@@ -1,11 +1,13 @@
 # Animoca Ethereum Contracts
 
-[![NPM Package](https://img.shields.io/npm/v/@animoca/ethereum-contracts.svg)](https://www.npmjs.org/package/@animoca/ethreum-contracts)
+[![NPM Package](https://img.shields.io/npm/v/@animoca/ethereum-contracts.svg)](https://www.npmjs.org/package/@animoca/ethereum-contracts)
 [![Coverage Status](https://codecov.io/gh/animoca/ethereum-contracts/graph/badge.svg)](https://codecov.io/gh/animoca/ethereum-contracts)
 
 Solidity contracts development library which uses [HardHat](https://hardhat.org/) consisting of upgradeable contracts, Hardhat plugins and configurations, tooling and testing utilities.
 
-## Solidity contracts
+## Overview
+
+### Solidity contracts
 
 The contracts are designed to be usable in any setup, behind a proxy or not. To achieve this, every storage is managed via [diamond storage pattern](https://dev.to/mudgen/how-diamond-storage-works-90e).
 
@@ -29,7 +31,7 @@ contract MyContract is Ownable {
 
 The compiled artifacts are available in the `artifacts` folder.
 
-## HardHat plugins and configurations
+### HardHat plugins and configurations
 
 A set of plugins and configurations are provided to improve the development experience. They can be used in your own project in your `hardhat.config.js`:
 
@@ -45,7 +47,7 @@ module.exports = merge(require('./hardhat-config'), {
 });
 ```
 
-## Constants and test behaviors
+### Constants and test behaviors
 
 Some constants and reusable test behaviors can be used in your own testing code:
 
@@ -72,14 +74,6 @@ npm add --save-dev @animoca/ethereum-contracts hardhat
 ```
 
 ## Development
-
-### Installation
-
-```bash
-yarn add @animoca/ethereum-contracts hardhat
-```
-
-### Development
 
 Install the dependencies:
 
