@@ -1,0 +1,2 @@
+*.sol linguist-language=Solidity
+artifacts/build-info/* filter=lfs diff=lfs merge=lfs -text
