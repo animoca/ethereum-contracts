@@ -5,7 +5,7 @@ const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constan
 function behavesLikeERC20Standard(implementation) {
   const {features, revertMessages, deploy} = implementation;
 
-  describe('like an ERC20Standard', function () {
+  describe('like an ERC20 Standard', function () {
     let accounts, deployer, owner, recipient, spender, maxSpender;
     const AccountIndex = {deployer: 0, owner: 1, recipient: 2, spender: 3, maxSpender: 4};
 

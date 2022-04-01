@@ -7,7 +7,7 @@ function behavesLikeERC20Mintable(implementation) {
   const {contractName, features, interfaces, revertMessages, methods, deploy} = implementation;
   const {'mint(address,uint256)': mint, 'batchMint(address[],uint256[])': batchMint} = methods;
 
-  describe('like a mintable ERC20', function () {
+  describe('like an ERC20 Mintable', function () {
     let accounts, deployer, recipient1, recipient2;
     const AccountIndex = {deployer: 0, recipient1: 1, recipient2: 2};
 

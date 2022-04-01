@@ -32,6 +32,7 @@ contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, Context {
         address target,
         bytes calldata data
     ) external override {
+        ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, target, data);
     }
 

@@ -4,7 +4,7 @@ const {shouldSupportInterfaces} = require('../../../introspection/behaviors/Supp
 function behavesLikeERC20Metadata(implementation) {
   const {tokenURI, deploy, features, revertMessages} = implementation;
 
-  describe('like an ERC20Metadata', function () {
+  describe('like an ERC20 Metadata', function () {
     let deployer, other;
 
     before(async function () {

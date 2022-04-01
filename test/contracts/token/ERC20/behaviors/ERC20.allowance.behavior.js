@@ -6,7 +6,7 @@ const {Zero, One, Two, Three, MaxUInt256, ZeroAddress} = require('../../../../..
 function behavesLikeERC20Allowance(implementation) {
   const {features, revertMessages, deploy} = implementation;
 
-  describe('like an allowance ERC20', function () {
+  describe('like an ERC20 Allowance', function () {
     let deployer, owner, spender, maxSpender;
 
     const initialSupply = ethers.BigNumber.from('100');

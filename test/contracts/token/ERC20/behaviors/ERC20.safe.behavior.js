@@ -6,7 +6,7 @@ const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constan
 function behavesLikeERC20Safe(implementation) {
   const {features, revertMessages, deploy} = implementation;
 
-  describe('like a safe ERC20', function () {
+  describe('like an ERC20 Safe Transfers', function () {
     let accounts, deployer, owner, recipient, spender, maxSpender;
     const AccountIndex = {deployer: 0, owner: 1, recipient: 2, spender: 3, maxSpender: 4};
 
