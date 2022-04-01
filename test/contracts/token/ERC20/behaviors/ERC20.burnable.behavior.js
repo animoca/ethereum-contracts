@@ -10,7 +10,7 @@ function behavesLikeERC20Burnable(implementation) {
   const initialSupply = ethers.BigNumber.from('100');
   const initialAllowance = initialSupply.sub(One);
 
-  describe('like a burnable ERC20', function () {
+  describe('like an ERC20 Burnable', function () {
     let accounts, deployer, owner, spender, maxSpender;
     const AccountIndex = {deployer: 0, owner: 1, spender: 2, maxSpender: 3};
 

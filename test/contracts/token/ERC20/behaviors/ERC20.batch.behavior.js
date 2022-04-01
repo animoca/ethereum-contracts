@@ -6,7 +6,7 @@ const {Zero, One, Two, MaxUInt256, ZeroAddress} = require('../../../../../src/co
 function behavesLikeERC20Batch(implementation) {
   const {features, revertMessages, deploy} = implementation;
 
-  describe('like a multi-transfer ERC20', function () {
+  describe('like an ERC20 Batch Transfers', function () {
     let accounts, deployer, owner, recipient1, recipient2, spender, maxSpender;
     const AccountIndex = {deployer: 0, owner: 1, recipient1: 2, recipient2: 3, spender: 4, maxSpender: 5};
 

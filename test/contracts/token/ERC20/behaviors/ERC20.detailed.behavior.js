@@ -4,7 +4,7 @@ const {shouldSupportInterfaces} = require('../../../introspection/behaviors/Supp
 function behavesLikeERC20Detailed(implementation) {
   const {name, symbol, decimals, features, deploy} = implementation;
 
-  describe('like a detailed ERC20', function () {
+  describe('like an ERC20 Detailed', function () {
     let deployer;
 
     before(async function () {

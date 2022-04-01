@@ -18,7 +18,7 @@ const PermitType = {
 function behavesLikeERC20Permit(implementation) {
   const {features, revertMessages, deploy} = implementation;
 
-  describe('like a permit ERC20', function () {
+  describe('like an ERC20 Permit', function () {
     let deployer, owner, spender, other;
 
     const initialSupply = ethers.BigNumber.from('100');
