@@ -60,7 +60,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-mocha": "^10.0.3",
     "eslint-plugin-prettier": "^4.0.0",
-    "ethereum-waffle": "^4.0.0-alpha.0",
+    "ethereum-waffle": "^4.0.0",
     "ethers": "=5.6.1",
     "fs-extra": "^10.0.1",
     "hardhat": "^2.9.2",
