@@ -9,6 +9,8 @@ import {ERC2771Data} from "./libraries/ERC2771Data.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+// This contract has been derived from wighawag/universal-forwarder
+// See https://github.com/wighawag/universal-forwarder/blob/5e16fad4d7bb99a7d4f32599787a6e240396d47c/src/ForwarderRegistry.sol
 /// @title Universal Meta-Transactions Forwarder Registry.
 /// @notice Users can record specific forwarders that will be allowed to forward meta-transactions on their behalf.
 contract ForwarderRegistry is IERC2771, IForwarderRegistry {
