@@ -1,37 +1,44 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 pragma experimental ABIEncoderV2;
 
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./interfaces/IDiamondCutBatchInit.sol";
-import {LibProxyAdmin} from "./../proxy/libraries/LibProxyAdmin.sol";
-import {LibDiamond} from "./libraries/LibDiamond.sol";
-import {LibInterfaceDetection} from "./../introspection/libraries/LibInterfaceDetection.sol";
+import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
+import {InterfaceDetectionStorage} from "./../introspection/libraries/InterfaceDetectionStorage.sol";
+import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
-/**
- * @title Diamond Cut (facet version).
- * @dev Note: This facet depends on {ProxyAdminFacet}.
- */
+/// @title Diamond Cut (facet version).
+/// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, Context {
+    using ProxyAdminStorage for ProxyAdminStorage.Layout;
+    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+    using DiamondStorage for DiamondStorage.Layout;
+
+    /// @notice Initialises the storage.
+    /// @notice Marks the following ERC165 interfaces as supported: DiamondCut, DiamondCutBatchInit.
+    /// @dev Reverts if the sender is not the proxy admin.
     function initDiamondCutStorage() external {
-        LibInterfaceDetection.setSupportedInterface(type(IDiamondCut).interfaceId, true);
-        LibInterfaceDetection.setSupportedInterface(type(IDiamondCutBatchInit).interfaceId, true);
+        ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCut).interfaceId, true);
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCutBatchInit).interfaceId, true);
     }
 
     /// @inheritdoc IDiamondCut
+    /// @dev Reverts if the sender is not the proxy admin.
     function diamondCut(
-        FacetCut[] calldata diamondCut_,
-        address init_,
-        bytes calldata calldata_
+        FacetCut[] calldata cuts,
+        address target,
+        bytes calldata data
     ) external override {
-        LibProxyAdmin.enforceIsProxyAdmin(_msgSender());
-        LibDiamond.diamondCut(diamondCut_, init_, calldata_);
+        DiamondStorage.layout().diamondCut(cuts, target, data);
     }
 
     /// @inheritdoc IDiamondCutBatchInit
-    function diamondCut(FacetCut[] calldata diamondCut_, Initialization[] calldata initializations_) external override {
-        LibProxyAdmin.enforceIsProxyAdmin(_msgSender());
-        LibDiamond.diamondCut(diamondCut_, initializations_);
+    /// @dev Reverts if the sender is not the proxy admin.
+    function diamondCut(FacetCut[] calldata cuts, Initialization[] calldata initializations) external override {
+        ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
+        DiamondStorage.layout().diamondCut(cuts, initializations);
     }
 }

@@ -1,12 +1,6 @@
-const {utils, BigNumber} = require('ethers');
-const {parseBytes32String} = utils;
-const {expectEvent, expectRevert, time} = require('@openzeppelin/test-helpers');
-
-const {runBehaviorTests} = require('../../utils/run');
-const {createFixtureLoader} = require('../../utils/fixture');
-const fixtureLoader = createFixtureLoader();
-
-const [deployer, other] = require('../../.accounts');
+const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {loadFixture} = require('../../helpers/fixtures');
+const {latest} = require('../../helpers/time');
 
 const config = {
   immutable: {
@@ -14,87 +8,70 @@ const config = {
     ctorArguments: ['checkpointIds', 'timestamps'],
   },
   diamond: {
-    facetDependencies: [
+    facets: [
+      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
+      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
       {
-        name: 'ProxyAdminFacet',
-        initMethod: 'initProxyAdminStorage',
-        initArguments: ['initialAdmin'],
-      },
-      {name: 'DiamondCutFacet', initMethod: 'initDiamondCutStorage'},
-      {
-        name: 'OwnableFacet',
-        initMethod: 'initOwnershipStorage',
-        initArguments: ['initialOwner'],
+        name: 'CheckpointsFacetMock',
+        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, versionProtected: true},
       },
     ],
-    mainFacet: {
-      name: 'CheckpointsFacetMock',
-      initMethod: 'initCheckpointsStorage',
-      initArguments: ['checkpointIds', 'timestamps'],
-    },
   },
   defaultArguments: {
-    initialAdmin: deployer,
-    initialOwner: deployer,
+    initialAdmin: getDeployerAddress,
+    initialOwner: getDeployerAddress,
     checkpointIds: [],
     timestamps: [],
   },
-  abiExtensions: ['LibCheckpoints'],
 };
 
 runBehaviorTests('Checkpoints', config, function (deployFn) {
+  let deployer, other;
+
+  before(async function () {
+    [deployer, other] = await ethers.getSigners();
+    const tempContract = await deployFn();
+    this.checkpointId = await tempContract.START_CHECKPOINTID();
+  });
+
   const fixtureTimeUnset = async function () {
-    const tempContract = await deployFn({}, deployer);
-    this.checkpointId = await tempContract.contract.START_CHECKPOINTID();
     this.startTime = '0';
-    const deployment = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]}, deployer);
-    this.contract = deployment.contract;
-    this.tx = deployment.tx;
+    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
   const fixtureTimeSetInPast = async function () {
-    const tempContract = await deployFn({}, deployer);
-    this.checkpointId = await tempContract.contract.START_CHECKPOINTID();
-    this.startTime = BigNumber.from((await time.latest()).toString());
-    const deployment = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]}, deployer);
-    this.contract = deployment.contract;
-    this.tx = deployment.tx;
+    this.startTime = await latest();
+    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
   const fixtureTimeSetInFuture = async function () {
-    const tempContract = await deployFn({}, deployer);
-    this.checkpointId = await tempContract.contract.START_CHECKPOINTID();
-    this.startTime = BigNumber.from((await time.latest()).toString()).add('1000');
-    const deployment = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]}, deployer);
-    this.contract = deployment.contract;
-    this.tx = deployment.tx;
+    this.startTime = (await latest()).add('1000');
+    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
 
   describe('constructor(bytes32[],uint256[])', function () {
     it('reverts with inconsistent array lengths', async function () {
-      await expectRevert(deployFn({checkpointIds: [], timestamps: ['0']}, deployer), 'Checkpoints: wrong array length');
+      await expect(deployFn({checkpointIds: [], timestamps: ['0']})).to.be.revertedWith('Checkpoints: wrong array length');
     });
     context('with a zero start time', function () {
       beforeEach(async function () {
-        await fixtureLoader(fixtureTimeUnset, this);
+        await loadFixture(fixtureTimeUnset, this);
       });
       it('leaves the checkpoint unset', async function () {
-        (await this.contract.checkpoint(this.checkpointId)).should.be.bignumber.equal(this.startTime);
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
       });
       it('does not emit a {CheckpointSet} event', async function () {
-        await expectEvent.notEmitted.inTransaction(this.tx, this.contract, 'CheckpointSet');
+        await expect(this.contract.deployTransaction.hash).not.to.emit(this.contract, 'CheckpointSet');
       });
     });
     context('with a non-zero start time', function () {
       beforeEach(async function () {
-        await fixtureLoader(fixtureTimeSetInPast, this);
+        await loadFixture(fixtureTimeSetInPast, this);
       });
       it('sets the checkpoint', async function () {
-        (await this.contract.checkpoint(this.checkpointId)).should.be.bignumber.equal(this.startTime.toString());
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
       });
       it('emits a {CheckpointSet} event', async function () {
-        await expectEvent.inTransaction(this.tx, this.contract, 'CheckpointSet', {
-          checkpointId: this.checkpointId,
-          timestamp: this.startTime.toString(),
-        });
+        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'CheckpointSet').withArgs(this.checkpointId, this.startTime);
       });
     });
   });
@@ -102,63 +79,60 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
   describe('checkpoint reaching conditions', function () {
     context('checkpoint is unset (zero)', function () {
       beforeEach(async function () {
-        await fixtureLoader(fixtureTimeUnset, this);
+        await loadFixture(fixtureTimeUnset, this);
       });
 
       it('checkpointReached(bytes32) returns false', async function () {
-        (await this.contract.checkpointReached(this.checkpointId)).should.be.false;
+        expect(await this.contract.checkpointReached(this.checkpointId)).to.be.false;
       });
 
-      it('LibCheckpoints.enforceCheckpointReached(bytes32) reverts', async function () {
-        await expectRevert(
-          this.contract.enforceCheckpointReached(this.checkpointId),
-          `Checkpoints: checkpoint '${parseBytes32String(this.checkpointId)}' not reached yet`
+      it('CheckpointsStorage.enforceCheckpointReached(bytes32) reverts', async function () {
+        await expect(this.contract.enforceCheckpointReached(this.checkpointId)).to.be.revertedWith(
+          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' not reached yet`
         );
       });
 
-      it('LibCheckpoints.enforceCheckpointNotReached(bytes32) does not revert', async function () {
+      it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) does not revert', async function () {
         await this.contract.enforceCheckpointNotReached(this.checkpointId);
       });
     });
 
     context('checkpoint is set (non-zero) and time is not reached yet', function () {
       beforeEach(async function () {
-        await fixtureLoader(fixtureTimeSetInFuture, this);
+        await loadFixture(fixtureTimeSetInFuture, this);
       });
 
       it('checkpointReached(bytes32) returns false', async function () {
-        (await this.contract.checkpointReached(this.checkpointId)).should.be.false;
+        expect(await this.contract.checkpointReached(this.checkpointId)).to.be.false;
       });
 
-      it('LibCheckpoints.enforceCheckpointReached(bytes32) reverts', async function () {
-        await expectRevert(
-          this.contract.enforceCheckpointReached(this.checkpointId),
-          `Checkpoints: checkpoint '${parseBytes32String(this.checkpointId)}' not reached yet`
+      it('CheckpointsStorage.enforceCheckpointReached(bytes32) reverts', async function () {
+        await expect(this.contract.enforceCheckpointReached(this.checkpointId)).to.be.revertedWith(
+          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' not reached yet`
         );
       });
 
-      it('LibCheckpoints.enforceCheckpointNotReached(bytes32) does not revert', async function () {
+      it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) does not revert', async function () {
         await this.contract.enforceCheckpointNotReached(this.checkpointId);
       });
     });
 
     context('checkpoint is set (non-zero) and time is reached', function () {
       beforeEach(async function () {
-        await fixtureLoader(fixtureTimeSetInPast, this);
+        await loadFixture(fixtureTimeSetInPast, this);
       });
 
       it('checkpointReached(bytes32) returns true', async function () {
-        (await this.contract.checkpointReached(this.checkpointId)).should.be.true;
+        expect(await this.contract.checkpointReached(this.checkpointId)).to.be.true;
       });
 
-      it('LibCheckpoints.enforceCheckpointReached(bytes32) does not revert', async function () {
+      it('CheckpointsStorage.enforceCheckpointReached(bytes32) does not revert', async function () {
         await this.contract.enforceCheckpointReached(this.checkpointId);
       });
 
-      it('LibCheckpoints.enforceCheckpointNotReached(bytes32) reverts', async function () {
-        await expectRevert(
-          this.contract.enforceCheckpointNotReached(this.checkpointId),
-          `Checkpoints: checkpoint '${parseBytes32String(this.checkpointId)}' already reached`
+      it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) reverts', async function () {
+        await expect(this.contract.enforceCheckpointNotReached(this.checkpointId)).to.be.revertedWith(
+          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already reached`
         );
       });
     });
@@ -166,99 +140,80 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
 
   context('setCheckpoint(bytes32,uint256)', function () {
     beforeEach(async function () {
-      await fixtureLoader(fixtureTimeUnset, this);
+      await loadFixture(fixtureTimeUnset, this);
       this.startTime = '1';
     });
 
     it('reverts if not called by the contract owner', async function () {
-      await expectRevert(
-        this.contract.setCheckpoint(this.checkpointId, this.startTime, {
-          from: other,
-        }),
-        'Ownership: not the owner'
-      );
+      await expect(this.contract.connect(other).setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWith('Ownership: not the owner');
     });
 
     it('reverts if the checkpoint is already set', async function () {
-      await this.contract.setCheckpoint(this.checkpointId, this.startTime, {
-        from: deployer,
-      });
-      await expectRevert(
-        this.contract.setCheckpoint(this.checkpointId, this.startTime, {
-          from: deployer,
-        }),
-        `Checkpoints: checkpoint '${parseBytes32String(this.checkpointId)}' already set`
+      await this.contract.setCheckpoint(this.checkpointId, this.startTime);
+      await expect(this.contract.setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWith(
+        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already set`
       );
     });
 
     context('when successful (zero timestamp value)', function () {
       beforeEach(async function () {
         this.startTime = '0';
-        this.receipt = await this.contract.setCheckpoint(this.checkpointId, this.startTime, {from: deployer});
+        this.receipt = await this.contract.setCheckpoint(this.checkpointId, this.startTime);
       });
 
       it('leaves the checkpoint unset', async function () {
-        (await this.contract.checkpoint(this.checkpointId)).should.be.bignumber.equal(this.startTime);
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
       });
 
       it('does not emit a {CheckpointSet} event', async function () {
-        await expectEvent.notEmitted(this.receipt, 'CheckpointSet');
+        await expect(this.receipt).not.to.emit(this.contract, 'CheckpointSet');
       });
     });
 
     context('when successful (non-zero timestamp value)', function () {
       beforeEach(async function () {
-        this.receipt = await this.contract.setCheckpoint(this.checkpointId, this.startTime, {from: deployer});
+        this.receipt = await this.contract.setCheckpoint(this.checkpointId, this.startTime);
       });
 
       it('sets the checkpoint', async function () {
-        (await this.contract.checkpoint(this.checkpointId)).should.be.bignumber.equal(this.startTime);
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
       });
 
       it('emits a {CheckpointSet} event', async function () {
-        expectEvent(this.receipt, 'CheckpointSet', {
-          checkpointId: this.checkpointId,
-          timestamp: this.startTime,
-        });
+        await expect(this.receipt).to.emit(this.contract, 'CheckpointSet').withArgs(this.checkpointId, this.startTime);
       });
     });
   });
 
   context('triggerCheckpoint(bytes32)', function () {
     beforeEach(async function () {
-      await fixtureLoader(fixtureTimeUnset, this);
+      await loadFixture(fixtureTimeUnset, this);
     });
 
     it('reverts if not called by the contract owner', async function () {
-      await expectRevert(this.contract.triggerCheckpoint(this.checkpointId, {from: other}), 'Ownership: not the owner');
+      await expect(this.contract.connect(other).triggerCheckpoint(this.checkpointId)).to.be.revertedWith('Ownership: not the owner');
     });
 
     it('reverts if the checkpoint is already reached', async function () {
-      await this.contract.triggerCheckpoint(this.checkpointId, {
-        from: deployer,
-      });
-      await expectRevert(
-        this.contract.triggerCheckpoint(this.checkpointId, {from: deployer}),
-        `Checkpoints: checkpoint '${parseBytes32String(this.checkpointId)}' already reached`
+      await this.contract.triggerCheckpoint(this.checkpointId);
+      await expect(this.contract.triggerCheckpoint(this.checkpointId)).to.be.revertedWith(
+        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already reached`
       );
     });
 
     context('when successful', function () {
       beforeEach(async function () {
-        this.receipt = await this.contract.triggerCheckpoint(this.checkpointId, {from: deployer});
-        const block = await hre.ethers.provider.getBlock(this.receipt.receipt.blockNumber);
-        this.startTime = BigNumber.from(block.timestamp).toString();
+        this.receipt = await this.contract.triggerCheckpoint(this.checkpointId);
+        const block = await ethers.provider.getBlock(this.receipt.blockNumber);
+        this.startTime = ethers.BigNumber.from(block.timestamp);
       });
 
       it('sets the checkpoint to the current timestamp', async function () {
-        (await this.contract.checkpoint(this.checkpointId)).should.be.bignumber.equal(this.startTime);
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
       });
 
       it('emits a {CheckpointSet} event', async function () {
-        expectEvent(this.receipt, 'CheckpointSet', {
-          checkpointId: this.checkpointId,
-          timestamp: this.startTime,
-        });
+        await expect(this.receipt).to.emit(this.contract, 'CheckpointSet').withArgs(this.checkpointId, this.startTime);
       });
     });
   });

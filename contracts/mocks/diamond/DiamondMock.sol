@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibDiamond} from "./../../diamond/libraries/LibDiamond.sol";
 import {IDiamondCutBase} from "./../../diamond/interfaces/IDiamondCutBase.sol";
+import {DiamondStorage} from "./../../diamond/libraries/DiamondStorage.sol";
 import {Diamond} from "./../../diamond/Diamond.sol";
 
 contract DiamondMock is Diamond {
+    using DiamondStorage for DiamondStorage.Layout;
+
     event ImmutableFunctionCalled();
 
-    constructor(IDiamondCutBase.FacetCut[] memory diamondCut_, IDiamondCutBase.Initialization[] memory initializations_)
+    constructor(IDiamondCutBase.FacetCut[] memory cuts, IDiamondCutBase.Initialization[] memory initializations)
         payable
-        Diamond(diamondCut_, initializations_)
+        Diamond(cuts, initializations)
     {
         bytes4[] memory selectors = new bytes4[](1);
         selectors[0] = DiamondMock.immutableFunction.selector;
@@ -19,7 +21,7 @@ contract DiamondMock is Diamond {
         cut[0].action = IDiamondCutBase.FacetCutAction.Add;
         cut[0].functionSelectors = selectors;
 
-        LibDiamond.diamondCut(cut, address(0), "");
+        DiamondStorage.layout().diamondCut(cut, address(0), "");
     }
 
     function immutableFunction() external {

@@ -1,16 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibProxyAdmin} from "./libraries/LibProxyAdmin.sol";
+import {ProxyAdminStorage} from "./libraries/ProxyAdminStorage.sol";
 import {ProxyAdminBase} from "./ProxyAdminBase.sol";
 
-/**
- * @title ERC1967 Standard Proxy Storage Slots, Admin Address (immutable version).
- * @dev See https://eips.ethereum.org/EIPS/eip-1967
- * @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
- */
+/// @title ERC1967 Standard Proxy Storage Slots, Admin Address (immutable version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-1967
+/// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ProxyAdmin is ProxyAdminBase {
+    using ProxyAdminStorage for ProxyAdminStorage.Layout;
+
+    /// @notice Initializes the storage with an initial admin.
+    /// @notice Sets the proxy admin storage version to `1`.
+    /// @dev Reverts if the proxy admin storage is already initialized to version `1` or above.
+    /// @dev Emits an {AdminChanged} event if `initialAdmin` is not the zero address.
+    /// @param initialAdmin The initial payout wallet.
     constructor(address initialAdmin) {
-        LibProxyAdmin.initProxyAdminStorage(initialAdmin);
+        ProxyAdminStorage.layout().init(initialAdmin);
     }
 }

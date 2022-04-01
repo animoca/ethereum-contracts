@@ -1,42 +1,32 @@
-const {expectRevert} = require('@openzeppelin/test-helpers');
-
-const {runBehaviorTests} = require('../../utils/run');
-const {createFixtureLoader} = require('../../utils/fixture');
-const fixtureLoader = createFixtureLoader();
-
+const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {loadFixture} = require('../../helpers/fixtures');
 const {makeInterfaceId, shouldSupportInterfaces} = require('./behaviors/SupportsInterface.behavior');
-
-const [deployer] = require('../../.accounts');
 
 const config = {
   immutable: {name: 'ERC165Mock'},
   diamond: {
-    facetDependencies: [
-      {
-        name: 'ProxyAdminFacet',
-        initMethod: 'initProxyAdminStorage',
-        initArguments: ['initialAdmin'],
-      },
-      {name: 'DiamondCutFacet', initMethod: 'initDiamondCutStorage'},
+    facets: [
+      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
+      {name: 'ERC165FacetMock', init: {method: 'initInterfaceDetectionStorage', adminProtected: true, versionProtected: true}},
     ],
-    mainFacet: {
-      name: 'ERC165FacetMock',
-      initMethod: 'initInterfaceDetectionStorage',
-    },
   },
-  defaultArguments: {initialAdmin: deployer},
-  abiExtensions: ['LibPayoutWallet'],
+  defaultArguments: {initialAdmin: getDeployerAddress},
 };
 
 runBehaviorTests('ERC165', config, function (deployFn) {
+  let deployer;
+
+  before(async function () {
+    [deployer] = await ethers.getSigners();
+  });
+
   const fixture = async function () {
-    const deployment = await deployFn({}, deployer);
-    this.contract = deployment.contract;
-    this.tx = deployment.tx;
+    this.contract = await deployFn();
   };
 
   beforeEach(async function () {
-    await fixtureLoader(fixture, this);
+    await loadFixture(fixture, this);
   });
 
   shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
@@ -44,7 +34,7 @@ runBehaviorTests('ERC165', config, function (deployFn) {
   describe('setSupportedInterface(bytes4,bool)', function () {
     context('registering a new interface', function () {
       it('reverts with illegal value 0xffffffff', async function () {
-        await expectRevert(this.contract.setSupportedInterface('0xffffffff', true), 'InterfaceDetection: wrong value');
+        await expect(this.contract.setSupportedInterface('0xffffffff', true)).to.be.revertedWith('InterfaceDetection: wrong value');
       });
 
       context('when successful', function () {
@@ -58,7 +48,7 @@ runBehaviorTests('ERC165', config, function (deployFn) {
 
     context('unregistering an existing interface', function () {
       it('reverts with illegal value 0xffffffff', async function () {
-        await expectRevert(this.contract.setSupportedInterface('0xffffffff', false), 'InterfaceDetection: wrong value');
+        await expect(this.contract.setSupportedInterface('0xffffffff', false)).to.be.revertedWith('InterfaceDetection: wrong value');
       });
 
       context('when successful', function () {
@@ -67,7 +57,7 @@ runBehaviorTests('ERC165', config, function (deployFn) {
         });
 
         it('does not support the interface any more', async function () {
-          (await this.contract.supportsInterface(makeInterfaceId('contracts/introspection/interfaces/IERC165.sol:IERC165'))).should.be.false;
+          expect(await this.contract.supportsInterface(makeInterfaceId('contracts/introspection/interfaces/IERC165.sol:IERC165'))).to.be.false;
         });
       });
     });

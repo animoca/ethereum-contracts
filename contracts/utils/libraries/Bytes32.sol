@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
 library Bytes32 {
-    /**
-     * Converts bytes32 to base32 string.
-     * @param value value to convert.
-     * @return the converted base32 string.
-     */
+    /// @notice Converts bytes32 to base32 string.
+    /// @param value value to convert.
+    /// @return the converted base32 string.
     function toBase32String(bytes32 value) internal pure returns (string memory) {
         bytes32 base32Alphabet = 0x6162636465666768696A6B6C6D6E6F707172737475767778797A323334353637;
         uint256 i = uint256(value);
@@ -21,11 +19,9 @@ library Bytes32 {
         return string(bstr);
     }
 
-    /**
-     * Converts a bytes32 value to an ASCII string, trimming the tailing zeros.
-     * @param value value to convert.
-     * @return the converted ASCII string.
-     */
+    /// @notice Converts a bytes32 value to an ASCII string, trimming the tailing zeros.
+    /// @param value value to convert.
+    /// @return the converted ASCII string.
     function toASCIIString(bytes32 value) internal pure returns (string memory) {
         if (value == 0x00) return "";
         bytes memory bytesString = bytes(abi.encodePacked(value));

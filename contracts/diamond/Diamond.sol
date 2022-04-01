@@ -1,21 +1,30 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 pragma experimental ABIEncoderV2;
 
-import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {IDiamondCutBase} from "./interfaces/IDiamondCutBase.sol";
+import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 
-/**
- * @title ERC2535 Diamond Standard, Diamond.
- * @dev See https://eips.ethereum.org/EIPS/eip-2535
- */
+/// @title ERC2535 Diamond Standard, Diamond.
+/// @dev See https://eips.ethereum.org/EIPS/eip-2535
 contract Diamond {
-    constructor(IDiamondCutBase.FacetCut[] memory diamondCut_, IDiamondCutBase.Initialization[] memory initializations_) payable {
-        LibDiamond.diamondCut(diamondCut_, initializations_);
+    using DiamondStorage for DiamondStorage.Layout;
+
+    /// @notice Add/replace/remove facet functions and execute a batch of functions with delegatecall.
+    /// @dev Emits a {DiamondCut} event.
+    /// @param cuts The list of facet addresses, actions and function selectors to apply to the diamond.
+    /// @param initializations The list of addresses and encoded function calls to execute with delegatecall.
+    constructor(IDiamondCutBase.FacetCut[] memory cuts, IDiamondCutBase.Initialization[] memory initializations) payable {
+        DiamondStorage.layout().diamondCut(cuts, initializations);
     }
 
     fallback() external payable {
-        address facet = LibDiamond.facetAddress(msg.sig);
+        bytes32 position = DiamondStorage.DIAMOND_STORAGE_POSITION;
+        DiamondStorage.Layout storage s;
+        assembly {
+            s.slot := position
+        }
+        address facet = s.selectorToFacetAndPosition[msg.sig].facetAddress;
         require(facet != address(0), "Diamond: function not found");
         assembly {
             calldatacopy(0, 0, calldatasize())

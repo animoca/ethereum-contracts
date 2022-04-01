@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibPause} from "./../../lifecycle/libraries/LibPause.sol";
+import {PauseStorage} from "./../../lifecycle/libraries/PauseStorage.sol";
 import {Pausable} from "./../../lifecycle/Pausable.sol";
 import {Ownable} from "./../../access/Ownable.sol";
 
 contract PausableMock is Pausable {
+    using PauseStorage for PauseStorage.Layout;
+
     constructor(bool paused_) Pausable(paused_) Ownable(msg.sender) {}
 
     function enforceIsPaused() external view {
-        LibPause.enforceIsPaused();
+        PauseStorage.layout().enforceIsPaused();
     }
 
     function enforceIsNotPaused() external view {
-        LibPause.enforceIsNotPaused();
+        PauseStorage.layout().enforceIsNotPaused();
     }
 }

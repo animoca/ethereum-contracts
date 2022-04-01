@@ -1,89 +1,76 @@
-const {expectEvent, expectRevert} = require('@openzeppelin/test-helpers');
 const {ZeroAddress} = require('../../../src/constants');
-
-const {runBehaviorTests} = require('../../utils/run');
-const {createFixtureLoader} = require('../../utils/fixture');
-const fixtureLoader = createFixtureLoader();
-
-const [deployer, other, payoutWallet] = require('../../.accounts');
+const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
   immutable: {name: 'PayoutWalletMock', ctorArguments: ['payoutWallet']},
   diamond: {
-    facetDependencies: [
+    facets: [
+      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
+      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
       {
-        name: 'ProxyAdminFacet',
-        initMethod: 'initProxyAdminStorage',
-        initArguments: ['initialAdmin'],
-      },
-      {name: 'DiamondCutFacet', initMethod: 'initDiamondCutStorage'},
-      {
-        name: 'OwnableFacet',
-        initMethod: 'initOwnershipStorage',
-        initArguments: ['initialOwner'],
+        name: 'PayoutWalletFacet',
+        init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, versionProtected: true},
       },
     ],
-    mainFacet: {
-      name: 'PayoutWalletFacet',
-      initMethod: 'initPayoutWalletStorage',
-      initArguments: ['payoutWallet'],
-    },
   },
   defaultArguments: {
-    initialAdmin: deployer,
-    initialOwner: deployer,
-    payoutWallet: deployer,
+    initialAdmin: getDeployerAddress,
+    initialOwner: getDeployerAddress,
+    payoutWallet: getDeployerAddress,
   },
-  abiExtensions: ['LibPayoutWallet'],
 };
 
 runBehaviorTests('PayoutWallet', config, function (deployFn) {
+  let deployer, other, payoutWallet;
+
+  before(async function () {
+    [deployer, other, payoutWallet] = await ethers.getSigners();
+  });
+
   const fixture = async function () {
-    const deployment = await deployFn({payoutWallet}, deployer);
-    this.contract = deployment.contract;
-    this.tx = deployment.tx;
+    this.contract = await deployFn({payoutWallet: payoutWallet.address});
   };
 
   beforeEach(async function () {
-    await fixtureLoader(fixture, this);
+    await loadFixture(fixture, this);
   });
 
   describe('constructor(address payable)', function () {
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expectRevert(deployFn({payoutWallet: ZeroAddress}, deployer), 'PayoutWallet: zero address');
+      await expect(deployFn({payoutWallet: ZeroAddress})).to.be.revertedWith('PayoutWallet: zero address');
     });
 
     it('sets the payout wallet', async function () {
-      (await this.contract.payoutWallet()).should.be.equal(payoutWallet);
+      expect(await this.contract.payoutWallet()).to.equal(payoutWallet.address);
     });
 
     it('emits a PayoutWalletSet event', async function () {
-      await expectEvent.inTransaction(this.tx, this.contract, 'PayoutWalletSet', {payoutWallet});
+      await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'PayoutWalletSet').withArgs(payoutWallet.address);
     });
   });
 
   describe('setPayoutWallet(address payable)', function () {
     it('reverts if not sent by the contract owner', async function () {
-      await expectRevert(this.contract.setPayoutWallet(other, {from: other}), 'Ownership: not the owner');
+      await expect(this.contract.connect(other).setPayoutWallet(other.address)).to.be.revertedWith('Ownership: not the owner');
     });
 
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expectRevert(this.contract.setPayoutWallet(ZeroAddress, {from: deployer}), 'PayoutWallet: zero address');
+      await expect(this.contract.setPayoutWallet(ZeroAddress)).to.be.revertedWith('PayoutWallet: zero address');
     });
 
     context('when successful', function () {
       beforeEach(async function () {
-        this.receipt = await this.contract.setPayoutWallet(other, {
-          from: deployer,
-        });
+        this.receipt = await this.contract.setPayoutWallet(other.address);
       });
 
       it('sets the payout wallet', async function () {
-        (await this.contract.payoutWallet()).should.be.equal(other);
+        expect(await this.contract.payoutWallet()).to.equal(other.address);
       });
 
       it('emits a PayoutWalletSet event', async function () {
-        expectEvent(this.receipt, 'PayoutWalletSet', {payoutWallet: other});
+        await expect(this.receipt).to.emit(this.contract, 'PayoutWalletSet').withArgs(other.address);
       });
     });
   });

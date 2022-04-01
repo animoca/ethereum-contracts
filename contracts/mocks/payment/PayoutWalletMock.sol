@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
 import {PayoutWallet} from "./../../payment/PayoutWallet.sol";
 import {Ownable} from "./../../access/Ownable.sol";

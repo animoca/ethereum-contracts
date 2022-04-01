@@ -1,11 +1,16 @@
-const {artifacts} = require('hardhat');
-const {utils} = require('ethers');
-const helper = require('@openzeppelin/test-helpers');
-
-function makeInterfaceId(interface) {
-  const abi = artifacts.require(interface).abi;
-  const functions = abi.filter((el) => el.type == 'function').map((fn) => utils.Fragment.from(fn).format());
-  return helper.makeInterfaceId.ERC165(functions);
+function makeInterfaceId(interfaceName) {
+  const artifact = artifacts.readArtifactSync(interfaceName);
+  const interface = new ethers.utils.Interface(artifact.abi);
+  const sighashes = Object.values(interface.functions).map((fn) => interface.getSighash(fn));
+  const interfaceId = sighashes
+    .map((sighash) => Buffer.from(sighash.substring(2), 'hex'))
+    .reduce((prev, curr) => {
+      for (let i = 0; i < 4; i++) {
+        prev[i] = prev[i] ^ curr[i];
+      }
+      return prev;
+    }, Buffer.alloc(4));
+  return `0x${interfaceId.toString('hex')}`;
 }
 
 function shouldSupportInterfaces(interfaces, maxGas = 30000) {
@@ -19,11 +24,11 @@ function shouldSupportInterfaces(interfaces, maxGas = 30000) {
 
       describe(`${interface} (${interfaceId})`, function () {
         it('is supported', async function () {
-          (await this.contract.supportsInterface(interfaceId)).should.equal(true);
+          expect(await this.contract.supportsInterface(interfaceId)).to.be.true;
         });
 
         it(`should use less than ${maxGas} gas [ @skip-on-coverage ]`, async function () {
-          (await this.contract.supportsInterface.estimateGas(interfaceId)).should.be.lte(maxGas);
+          expect(await this.contract.estimateGas.supportsInterface(interfaceId)).to.be.lte(maxGas);
         });
       });
     }
