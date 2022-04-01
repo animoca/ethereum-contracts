@@ -7,7 +7,7 @@ require('solidity-coverage');
 task('coverage', async (taskArguments, hre, runSuper) => {
   // hre.config.mocha.grep cannot be used because it is overwritten by cli option in hardhart@2.9.0
   // see https://github.com/NomicFoundation/hardhat/issues/2459
-  hre.config.mocha.fgrep = '@skip-on-coverage';
+  hre.config.mocha.grep = '@skip-on-coverage';
   hre.config.mocha.invert = true;
 
   const artifacts = hre.config.paths.artifacts;

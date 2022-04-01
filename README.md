@@ -14,7 +14,7 @@ The contracts are designed to be usable in any setup, behind a proxy or not. To 
 The contracts are named using the following convention:
 | contract                       | description                                                                           |
 | ------------------------------ | ------------------------------------------------------------------------------------- |
-| `libraries/LibXXXXStorage.sol` | Library managing the diamond storage and the core contract logic                      |
+| `libraries/XXXXStorage.sol`    | Library managing the diamond storage and the core contract logic                      |
 | `XXXBase.sol`                  | The base proxiable contract. Should be inherited by a proxied implementation          |
 | `XXX.sol`                      | The base immutable contract. Should be inherited by an immutable implementation       |
 | `XXXFacet.sol`                 | The facet implementation. Should be deployed and used as a diamon face                |

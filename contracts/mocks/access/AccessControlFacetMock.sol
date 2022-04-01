@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibAccessControl} from "./../../access/libraries/LibAccessControl.sol";
+import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
 import {AccessControlFacet} from "./../../access/AccessControlFacet.sol";
 
 contract AccessControlFacetMock is AccessControlFacet {
+    using AccessControlStorage for AccessControlStorage.Layout;
+
     bytes32 public constant TEST_ROLE = "tester";
 
     function enforceHasRole(bytes32 role, address account) external view {
-        LibAccessControl.enforceHasRole(role, account);
+        AccessControlStorage.layout().enforceHasRole(role, account);
     }
 }

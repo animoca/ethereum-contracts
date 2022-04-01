@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibOwnership} from "./../../access/libraries/LibOwnership.sol";
+import {OwnershipStorage} from "./../../access/libraries/OwnershipStorage.sol";
 import {OwnableFacet} from "./../../access/OwnableFacet.sol";
 
 contract OwnableFacetMock is OwnableFacet {
+    using OwnershipStorage for OwnershipStorage.Layout;
+
     function enforceIsContractOwner(address account) external view {
-        LibOwnership.enforceIsContractOwner(account);
+        OwnershipStorage.layout().enforceIsContractOwner(account);
     }
 }

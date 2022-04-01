@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
-import {LibInterfaceDetection} from "./../../introspection/libraries/LibInterfaceDetection.sol";
+import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {ERC165} from "./../../introspection/ERC165.sol";
 
 contract ERC165Mock is ERC165 {
+    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+
     function setSupportedInterface(bytes4 interfaceId, bool supported) external {
-        LibInterfaceDetection.setSupportedInterface(interfaceId, supported);
+        InterfaceDetectionStorage.layout().setSupportedInterface(interfaceId, supported);
     }
 }

@@ -12,14 +12,14 @@ node_modules/
 cache/
 cache.coverage/
 
-artifacts*
+artifacts/*
 !artifacts/build-info/
 !artifacts/contracts/
+artifacts.bak/
 artifacts.coverage/
 
 coverage*
 .coverage*
-smartcheck*
 flattened*
 docs/
 gas-report.md
@@ -34,8 +34,6 @@ generated/localhost*
 generated/hardhat*
 
 .mnemonic*
-
-test/.accounts
 
 hardhat.config.last.json
 

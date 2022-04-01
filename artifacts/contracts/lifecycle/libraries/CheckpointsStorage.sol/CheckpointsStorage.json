@@ -1,0 +1,56 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CheckpointsStorage",
+  "sourceName": "contracts/lifecycle/libraries/CheckpointsStorage.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "checkpointId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "CheckpointSet",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "CHECKPOINTS_STORAGE_POSITION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CHECKPOINTS_VERSION_SLOT",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x61012561003a600b82828239805160001a60731461002d57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c806387260307146042578063a0c0242c14605a575b600080fd5b60486060565b60405190815260200160405180910390f35b6048608c565b608960017f4a524ceabb4f005f39a09bc26e36b1ec596a1100d17cea8abc46bdceb12607ae60b2565b81565b608960017f4c8f66364c5b891527359e308e3f184aaf00c094b068e22e5fcea10aed1547905b60008282101560ea577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea2646970667358221220a0368a8043cf23bdcd3116e7bdbb4bb8a392c69330eda0255487d71482cc2bac64736f6c634300080d0033",
+  "deployedBytecode": "0x7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c806387260307146042578063a0c0242c14605a575b600080fd5b60486060565b60405190815260200160405180910390f35b6048608c565b608960017f4a524ceabb4f005f39a09bc26e36b1ec596a1100d17cea8abc46bdceb12607ae60b2565b81565b608960017f4c8f66364c5b891527359e308e3f184aaf00c094b068e22e5fcea10aed1547905b60008282101560ea577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea2646970667358221220a0368a8043cf23bdcd3116e7bdbb4bb8a392c69330eda0255487d71482cc2bac64736f6c634300080d0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

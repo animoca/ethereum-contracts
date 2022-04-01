@@ -1,20 +1,21 @@
-const {BigNumber} = require('ethers');
+const {BigNumber, constants} = require('ethers');
 
 // BigNumber
-const Zero = BigNumber.from('0');
-const One = BigNumber.from('1');
-const Two = BigNumber.from('2');
+const NegativeOne = constants.NegativeOne;
+const Zero = constants.Zero;
+const One = constants.One;
+const Two = constants.Two;
 const Three = BigNumber.from('3');
 const Four = BigNumber.from('4');
 const Five = BigNumber.from('5');
 
-const MaxUInt256 = BigNumber.from('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
-const MaxInt256 = BigNumber.from('0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
-const MinInt256 = BigNumber.from('-0x8000000000000000000000000000000000000000000000000000000000000000');
+const MaxUInt256 = constants.MaxUint256;
+const MaxInt256 = constants.MaxInt256;
+const MinInt256 = constants.MinInt256;
 
 // Address
 const EthAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-const ZeroAddress = '0x0000000000000000000000000000000000000000';
+const ZeroAddress = constants.AddressZero;
 
 // Byte
 const EmptyByte = '0x';
@@ -23,7 +24,7 @@ const EmptyByte = '0x';
 const ZeroBytes4 = '0x00000000';
 
 // Bytes32
-const ZeroBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const ZeroBytes32 = constants.HashZero;
 
 module.exports = {
   // BigNumber
