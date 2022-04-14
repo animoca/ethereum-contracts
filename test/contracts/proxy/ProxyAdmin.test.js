@@ -1,16 +1,24 @@
 const {ZeroAddress} = require('../../../src/constants');
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
   immutable: {name: 'ProxyAdminMock', ctorArguments: ['initialAdmin']},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin'], versionProtected: true}},
-      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
+      {
+        name: 'ProxyAdminFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin'], versionProtected: true},
+        metaTxSupport: true,
+      },
+      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
     ],
   },
-  defaultArguments: {initialAdmin: getDeployerAddress},
+  defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
+    initialAdmin: getDeployerAddress,
+  },
 };
 runBehaviorTests('ProxyAdmin', config, function (deployFn) {
   let deployer, other;

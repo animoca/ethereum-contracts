@@ -2,18 +2,21 @@
 pragma solidity 0.8.13;
 pragma experimental ABIEncoderV2;
 
+import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {IDiamondLoupe} from "./interfaces/IDiamondLoupe.sol";
 import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 import {InterfaceDetectionStorage} from "./../introspection/libraries/InterfaceDetectionStorage.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title Diamond Loupe (facet version).
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
-contract DiamondLoupeFacet is IDiamondLoupe, Context {
+contract DiamondLoupeFacet is IDiamondLoupe, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using DiamondStorage for DiamondStorage.Layout;
+
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Initialises the storage.
     /// @notice Marks the following ERC165 interfaces as supported: DiamondLoupe.

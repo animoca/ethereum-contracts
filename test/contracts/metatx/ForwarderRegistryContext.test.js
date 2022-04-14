@@ -6,7 +6,7 @@ const config = {
   immutable: {name: 'ForwarderRegistryReceiverMock', ctorArguments: ['forwarderRegistry']},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'ForwarderRegistryContextFacet', ctorArguments: ['forwarderRegistry']},
     ],
   },
