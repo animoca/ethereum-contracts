@@ -4,19 +4,6 @@
   "sourceName": "contracts/metatx/ForwarderRegistryContext.sol",
   "abi": [
     {
-      "inputs": [],
-      "name": "_forwarderRegistry",
-      "outputs": [
-        {
-          "internalType": "contract IForwarderRegistry",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "address",

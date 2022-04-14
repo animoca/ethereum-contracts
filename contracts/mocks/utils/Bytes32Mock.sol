@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.13;
 
 import {Bytes32} from "./../../utils/libraries/Bytes32.sol";
 

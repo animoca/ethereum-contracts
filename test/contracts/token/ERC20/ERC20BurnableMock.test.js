@@ -1,5 +1,5 @@
 const {behavesLikeERC20} = require('./behaviors/ERC20.behavior');
-const {getDeployerAddress, runBehaviorTests} = require('../../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
 const name = 'ERC20 Mock';
 const symbol = 'E20';
@@ -9,32 +9,68 @@ const tokenURI = 'uri';
 const config = {
   immutable: {
     name: 'ERC20BurnableMock',
-    ctorArguments: ['initialHolders', 'initialBalances', 'name', 'symbol', 'decimals', 'tokenURI'],
+    ctorArguments: ['initialHolders', 'initialBalances', 'name', 'symbol', 'decimals', 'tokenURI', 'forwarderRegistry'],
+    metaTxSupport: true,
   },
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
       {name: 'ERC165Facet', init: {method: 'initInterfaceDetectionStorage'}},
-      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
-      {name: 'AccessControlFacet'},
+      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
-        name: 'ERC20Facet',
+        name: 'ERC20FacetMock',
+        ctorArguments: ['forwarderRegistry'],
         init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
       },
       {
-        name: 'ERC20DetailedFacet',
+        name: 'ERC20DetailedFacetMock',
+        ctorArguments: ['forwarderRegistry'],
         init: {method: 'initERC20DetailedStorage', arguments: ['name', 'symbol', 'decimals'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
       },
-      {name: 'ERC20MetadataFacet', init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, versionProtected: true}},
-      {name: 'ERC20PermitFacet', init: {method: 'initERC20PermitStorage', adminProtected: true, versionProtected: true}},
-      {name: 'ERC20BatchTransfersFacet', init: {method: 'initERC20BatchTransfersStorage', adminProtected: true}},
-      {name: 'ERC20SafeTransfersFacet', init: {method: 'initERC20SafeTransfersStorage', adminProtected: true}},
-      {name: 'ERC20MintableFacet', init: {method: 'initERC20MintableStorage', adminProtected: true}},
-      {name: 'ERC20BurnableFacet', init: {method: 'initERC20BurnableStorage', adminProtected: true}},
+      {
+        name: 'ERC20MetadataFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC20PermitFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20PermitStorage', adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC20BatchTransfersFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20BatchTransfersStorage', adminProtected: true},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC20SafeTransfersFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20SafeTransfersStorage', adminProtected: true},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC20MintableFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20MintableStorage', adminProtected: true},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC20BurnableFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC20BurnableStorage', adminProtected: true},
+        metaTxSupport: true,
+      },
     ],
   },
   defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
     initialHolders: [],

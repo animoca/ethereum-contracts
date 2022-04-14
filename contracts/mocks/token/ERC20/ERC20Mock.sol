@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.13;
 
+import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC20SimpleMock} from "./ERC20SimpleMock.sol";
 import {ERC20Detailed} from "./../../../token/ERC20/ERC20Detailed.sol";
 import {ERC20Metadata} from "./../../../token/ERC20/ERC20Metadata.sol";
 import {ERC20Permit} from "./../../../token/ERC20/ERC20Permit.sol";
 import {ERC20SafeTransfers} from "./../../../token/ERC20/ERC20SafeTransfers.sol";
 import {ERC20BatchTransfers} from "./../../../token/ERC20/ERC20BatchTransfers.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
 contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit, ERC20SafeTransfers, ERC20BatchTransfers {
     constructor(
@@ -15,6 +18,17 @@ contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        string memory tokenURI_
-    ) ERC20SimpleMock(holders, allocations) ERC20Detailed(name_, symbol_, decimals_) ERC20Metadata(tokenURI_) {}
+        string memory tokenURI_,
+        IForwarderRegistry forwarderRegistry
+    ) ERC20SimpleMock(holders, allocations, forwarderRegistry) ERC20Detailed(name_, symbol_, decimals_) ERC20Metadata(tokenURI_) {}
+
+    /// @inheritdoc ForwarderRegistryContextBase
+    function _msgSender() internal view virtual override(Context, ERC20SimpleMock) returns (address) {
+        return ERC20SimpleMock._msgSender();
+    }
+
+    /// @inheritdoc ForwarderRegistryContextBase
+    function _msgData() internal view virtual override(Context, ERC20SimpleMock) returns (bytes calldata) {
+        return ERC20SimpleMock._msgData();
+    }
 }

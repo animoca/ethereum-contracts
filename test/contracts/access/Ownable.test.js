@@ -1,19 +1,25 @@
 const {ZeroAddress} = require('../../../src/constants');
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {shouldSupportInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
-  immutable: {name: 'OwnableMock', ctorArguments: ['initialOwner']},
+  immutable: {name: 'OwnableMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
       {name: 'ERC165Facet', init: {method: 'initInterfaceDetectionStorage'}},
-      {name: 'OwnableFacetMock', init: {method: 'initOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, versionProtected: true}},
+      {
+        name: 'OwnableFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
+      },
     ],
   },
   defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
   },

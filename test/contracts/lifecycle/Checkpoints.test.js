@@ -1,24 +1,28 @@
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {latest} = require('../../helpers/time');
 
 const config = {
   immutable: {
     name: 'CheckpointsMock',
-    ctorArguments: ['checkpointIds', 'timestamps'],
+    ctorArguments: ['checkpointIds', 'timestamps', 'forwarderRegistry'],
+    metaTxSupport: true,
   },
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
       {
         name: 'CheckpointsFacetMock',
+        ctorArguments: ['forwarderRegistry'],
         init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
       },
     ],
   },
   defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
     checkpointIds: [],

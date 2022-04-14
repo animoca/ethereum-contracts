@@ -286,23 +286,13 @@ describe('Meta Transactions', function () {
   });
 
   describe('ForwarderRegistryReceiver', function () {
-    describe('isTrustedForwarder(address)', function () {
-      it('returns true for the ForwarderRegistry', async function () {
-        expect(await this.receiver.isTrustedForwarder(this.contract.address)).to.be.true;
-      });
-      it('returns false for other address', async function () {
-        expect(await this.receiver.isTrustedForwarder(ZeroAddress)).to.be.false;
-        expect(await this.receiver.isTrustedForwarder(deployer.address)).to.be.false;
-        expect(await this.receiver.isTrustedForwarder(other.address)).to.be.false;
-      });
-    });
-
-    describe('_msgSender()', function () {
-      it('when msg.sender == tx.origin', async function () {
+    describe('_msgSender() and _msgData()', function () {
+      it('_msgSender() == msg.sender if msg.sender == tx.origin', async function () {
         await this.receiver.test(42);
         expect(await this.receiver.getData(deployer.address)).to.equal(42);
       });
-      it('when msg.sender != tx.origin and msg.sender is not an approved forwarder', async function () {
+
+      it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.sender is not an approved forwarder', async function () {
         const {to, data} = await this.receiver.populateTransaction.test(42);
         await this.forwarder.forward(deployer.address, to, data);
         expect(await this.receiver.getData(deployer.address)).to.equal(0);

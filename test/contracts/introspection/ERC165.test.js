@@ -1,4 +1,4 @@
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {makeInterfaceId, shouldSupportInterfaces} = require('./behaviors/SupportsInterface.behavior');
 
@@ -11,7 +11,10 @@ const config = {
       {name: 'ERC165FacetMock', init: {method: 'initInterfaceDetectionStorage', adminProtected: true, versionProtected: true}},
     ],
   },
-  defaultArguments: {initialAdmin: getDeployerAddress},
+  defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
+    initialAdmin: getDeployerAddress,
+  },
 };
 
 runBehaviorTests('ERC165', config, function (deployFn) {

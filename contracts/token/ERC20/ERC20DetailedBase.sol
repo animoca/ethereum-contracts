@@ -3,12 +3,11 @@ pragma solidity ^0.8.8;
 
 import {IERC20Detailed} from "./interfaces/IERC20Detailed.sol";
 import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Detailed (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev `ERC20DetailedStorage.init` should be called during contract initialization.
-abstract contract ERC20DetailedBase is Context, IERC20Detailed {
+abstract contract ERC20DetailedBase is IERC20Detailed {
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
 
     /// @inheritdoc IERC20Detailed
