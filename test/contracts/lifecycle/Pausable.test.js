@@ -1,17 +1,23 @@
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'PausableMock', ctorArguments: ['paused']},
+  immutable: {name: 'PausableMock', ctorArguments: ['paused', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
-      {name: 'PausableFacetMock', init: {method: 'initPauseStorage', arguments: ['paused'], adminProtected: true, versionProtected: true}},
+      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {
+        name: 'PausableFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initPauseStorage', arguments: ['paused'], adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
+      },
     ],
   },
   defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
     paused: true,

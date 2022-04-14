@@ -1,4 +1,5 @@
 const {loadFixture} = require('../../../../helpers/fixtures');
+const {deployForwarderRegistry} = require('../../../../helpers/metatx');
 const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
@@ -23,8 +24,9 @@ function behavesLikeERC20Safe(implementation) {
       this.contract = (await deploy([owner.address], [initialSupply], deployer)).connect(owner);
       await this.contract.approve(spender.address, initialAllowance);
       await this.contract.approve(maxSpender.address, MaxUInt256);
+      const forwarderRegistry = await deployForwarderRegistry();
       const ERC20 = await ethers.getContractFactory('ERC20Mock');
-      this.nonReceiver = await ERC20.deploy([], [], '', '', '1', '');
+      this.nonReceiver = await ERC20.deploy([], [], '', '', '1', '', forwarderRegistry.address);
       await this.nonReceiver.deployed();
       const ERC20Receiver = await ethers.getContractFactory('ERC20ReceiverMock');
       this.receiver = await ERC20Receiver.deploy(true, this.contract.address);

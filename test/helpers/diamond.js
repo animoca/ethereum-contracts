@@ -7,7 +7,7 @@ const FacetCutAction = {
   Remove: 2,
 };
 
-const newFacetFilter = (el) => !el.name.startsWith('init');
+const newFacetFilter = (el) => !el.name.startsWith('init') && !el.name.startsWith('__');
 
 function getSelectors(facet, abiFilter) {
   let functions = Object.values(facet.interface.functions);
@@ -46,11 +46,15 @@ async function deployDiamond(facetsConfig, args, abiExtensions = [], methodsFilt
   const artifact = await artifacts.readArtifact(implementation);
   const abi = [...artifact.abi];
   for (const facet of Object.values(facetDeployments.facets)) {
-    abi.push(...JSON.parse(facet.interface.format(ethers.utils.FormatTypes.json)));
+    abi.push(
+      ...JSON.parse(facet.interface.format(ethers.utils.FormatTypes.json))
+        .filter((el) => el.type !== 'constructor')
+        .filter(methodsFilter)
+    );
   }
   for (const extension of abiExtensions) {
     const extensionArtifact = await artifacts.readArtifact(extension);
-    abi.push(...extensionArtifact.abi);
+    abi.push(...extensionArtifact.abi.filter((el) => el.type !== 'constructor'));
   }
   const Diamond = await ethers.getContractFactory(abi, artifact.bytecode);
   const diamond = await Diamond.deploy(facetDeployments.cuts, facetDeployments.inits);

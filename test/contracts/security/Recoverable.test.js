@@ -1,17 +1,22 @@
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
+const {deployForwarderRegistry} = require('../../helpers/metatx');
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'RecoverableMock'},
+  immutable: {name: 'RecoverableMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
-      {name: 'RecoverableFacet'},
+      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'RecoverableFacetMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
     ],
   },
-  defaultArguments: {initialAdmin: getDeployerAddress, initialOwner: getDeployerAddress},
+  defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
+    initialAdmin: getDeployerAddress,
+    initialOwner: getDeployerAddress,
+  },
 };
 
 runBehaviorTests('Recoverable', config, function (deployFn) {
@@ -23,8 +28,9 @@ runBehaviorTests('Recoverable', config, function (deployFn) {
 
   const fixture = async function () {
     this.contract = await deployFn();
+    const forwarderRegistry = await deployForwarderRegistry();
     const ERC20 = await ethers.getContractFactory('ERC20Mock');
-    this.erc20 = await ERC20.deploy([this.contract.address], ['1000'], '', '', '1', '');
+    this.erc20 = await ERC20.deploy([this.contract.address], ['1000'], '', '', '1', '', forwarderRegistry.address);
     await this.erc20.deployed();
     const ERC721 = await ethers.getContractFactory('ERC721PresetMinterPauserAutoId');
     this.erc721 = await ERC721.deploy('test', 'test', 'test');

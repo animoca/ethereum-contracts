@@ -27,9 +27,9 @@ abstract contract PayoutWalletBase is Context {
     /// @dev Reverts if the sender is not the contract owner.
     /// @dev Reverts if `payoutWallet_` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
-    /// @param payoutWallet_ The payout wallet.
-    function setPayoutWallet(address payable payoutWallet_) external {
+    /// @param newPayoutWallet The payout wallet.
+    function setPayoutWallet(address payable newPayoutWallet) external {
         OwnershipStorage.layout().enforceIsContractOwner(_msgSender());
-        PayoutWalletStorage.layout().setPayoutWallet(payoutWallet_);
+        PayoutWalletStorage.layout().setPayoutWallet(newPayoutWallet);
     }
 }

@@ -1,16 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.13;
 
+import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
 import {OwnershipStorage} from "./libraries/OwnershipStorage.sol";
 import {OwnableBase} from "./OwnableBase.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title ERC173 Contract Ownership Standard (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
-contract OwnableFacet is OwnableBase {
+contract OwnableFacet is OwnableBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using OwnershipStorage for OwnershipStorage.Layout;
+
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Initialises the storage with an initial contract owner.
     /// @notice Sets the ownership storage version to 1.
@@ -22,5 +27,15 @@ contract OwnableFacet is OwnableBase {
     function initOwnershipStorage(address initialOwner) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         OwnershipStorage.layout().init(initialOwner);
+    }
+
+    /// @inheritdoc ForwarderRegistryContextBase
+    function _msgSender() internal view virtual override(Context, ForwarderRegistryContextBase) returns (address) {
+        return ForwarderRegistryContextBase._msgSender();
+    }
+
+    /// @inheritdoc ForwarderRegistryContextBase
+    function _msgData() internal view virtual override(Context, ForwarderRegistryContextBase) returns (bytes calldata) {
+        return ForwarderRegistryContextBase._msgData();
     }
 }

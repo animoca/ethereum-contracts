@@ -29,11 +29,11 @@ library PayoutWalletStorage {
     /// @notice Sets the payout wallet.
     /// @dev Reverts if `payoutWallet_` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
-    /// @param payoutWallet_ The payout wallet.
-    function setPayoutWallet(Layout storage s, address payable payoutWallet_) internal {
-        require(payoutWallet_ != address(0), "PayoutWallet: zero address");
-        s.payoutWallet = payoutWallet_;
-        emit PayoutWalletSet(payoutWallet_);
+    /// @param newPayoutWallet The payout wallet.
+    function setPayoutWallet(Layout storage s, address payable newPayoutWallet) internal {
+        require(newPayoutWallet != address(0), "PayoutWallet: zero address");
+        s.payoutWallet = newPayoutWallet;
+        emit PayoutWalletSet(newPayoutWallet);
     }
 
     function layout() internal pure returns (Layout storage s) {

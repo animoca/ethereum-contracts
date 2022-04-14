@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.13;
 
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
 import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
 import {ERC20DetailedBase} from "./ERC20DetailedBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Detailed (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
-contract ERC20DetailedFacet is ERC20DetailedBase {
+contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
+
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Initialises the storage with the token details.
     /// @notice Sets the ERC20Detailed storage version to `1`.

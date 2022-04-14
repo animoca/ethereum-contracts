@@ -1,17 +1,18 @@
-const {getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
+const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'AccessControlMock'},
+  immutable: {name: 'AccessControlMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
-      {name: 'AccessControlFacetMock'},
+      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'AccessControlFacetMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
     ],
   },
   defaultArguments: {
+    forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
   },
@@ -25,7 +26,7 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
   });
 
   const fixture = async function () {
-    this.contract = await deployFn({initialAdmin: deployer.address, initialOwner: deployer.address});
+    this.contract = await deployFn();
     this.role = await this.contract.TEST_ROLE();
     await this.contract.grantRole(this.role, deployer.address);
   };

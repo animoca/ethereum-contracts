@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.13;
+
+import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
+import {ERC20Facet} from "./../../../token/ERC20/ERC20Facet.sol";
+
+contract ERC20FacetMock is ERC20Facet {
+    constructor(IForwarderRegistry forwarderRegistry) ERC20Facet(forwarderRegistry) {}
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
+    }
+}
