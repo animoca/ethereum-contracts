@@ -1,0 +1,74 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "AccessControlStorage",
+  "sourceName": "contracts/access/libraries/AccessControlStorage.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ACCESSCONTROL_STORAGE_POSITION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60ef610039600b82828239805160001a60731461002c57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063a6968534146038575b600080fd5b603e6050565b60405190815260200160405180910390f35b607960017fc8a24fbf085abf1493c5f225802d03df3ece6cd19f18edff36c56d854cddac9e607c565b81565b60008282101560b4577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea26469706673582212200591b5334eea94380a7ab8fccebd86403c05f78e50b13f565871ebc77358dd9364736f6c634300080d0033",
+  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361060335760003560e01c8063a6968534146038575b600080fd5b603e6050565b60405190815260200160405180910390f35b607960017fc8a24fbf085abf1493c5f225802d03df3ece6cd19f18edff36c56d854cddac9e607c565b81565b60008282101560b4577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea26469706673582212200591b5334eea94380a7ab8fccebd86403c05f78e50b13f565871ebc77358dd9364736f6c634300080d0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
