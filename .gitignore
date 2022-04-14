@@ -12,9 +12,14 @@ node_modules/
 cache/
 cache.coverage/
 
-artifacts/*
-!artifacts/build-info/
+# artifacts/*
+# !artifacts/build-info/
+# !artifacts/contracts/
+
+artifacts
 !artifacts/contracts/
+artifacts/contracts/**/*.dbg.json
+
 artifacts.bak/
 artifacts.coverage/
 
