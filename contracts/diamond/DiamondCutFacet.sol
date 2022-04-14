@@ -2,19 +2,22 @@
 pragma solidity 0.8.13;
 pragma experimental ABIEncoderV2;
 
+import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./interfaces/IDiamondCutBatchInit.sol";
 import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
 import {InterfaceDetectionStorage} from "./../introspection/libraries/InterfaceDetectionStorage.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title Diamond Cut (facet version).
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
-contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, Context {
+contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using DiamondStorage for DiamondStorage.Layout;
+
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Initialises the storage.
     /// @notice Marks the following ERC165 interfaces as supported: DiamondCut, DiamondCutBatchInit.

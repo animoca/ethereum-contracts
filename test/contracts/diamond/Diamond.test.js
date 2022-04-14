@@ -1,6 +1,7 @@
 const {ZeroAddress, EmptyByte} = require('../../../src/constants');
 const {loadFixture} = require('../../helpers/fixtures');
 const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('../../helpers/diamond');
+const {getForwarderRegistryAddress} = require('../../helpers/run');
 const {shouldSupportInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const EmptyInit = [ZeroAddress, EmptyByte];
@@ -26,10 +27,10 @@ async function expectDiamondCutEvent(receipt, expectedCuts, expectedInit, expect
 }
 
 const facetsConfig = [
-  {name: 'ProxyAdminFacet', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-  {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-  {name: 'DiamondLoupeFacet', init: {method: 'initDiamondLoupeStorage'}},
-  {name: 'ERC165Facet', init: {method: 'initInterfaceDetectionStorage'}},
+  {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+  {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
+  {name: 'DiamondLoupeFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondLoupeStorage'}},
+  {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
 ];
 
 describe('Diamond', function () {
@@ -40,7 +41,14 @@ describe('Diamond', function () {
   });
 
   const fixture = async function () {
-    const deployments = await deployDiamond(facetsConfig, {initialAdmin: deployer.address}, ['FacetMock'], newFacetFilter, 'DiamondMock');
+    const forwarderRegistryAddress = await getForwarderRegistryAddress();
+    const deployments = await deployDiamond(
+      facetsConfig,
+      {forwarderRegistry: forwarderRegistryAddress, initialAdmin: deployer.address},
+      ['FacetMock'],
+      newFacetFilter,
+      'DiamondMock'
+    );
     this.contract = deployments.diamond;
     this.facets = deployments.facets;
     const Facet = await ethers.getContractFactory('FacetMock');
