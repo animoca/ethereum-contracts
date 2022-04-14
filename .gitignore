@@ -16,7 +16,7 @@ cache.coverage/
 # !artifacts/build-info/
 # !artifacts/contracts/
 
-artifacts
+artifacts/*
 !artifacts/contracts/
 artifacts/contracts/**/*.dbg.json
 
