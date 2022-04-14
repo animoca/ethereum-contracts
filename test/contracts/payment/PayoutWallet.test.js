@@ -6,8 +6,8 @@ const config = {
   immutable: {name: 'PayoutWalletMock', ctorArguments: ['payoutWallet', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
+      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
       {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
       {
         name: 'PayoutWalletFacetMock',

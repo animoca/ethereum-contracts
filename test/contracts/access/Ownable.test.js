@@ -7,9 +7,9 @@ const config = {
   immutable: {name: 'OwnableMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165Facet', init: {method: 'initInterfaceDetectionStorage'}},
+      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
+      {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
       {
         name: 'OwnableFacetMock',
         ctorArguments: ['forwarderRegistry'],

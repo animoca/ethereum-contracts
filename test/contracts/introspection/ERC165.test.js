@@ -6,9 +6,14 @@ const config = {
   immutable: {name: 'ERC165Mock'},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165FacetMock', init: {method: 'initInterfaceDetectionStorage', adminProtected: true, versionProtected: true}},
+      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
+      {
+        name: 'ERC165FacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initInterfaceDetectionStorage', adminProtected: true, versionProtected: true},
+        metaTxSupport: true,
+      },
     ],
   },
   defaultArguments: {
