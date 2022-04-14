@@ -33,7 +33,7 @@
       "inputs": [
         {
           "internalType": "address payable",
-          "name": "payoutWallet_",
+          "name": "newPayoutWallet",
           "type": "address"
         }
       ],
