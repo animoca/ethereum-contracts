@@ -21,6 +21,8 @@ library ERC721Storage {
 
     bytes32 public constant ERC721_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC721.ERC721.storage")) - 1);
     bytes32 public constant ERC721_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC721.version")) - 1);
+
+    bytes4 internal constant _ERC721_RECEIVED = type(IERC721Receiver).interfaceId;
     uint256 internal constant _APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
 
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
@@ -74,7 +76,50 @@ library ERC721Storage {
         emit ApprovalForAll(sender, operator, approved);
     }
 
+    //================================================= ERC721BatchTransfer =================================================//
+
+    function batchTransferFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256[] memory tokenIds
+    ) internal {
+        require(to != address(0), "ERC721: transfer to zero");
+        bool operatable = _isOperatable(s, from, sender);
+
+        uint256 length = tokenIds.length;
+
+        for (uint256 i; i != length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            _transferNFT(s, sender, from, to, tokenId, operatable, true);
+            emit Transfer(from, to, tokenId);
+        }
+
+        if (length != 0) {
+            _transferNFTUpdateBalances(s, from, to, length);
+        }
+    }
+
      //============================================ High-level Internal Functions ============================================//
+
+    function _mint(
+        Layout storage s,
+        address sender,
+        address to,
+        uint256 tokenId,
+        bytes memory data,
+        bool safe
+    ) internal {
+        require(to != address(0), "ERC721: mint to zero");
+
+        _mintNFT(s, to, tokenId, false);
+
+        emit Transfer(address(0), to, tokenId);
+        if (safe && to.isContract()) {
+            _callOnERC721Received(sender, address(0), to, tokenId, data);
+        }
+    }
 
     function _batchMint(
          Layout storage s,
@@ -91,6 +136,26 @@ library ERC721Storage {
         }
 
         s.nftBalances[to] += length;
+    }
+
+    function _transferFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data,
+        bool safe
+    ) internal {
+        require(to != address(0), "ERC721: transfer to zero");
+        bool operatable = _isOperatable(s, from, sender);
+
+        _transferNFT(s, sender, from, to, tokenId, operatable, false);
+
+        emit Transfer(from, to, tokenId);
+        if (safe && to.isContract()) {
+            _callOnERC721Received(sender, from, to, tokenId, data);
+        }
     }
 
     //============================================== Helper Internal Functions ==============================================//
@@ -143,6 +208,26 @@ library ERC721Storage {
             // cannot overflow due to the cost of minting individual tokens
             ++s.nftBalances[to];
         }
+    }
+
+    /**
+     * Calls {IERC721Receiver-onERC721Received} on a target contract.
+     * @dev Reverts if `to` is not a contract.
+     * @dev Reverts if the call to the target fails or is refused.
+     * @param sender sender of the message.
+     * @param from Previous token owner.
+     * @param to New token owner.
+     * @param tokenId Identifier of the token transferred.
+     * @param data Optional data to send along with the receiver contract call.
+     */
+    function _callOnERC721Received(
+        address sender,
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) internal {
+        require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == _ERC721_RECEIVED, "ERC721: transfer refused");
     }
 
     /**
