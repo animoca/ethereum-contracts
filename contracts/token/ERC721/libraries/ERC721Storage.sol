@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
@@ -22,6 +23,7 @@ library ERC721Storage {
     bytes32 public constant ERC721_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC721.version")) - 1);
     uint256 internal constant _APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
 
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
@@ -72,6 +74,77 @@ library ERC721Storage {
         emit ApprovalForAll(sender, operator, approved);
     }
 
+     //============================================ High-level Internal Functions ============================================//
+
+    function _batchMint(
+         Layout storage s,
+         address to, 
+         uint256[] memory tokenIds
+    ) internal {
+        require(to != address(0), "ERC721: mint to zero");
+
+        uint256 length = tokenIds.length;
+        for (uint256 i; i != length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            _mintNFT(s, to, tokenId, true);
+            emit Transfer(address(0), to, tokenId);
+        }
+
+        s.nftBalances[to] += length;
+    }
+
+    //============================================== Helper Internal Functions ==============================================//
+
+    function _transferNFT(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256 id,
+        bool operatable,
+        bool isBatch
+    ) internal {
+        uint256 owner = s.owners[id];
+        require(from == address(uint160(owner)), "ERC721: non-owned NFT");
+        if (!operatable) {
+            require((owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.nftApprovals[id], "ERC721: non-approved sender");
+        }
+        s.owners[id] = uint256(uint160(to));
+        if (!isBatch) {
+            _transferNFTUpdateBalances(s, from, to, 1);
+        }
+    }
+
+    function _transferNFTUpdateBalances(
+        Layout storage s,
+        address from,
+        address to,
+        uint256 amount
+    ) internal {
+        if (from != to) {
+            // cannot underflow as balance is verified through ownership
+            s.nftBalances[from] -= amount;
+            //  cannot overflow as supply cannot overflow
+            s.nftBalances[to] += amount;
+        }
+    }
+
+    function _mintNFT(
+        Layout storage s,
+        address to,
+        uint256 id,
+        bool isBatch
+    ) internal {
+        require(s.owners[id] == 0, "ERC721: existing/burnt NFT");
+
+        s.owners[id] = uint256(uint160(to));
+
+        if (!isBatch) {
+            // cannot overflow due to the cost of minting individual tokens
+            ++s.nftBalances[to];
+        }
+    }
+
     /**
      * Returns whether `sender` is authorised to make a transfer on behalf of `from`.
      * @param from The address to check operatibility upon.
@@ -88,6 +161,5 @@ library ERC721Storage {
             s.slot := position
         }
     }
-
 
 }
