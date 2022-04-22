@@ -23,6 +23,7 @@ library ERC721Storage {
     uint256 internal constant _APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
 
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+    event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
     /// @notice Initialises the storage.
     /// @notice Sets the ERC721 storage version to `1`.
@@ -60,7 +61,18 @@ library ERC721Storage {
         emit Approval(ownerAddress, to, tokenId);
     }
 
-        /**
+    function setApprovalForAll(
+        Layout storage s,
+        address sender,
+        address operator, 
+        bool approved
+    ) internal {
+        require(operator != sender, "ERC721: self-approval");
+        s.operators[sender][operator] = approved;
+        emit ApprovalForAll(sender, operator, approved);
+    }
+
+    /**
      * Returns whether `sender` is authorised to make a transfer on behalf of `from`.
      * @param from The address to check operatibility upon.
      * @param sender The sender address.
