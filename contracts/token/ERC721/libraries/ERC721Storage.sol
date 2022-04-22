@@ -76,7 +76,63 @@ library ERC721Storage {
         emit ApprovalForAll(sender, operator, approved);
     }
 
-    //================================================= ERC721BatchTransfer =================================================//
+    function transferFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal {
+        _transferFrom(
+            s,
+            sender,
+            from,
+            to,
+            tokenId,
+            "",
+            /* safe */
+            false
+        );
+    }
+
+    function safeTransferFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal {
+        _transferFrom(
+            s,
+            sender,
+            from,
+            to,
+            tokenId,
+            "",
+            /* safe */
+            true
+        );
+    }
+
+    function safeTransferFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) internal {
+        _transferFrom(
+            s,
+            sender,
+            from,
+            to,
+            tokenId,
+            data,
+            /* safe */
+            true
+        );
+    }
 
     function batchTransferFrom(
         Layout storage s,
@@ -97,11 +153,11 @@ library ERC721Storage {
         }
 
         if (length != 0) {
-            _transferNFTUpdateBalances(s, from, to, length);
+           _transferNFTUpdateBalances(s, from, to, length);
         }
     }
 
-     //============================================ High-level Internal Functions ============================================//
+ //============================================ High-level Private Functions ============================================//
 
     function _mint(
         Layout storage s,
@@ -110,7 +166,7 @@ library ERC721Storage {
         uint256 tokenId,
         bytes memory data,
         bool safe
-    ) internal {
+    ) private {
         require(to != address(0), "ERC721: mint to zero");
 
         _mintNFT(s, to, tokenId, false);
@@ -125,7 +181,7 @@ library ERC721Storage {
          Layout storage s,
          address to, 
          uint256[] memory tokenIds
-    ) internal {
+    ) private {
         require(to != address(0), "ERC721: mint to zero");
 
         uint256 length = tokenIds.length;
@@ -146,7 +202,7 @@ library ERC721Storage {
         uint256 tokenId,
         bytes memory data,
         bool safe
-    ) internal {
+    ) private {
         require(to != address(0), "ERC721: transfer to zero");
         bool operatable = _isOperatable(s, from, sender);
 
@@ -158,7 +214,8 @@ library ERC721Storage {
         }
     }
 
-    //============================================== Helper Internal Functions ==============================================//
+    //============================================== Private Helper Functions ==============================================//
+
 
     function _transferNFT(
         Layout storage s,
@@ -168,7 +225,7 @@ library ERC721Storage {
         uint256 id,
         bool operatable,
         bool isBatch
-    ) internal {
+    ) private {
         uint256 owner = s.owners[id];
         require(from == address(uint160(owner)), "ERC721: non-owned NFT");
         if (!operatable) {
@@ -185,7 +242,7 @@ library ERC721Storage {
         address from,
         address to,
         uint256 amount
-    ) internal {
+    ) private {
         if (from != to) {
             // cannot underflow as balance is verified through ownership
             s.nftBalances[from] -= amount;
@@ -199,7 +256,7 @@ library ERC721Storage {
         address to,
         uint256 id,
         bool isBatch
-    ) internal {
+    ) private {
         require(s.owners[id] == 0, "ERC721: existing/burnt NFT");
 
         s.owners[id] = uint256(uint160(to));
@@ -226,7 +283,7 @@ library ERC721Storage {
         address to,
         uint256 tokenId,
         bytes memory data
-    ) internal {
+    ) private {
         require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == _ERC721_RECEIVED, "ERC721: transfer refused");
     }
 
@@ -236,9 +293,11 @@ library ERC721Storage {
      * @param sender The sender address.
      * @return True if sender is `from` or an operator for `from`, false otherwise.
      */
-    function _isOperatable(Layout storage s, address from, address sender) internal view returns (bool) {
+    function _isOperatable(Layout storage s, address from, address sender) private view returns (bool) {
         return (from == sender) || s.operators[from][sender];
     }
+
+    //============================================== Internal Layout Getter Function ==============================================//
 
     function layout() internal pure returns (Layout storage s) {
         bytes32 position = ERC721_STORAGE_POSITION;
