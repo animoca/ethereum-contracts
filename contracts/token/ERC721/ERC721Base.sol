@@ -5,7 +5,6 @@ import {IERC721} from "./interfaces/IERC721.sol";
 import {IERC721Events} from "./interfaces/IERC721Events.sol";
 import {IERC721Metadata} from "./interfaces/IERC721Metadata.sol";
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
-import {ERC721MetadataStorage} from "./libraries/ERC721MetadataStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721 Non-Fungible Token Standard (proxiable version).
@@ -13,15 +12,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev `ERC721Storage.init` should be called during contract initialization.
 abstract contract ERC721Base is Context, IERC721, IERC721Events {
     using ERC721Storage for ERC721Storage.Layout;
-    using ERC721MetadataStorage for ERC721MetadataStorage.Layout;
-
-    function name() public view virtual returns (string memory) {
-        return ERC721MetadataStorage.layout().name;
-    }
-
-    function symbol() public view virtual returns (string memory) {
-        return ERC721MetadataStorage.layout().symbol;
-    }
 
     /// @inheritdoc IERC721
     function balanceOf(address owner) public view virtual override returns (uint256) {
