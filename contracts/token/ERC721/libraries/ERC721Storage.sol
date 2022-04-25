@@ -33,7 +33,7 @@ library ERC721Storage {
     /// @notice Sets the ERC721 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
-    function init() internal {
+    function init(Layout storage) internal {
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
     }
