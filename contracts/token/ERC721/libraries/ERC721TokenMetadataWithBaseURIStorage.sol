@@ -5,6 +5,7 @@ pragma solidity ^0.8.8;
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
 
 library ERC721TokenMetadataWithBaseURIStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
