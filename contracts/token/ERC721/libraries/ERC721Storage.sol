@@ -76,6 +76,16 @@ library ERC721Storage {
         emit ApprovalForAll(sender, operator, approved);
     }
 
+    function getApproved(Layout storage s, uint256 tokenId) internal view returns (address) {
+        uint256 owner = s.owners[tokenId];
+        require(address(uint160(owner)) != address(0), "ERC721: non-existing NFT");
+        if (owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) {
+            return s.nftApprovals[tokenId];
+        } else {
+            return address(0);
+        }
+    }
+
     function transferFrom(
         Layout storage s,
         address sender,

@@ -48,4 +48,12 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
     }
 
+    function getApproved(uint256 tokenId) external view returns (address operator) {
+        return ERC721Storage.layout().getApproved(tokenId);
+    }
+    
+    function isApprovedForAll(address owner, address operator) external view returns (bool) {
+        return ERC721Storage.layout().operators[owner][operator];
+    }
+
 }
