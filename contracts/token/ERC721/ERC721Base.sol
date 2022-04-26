@@ -6,6 +6,7 @@ import {IERC721Events} from "./interfaces/IERC721Events.sol";
 import {IERC721Metadata} from "./interfaces/IERC721Metadata.sol";
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import "hardhat/console.sol";
 
 /// @title ERC721 Non-Fungible Token Standard (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
@@ -25,6 +26,8 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
 
     /// @inheritdoc IERC721
      function approve(address to, uint256 tokenId) public virtual override {
+         console.log("ERC721Base approve");
+         console.log("_msgSender()", _msgSender());
          ERC721Storage.layout().approve(_msgSender(), to, tokenId);
      }
 
