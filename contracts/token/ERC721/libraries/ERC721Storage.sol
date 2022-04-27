@@ -25,6 +25,8 @@ library ERC721Storage {
 
     bytes4 internal constant _ERC721_RECEIVED = type(IERC721Receiver).interfaceId;
     uint256 internal constant _APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
+       // Burnt Non-Fungible Token owner's magic value
+    uint256 internal constant _BURNT_NFT_OWNER = 0xdead000000000000000000000000000000000000000000000000000000000000;
 
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
@@ -204,7 +206,31 @@ library ERC721Storage {
         s.nftBalances[to] += length;
     }
 
-     //============================================ High-level Private Functions ============================================//
+    function burnFrom(Layout storage s, address sender, address from, uint256 tokenId) internal {
+        bool operatable = _isOperatable(s, from, sender);
+
+        _burnNFT(s, sender, from, tokenId, operatable, false);
+        emit Transfer(from, address(0), tokenId);
+    }
+
+    function batchBurnFrom(Layout storage s, address sender, address from, uint256[] memory tokenIds) internal {
+        bool operatable = _isOperatable(s, from, sender);
+
+        uint256 length = tokenIds.length;
+
+        for (uint256 i; i != length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            _burnNFT(s, sender, from, tokenId, operatable, true);
+            emit Transfer(from, address(0), tokenId);
+        }
+
+        if (length != 0) {
+            s.nftBalances[from] -= length;
+        }
+    }
+
+
+     //============================================ Private Functions ============================================//
 
     function _transferFrom(
         Layout storage s,
@@ -225,9 +251,6 @@ library ERC721Storage {
             _callOnERC721Received(sender, from, to, tokenId, data);
         }
     }
-
-    //============================================== Private Helper Functions ==============================================//
-
 
     function _transferNFT(
         Layout storage s,
@@ -276,6 +299,27 @@ library ERC721Storage {
         if (!isBatch) {
             // cannot overflow due to the cost of minting individual tokens
             ++s.nftBalances[to];
+        }
+    }
+
+    function _burnNFT(
+        Layout storage s,
+        address sender,
+        address from,
+        uint256 id,
+        bool operatable,
+        bool isBatch
+    ) private {
+        uint256 owner = s.owners[id];
+        require(from == address(uint160(owner)), "ERC721: non-owned NFT");
+        if (!operatable) {
+            require((owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.nftApprovals[id], "ERC721: non-approved sender");
+        }
+        s.owners[id] = _BURNT_NFT_OWNER;
+
+        if (!isBatch) {
+            // cannot underflow as balance is verified through NFT ownership
+            --s.nftBalances[from];
         }
     }
 
