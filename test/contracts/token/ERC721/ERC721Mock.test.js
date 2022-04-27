@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const {loadFixture} = require('../../../helpers/fixtures');
 
-describe('ERC721SimpleMock', function () {
+describe.only('ERC721Mock', function () {
     let deployer;
   
     before(async function () {
@@ -9,9 +9,9 @@ describe('ERC721SimpleMock', function () {
     });
 
     const fixture = async function () {
-      const ERC721SimpleMock = await ethers.getContractFactory('ERC721SimpleMock');
-      const name = "Simple Mock Token";
-      const symbol = "SIMPLE-MOCK";
+      const ERC721SimpleMock = await ethers.getContractFactory('ERC721Mock');
+      const name = "Mock Token";
+      const symbol = "SMOCK";
       const baseTokenURI = "https://placeholder.com/"
       this.contract = await ERC721SimpleMock.deploy(name, symbol, baseTokenURI);
       await this.contract.deployed();
@@ -26,6 +26,13 @@ describe('ERC721SimpleMock', function () {
       it('should not revert when calling balanceOf, and balance should equal zero', async function () {
         const balance = await this.contract.balanceOf(deployer.address);
         expect(balance).to.equal(0);
+      });
+      it("Should not revert when calling mint, and minters balance should update", async function () {
+        const mintCount = 1;
+        const deployerBalanceBeforeMint = await this.contract.balanceOf(deployer.address);
+        await this.contract.mint(deployer.address, mintCount);
+        const deployerBalanceAfterMint = await this.contract.balanceOf(deployer.address);
+        expect(deployerBalanceAfterMint - deployerBalanceBeforeMint).to.equal(mintCount);
       });
     });
 

@@ -169,16 +169,14 @@ library ERC721Storage {
         }
     }
 
- //============================================ High-level Private Functions ============================================//
-
-    function _mint(
+    function mint(
         Layout storage s,
         address sender,
         address to,
         uint256 tokenId,
         bytes memory data,
         bool safe
-    ) private {
+    ) internal {
         require(to != address(0), "ERC721: mint to zero");
 
         _mintNFT(s, to, tokenId, false);
@@ -189,11 +187,11 @@ library ERC721Storage {
         }
     }
 
-    function _batchMint(
+    function batchMint(
          Layout storage s,
          address to, 
          uint256[] memory tokenIds
-    ) private {
+    ) internal {
         require(to != address(0), "ERC721: mint to zero");
 
         uint256 length = tokenIds.length;
@@ -205,6 +203,8 @@ library ERC721Storage {
 
         s.nftBalances[to] += length;
     }
+
+     //============================================ High-level Private Functions ============================================//
 
     function _transferFrom(
         Layout storage s,
