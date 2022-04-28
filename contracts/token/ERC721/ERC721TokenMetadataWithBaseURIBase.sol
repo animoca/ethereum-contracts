@@ -25,6 +25,8 @@ abstract contract ERC721TokenMetadataWithBaseURIBase is Context, IERC721Metadata
         return  ERC721ContractMetadataStorage.layout().symbol;
     }
 
+    //TODO: tokenURI implementation should be injectable.
+
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         return string(abi.encodePacked(ERC721TokenMetadataWithBaseURIStorage.layout().tokenURI, tokenId.toDecimalString()));
     }

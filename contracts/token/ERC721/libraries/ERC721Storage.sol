@@ -171,6 +171,26 @@ library ERC721Storage {
         }
     }
 
+    function mintOnce(
+        Layout storage s,
+        address sender,
+        address to,
+        uint256 tokenId,
+        bytes memory data,
+        bool safe
+    ) internal {
+        uint256 owner = s.owners[tokenId];
+        require(uint160(owner) == uint160(0), "ERC721: existing NFT");
+        require(owner != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
+
+        _mintNFT(s, to, tokenId, false);
+
+        emit Transfer(address(0), to, tokenId);
+        if (safe && to.isContract()) {
+            _callOnERC721Received(sender, address(0), to, tokenId, data);
+        }
+    }
+
     function mint(
         Layout storage s,
         address sender,

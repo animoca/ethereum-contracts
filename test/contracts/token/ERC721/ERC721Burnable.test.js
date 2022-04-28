@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const {loadFixture} = require('../../../helpers/fixtures');
 
-describe.only('ERC721BurnableMock', function () {
+describe('ERC721BurnableMock', function () {
     let deployer;
   
     before(async function () {
