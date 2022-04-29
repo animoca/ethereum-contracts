@@ -10,10 +10,7 @@ describe('ERC721SimpleMock', function () {
 
     const fixture = async function () {
       const ERC721SimpleMock = await ethers.getContractFactory('ERC721SimpleMock');
-      const name = "Simple Mock Token";
-      const symbol = "SIMPLE-MOCK";
-      const baseTokenURI = "https://placeholder.com/"
-      this.contract = await ERC721SimpleMock.deploy(name, symbol, baseTokenURI);
+      this.contract = await ERC721SimpleMock.deploy();
       await this.contract.deployed();
       console.log("deployer: ", deployer.address);
     };

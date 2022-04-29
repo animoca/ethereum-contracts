@@ -6,9 +6,11 @@ import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
+import {ERC721ContractMetadataStorage} from "./ERC721ContractMetadataStorage.sol";
 
 library ERC721TokenMetadataWithBaseURIStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+    using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
 
     struct Layout {
         string tokenURI;
@@ -23,8 +25,9 @@ library ERC721TokenMetadataWithBaseURIStorage {
     /// @dev Reverts if the ERC721TokenMetadataWithBaseURIStorage storage is already initialized to version `1` or above.
 
     /// @param tokenURI_ the Non-Fungle token tokenURI.
-    function init(Layout storage s, string memory tokenURI_) internal {
+    function init(Layout storage s, string memory name, string memory symbol, string memory tokenURI_) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
+        ERC721ContractMetadataStorage.layout().init(name, symbol);
         s.tokenURI = tokenURI_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }

@@ -12,11 +12,6 @@ abstract contract ERC721TokenMetadataWithBaseURIBase is Context, IERC721Metadata
     using ERC721TokenMetadataWithBaseURIStorage for ERC721TokenMetadataWithBaseURIStorage.Layout;
     using UInt256ToDecimalString for uint256;
 
-    constructor(string memory name_, string memory symbol_, string memory tokenURI_){
-        ERC721ContractMetadataStorage.layout().init(name_, symbol_);
-        ERC721TokenMetadataWithBaseURIStorage.layout().init(tokenURI_);
-    }
-
     function name() external view returns (string memory) {
         return ERC721ContractMetadataStorage.layout().name;
     }
