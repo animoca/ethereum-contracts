@@ -6,7 +6,6 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
-import "hardhat/console.sol";
 
 library ERC721Storage {
     using Address for address;
@@ -37,7 +36,6 @@ library ERC721Storage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     function init(Layout storage) internal {
-        console.log("ERC721Storage init");
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
     }
