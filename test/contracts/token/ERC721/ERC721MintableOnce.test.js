@@ -15,14 +15,13 @@ describe('ERC721MintableOnceMock', function () {
       const baseTokenURI = "https://placeholder.com/"
       this.contract = await ERC721MintableOnceMock.deploy(name, symbol, baseTokenURI);
       await this.contract.deployed();
-      console.log("deployer: ", deployer.address);
     };
 
     beforeEach(async function () {
       await loadFixture(fixture, this);
     });
 
-    context('with a standard ERC721 implementation', function () {  
+    context('with a standard ERC721 and ERC721MintableOnce implementation', function () {  
       it('should not revert when calling balanceOf, and balance should equal zero', async function () {
         const balance = await this.contract.balanceOf(deployer.address);
         expect(balance).to.equal(0);

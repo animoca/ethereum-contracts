@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const {loadFixture} = require('../../../helpers/fixtures');
 
-describe.only('ERC721Mock', function () {
+describe('ERC721Mock', function () {
     let deployer;
     let alice;
   
@@ -16,7 +16,6 @@ describe.only('ERC721Mock', function () {
       const baseTokenURI = "https://placeholder.com/"
       this.contract = await ERC721Mock.deploy(name, symbol, baseTokenURI);
       await this.contract.deployed();
-      console.log("deployer: ", deployer.address);
     };
 
     beforeEach(async function () {
