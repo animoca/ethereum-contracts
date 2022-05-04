@@ -32,6 +32,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         tokenURI,
         revertMessages: {
             // TODO
+            ZeroAddress: 'ERC721: zero address'
         },
         features: {
             ERC165: true

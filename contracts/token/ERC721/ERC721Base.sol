@@ -16,6 +16,7 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
 
     /// @inheritdoc IERC721
     function balanceOf(address owner) public view virtual override returns (uint256) {
+        require(owner != address(0), "ERC721: zero address");
         return ERC721Storage.layout().nftBalances[owner];
     }
 
