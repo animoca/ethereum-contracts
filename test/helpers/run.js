@@ -26,7 +26,7 @@ async function buildDefaultArguments(defaultArguments) {
   return result;
 }
 
-function runBehaviorTests(name, config, behaviorFn) {
+function runBehaviorTests(name, config, behaviorFn,  includeDiamondTest=true) {
   async function deployAsImmutableContract(args = {}) {
     const defaultArguments = await buildDefaultArguments(config.defaultArguments);
     const arguments_ = {...defaultArguments, ...args};
@@ -116,7 +116,10 @@ function runBehaviorTests(name, config, behaviorFn) {
           }
         });
       }
-      behaviorFn(deployAsDiamondFacet);
+      if (includeDiamondTest) { // TODO; Maybe remove after ERC721 development finished?
+        behaviorFn(deployAsDiamondFacet);
+      }
+      
     });
   });
 }

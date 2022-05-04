@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const {loadFixture} = require('../../../helpers/fixtures');
 
-describe.only('ERC721ReceiverMock', function () {
+describe('ERC721ReceiverMock', function () {
     let deployer;
   
     before(async function () {
