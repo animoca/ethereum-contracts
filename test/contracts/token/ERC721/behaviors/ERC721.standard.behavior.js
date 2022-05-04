@@ -19,6 +19,7 @@ const { ZeroAddress } = require('../../../../../src/constants');
       const nft3 = 3;
       const nft4 = 4;
       const nft5 = 5;
+      const unknownNFT = 1000;
   
       const fixture = async function () {
         this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI);
@@ -29,7 +30,6 @@ const { ZeroAddress } = require('../../../../../src/constants');
         await this.token.mint(owner.address, nft5);
 
         this.nftBalance = await this.token.balanceOf(owner.address);
-        console.log(this.nftBalance)
       };
   
       beforeEach(async function () {
@@ -57,6 +57,18 @@ const { ZeroAddress } = require('../../../../../src/constants');
         });
 
       });
+
+      describe('ownerOf(uint256)', function () {
+        context('when the given token ID was tracked by this token', function () {
+          it('returns the owner of the given token ID', async function () {
+            expect(await this.token.ownerOf(nft1)).to.equal(owner.address);
+          });
+        });
+  
+        it('reverts if the token does not exist', async function () {
+          await expect(this.token.ownerOf(unknownNFT)).to.be.revertedWith(revertMessages.NonExistingNFT);
+        });
+      });  
 
     });
 }

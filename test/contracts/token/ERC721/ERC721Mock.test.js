@@ -31,8 +31,8 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         symbol,
         tokenURI,
         revertMessages: {
-            // TODO
-            ZeroAddress: 'ERC721: zero address'
+            ZeroAddress: 'ERC721: zero address',
+            NonExistingNFT: 'ERC721: non-existing NFT'
         },
         features: {
             ERC165: true
