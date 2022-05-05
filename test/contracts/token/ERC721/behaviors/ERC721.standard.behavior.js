@@ -122,9 +122,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
             describe("transferFrom(address,address,uint256)", function() {
                 const transferFn = async function(from, to, tokenId) {
-                    console.log(`transferFn from ${from.address} to ${to.address} tokenId ${tokenId}`);
                     return this.token.connect(from).transferFrom(from.address, to.address, tokenId);
-                }
+                };
                 const safe = false;
                 const data = undefined;
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
@@ -133,9 +132,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
             describe("batchTransferFrom(address,adress,uint256[])", function() {
                 const transferFn = async function(from, to, tokenIds) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-                    console.log(`transferFn from ${from.address} to ${to.address} tokenIds ${ids}`);
                     return this.token.connect(from).batchTransferFrom(from.address, to.address, ids);
-                }
+                };
                 const safe = true;
                 context("with an empty list of token", function() {
                     shouldTransferTokenToRecipient(transferFn, [], undefined, safe);
@@ -146,6 +144,15 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context("with a list of tokens from the same collection", function() {
                     shouldTransferTokenToRecipient(transferFn, [nft1, nft2], undefined, safe);
                 });
+            });
+
+            describe("safeTransferFrom(address,address,uint256)", function() {
+                const transferFn = async function(from, to, tokenId) {
+                    //safeTransferFrom is overloaded so we specify the function signature
+                    return this.token.connect(from)["safeTransferFrom(address,address,uint256)"](from.address, to.address, tokenId);
+                };
+                const safe = true;
+                shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
             });
         });
     });
