@@ -129,6 +129,24 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 const data = undefined;
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
+
+            describe("batchTransferFrom(address,adress,uint256[])", function() {
+                const transferFn = async function(from, to, tokenIds) {
+                    const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+                    console.log(`transferFn from ${from.address} to ${to.address} tokenIds ${ids}`);
+                    return this.token.connect(from).batchTransferFrom(from.address, to.address, ids);
+                }
+                const safe = true;
+                context("with an empty list of token", function() {
+                    shouldTransferTokenToRecipient(transferFn, [], undefined, safe);
+                });
+                context("with a single token", function() {
+                    shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
+                });
+                context("with a list of tokens from the same collection", function() {
+                    shouldTransferTokenToRecipient(transferFn, [nft1, nft2], undefined, safe);
+                });
+            });
         });
     });
 }
