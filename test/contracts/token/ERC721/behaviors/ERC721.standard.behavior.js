@@ -77,11 +77,22 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
                     }
                 });
+                it("clears the approval for the token(s)", async function() {
+                    for (const id of ids) {
+                        expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
+                    }
+                });
+                it('emits Transfer event(s)', async function() {
+                    for (const id of ids) {
+                        await expect(this.receipt).to.emit(this.token, 'Transfer')
+                            .withArgs(owner.address, this.toWhom.address, id);
+                    }
+                });
             }
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe) {
                 context("when called by the owner", function() {
                     this.beforeEach(async function() {
-                        receipt = await transferFunction.call(this, owner, this.toWhom, ids);
+                        this.receipt = await transferFunction.call(this, owner, this.toWhom, ids);
                     });
                     transferWasSuccessful(ids, data, safe);
                 });
