@@ -70,7 +70,19 @@ function shouldBehaveLikeERC721Standard(implementation) {
             });
         });
 
-        describe("transferFrom(address,address,uint256)", function() {
+        const shouldTransferTokenToRecipient = function(transferFunction, ids, data, safe) {
+            context('when sent to another wallet', function() {
+                beforeEach(async function() {
+                    this.toWhom = other;
+                });
+                shouldTransferTokenBySender(transferFunction, ids, data, safe);
+            });
+        }
+
+        describe('transfers', function() {
+
+            let receipt = null;
+
             const transferWasSuccessful = function(ids, data, safe) {
                 it("gives the token(s) ownership to the recipient", async function() {
                     for (const id of ids) {
@@ -89,6 +101,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     }
                 });
             }
+
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe) {
                 context("when called by the owner", function() {
                     this.beforeEach(async function() {
@@ -97,6 +110,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     transferWasSuccessful(ids, data, safe);
                 });
             }
+
             const shouldTransferTokenToRecipient = function(transferFunction, ids, data, safe) {
                 context('when sent to another wallet', function() {
                     beforeEach(async function() {
@@ -105,15 +119,17 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     shouldTransferTokenBySender(transferFunction, ids, data, safe);
                 });
             }
-            const transferFn = async function(from, to, tokenId) {
-                console.log(`transferFn from ${from.address} to ${to.address} tokenId ${tokenId}`);
-                return this.token.connect(from).transferFrom(from.address, to.address, tokenId);
-            }
-            const safe = false;
-            const data = undefined;
-            shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
-        });
 
+            describe("transferFrom(address,address,uint256)", function() {
+                const transferFn = async function(from, to, tokenId) {
+                    console.log(`transferFn from ${from.address} to ${to.address} tokenId ${tokenId}`);
+                    return this.token.connect(from).transferFrom(from.address, to.address, tokenId);
+                }
+                const safe = false;
+                const data = undefined;
+                shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
+            });
+        });
     });
 }
 
