@@ -39,7 +39,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
         describe('balanceOf(address)', function() {
 
             context('when the given address owns some tokens', function() {
-                it("returns the amount of tokens owned by the given address", async function() {
+                it('returns the amount of tokens owned by the given address', async function() {
                     expect(await this.token.balanceOf(owner.address)).to.equal(5);
                 });
             });
@@ -84,12 +84,12 @@ function shouldBehaveLikeERC721Standard(implementation) {
             let receipt = null;
 
             const transferWasSuccessful = function(ids, data, safe) {
-                it("gives the token(s) ownership to the recipient", async function() {
+                it('gives the token(s) ownership to the recipient', async function() {
                     for (const id of ids) {
                         expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
                     }
                 });
-                it("clears the approval for the token(s)", async function() {
+                it('clears the approval for the token(s)', async function() {
                     for (const id of ids) {
                         expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
                     }
@@ -103,7 +103,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
             }
 
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe) {
-                context("when called by the owner", function() {
+                context('when called by the owner', function() {
                     this.beforeEach(async function() {
                         this.receipt = await transferFunction.call(this, owner, this.toWhom, ids);
                     });
@@ -120,7 +120,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 });
             }
 
-            describe("transferFrom(address,address,uint256)", function() {
+            describe('transferFrom(address,address,uint256)', function() {
                 const transferFn = async function(from, to, tokenId) {
                     return this.token.connect(from).transferFrom(from.address, to.address, tokenId);
                 };
@@ -129,27 +129,27 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
 
-            describe("batchTransferFrom(address,adress,uint256[])", function() {
+            describe('batchTransferFrom(address,adress,uint256[])', function() {
                 const transferFn = async function(from, to, tokenIds) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
                     return this.token.connect(from).batchTransferFrom(from.address, to.address, ids);
                 };
                 const safe = true;
-                context("with an empty list of token", function() {
+                context('with an empty list of token', function() {
                     shouldTransferTokenToRecipient(transferFn, [], undefined, safe);
                 });
-                context("with a single token", function() {
+                context('with a single token', function() {
                     shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
                 });
-                context("with a list of tokens from the same collection", function() {
+                context('with a list of tokens from the same collection', function() {
                     shouldTransferTokenToRecipient(transferFn, [nft1, nft2], undefined, safe);
                 });
             });
 
-            describe("safeTransferFrom(address,address,uint256)", function() {
+            describe('safeTransferFrom(address,address,uint256)', function() {
                 const transferFn = async function(from, to, tokenId) {
                     //safeTransferFrom is overloaded so we specify the function signature
-                    return this.token.connect(from)["safeTransferFrom(address,address,uint256)"](from.address, to.address, tokenId);
+                    return this.token.connect(from)['safeTransferFrom(address,address,uint256)'](from.address, to.address, tokenId);
                 };
                 const safe = true;
                 shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
