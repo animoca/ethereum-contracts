@@ -58,16 +58,6 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         [deployer] = await ethers.getSigners();
     });
 
-    // TODO: Remve describe & it functions below. Should call behavesLikeERC721 at top level. 
-    // Used atm for '.only' functionality to run only this test function in development
-    /*
-    describe.only("ERC721Mock_behaviors", async function() {
-        it("Should behave like ERC721", async function() {
-            //behavesLikeERC721(implementation);
-        });
-    });
-    */
-
     behavesLikeERC721(implementation);
 
 }, includeDiamondTest);
