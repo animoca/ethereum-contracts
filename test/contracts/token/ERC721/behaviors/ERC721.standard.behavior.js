@@ -1,6 +1,7 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ZeroAddress } = require('../../../../../src/constants');
+const { interfaces } = require('mocha');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
@@ -70,15 +71,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
             });
         });
 
-        const shouldTransferTokenToRecipient = function(transferFunction, ids, data, safe) {
-            context('when sent to another wallet', function() {
-                beforeEach(async function() {
-                    this.toWhom = other;
-                });
-                shouldTransferTokenBySender(transferFunction, ids, data, safe);
-            });
-        }
-
         describe('transfers', function() {
 
             let receipt = null;
@@ -111,6 +103,33 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 });
             }
 
+            const shouldRevertOnPreconditions = function(transferFunction, safe) {
+                describe('Pre-conditions', function() {
+                    //beforeEach(async function() {
+                    //    this.toWhom = other;
+                    //});
+                    const data = '0x42';
+                    if (interfaces.Pausable) {
+                        it('[Pausable] reverts when paused', async function() {
+                            await this.token.connect(owner).pause();
+                            await expect(transferFunction.call(this, owner, other, nft1)).to.be.revertedWith(revertMessages.TransferToZero);
+                        });
+                    }
+                    it('reverts if transferred to the zero address', async function() {
+                        await expect(transferFunction.call(this, owner, { address: ZeroAddress }, nft1)).to.be.revertedWith(revertMessages.TransferToZero);
+                    });
+                    it('reverts if the token does not exist', async function() {
+                        await expect(transferFunction.call(this, owner, other, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                    });
+                    it('reverts if `from` is not the token owner', async function() {
+                        await expect(transferFunction.call(this, other, other, nft1)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                    });
+                    it('reverts if the sender is not authorized for the token', async function() {
+                        //TODO
+                    });
+                });
+            }
+
             const shouldTransferTokenToRecipient = function(transferFunction, ids, data, safe) {
                 context('when sent to another wallet', function() {
                     beforeEach(async function() {
@@ -126,11 +145,12 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 };
                 const safe = false;
                 const data = undefined;
+                shouldRevertOnPreconditions(transferFn, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
 
             describe('batchTransferFrom(address,adress,uint256[])', function() {
-                const transferFn = async function(from, to, tokenIds) {
+                const transferFn = async function(from, to, tokenIds, ) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
                     return this.token.connect(from).batchTransferFrom(from.address, to.address, ids);
                 };

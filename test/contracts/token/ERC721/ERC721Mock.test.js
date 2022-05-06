@@ -31,8 +31,20 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         symbol,
         tokenURI,
         revertMessages: {
+            NonApproved: 'ERC721: non-approved sender',
+            SelfApproval: 'ERC721: self-approval',
+            SelfApprovalForAll: 'ERC721: self-approval',
             ZeroAddress: 'ERC721: zero address',
-            NonExistingNFT: 'ERC721: non-existing NFT'
+            TransferToZero: 'ERC721: transfer to zero',
+            MintToZero: 'ERC721: mint to zero',
+            TransferRejected: 'ERC721: transfer refused',
+            NonExistingNFT: 'ERC721: non-existing NFT',
+            NonOwnedNFT: 'ERC721: non-owned NFT',
+            ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
+
+            // Admin
+            NotMinter: 'MinterRole: not a Minter',
+            NotContractOwner: 'Ownable: not the owner'
         },
         features: {
             ERC165: true
