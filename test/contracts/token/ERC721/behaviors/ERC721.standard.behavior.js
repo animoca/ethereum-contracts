@@ -127,6 +127,13 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     it('reverts if the sender is not authorized for the token', async function() {
                         await expect(transferFunction.call(this, owner, other, nft1, signer = other)).to.be.revertedWith(revertMessages.NonApproved);
                     });
+
+                    if (safe) {
+                        it('reverts when sent to a non-receiver contract', async function() {
+                            //TODO: Add revert message
+                            await expect(transferFunction.call(this, owner, this.token, nft1)).to.be.revertedWith('');
+                        });
+                    }
                 });
             }
 
@@ -154,7 +161,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
                     return this.token.connect(signer).batchTransferFrom(from.address, to.address, ids);
                 };
-                const safe = true;
+                const safe = false;
+                shouldRevertOnPreconditions(transferFn, safe);
                 context('with an empty list of token', function() {
                     shouldTransferTokenToRecipient(transferFn, [], undefined, safe);
                 });
@@ -172,6 +180,17 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     return this.token.connect(signer)['safeTransferFrom(address,address,uint256)'](from.address, to.address, tokenId);
                 };
                 const safe = true;
+                shouldRevertOnPreconditions(transferFn, safe);
+                shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
+            });
+
+            describe('safeTransferFrom(address,address,uint256,bytes)', function() {
+                const transferFn = async function(from, to, tokenId, signer = from) {
+                    const data = '0x42';
+                    return this.token.connect(signer)['safeTransferFrom(address,address,uint256,bytes)'](from.address, to.address, tokenId, data);
+                }
+                const safe = true;
+                shouldRevertOnPreconditions(transferFn, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
             });
         });
