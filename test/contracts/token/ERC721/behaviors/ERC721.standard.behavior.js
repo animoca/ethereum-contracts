@@ -2,17 +2,18 @@ const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ZeroAddress } = require('../../../../../src/constants');
 const { interfaces } = require('mocha');
+const ReceiverType = require('../../ReceiverType');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
     const { deploy, revertMessages } = implementation;
 
     describe('like an ERC721 Standard', function() {
-        let accounts, deployer, owner, recipient, spender, maxSpender;
+        let accounts, deployer, owner, approved, anotherApproved, operator, other;
 
         before(async function() {
             accounts = await ethers.getSigners();
-            [deployer, owner, other, spender, maxSpender] = accounts;
+            [deployer, owner, approved, anotherApproved, operator, other] = accounts;
         });
 
         const nft1 = 1;
@@ -30,6 +31,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft4);
             await this.token.mint(owner.address, nft5);
 
+            await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.nftBalance = await this.token.balanceOf(owner.address);
         };
 
@@ -81,6 +83,9 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
                     }
                 });
+                //if (selfTransfer) {
+                //
+                //}
                 it('clears the approval for the token(s)', async function() {
                     for (const id of ids) {
                         expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
@@ -94,12 +99,24 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 });
             }
 
-            const shouldTransferTokenBySender = function(transferFunction, ids, data, safe) {
+            const shouldTransferTokenBySender = function(transferFunction, ids, data, safe, receiverType, selfTransfer) {
                 context('when called by the owner', function() {
                     this.beforeEach(async function() {
                         this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data);
                     });
-                    transferWasSuccessful(ids, data, safe);
+                    transferWasSuccessful(ids, data, safe, receiverType, selfTransfer);
+                });
+                context('when called by a wallet with single token approval', function() {
+                    this.beforeEach(async function() {
+                        this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data);
+                    });
+                    transferWasSuccessful(ids, data, safe, receiverType, selfTransfer);
+                });
+                context('when called by an operator', function() {
+                    this.beforeEach(async function() {
+                        this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data, signer = operator);
+                    });
+                    transferWasSuccessful(ids, data, safe, receiverType, selfTransfer)
                 });
             }
 
@@ -138,8 +155,31 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     beforeEach(async function() {
                         this.toWhom = other;
                     });
-                    shouldTransferTokenBySender(transferFunction, ids, data, safe);
+                    shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.WALLET);
                 });
+
+                context('when sent to the same owner', function() {
+                    this.beforeEach(async function() {
+                        this.toWhom = owner;
+                    });
+                    const selfTransfer = true;
+                    shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.WALLET);
+                });
+
+                context('when sent to an ERC721Receiver contract', function() {
+                    this.beforeEach(async function() {
+                        // TODO
+                    });
+                    // TODO
+                });
+                if (interfaces.ERC1155) {
+                    context('[ERC1155] when sent to an ERC1155TokenReceiver contract', function() {
+                        this.beforeEach(async function() {
+                            // TODO
+                        });
+                        // TODO
+                    });
+                }
             }
 
             describe('transferFrom(address,address,uint256)', function() {
@@ -169,6 +209,14 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context('with a list of tokens from the same collection', function() {
                     shouldTransferTokenToRecipient(transferFn, [nft1, nft2], undefined, safe);
                 });
+                if (interfaces.ERC1155Inventory) {
+                    context('[ERC1155Inventory] with a list of tokens sorted by collection', function() {
+                        // TODO
+                    });
+                    context('[ERC1155Inventory] with an unsorted list of tokens from different collection', function() {
+                        // TODO
+                    });
+                }
             });
 
             describe('safeTransferFrom(address,address,uint256)', function() {
