@@ -97,41 +97,37 @@ function shouldBehaveLikeERC721Standard(implementation) {
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe) {
                 context('when called by the owner', function() {
                     this.beforeEach(async function() {
-                        this.receipt = await transferFunction.call(this, owner, this.toWhom, ids);
+                        this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data);
                     });
                     transferWasSuccessful(ids, data, safe);
                 });
             }
 
-            const shouldRevertOnPreconditions = function(transferFunction, safe) {
+            const shouldRevertOnPreconditions = function(transferFunction, data, safe) {
                 describe('Pre-conditions', function() {
-                    //beforeEach(async function() {
-                    //    this.toWhom = other;
-                    //});
-                    const data = '0x42';
                     if (interfaces.Pausable) {
                         it('[Pausable] reverts when paused', async function() {
                             await this.token.connect(owner).pause();
-                            await expect(transferFunction.call(this, owner, other, nft1)).to.be.revertedWith(revertMessages.TransferToZero);
+                            await expect(transferFunction.call(this, owner, other, nft1, data)).to.be.revertedWith(revertMessages.TransferToZero);
                         });
                     }
                     it('reverts if transferred to the zero address', async function() {
-                        await expect(transferFunction.call(this, owner, { address: ZeroAddress }, nft1)).to.be.revertedWith(revertMessages.TransferToZero);
+                        await expect(transferFunction.call(this, owner, { address: ZeroAddress }, nft1, data)).to.be.revertedWith(revertMessages.TransferToZero);
                     });
                     it('reverts if the token does not exist', async function() {
-                        await expect(transferFunction.call(this, owner, other, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                        await expect(transferFunction.call(this, owner, other, unknownNFT, data)).to.be.revertedWith(revertMessages.NonOwnedNFT);
                     });
                     it('reverts if `from` is not the token owner', async function() {
-                        await expect(transferFunction.call(this, other, other, nft1)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                        await expect(transferFunction.call(this, other, other, nft1, data)).to.be.revertedWith(revertMessages.NonOwnedNFT);
                     });
                     it('reverts if the sender is not authorized for the token', async function() {
-                        await expect(transferFunction.call(this, owner, other, nft1, signer = other)).to.be.revertedWith(revertMessages.NonApproved);
+                        await expect(transferFunction.call(this, owner, other, nft1, data, other)).to.be.revertedWith(revertMessages.NonApproved);
                     });
 
                     if (safe) {
                         it('reverts when sent to a non-receiver contract', async function() {
                             //TODO: Add revert message
-                            await expect(transferFunction.call(this, owner, this.token, nft1)).to.be.revertedWith('');
+                            await expect(transferFunction.call(this, owner, this.token, nft1, data)).to.be.revertedWith('');
                         });
                     }
                 });
@@ -147,22 +143,23 @@ function shouldBehaveLikeERC721Standard(implementation) {
             }
 
             describe('transferFrom(address,address,uint256)', function() {
-                const transferFn = async function(from, to, tokenId, signer = from) {
+                const transferFn = async function(from, to, tokenId, data = undefined, signer = from) {
                     return this.token.connect(signer).transferFrom(from.address, to.address, tokenId);
                 };
                 const safe = false;
                 const data = undefined;
-                shouldRevertOnPreconditions(transferFn, safe);
+                shouldRevertOnPreconditions(transferFn, data, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
 
             describe('batchTransferFrom(address,adress,uint256[])', function() {
-                const transferFn = async function(from, to, tokenIds, signer = from) {
+                const transferFn = async function(from, to, tokenIds, data = undefined, signer = from) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
                     return this.token.connect(signer).batchTransferFrom(from.address, to.address, ids);
                 };
                 const safe = false;
-                shouldRevertOnPreconditions(transferFn, safe);
+                const data = undefined;
+                shouldRevertOnPreconditions(transferFn, data, safe);
                 context('with an empty list of token', function() {
                     shouldTransferTokenToRecipient(transferFn, [], undefined, safe);
                 });
@@ -175,23 +172,24 @@ function shouldBehaveLikeERC721Standard(implementation) {
             });
 
             describe('safeTransferFrom(address,address,uint256)', function() {
-                const transferFn = async function(from, to, tokenId, signer = from) {
+                const transferFn = async function(from, to, tokenId, data = undefined, signer = from) {
                     //safeTransferFrom is overloaded so we specify the function signature
                     return this.token.connect(signer)['safeTransferFrom(address,address,uint256)'](from.address, to.address, tokenId);
                 };
                 const safe = true;
-                shouldRevertOnPreconditions(transferFn, safe);
-                shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
+                const data = undefined;
+                shouldRevertOnPreconditions(transferFn, data, safe);
+                shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
 
             describe('safeTransferFrom(address,address,uint256,bytes)', function() {
-                const transferFn = async function(from, to, tokenId, signer = from) {
-                    const data = '0x42';
+                const transferFn = async function(from, to, tokenId, data, signer = from) {
                     return this.token.connect(signer)['safeTransferFrom(address,address,uint256,bytes)'](from.address, to.address, tokenId, data);
                 }
                 const safe = true;
-                shouldRevertOnPreconditions(transferFn, safe);
-                shouldTransferTokenToRecipient(transferFn, [nft1], undefined, safe);
+                const data = '0x42';
+                shouldRevertOnPreconditions(transferFn, data, safe);
+                shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
         });
     });
