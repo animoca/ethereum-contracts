@@ -1,6 +1,6 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
-const { ZeroAddress } = require('../../../../../src/constants');
+const { ZeroAddress, Zero } = require('../../../../../src/constants');
 const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 
@@ -14,12 +14,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
         before(async function() {
             accounts = await ethers.getSigners();
             [deployer, owner, approved, anotherApproved, operator, other] = accounts;
-            console.log({ accounts });
-            console.log("before deployer", deployer.address);
-            console.log("before owner", owner.address);
-            console.log("before approved", approved.address);
-            console.log("before anotherApproved", anotherApproved.address);
-            console.log("before operator", operator.address);
         });
 
         const nft1 = 1;
@@ -245,8 +239,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 shouldRevertOnPreconditions(transferFn, data, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
-
-            console.log({ approved })
         });
 
         describe('approve(address,address)', function() {
@@ -263,15 +255,14 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
             const itApproves = function() {
                 it('sets the approval for the target address', async function() {
-                    console.log("this.approvedAddress", this.approvedAddress);
                     expect(await this.token.getApproved(tokenId)).to.equal(this.approvedAddress);
                 });
             };
 
-            const itEmitsApprovalEvent = function(address) {
+            const itEmitsApprovalEvent = function() {
                 it('emits an Approval event', async function() {
                     await expect(this.receipt).to.emit(this.token, 'Approval')
-                        .withArgs(owner.address, address, tokenId);
+                        .withArgs(owner.address, this.approvedAddress, tokenId);
                 });
             };
 
@@ -279,40 +270,98 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context('when there was no prior approval', function() {
                     beforeEach(async function() {
                         this.receipt = await this.token.connect(owner).approve(ZeroAddress, tokenId);
+                        this.approvedAddress = ZeroAddress;
                     });
                     itClearsApproval();
-                    itEmitsApprovalEvent(ZeroAddress);
+                    itEmitsApprovalEvent();
                 });
                 context('when there was a prior approval', function() {
                     beforeEach(async function() {
                         await this.token.connect(owner).approve(approved.address, tokenId);
                         this.receipt = await this.token.connect(owner).approve(ZeroAddress, tokenId);
+                        this.approvedAddress = ZeroAddress;
                     });
                     itClearsApproval();
-                    itEmitsApprovalEvent(ZeroAddress);
+                    itEmitsApprovalEvent();
                 });
             });
 
             context('when approving a non-zero address', function() {
-                console.log("A approved", approved);
                 context('when there was no prior approval', function() {
-                    console.log("B approved", approved);
                     beforeEach(async function() {
-                        console.log("C approved", approved.address);
+                        this.receipt = await this.token.connect(owner).approve(approved.address, tokenId);
                         this.approvedAddress = approved.address;
-                        receipt = await this.token.connect(owner).approve(this.approvedAddress, tokenId);
                     });
                     itApproves();
-                    //itEmitsApprovalEvent();
+                    itEmitsApprovalEvent();
                 });
 
+                context('when there was a prior approval to the same address', function() {
+                    beforeEach(async function() {
+                        await this.token.connect(owner).approve(approved.address, tokenId);
+                        this.receipt = await this.token.connect(owner).approve(approved.address, tokenId);
+                        this.approvedAddress = approved.address;
+                    });
+                    itApproves();
+                    itEmitsApprovalEvent();
+                });
+
+                context('when there was a prior approval to a different address', function() {
+                    this.beforeEach(async function() {
+                        await this.token.connect(owner).approve(approved.address, tokenId);
+                        this.receipt = await this.token.connect(owner).approve(anotherApproved.address, tokenId);
+                        this.approvedAddress = anotherApproved.address;
+                    });
+                    itApproves();
+                    itEmitsApprovalEvent();
+                });
             });
 
+            it('reverts in case of self-approval', async function() {
+                await expect(this.token.connect(owner).approve(owner.address, tokenId)).to.be.revertedWith(revertMessages.SelfApproval);
+            });
 
+            it('reverts if the sender does not own the Non-Fungible Token', async function() {
+                await expect(this.token.connect(other).approve(approved.address, tokenId)).to.be.revertedWith(revertMessages.NonApproved);
+            });
 
-            //context
+            it('reverts if the sender is approved for the given Non-Fungible Token', async function() {
+                await this.token.connect(owner).approve(approved.address, tokenId);
+                await expect(this.token.connect(approved).approve(anotherApproved.address, tokenId)).to.be.revertedWith(revertMessages.NonApproved);
+            });
 
+            context('when the sender is an operator', function() {
+                this.beforeEach(async function() {
+                    await this.token.connect(owner).setApprovalForAll(operator.address, true);
+                    this.receipt = await this.token.connect(operator).approve(approved.address, tokenId);
+                    this.approvedAddress = approved.address;
+                });
+                itApproves();
+                itEmitsApprovalEvent();
+            });
 
+            it('reverts if the Non-Fungible Token does not exist', async function() {
+                await expect(this.token.connect(owner).approve(approved.address, unknownNFT)).to.be.revertedWith(revertMessages.NonExistingNFT);
+            });
+        });
+
+        describe('getApproved(uint256)', function() {
+            context('when the NFT exists', function() {
+                context('when the owner has approved an operator for the NFT', function() {
+                    it('returns the approved operator address', async function() {
+                        await this.token.connect(owner).approve(approved.address, nft1);
+                        const actual = await this.token.getApproved(nft1);
+                        expect(actual).to.equal(approved.address);
+                    });
+                });
+
+                context('when the owner has not approved an operator for the NFT', function() {
+                    it('returns the zero address', async function() {
+                        const actual = await this.token.getApproved(nft2);
+                        expect(actual).to.equal(ZeroAddress);
+                    });
+                });
+            });
         });
     });
 }
