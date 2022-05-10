@@ -93,6 +93,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 });
                 it('emits Transfer event(s)', async function() {
                     for (const id of ids) {
+                        console.log("emits transfer event for ", id);
                         await expect(this.receipt).to.emit(this.token, 'Transfer')
                             .withArgs(owner.address, this.toWhom.address, id);
                     }
@@ -103,6 +104,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context('when called by the owner', function() {
                     this.beforeEach(async function() {
                         this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data);
+                        console.log("transfer receipt", this.receipt);
                     });
                     transferWasSuccessful(ids, data, safe, receiverType, selfTransfer);
                 });
@@ -115,6 +117,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context('when called by an operator', function() {
                     this.beforeEach(async function() {
                         this.receipt = await transferFunction.call(this, owner, this.toWhom, ids, data, signer = operator);
+                        //console.log("this.receipt", this.receipt)
                     });
                     transferWasSuccessful(ids, data, safe, receiverType, selfTransfer)
                 });
@@ -239,6 +242,59 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 shouldRevertOnPreconditions(transferFn, data, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
+        });
+
+        describe('approve(address,address)', function() {
+            const tokenId = nft3;
+
+            let receipt = null;
+            let awaitedreceipt = null;
+
+            const itClearsApproval = function() {
+                it('clears approval for the token', async function() {
+                    console.log('DDD');
+                    expect(await this.token.getApproved(tokenId)).to.equal(ZeroAddress);
+                });
+            };
+
+            const itApproves = function(address) {
+                it('sets the approval for the target address', async function() {
+                    expect(await this.token.getApproved(tokenId)).to.equal(address);
+                });
+            };
+
+            const itEmitsApprovalEvent = function(address) {
+                it('emits an Approval event', async function() {
+                    console.log("receipt B", awaitedreceipt);
+                    await expect(this.receipt).to.emit(this.token, 'Approval')
+                        .withArgs(owner.address, address, tokenId);
+                });
+            };
+
+            context('when clearing approval', function() {
+                //console.log('AAA')
+                context('when there was no prior approval', function() {
+                    //console.log('BBB')
+                    beforeEach(async function() {
+                        //console.log('CCC')
+                        this.receipt = await this.token.connect(owner).approve(ZeroAddress, tokenId);
+                        console.log('approval receipt', this.receipt);
+                    });
+                    itClearsApproval();
+                    itEmitsApprovalEvent(ZeroAddress);
+                });
+
+            });
+
+            context('when there was a prior approval', function() {
+                this.beforeEach(async function() {
+                    const tx = await this.token.approve(approved, tokenId);
+                })
+            });
+
+            //context
+
+
         });
     });
 }
