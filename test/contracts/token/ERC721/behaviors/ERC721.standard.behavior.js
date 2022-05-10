@@ -14,6 +14,12 @@ function shouldBehaveLikeERC721Standard(implementation) {
         before(async function() {
             accounts = await ethers.getSigners();
             [deployer, owner, approved, anotherApproved, operator, other] = accounts;
+            console.log({ accounts });
+            console.log("before deployer", deployer.address);
+            console.log("before owner", owner.address);
+            console.log("before approved", approved.address);
+            console.log("before anotherApproved", anotherApproved.address);
+            console.log("before operator", operator.address);
         });
 
         const nft1 = 1;
@@ -239,25 +245,26 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 shouldRevertOnPreconditions(transferFn, data, safe);
                 shouldTransferTokenToRecipient(transferFn, [nft1], data, safe);
             });
+
+            console.log({ approved })
         });
 
         describe('approve(address,address)', function() {
             const tokenId = nft3;
 
             let receipt = null;
+            let approvedAddress = null;
 
             const itClearsApproval = function() {
                 it('clears approval for the token', async function() {
-                    let approvedAmount = await this.token.getApproved(tokenId)
-                    console.log("res", approvedAmount)
-                    console.log("zero addres", ZeroAddress)
                     expect(await this.token.getApproved(tokenId)).to.equal(ZeroAddress);
                 });
             };
 
-            const itApproves = function(address) {
+            const itApproves = function() {
                 it('sets the approval for the target address', async function() {
-                    expect(await this.token.getApproved(tokenId)).to.equal(address);
+                    console.log("this.approvedAddress", this.approvedAddress);
+                    expect(await this.token.getApproved(tokenId)).to.equal(this.approvedAddress);
                 });
             };
 
@@ -284,6 +291,21 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     itClearsApproval();
                     itEmitsApprovalEvent(ZeroAddress);
                 });
+            });
+
+            context('when approving a non-zero address', function() {
+                console.log("A approved", approved);
+                context('when there was no prior approval', function() {
+                    console.log("B approved", approved);
+                    beforeEach(async function() {
+                        console.log("C approved", approved.address);
+                        this.approvedAddress = approved.address;
+                        receipt = await this.token.connect(owner).approve(this.approvedAddress, tokenId);
+                    });
+                    itApproves();
+                    //itEmitsApprovalEvent();
+                });
+
             });
 
 
