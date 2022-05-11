@@ -362,6 +362,91 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     });
                 });
             });
+
+            it('reverts if the NFT does not exist', async function() {
+                await expect(this.token.getApproved(unknownNFT)).to.be.revertedWith(revertMessages.NonExistingNFT);
+            });
+        });
+
+        describe('setApprovalForAll(address, bool)', function() {
+            context('when the operatr being approved is not the owner', function() {
+                let receipt = null;
+                let approvedAddress = null;
+
+                const itApproves = function(isApproved) {
+                    it(isApproved ? 'approves the operator' : 'unsets the operator approval', async function() {
+                        expect(await this.token.isApprovedForAll(owner.address, this.approvedAddress)).to.equal(isApproved);
+                    });
+                };
+
+                const itEmitsApprovalEvent = function(isApproved) {
+                    it('emits an ApprovalForAll event', async function() {
+                        await expect(this.receipt).to.emit(this.token, 'ApprovalForAll')
+                            .withArgs(owner.address, this.approvedAddress, isApproved);
+                    });
+                }
+
+                context('when the operator has never had an approval explicitly set', function() {
+                    context('when setting the operator as approved', function() {
+                        beforeEach(async function() {
+                            this.receipt = await this.token.connect(owner).setApprovalForAll(operator.address, true);
+                            this.approvedAddress = operator.address;
+                        });
+                        itApproves(true);
+                        itEmitsApprovalEvent(true);
+                    });
+
+                    context('when unsetting the operator approval', function() {
+                        this.beforeEach(async function() {
+                            this.receipt = await this.token.connect(owner).setApprovalForAll(operator.address, false);
+                            this.approvedAddress = operator.address;
+                        });
+                        itApproves(false);
+                        itEmitsApprovalEvent(false);
+                    });
+                });
+
+                context('when the operator approval was previously unset', function() {
+                    beforeEach(async function() {
+                        await this.token.connect(owner).setApprovalForAll(operator.address, false);
+                    });
+                    context('when setting the operator as approved', function() {
+                        beforeEach(async function() {
+                            this.receipt = await this.token.connect(owner).setApprovalForAll(operator.address, true);
+                            this.approvedAddress = operator.address;
+                        });
+                        itApproves(true);
+                        itEmitsApprovalEvent(true);
+                    });
+
+                    context('when unsetting the operator approved again', function() {
+                        beforeEach(async function() {
+                            this.receipt = await this.token.connect(owner).setApprovalForAll(operator.address, false);
+                            this.approvedAddress = operator.address;
+                        });
+                        itApproves(false);
+                        itEmitsApprovalEvent(false);
+                    });
+                });
+
+                describe('isApprovedForAll(address,address)', function() {
+                    context('when the token owner has approved the operator', function() {
+                        it('returns true', async function() {
+                            const actual = await this.token.isApprovedForAll(owner.address, operator.address);
+                            expect(actual).to.equal(true);
+                        });
+                    });
+
+                    context('when the token owner has not approved the operator', function() {
+                        it('returns false', async function() {
+                            const actual = await this.token.isApprovedForAll(owner.address, other.address);
+                            expect(actual).to.equal(false);
+                        });
+                    });
+                });
+
+
+            });
         });
     });
 }
