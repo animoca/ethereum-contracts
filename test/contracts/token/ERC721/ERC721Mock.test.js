@@ -50,13 +50,11 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             ERC165: true
         },
         interfaces: {
-            ERC721: true
+            ERC721: true,
+            ERC721MintableOnce: true
         },
         methods: {
-            // ERC721Mintable
-            'mint(address,uint256)': async function(contract, to, tokenId, overrides) {
-                return contract.mint(to, tokenId, overrides);
-            },
+            //TODO
         },
         deploy: async function(name, symbol, tokenURI) {
             const contract = await deployFn({ name, symbol, tokenURI });
