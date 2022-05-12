@@ -24,7 +24,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
         const unknownNFT = 1000;
 
         const fixture = async function() {
-            this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI);
+            this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
             await this.token.mintOnce(owner.address, nft1);
             await this.token.mintOnce(owner.address, nft2);
             await this.token.mintOnce(owner.address, nft3);

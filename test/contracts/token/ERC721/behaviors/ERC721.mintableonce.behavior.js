@@ -34,7 +34,7 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
 
 
         const fixture = async function() {
-            this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI);
+            this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
             this.receiver721 = await deployERC721Mock(this.token);
         };
 

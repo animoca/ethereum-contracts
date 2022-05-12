@@ -56,8 +56,9 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         methods: {
             //TODO
         },
-        deploy: async function(name, symbol, tokenURI) {
+        deploy: async function(name, symbol, tokenURI, deployer) {
             const contract = await deployFn({ name, symbol, tokenURI });
+            await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
             return contract;
         },
     };

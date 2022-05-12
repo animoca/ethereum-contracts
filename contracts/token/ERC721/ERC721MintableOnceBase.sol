@@ -2,11 +2,15 @@
 pragma solidity ^0.8.8;
 
 import {IERC721MintableOnce} from "./interfaces/IERC721MintableOnce.sol";
+import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 abstract contract ERC721MintableOnceBase is Context, IERC721MintableOnce {
+    using AccessControlStorage for AccessControlStorage.Layout;
     using ERC721Storage for ERC721Storage.Layout;
+
+    bytes32 public constant MINTER_ROLE = "minter";
 
     function mintOnce(address to, uint256 tokenId) external {
         ERC721Storage.layout().mint(_msgSender(), to, tokenId, "", false);
