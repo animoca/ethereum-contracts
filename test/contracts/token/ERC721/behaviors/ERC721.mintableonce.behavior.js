@@ -14,6 +14,8 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
     describe('like a MintableOnce ERC721', function() {
         let accounts, deployer, minter, owner;
         let receiver721;
+        let nft1 = 1;
+        let unknownNFT = 1000;
 
         before(async function() {
             accounts = await ethers.getSigners();
@@ -83,6 +85,22 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
 
         const shouldRevertOnPreconditions = function(mintFunction, safe) {
             // TODO
+            describe('Pre-conditions', function() {
+                const data = '0x42';
+                const signer = deployer;
+                it('reverts if minted to the zero address', async function() {
+                    await expect(mintFunction.call(this, { address: ZeroAddress }, nft1, data)).to.be.revertedWith(revertMessages.MintToZero);
+                });
+                it('reverts if the token already exists', async function() {
+                    await mintFunction.call(this, owner, unknownNFT, data);
+                    await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
+                });
+                it("reverts if sent by non-minter", async function() {
+                    // TODO: how are minters set
+                    //const signer = owner;
+                    //await expect(mintFunction.call(this, owner, unknownNFT, data, signer)).to.be.revertedWith(revertMessages.NotMinter);
+                });
+            });
         };
 
         const shouldMintTokenToRecipient = function(mintFunction, ids, data, safe) {
@@ -114,6 +132,7 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
             const safe = false;
             const data = undefined;
             const nftId = 1;
+            shouldRevertOnPreconditions(mintFn, safe);
             shouldMintTokenToRecipient(mintFn, nftId, data, safe);
         });
 
