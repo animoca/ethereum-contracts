@@ -5,6 +5,7 @@ const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 const { ERC721_RECEIVER } = require('../../ReceiverType');
 const { ethers } = require('hardhat');
+const { BigNumber } = require('ethers');
 
 function shouldBehaveLikeERC721MintableOnce(implementation) {
 
@@ -65,7 +66,8 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
             }
 
             it('adjusts recipient balance', async function() {
-                // TODO
+                const quantity = Array.isArray(tokenIds) ? tokenIds.length : 1;
+                expect(await this.token.balanceOf(this.toWhom.address)).to.equal(quantity);
             });
 
             if (interfaces.ERC1155Inventory) {
@@ -73,7 +75,9 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
             }
 
             if (safe && receiverType == ReceiverType.ERC721_RECEIVER) {
-                // TODO
+                it("should call onERC721Received", async function() {
+                    // TODO
+                });
             }
         }
 
@@ -92,7 +96,7 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
 
             context('when sent to an ERC721Receiver contract', function() {
                 this.beforeEach(async function() {
-                    this.toWhom = this.receiver721;
+                    this.toWhom = owner;
                     this.receipt = await mintFunction.call(this, this.toWhom, ids, data, deployer);
                 });
                 mintWasSuccessful(ids, data, safe, ReceiverType.ERC721_RECEIVER);
@@ -111,6 +115,29 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
             const data = undefined;
             const nftId = 1;
             shouldMintTokenToRecipient(mintFn, nftId, data, safe);
+        });
+
+        context('batchMintOnce(address, uint256[])', function() {
+            const mintFn = async function(to, tokenIds, data, signer = deployer) {
+                const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+                return this.token.connect(signer).batchMintOnce(to.address, ids);
+            };
+            const safe = false;
+            context('with an empty list of tokens', function() {
+                shouldMintTokenToRecipient(mintFn, [], undefined, safe);
+            });
+            context('with a single token', function() {
+                const nft1 = 1;
+                shouldMintTokenToRecipient(mintFn, [nft1], undefined, safe);
+            });
+            context('with a list of tokens from the same collection', function() {
+                const nft1 = 1;
+                const nft2 = 2;
+                shouldMintTokenToRecipient(mintFn, [nft1, nft2], undefined, safe);
+            });
+            if (interfaces.ERC1155Inventory) {
+                // TODO
+            }
         });
 
         context('safeMintOnce(address,uint256,bytes)', function() {
