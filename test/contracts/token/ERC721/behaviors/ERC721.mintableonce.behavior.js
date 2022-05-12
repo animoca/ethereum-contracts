@@ -4,6 +4,7 @@ const { ZeroAddress, Zero } = require('../../../../../src/constants');
 const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 const { ERC721_RECEIVER } = require('../../ReceiverType');
+const { ethers } = require('hardhat');
 
 function shouldBehaveLikeERC721MintableOnce(implementation) {
 
@@ -11,14 +12,27 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
 
     describe('like a MintableOnce ERC721', function() {
         let accounts, deployer, minter, owner;
+        let receiver721;
 
         before(async function() {
             accounts = await ethers.getSigners();
             [deployer, owner] = accounts;
         });
 
+        // TODO: Move to helper file
+        async function deployERC721Mock(token) {
+            const ERC721ReceiverMock = await ethers.getContractFactory('ERC721ReceiverMock');
+            const acceptIncomingToken = true;
+            const receivedTokenAddress = token.address;
+            this.recipientContract = await ERC721ReceiverMock.deploy(acceptIncomingToken, receivedTokenAddress);
+            await this.recipientContract.deployed();
+            return this.recipientContract;
+        }
+
+
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI);
+            this.receiver721 = await deployERC721Mock(this.token);
         };
 
         beforeEach(async function() {
@@ -75,14 +89,36 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
                 });
                 mintWasSuccessful(ids, data, safe, ReceiverType.WALLET);
             });
+
+            context('when sent to an ERC721Receiver contract', function() {
+                this.beforeEach(async function() {
+                    this.toWhom = this.receiver721;
+                    this.receipt = await mintFunction.call(this, this.toWhom, ids, data, deployer);
+                });
+                mintWasSuccessful(ids, data, safe, ReceiverType.ERC721_RECEIVER);
+            });
+
+            if (!interfaces.ERC1155) {
+                //TODO
+            }
         };
 
         context('mintOnce(address, uint256)', function() {
-            const mintFn = async function(to, tokenId, _data, signer = deployer) {
+            const mintFn = async function(to, tokenId, data, signer = deployer) {
                 return this.token.connect(signer).mintOnce(to.address, tokenId);
             };
             const safe = false;
             const data = undefined;
+            const nftId = 1;
+            shouldMintTokenToRecipient(mintFn, nftId, data, safe);
+        });
+
+        context('safeMintOnce(address,uint256,bytes)', function() {
+            const mintFn = async function(to, tokenId, data, signer = deployer) {
+                return this.token.connect(signer).safeMintOnce(to.address, tokenId, data);
+            };
+            const safe = true;
+            const data = '0x42';
             const nftId = 1;
             shouldMintTokenToRecipient(mintFn, nftId, data, safe);
         });
