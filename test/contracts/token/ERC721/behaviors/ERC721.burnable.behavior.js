@@ -3,7 +3,6 @@ const { expect } = require('chai');
 const { ZeroAddress, Zero } = require('../../../../../src/constants');
 const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
-const { ERC721_RECEIVER } = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { BigNumber } = require('ethers');
 
@@ -13,7 +12,6 @@ function shouldBehaveLikeERC721Burnable(implementation) {
 
     describe('like a Burnable ERC721', function() {
         let accounts, deployer, minter, owner, other, approved, operator;
-        let receiver721;
         let nft1 = 1;
         let nft2 = 2;
         let unknownNFT = 1000;
@@ -23,19 +21,8 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             [deployer, minter, owner, other, approved, operator] = accounts;
         });
 
-        // TODO: Move to helper file
-        async function deployERC721ReceiverMock(token) {
-            const ERC721ReceiverMock = await ethers.getContractFactory('ERC721ReceiverMock');
-            const acceptIncomingToken = true;
-            const receivedTokenAddress = token.address;
-            this.recipientContract = await ERC721ReceiverMock.deploy(acceptIncomingToken, receivedTokenAddress);
-            await this.recipientContract.deployed();
-            return this.recipientContract;
-        }
-
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            this.receiver721 = await deployERC721ReceiverMock(this.token);
             await this.token.connect(deployer).mintOnce(owner.address, nft1);
             await this.token.connect(deployer).mintOnce(owner.address, nft2);
             await this.token.connect(owner).approve(approved.address, nft1);
@@ -98,7 +85,7 @@ function shouldBehaveLikeERC721Burnable(implementation) {
         const shouldBurnTokenBySender = function(burnFunction, ids) {
             context('when called by the owner', function() {
                 beforeEach(async function() {
-                    receipt = await burnFunction.call(this, owner, ids, owner);
+                    this.receipt = await burnFunction.call(this, owner, ids, owner);
                 });
                 burnWasSuccessful(ids, owner);
             });

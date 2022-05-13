@@ -13,7 +13,6 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
 
     describe('like a MintableOnce ERC721', function() {
         let accounts, deployer, minter, owner;
-        let receiver721;
         let nft1 = 1;
         let unknownNFT = 1000;
 
@@ -22,20 +21,8 @@ function shouldBehaveLikeERC721MintableOnce(implementation) {
             [deployer, owner] = accounts;
         });
 
-        // TODO: Move to helper file
-        async function deployERC721Mock(token) {
-            const ERC721ReceiverMock = await ethers.getContractFactory('ERC721ReceiverMock');
-            const acceptIncomingToken = true;
-            const receivedTokenAddress = token.address;
-            this.recipientContract = await ERC721ReceiverMock.deploy(acceptIncomingToken, receivedTokenAddress);
-            await this.recipientContract.deployed();
-            return this.recipientContract;
-        }
-
-
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            this.receiver721 = await deployERC721Mock(this.token);
         };
 
         beforeEach(async function() {

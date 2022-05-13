@@ -1,19 +1,17 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
-const { ZeroAddress, Zero } = require('../../../../../src/constants');
+const { ZeroAddress } = require('../../../../../src/constants');
 const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
-const { ERC721_RECEIVER } = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { BigNumber } = require('ethers');
 
 function shouldBehaveLikeERC721Mintable(implementation) {
 
-    const { deploy, methods, contractName, revertMessages } = implementation;
+    const { deploy, revertMessages } = implementation;
 
     describe('like a Mintable ERC721', function() {
         let accounts, deployer, minter, owner;
-        let receiver721;
         let nft1 = 1;
         let unknownNFT = 1000;
 
@@ -22,20 +20,8 @@ function shouldBehaveLikeERC721Mintable(implementation) {
             [deployer, owner] = accounts;
         });
 
-        // TODO: Move to helper file
-        async function deployERC721Mock(token) {
-            const ERC721ReceiverMock = await ethers.getContractFactory('ERC721ReceiverMock');
-            const acceptIncomingToken = true;
-            const receivedTokenAddress = token.address;
-            this.recipientContract = await ERC721ReceiverMock.deploy(acceptIncomingToken, receivedTokenAddress);
-            await this.recipientContract.deployed();
-            return this.recipientContract;
-        }
-
-
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            this.receiver721 = await deployERC721Mock(this.token);
         };
 
         beforeEach(async function() {
@@ -96,9 +82,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
                     await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
                 });
                 it("reverts if sent by non-minter", async function() {
-                    // TODO: how are minters set
-                    //const signer = owner;
-                    //await expect(mintFunction.call(this, owner, unknownNFT, data, signer)).to.be.revertedWith(revertMessages.NotMinter);
+                    // TODO: set minter
                 });
             });
         };
