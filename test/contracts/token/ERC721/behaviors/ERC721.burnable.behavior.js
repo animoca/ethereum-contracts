@@ -87,9 +87,6 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             }
 
             it("decreases the sender balance", async function() {
-                console.log("owner balance", await this.token.balanceOf(owner.address)); //1
-                console.log("nftBlanace", this.nftBalance); //2
-                console.log("ids.length", ids.length); //1
                 expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance - ids.length);
             });
 
@@ -107,17 +104,40 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             });
         }
 
+        const shouldRevertOnPreconditions = function(burnFunction) {
+            describe('Pre-condition', function() {
+                if (interfaces.Pausable) {
+                    it('[Pausable] reverts when paused', async function() {
+                        // TODO
+                    });
+                }
+                it('reverts if the token does not exist', async function() {
+                    await expect(burnFunction.call(this, owner, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                });
+
+                it('reverts if `from` is not the token owner', async function() {
+                    await expect(burnFunction.call(this, other, nft1, other)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+                });
+
+                it('reverts if the sender is not authorized for the token', async function() {
+                    await expect(burnFunction.call(this, owner, nft1, other)).to.be.revertedWith(revertMessages.NonApproved);
+                });
+
+                if (interfaces.ERC1155) {
+                    if ('[ERC1155] reverts if the id is a Fungbile Token', async function() {
+                            // TODO
+                        });
+                }
+            });
+        }
+
 
         describe('burnFrom(address,uint256)', function() {
             const burnFn = async function(from, tokenId, signer = deployer) {
-                    console.log("burnFN from.address", from.address);
-                    console.log('burnFn tokenId', tokenId);
-                    return this.token.connect(signer).burnFrom(from.address, tokenId);
-                }
-                // TODO: shouldRevertOnPreconditions(burnFn)
-            context('with an empty list of tokens', function() {
-                shouldBurnTokenBySender(burnFn, nft1);
-            });
+                return this.token.connect(signer).burnFrom(from.address, tokenId);
+            }
+            shouldRevertOnPreconditions(burnFn);
+            shouldBurnTokenBySender(burnFn, nft1);
         });
 
     });
