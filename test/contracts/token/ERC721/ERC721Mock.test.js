@@ -51,7 +51,8 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         },
         interfaces: {
             ERC721: true,
-            ERC721MintableOnce: true
+            ERC721MintableOnce: true,
+            ERC721Burnable: true
         },
         methods: {
             //TODO
