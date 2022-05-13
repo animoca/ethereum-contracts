@@ -135,9 +135,29 @@ function shouldBehaveLikeERC721Burnable(implementation) {
         describe('burnFrom(address,uint256)', function() {
             const burnFn = async function(from, tokenId, signer = deployer) {
                 return this.token.connect(signer).burnFrom(from.address, tokenId);
-            }
+            };
             shouldRevertOnPreconditions(burnFn);
             shouldBurnTokenBySender(burnFn, nft1);
+        });
+
+        describe('batchBurnFrom(address, uint256[])', function() {
+            const burnFn = async function(from, tokenIds, signer = deployer) {
+                const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+                return this.token.connect(signer).batchBurnFrom(from.address, ids);
+            };
+            shouldRevertOnPreconditions(burnFn);
+            context('with an empty list of tokens', function() {
+                shouldBurnTokenBySender(burnFn, []);
+            });
+            context('with a single token', function() {
+                shouldBurnTokenBySender(burnFn, [nft1]);
+            });
+            context('with a list of tokens from the same collection', function() {
+                shouldBurnTokenBySender(burnFn, [nft1, nft2]);
+            });
+            if (interfaces.ERC1155Inventory) {
+                // TODO
+            }
         });
 
     });
