@@ -83,9 +83,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
                     }
                 });
-                //if (selfTransfer) {
-                //
-                //}
+
                 it('clears the approval for the token(s)', async function() {
                     for (const id of ids) {
                         expect(await this.token.getApproved(id)).to.equal(ZeroAddress);

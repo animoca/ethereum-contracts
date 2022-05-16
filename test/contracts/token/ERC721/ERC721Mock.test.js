@@ -2,8 +2,8 @@ const { behavesLikeERC721 } = require('./behaviors/ERC721.behavior');
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require('../../../helpers/run');
 const { ethers } = require('hardhat');
 
-const name = 'ERC721 Mock';
-const symbol = 'E721';
+const name = 'ERC721Mock';
+const symbol = 'ERC721Mock';
 const tokenURI = 'uri';
 
 const config = {
@@ -52,7 +52,8 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         interfaces: {
             ERC721: true,
             ERC721MintableOnce: true,
-            ERC721Burnable: true
+            ERC721Burnable: true,
+            ERC721Metadata: true
         },
         methods: {
             //TODO

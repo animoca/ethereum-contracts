@@ -18,8 +18,13 @@ library UInt256ToDecimalString {
         uint256 index = digits - 1;
         temp = value;
         while (temp != 0) {
-            buffer[index--] = bytes1(uint8(48 + (temp % 10)));
-            temp /= 10;
+            unchecked { 
+                // TODO:  Find solution for 0.8+ and remove 'unchecked'.
+                // Below code ported from < 0.8 breaks on 0.8+, see: .
+                // https://ethereum.stackexchange.com/questions/94351/revert-reason-for-arithmetic-overflows-in-solidity-v0-8
+                buffer[index--] = bytes1(uint8(48 + (temp % 10)));
+                temp /= 10;
+            }
         }
         return string(buffer);
     }
