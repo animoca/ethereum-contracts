@@ -12,7 +12,36 @@ const config = {
         ctorArguments: ['name', 'symbol', 'tokenURI']
     },
     diamond: {
-        facets: []
+        facets: [
+
+            { name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: { method: 'initProxyAdminStorage', arguments: ['initialAdmin'] } },
+            { name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initDiamondCutStorage' } },
+            { name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: { method: 'initInterfaceDetectionStorage' } },
+            { name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initOwnershipStorage', arguments: ['initialOwner'] } },
+            { name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry'] },
+            {
+                name: "ERC721FacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721Storage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false,
+            },
+            {
+                name: "ERC721MintableFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721MintableStorage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false,
+            },
+        ]
     },
     defaultArguments: {
         forwarderRegistry: getForwarderRegistryAddress,
@@ -24,7 +53,7 @@ const config = {
     },
 };
 
-const includeDiamondTest = false;
+const includeDiamondTest = true;
 runBehaviorTests('Mintable ERC721', config, function(deployFn) {
     const implementation = {
         name,
