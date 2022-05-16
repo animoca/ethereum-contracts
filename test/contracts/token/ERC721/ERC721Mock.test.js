@@ -12,7 +12,68 @@ const config = {
         ctorArguments: ['name', 'symbol', 'tokenURI']
     },
     diamond: {
-        facets: []
+        facets: [
+            { name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: { method: 'initProxyAdminStorage', arguments: ['initialAdmin'] } },
+            { name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initDiamondCutStorage' } },
+            { name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: { method: 'initInterfaceDetectionStorage' } },
+            { name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initOwnershipStorage', arguments: ['initialOwner'] } },
+            { name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry'] },
+            {
+                name: "ERC721FacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721Storage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false,
+            },
+            {
+                name: "ERC721TokenMetadataWithBaseURIFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721MetadataStorageWithBaseURIStorage',
+                    arguments: ['name', 'symbol', 'tokenURI'],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false,
+            },
+            {
+                name: "ERC721MintableOnceFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721MintableOnceStorage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false
+            },
+            {
+                name: "ERC721BurnableFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721BurnableStorage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false
+            }, {
+                name: "ERC721BatchTransferFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721BatchTransferStorage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false
+            }
+
+        ]
     },
     defaultArguments: {
         forwarderRegistry: getForwarderRegistryAddress,
@@ -24,7 +85,7 @@ const config = {
     },
 };
 
-const includeDiamondTest = false;
+const includeDiamondTest = true;
 runBehaviorTests('Standard ERC721', config, function(deployFn) {
     const implementation = {
         name,
