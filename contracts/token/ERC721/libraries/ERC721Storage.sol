@@ -207,6 +207,25 @@ library ERC721Storage {
         }
     }
 
+    function batchMintOnce(
+         Layout storage s,
+         address to, 
+         uint256[] memory tokenIds
+    ) internal {
+        require(to != address(0), "ERC721: mint to zero");
+
+        uint256 length = tokenIds.length;
+        for (uint256 i; i != length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            require(owner != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
+            _mintNFT(s, to, tokenId, true);
+            emit Transfer(address(0), to, tokenId);
+        }
+
+        s.nftBalances[to] += length;
+    }
+
     function batchMint(
          Layout storage s,
          address to, 
