@@ -76,12 +76,9 @@ runBehaviorTests('Mintable ERC721', config, function(deployFn) {
             NotContractOwner: 'Ownable: not the owner'
         },
         features: {
-            ERC165: true
-                // TODO: Add flag called mintableOnce ?
+            ERC721MintableOnce: true
         },
-        interfaces: {
-            ERC721MintableOnce: true // Move to features, since not an interface
-        },
+        interfaces: {},
         methods: {
             //TODO
         },

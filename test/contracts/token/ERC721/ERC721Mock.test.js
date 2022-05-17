@@ -107,9 +107,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             NotMinter: 'MinterRole: not a Minter',
             NotContractOwner: 'Ownable: not the owner'
         },
-        features: {
-            ERC165: true
-        },
+        features: {},
         interfaces: {
             ERC721: true,
             ERC721Mintable: true,

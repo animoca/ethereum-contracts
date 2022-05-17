@@ -11,7 +11,7 @@ function behavesLikeERC721(implementation) {
         if (implementation.interfaces.ERC721) {
             shouldBehaveLikeERC721Standard(implementation);
         }
-        if (implementation.interfaces.ERC721MintableOnce) {
+        if (implementation.features.ERC721MintableOnce) {
             shouldBehaveLikeERC721MintableOnce(implementation);
         }
         if (implementation.interfaces.ERC721Mintable) {
