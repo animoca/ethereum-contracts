@@ -1,4 +1,4 @@
-const {artifacts, ethers} = require('hardhat');
+const {ethers, deployments} = require('hardhat');
 const {utils} = ethers;
 
 const FacetCutAction = {
@@ -43,7 +43,7 @@ async function deployFacets(facetsConfig, args, methodsFilter) {
 
 async function deployDiamond(facetsConfig, args, abiExtensions = [], methodsFilter = newFacetFilter, implementation = 'Diamond') {
   const facetDeployments = await deployFacets(facetsConfig, args, methodsFilter);
-  const artifact = await artifacts.readArtifact(implementation);
+  const artifact = await deployments.getArtifact(implementation);
   const abi = [...artifact.abi];
   for (const facet of Object.values(facetDeployments.facets)) {
     abi.push(
@@ -53,7 +53,7 @@ async function deployDiamond(facetsConfig, args, abiExtensions = [], methodsFilt
     );
   }
   for (const extension of abiExtensions) {
-    const extensionArtifact = await artifacts.readArtifact(extension);
+    const extensionArtifact = await deployments.getArtifact(extension);
     abi.push(...extensionArtifact.abi.filter((el) => el.type !== 'constructor'));
   }
   const Diamond = await ethers.getContractFactory(abi, artifact.bytecode);
