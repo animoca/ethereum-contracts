@@ -25,11 +25,11 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            await this.token.mintOnce(owner.address, nft1);
-            await this.token.mintOnce(owner.address, nft2);
-            await this.token.mintOnce(owner.address, nft3);
-            await this.token.mintOnce(owner.address, nft4);
-            await this.token.mintOnce(owner.address, nft5);
+            await this.token.mint(owner.address, nft1);
+            await this.token.mint(owner.address, nft2);
+            await this.token.mint(owner.address, nft3);
+            await this.token.mint(owner.address, nft4);
+            await this.token.mint(owner.address, nft5);
 
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.nftBalance = await this.token.balanceOf(owner.address);

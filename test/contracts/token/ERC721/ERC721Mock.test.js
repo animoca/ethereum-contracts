@@ -41,10 +41,10 @@ const config = {
                 metaTxSupport: false,
             },
             {
-                name: "ERC721MintableOnceFacetMock",
+                name: "ERC721MintableFacetMock",
                 ctorArguments: ['forwarderRegistry'],
                 init: {
-                    method: 'initERC721MintableOnceStorage',
+                    method: 'initERC721MintableStorage',
                     arguments: [],
                     adminProtected: false,
                     versionProtected: false
@@ -112,7 +112,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
         },
         interfaces: {
             ERC721: true,
-            ERC721MintableOnce: true,
+            ERC721Mintable: true,
             ERC721Burnable: true,
             ERC721Metadata: true
         },

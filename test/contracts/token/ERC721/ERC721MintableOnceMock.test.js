@@ -2,13 +2,13 @@ const { behavesLikeERC721 } = require('./behaviors/ERC721.behavior');
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require('../../../helpers/run');
 const { ethers } = require('hardhat');
 
-const name = 'ERC721 Mintable Mock';
-const symbol = 'E721MINTABLE';
+const name = 'ERC721 MintableOnce Mock';
+const symbol = 'E721MINTABLEONCE';
 const tokenURI = 'uri';
 
 const config = {
     immutable: {
-        name: 'ERC721MintableMock',
+        name: 'ERC721MintableOnceMock',
         ctorArguments: ['name', 'symbol', 'tokenURI']
     },
     diamond: {
@@ -31,10 +31,10 @@ const config = {
                 metaTxSupport: false,
             },
             {
-                name: "ERC721MintableFacetMock",
+                name: "ERC721MintableOnceFacetMock",
                 ctorArguments: ['forwarderRegistry'],
                 init: {
-                    method: 'initERC721MintableStorage',
+                    method: 'initERC721MintableOnceStorage',
                     arguments: [],
                     adminProtected: false,
                     versionProtected: false
@@ -77,9 +77,10 @@ runBehaviorTests('Mintable ERC721', config, function(deployFn) {
         },
         features: {
             ERC165: true
+                // TODO: Add flag called mintableOnce ?
         },
         interfaces: {
-            ERC721Mintable: true
+            ERC721MintableOnce: true // Move to features, since not an interface
         },
         methods: {
             //TODO

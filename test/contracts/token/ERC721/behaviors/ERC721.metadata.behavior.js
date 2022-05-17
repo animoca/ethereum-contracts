@@ -34,7 +34,7 @@ function shouldBehaveLikeERC721Metadata(implementation) {
 
         describe('when requesting tokenURI', function() {
             beforeEach(async function() {
-                await this.token.mintOnce(owner.address, nft1);
+                await this.token.mint(owner.address, nft1);
             });
             it('returns tokenURI if NFT exists', async function() {
                 await this.token.tokenURI(nft1); //doesn't revert
