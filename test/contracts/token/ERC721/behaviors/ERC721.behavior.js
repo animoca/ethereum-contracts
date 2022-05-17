@@ -12,19 +12,15 @@ function behavesLikeERC721(implementation) {
             shouldBehaveLikeERC721Standard(implementation);
         }
         if (implementation.interfaces.ERC721MintableOnce) {
-            console.log("implementation.interfaces.ERC721MintableOnce");
             shouldBehaveLikeERC721MintableOnce(implementation);
         }
         if (implementation.interfaces.ERC721Mintable) {
-            console.log("implementation.interfaces.ERC721Mintable");
             shouldBehaveLikeERC721Mintable(implementation);
         }
         if (implementation.interfaces.ERC721Burnable) {
-            console.log("implementation.interfaces.ERC721Burnable");
             shouldBehaveLikeERC721Burnable(implementation);
         }
         if (implementation.interfaces.ERC721Metadata) {
-            console.log("implementation.interfaces.ERC721Metadata");
             shouldBehaveLikeERC721Metadata(implementation);
         }
     });
