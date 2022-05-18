@@ -81,6 +81,7 @@ runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
             NonExistingNFT: 'ERC721: non-existing NFT',
             NonOwnedNFT: 'ERC721: non-owned NFT',
             ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
+            BurntNFT: 'ERC721: burnt NFT',
 
             // Admin
             NotMinter: 'MinterRole: not a Minter',

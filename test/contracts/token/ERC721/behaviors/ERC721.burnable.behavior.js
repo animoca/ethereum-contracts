@@ -42,18 +42,16 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             await loadFixture(fixture, this);
         });
 
-        let receipt = null;
-
         const shouldNotBeMintableAgain = function(ids) {
             ids = Array.isArray(ids) ? ids : [ids];
             context("ERC721MintableOnce", function() {
                 it("should not be mintable again, using mintOnce", async function() {
                     for (const id of ids) {
-                        await expect(this.token.connect(deployer).mintOnce(owner.address, id)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
+                        await expect(this.token.connect(deployer).mintOnce(owner.address, id)).to.be.revertedWith(revertMessages.BurntNFT);
                     }
                 });
                 it("should not be mintable again, using batchMintOnce", async function() {
-                    //TODO
+                    await expect(this.token.connect(deployer).batchMintOnce(owner.address, ids)).to.be.revertedWith(revertMessages.BurntNFT);
                 })
             })
         }
@@ -107,7 +105,7 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                     this.receipt = await burnFunction.call(this, owner, ids, owner);
                 });
                 burnWasSuccessful(ids, owner);
-                if (features.ERC721MintableOnce) {
+                if (features.ERC721MintableOnce && ids.length > 0) {
                     shouldNotBeMintableAgain(ids);
                 }
             });

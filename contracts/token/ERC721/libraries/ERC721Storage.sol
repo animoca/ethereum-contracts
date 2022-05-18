@@ -6,6 +6,8 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
+import "hardhat/console.sol";
+
 
 library ERC721Storage {
     using Address for address;
