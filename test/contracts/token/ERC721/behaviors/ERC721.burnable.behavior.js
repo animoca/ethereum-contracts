@@ -8,7 +8,7 @@ const { BigNumber } = require('ethers');
 
 function shouldBehaveLikeERC721Burnable(implementation) {
 
-    const { deploy, methods, contractName, revertMessages } = implementation;
+    const { deploy, features, revertMessages } = implementation;
 
     describe('like a Burnable ERC721', function() {
         let accounts, deployer, minter, owner, other, approved, operator;
@@ -23,8 +23,13 @@ function shouldBehaveLikeERC721Burnable(implementation) {
 
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            await this.token.connect(deployer).mint(owner.address, nft1);
-            await this.token.connect(deployer).mint(owner.address, nft2);
+            if (features.ERC721MintableOnce) {
+                await this.token.connect(deployer).mintOnce(owner.address, nft1);
+                await this.token.connect(deployer).mintOnce(owner.address, nft2);
+            } else {
+                await this.token.connect(deployer).mint(owner.address, nft1);
+                await this.token.connect(deployer).mint(owner.address, nft2);
+            }
             await this.token.connect(owner).approve(approved.address, nft1);
 
             this.nftBalance = await this.token.balanceOf(owner.address);
@@ -38,6 +43,20 @@ function shouldBehaveLikeERC721Burnable(implementation) {
         });
 
         let receipt = null;
+
+        const shouldNotBeMintableAgain = function(ids) {
+            ids = Array.isArray(ids) ? ids : [ids];
+            context("ERC721MintableOnce", function() {
+                it("should not be mintable again, using mintOnce", async function() {
+                    for (const id of ids) {
+                        await expect(this.token.connect(deployer).mintOnce(owner.address, id)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
+                    }
+                });
+                it("should not be mintable again, using batchMintOnce", async function() {
+                    //TODO
+                })
+            })
+        }
 
         const burnWasSuccessful = function(tokenIds, signer = deployer) {
             const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
@@ -77,7 +96,7 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                 expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance - ids.length);
             });
 
-            if (interfaces.ERC1155Inventory) {
+            if (features.ERC1155Inventory) {
                 // TODO
             };
         };
@@ -88,6 +107,9 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                     this.receipt = await burnFunction.call(this, owner, ids, owner);
                 });
                 burnWasSuccessful(ids, owner);
+                if (features.ERC721MintableOnce) {
+                    shouldNotBeMintableAgain(ids);
+                }
             });
         }
 

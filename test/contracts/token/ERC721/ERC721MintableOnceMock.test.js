@@ -41,6 +41,17 @@ const config = {
                 },
                 metaTxSupport: false,
             },
+            {
+                name: "ERC721BurnableFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initERC721BurnableStorage',
+                    arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false
+            },
         ]
     },
     defaultArguments: {
@@ -54,7 +65,7 @@ const config = {
 };
 
 const includeDiamondTest = true;
-runBehaviorTests('Mintable ERC721', config, function(deployFn) {
+runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
     const implementation = {
         name,
         symbol,
@@ -78,7 +89,9 @@ runBehaviorTests('Mintable ERC721', config, function(deployFn) {
         features: {
             ERC721MintableOnce: true
         },
-        interfaces: {},
+        interfaces: {
+            ERC721Burnable: true
+        },
         methods: {
             //TODO
         },
