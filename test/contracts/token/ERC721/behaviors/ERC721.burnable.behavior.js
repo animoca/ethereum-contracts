@@ -8,7 +8,7 @@ const { BigNumber } = require('ethers');
 
 function shouldBehaveLikeERC721Burnable(implementation) {
 
-    const { deploy, features, revertMessages } = implementation;
+    const { deploy, features, revertMessages, interfaces } = implementation;
 
     describe('like a Burnable ERC721', function() {
         let accounts, deployer, minter, owner, other, approved, operator;
@@ -115,7 +115,13 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             describe('Pre-condition', function() {
                 if (interfaces.Pausable) {
                     it('[Pausable] reverts when paused', async function() {
-                        // TODO
+                        let isPaused = await this.token.connect(deployer).paused();
+                        console.log("isPaused before pausing", isPaused);
+                        await this.token.connect(deployer).pause();
+                        isPaused = await this.token.connect(deployer).paused();
+                        console.log("isPaused after pausing", isPaused);
+                        // TODO: implement paused-check for burnFrom and batchBurnFrom
+                        //await expect(burnFunction.call(this, owner, nft1, owner)).to.be.revertedWith(revertMessages.AlreadyPaused);
                     });
                 }
                 it('reverts if the token does not exist', async function() {

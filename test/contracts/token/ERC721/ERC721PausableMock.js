@@ -78,7 +78,7 @@ const config = {
                 ctorArguments: ['forwarderRegistry'],
                 init: {
                     method: 'initPauseStorage',
-                    arguments: [true],
+                    arguments: [false],
                     adminProtected: false,
                     versionProtected: false
                 },
@@ -115,18 +115,23 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             NonOwnedNFT: 'ERC721: non-owned NFT',
             ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
 
+            // Pausable
+            AlreadyPaused: 'Pausable: paused',
+            AlreadyUnpaused: 'Pausable: not paused',
+
             // Admin
             NotMinter: 'MinterRole: not a Minter',
             NotContractOwner: 'Ownable: not the owner'
         },
         features: {
-            Pausable: true
+
         },
         interfaces: {
             ERC721: true,
             ERC721Mintable: true,
             ERC721Burnable: true,
-            ERC721Metadata: true
+            ERC721Metadata: true,
+            Pausable: true
         },
         methods: {
             //TODO
