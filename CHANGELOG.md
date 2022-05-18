@@ -8,6 +8,7 @@
 
 ### New features
 
+- Added contract `ERC20Receiver.sol`.
 - Added more ERC721 interfaces.
 - Added the ERC1155 basic interfaces.
 
