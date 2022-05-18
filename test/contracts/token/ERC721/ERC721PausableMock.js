@@ -61,12 +61,24 @@ const config = {
                     versionProtected: false
                 },
                 metaTxSupport: false
-            }, {
+            },
+            {
                 name: "ERC721BatchTransferFacetMock",
                 ctorArguments: ['forwarderRegistry'],
                 init: {
                     method: 'initERC721BatchTransferStorage',
                     arguments: [],
+                    adminProtected: false,
+                    versionProtected: false
+                },
+                metaTxSupport: false
+            },
+            {
+                name: "PausableFacetMock",
+                ctorArguments: ['forwarderRegistry'],
+                init: {
+                    method: 'initPauseStorage',
+                    arguments: [true],
                     adminProtected: false,
                     versionProtected: false
                 },
@@ -107,7 +119,9 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             NotMinter: 'MinterRole: not a Minter',
             NotContractOwner: 'Ownable: not the owner'
         },
-        features: {},
+        features: {
+            Pausable: true
+        },
         interfaces: {
             ERC721: true,
             ERC721Mintable: true,
