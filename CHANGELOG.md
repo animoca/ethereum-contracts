@@ -17,6 +17,7 @@
 
 ### Improvements
 
+- Moved to `solc@0.8.14`.
 - `runBehaviorTests`: Immutable tests are run only if there is an `immutable` section. Diamond tests will run only if there is a `diamond` section.
 
 ## 0.0.4

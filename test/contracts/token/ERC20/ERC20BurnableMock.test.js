@@ -123,9 +123,6 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
       BurnExceedsAllowance: 'ERC20: insufficient allowance',
       BatchBurnValuesOverflow: 'ERC20: insufficient balance',
 
-      // ERC20Receiver
-      DirectReceiverCall: 'ChildERC20: wrong sender',
-
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",
       NotContractOwner: 'Ownership: not the owner',

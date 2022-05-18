@@ -1,0 +1,309 @@
+{
+  "id": "8fbcc2484535eddaa660d971b472557d",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.8.14",
+  "solcLongVersion": "0.8.14+commit.80d49f37",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.8;\n\n/**\n * @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.\n * @dev See https://eips.ethereum.org/EIPS/eip-721\n * @dev Note: The ERC-165 identifier for this interface is 0xf3993d11.\n */\ninterface IERC721BatchTransfer {\n    /**\n     * Unsafely transfers a batch of tokens.\n     * @dev Reverts if `to` is the zero address.\n     * @dev Reverts if the sender is not approved.\n     * @dev Reverts if one of `tokenIds` is not owned by `from`.\n     * @dev Resets the token approval for each of `tokenIds`.\n     * @dev Emits an {IERC721-Transfer} event for each of `tokenIds`.\n     * @param from Current tokens owner.\n     * @param to Address of the new token owner.\n     * @param tokenIds Identifiers of the tokens to transfer.\n     */\n    function batchTransferFrom(\n        address from,\n        address to,\n        uint256[] calldata tokenIds\n    ) external;\n}\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 99999
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata",
+            "devdoc",
+            "userdoc",
+            "storageLayout",
+            "evm.gasEstimates"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      },
+      "metadata": {
+        "useLiteralContent": true
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol": {
+        "IERC721BatchTransfer": {
+          "abi": [
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "tokenIds",
+                  "type": "uint256[]"
+                }
+              ],
+              "name": "batchTransferFrom",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ],
+          "devdoc": {
+            "details": "See https://eips.ethereum.org/EIPS/eip-721Note: The ERC-165 identifier for this interface is 0xf3993d11.",
+            "kind": "dev",
+            "methods": {
+              "batchTransferFrom(address,address,uint256[])": {
+                "details": "Reverts if `to` is the zero address.Reverts if the sender is not approved.Reverts if one of `tokenIds` is not owned by `from`.Resets the token approval for each of `tokenIds`.Emits an {IERC721-Transfer} event for each of `tokenIds`.",
+                "params": {
+                  "from": "Current tokens owner.",
+                  "to": "Address of the new token owner.",
+                  "tokenIds": "Identifiers of the tokens to transfer."
+                }
+              }
+            },
+            "title": "ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.",
+            "version": 1
+          },
+          "evm": {
+            "bytecode": {
+              "functionDebugData": {},
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "deployedBytecode": {
+              "functionDebugData": {},
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "gasEstimates": null,
+            "methodIdentifiers": {
+              "batchTransferFrom(address,address,uint256[])": "f3993d11"
+            }
+          },
+          "metadata": "{\"compiler\":{\"version\":\"0.8.14+commit.80d49f37\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256[]\",\"name\":\"tokenIds\",\"type\":\"uint256[]\"}],\"name\":\"batchTransferFrom\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"See https://eips.ethereum.org/EIPS/eip-721Note: The ERC-165 identifier for this interface is 0xf3993d11.\",\"kind\":\"dev\",\"methods\":{\"batchTransferFrom(address,address,uint256[])\":{\"details\":\"Reverts if `to` is the zero address.Reverts if the sender is not approved.Reverts if one of `tokenIds` is not owned by `from`.Resets the token approval for each of `tokenIds`.Emits an {IERC721-Transfer} event for each of `tokenIds`.\",\"params\":{\"from\":\"Current tokens owner.\",\"to\":\"Address of the new token owner.\",\"tokenIds\":\"Identifiers of the tokens to transfer.\"}}},\"title\":\"ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"batchTransferFrom(address,address,uint256[])\":{\"notice\":\"Unsafely transfers a batch of tokens.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol\":\"IERC721BatchTransfer\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":99999},\"remappings\":[]},\"sources\":{\"contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.8;\\n\\n/**\\n * @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.\\n * @dev See https://eips.ethereum.org/EIPS/eip-721\\n * @dev Note: The ERC-165 identifier for this interface is 0xf3993d11.\\n */\\ninterface IERC721BatchTransfer {\\n    /**\\n     * Unsafely transfers a batch of tokens.\\n     * @dev Reverts if `to` is the zero address.\\n     * @dev Reverts if the sender is not approved.\\n     * @dev Reverts if one of `tokenIds` is not owned by `from`.\\n     * @dev Resets the token approval for each of `tokenIds`.\\n     * @dev Emits an {IERC721-Transfer} event for each of `tokenIds`.\\n     * @param from Current tokens owner.\\n     * @param to Address of the new token owner.\\n     * @param tokenIds Identifiers of the tokens to transfer.\\n     */\\n    function batchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata tokenIds\\n    ) external;\\n}\\n\",\"keccak256\":\"0x47d9fe1afcf697d57805e87acb4187b7f88ca46f071fec80b6ca15fa2d713535\",\"license\":\"MIT\"}},\"version\":1}",
+          "storageLayout": {
+            "storage": [],
+            "types": null
+          },
+          "userdoc": {
+            "kind": "user",
+            "methods": {
+              "batchTransferFrom(address,address,uint256[])": {
+                "notice": "Unsafely transfers a batch of tokens."
+              }
+            },
+            "version": 1
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol": {
+        "ast": {
+          "absolutePath": "contracts/token/ERC721/interfaces/IERC721BatchTransfer.sol",
+          "exportedSymbols": {
+            "IERC721BatchTransfer": [
+              14
+            ]
+          },
+          "id": 15,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "^",
+                "0.8",
+                ".8"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "32:23:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "canonicalName": "IERC721BatchTransfer",
+              "contractDependencies": [],
+              "contractKind": "interface",
+              "documentation": {
+                "id": 2,
+                "nodeType": "StructuredDocumentation",
+                "src": "57:211:0",
+                "text": " @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.\n @dev See https://eips.ethereum.org/EIPS/eip-721\n @dev Note: The ERC-165 identifier for this interface is 0xf3993d11."
+              },
+              "fullyImplemented": false,
+              "id": 14,
+              "linearizedBaseContracts": [
+                14
+              ],
+              "name": "IERC721BatchTransfer",
+              "nameLocation": "279:20:0",
+              "nodeType": "ContractDefinition",
+              "nodes": [
+                {
+                  "documentation": {
+                    "id": 3,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "306:505:0",
+                    "text": " Unsafely transfers a batch of tokens.\n @dev Reverts if `to` is the zero address.\n @dev Reverts if the sender is not approved.\n @dev Reverts if one of `tokenIds` is not owned by `from`.\n @dev Resets the token approval for each of `tokenIds`.\n @dev Emits an {IERC721-Transfer} event for each of `tokenIds`.\n @param from Current tokens owner.\n @param to Address of the new token owner.\n @param tokenIds Identifiers of the tokens to transfer."
+                  },
+                  "functionSelector": "f3993d11",
+                  "id": 13,
+                  "implemented": false,
+                  "kind": "function",
+                  "modifiers": [],
+                  "name": "batchTransferFrom",
+                  "nameLocation": "825:17:0",
+                  "nodeType": "FunctionDefinition",
+                  "parameters": {
+                    "id": 11,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 5,
+                        "mutability": "mutable",
+                        "name": "from",
+                        "nameLocation": "860:4:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 13,
+                        "src": "852:12:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 4,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "852:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 7,
+                        "mutability": "mutable",
+                        "name": "to",
+                        "nameLocation": "882:2:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 13,
+                        "src": "874:10:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 6,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "874:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 10,
+                        "mutability": "mutable",
+                        "name": "tokenIds",
+                        "nameLocation": "913:8:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 13,
+                        "src": "894:27:0",
+                        "stateVariable": false,
+                        "storageLocation": "calldata",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                          "typeString": "uint256[]"
+                        },
+                        "typeName": {
+                          "baseType": {
+                            "id": 8,
+                            "name": "uint256",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "894:7:0",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "id": 9,
+                          "nodeType": "ArrayTypeName",
+                          "src": "894:9:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                            "typeString": "uint256[]"
+                          }
+                        },
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "842:85:0"
+                  },
+                  "returnParameters": {
+                    "id": 12,
+                    "nodeType": "ParameterList",
+                    "parameters": [],
+                    "src": "936:0:0"
+                  },
+                  "scope": 14,
+                  "src": "816:121:0",
+                  "stateMutability": "nonpayable",
+                  "virtual": false,
+                  "visibility": "external"
+                }
+              ],
+              "scope": 15,
+              "src": "269:670:0",
+              "usedErrors": []
+            }
+          ],
+          "src": "32:908:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}
