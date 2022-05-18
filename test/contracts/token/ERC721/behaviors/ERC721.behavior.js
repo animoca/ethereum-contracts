@@ -6,7 +6,7 @@ const { shouldBehaveLikeERC721Metadata } = require('./ERC721.metadata.behavior')
 
 
 function behavesLikeERC721(implementation) {
-    describe('like an ERC721', function() {
+    describe.only('like an ERC721', function() { // TODO: remove .only
         if (implementation.interfaces.ERC721) {
             shouldBehaveLikeERC721Standard(implementation);
         }
