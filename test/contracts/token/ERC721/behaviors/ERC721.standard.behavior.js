@@ -1,7 +1,7 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ZeroAddress, Zero } = require('../../../../../src/constants');
-const { interfaces } = require('mocha');
+const { interfaces, it } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 
 function shouldBehaveLikeERC721Standard(implementation) {
@@ -75,14 +75,22 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
         describe('transfers', function() {
 
-            let receipt = null;
+            const transferWasSuccessful = function(tokenIds, data, safe, receiverType, selfTransfer) {
+                const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIDs];
 
-            const transferWasSuccessful = function(ids, data, safe) {
-                it('gives the token(s) ownership to the recipient', async function() {
-                    for (const id of ids) {
-                        expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
-                    }
-                });
+                if (selfTransfer) {
+                    it('does not affect the token(s) ownership', async function() {
+                        for (const id of ids) {
+                            expect(await this.token.ownerOf(id)).to.equal(owner.address);
+                        }
+                    });
+                } else {
+                    it('gives the token(s) ownership to the recipient', async function() {
+                        for (const id of ids) {
+                            expect(await this.token.ownerOf(id)).to.equal(this.toWhom.address);
+                        }
+                    });
+                }
 
                 it('clears the approval for the token(s)', async function() {
                     for (const id of ids) {
@@ -95,6 +103,20 @@ function shouldBehaveLikeERC721Standard(implementation) {
                             .withArgs(owner.address, this.toWhom.address, id);
                     }
                 });
+
+                if (selfTransfer) {
+                    it('does not affect the sender balance', async function() {
+                        expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance);
+                    });
+                } else {
+                    it('decreases the sender balance', async function() {
+                        expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance - ids.length);
+                    });
+
+                    it('increases the recipients balance', async function() {
+                        expect(await this.token.balanceOf(this.toWhom.address)).to.equal(ids.length);
+                    });
+                }
             }
 
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe, receiverType, selfTransfer) {
@@ -161,7 +183,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         this.toWhom = owner;
                     });
                     const selfTransfer = true;
-                    shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.WALLET);
+                    shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.WALLET, selfTransfer);
                 });
 
                 context('when sent to an ERC721Receiver contract', function() {
