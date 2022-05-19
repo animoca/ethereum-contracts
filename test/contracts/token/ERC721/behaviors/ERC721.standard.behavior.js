@@ -6,7 +6,7 @@ const ReceiverType = require('../../ReceiverType');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
-    const { deploy, revertMessages } = implementation;
+    const { deploy, revertMessages, interfaces } = implementation;
 
     describe('like an ERC721 Standard', function() {
         let accounts, deployer, owner, approved, anotherApproved, operator, other;
@@ -122,8 +122,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 describe('Pre-conditions', function() {
                     if (interfaces.Pausable) {
                         it('[Pausable] reverts when paused', async function() {
-                            await this.token.connect(owner).pause();
-                            await expect(transferFunction.call(this, owner, other, nft1, data)).to.be.revertedWith(revertMessages.TransferToZero);
+                            await this.token.connect(deployer).pause();
+                            await expect(transferFunction.call(this, owner, other, nft1, data)).to.be.revertedWith(revertMessages.AlreadyPaused);
                         });
                     }
                     it('reverts if transferred to the zero address', async function() {

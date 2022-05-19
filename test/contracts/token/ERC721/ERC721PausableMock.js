@@ -107,8 +107,10 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
 
         },
         interfaces: {
+            ERC721: true,
             ERC721Mintable: true,
             ERC721Burnable: true,
+            ERC721BatchTransfer: true,
             Pausable: true
         },
         methods: {

@@ -103,6 +103,10 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             NonOwnedNFT: 'ERC721: non-owned NFT',
             ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
 
+            // Pausable
+            AlreadyPaused: 'Pause: paused',
+            AlreadyUnpaused: 'Pause: not paused',
+
             // Admin
             NotMinter: 'MinterRole: not a Minter',
             NotContractOwner: 'Ownable: not the owner'
