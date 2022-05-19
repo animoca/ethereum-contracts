@@ -16,7 +16,7 @@ abstract contract ERC721BurnableBase is Context, IERC721Burnable {
 
     function batchBurnFrom(
         address from, 
-        uint256[] calldata tokenIds) public virtual override {
+        uint256[] memory tokenIds) public virtual override {
             ERC721Storage.layout().batchBurnFrom(_msgSender(), from, tokenIds);
         }
 }

@@ -20,50 +20,20 @@ contract ERC721PausableMock is ERC721BurnableMock, Pausable  {
         Pausable(isPaused)
     {}
 
-    //=================================================== ERC721Mintable ====================================================//
-
-
-    /// @inheritdoc IERC721Mintable
-    /// @dev Reverts if the sender is not a minter.
-    function mint(address to, uint256 nftId) public virtual override {
-        PauseStorage.layout().enforceIsNotPaused();
-        mint(to, nftId);
-    }
-
-    /// @inheritdoc IERC721Mintable
-    /// @dev Reverts if the sender is not a minter.
-    function batchMint(address to, uint256[] memory nftIds) public virtual override {
-        PauseStorage.layout().enforceIsNotPaused();
-        batchMint(to, nftIds);
-    }
-
-    /// @inheritdoc IERC721Mintable
-    /// @dev Reverts if the sender is not a minter.
-    function safeMint(
-        address to,
-        uint256 nftId,
-        bytes memory data
-    ) public virtual override {
-        PauseStorage.layout().enforceIsNotPaused();
-        safeMint(to, nftId, data);
-    }
-
     //=================================================== ERC721Burnable ====================================================//
 
     /// @inheritdoc IERC721Burnable
     /// @dev Reverts if the contract is paused.
     function burnFrom(address from, uint256 tokenId) public virtual override {
         PauseStorage.layout().enforceIsNotPaused();
-        burnFrom(from, tokenId);
+        super.burnFrom(from, tokenId);
     }
 
     /// @inheritdoc IERC721Burnable
     /// @dev Reverts if the contract is paused.
     function batchBurnFrom(address from, uint256[] memory tokenIds) public virtual override {
         PauseStorage.layout().enforceIsNotPaused();
-        batchBurnFrom(from, tokenIds);
+        super.batchBurnFrom(from, tokenIds);
     }
-
-
 
 }
