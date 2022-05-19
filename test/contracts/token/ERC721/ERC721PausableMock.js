@@ -2,13 +2,14 @@ const { behavesLikeERC721 } = require('./behaviors/ERC721.behavior');
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require('../../../helpers/run');
 const { ethers } = require('hardhat');
 
-const name = 'ERC721PausableMock';
-const symbol = 'ERC721PausableMock';
+const name = 'ERC721Mock';
+const symbol = 'ERC721Mock';
 const tokenURI = 'uri';
+const isPaused = true;
 
 const config = {
     immutable: {
-        name: 'ERC721PausableMock',
+        name: 'ERC721Mock',
         ctorArguments: ['name', 'symbol', 'tokenURI']
     },
     diamond: {
@@ -72,17 +73,6 @@ const config = {
                     versionProtected: false
                 },
                 metaTxSupport: false
-            },
-            {
-                name: "PausableFacetMock",
-                ctorArguments: ['forwarderRegistry'],
-                init: {
-                    method: 'initPauseStorage',
-                    arguments: [false],
-                    adminProtected: false,
-                    versionProtected: false
-                },
-                metaTxSupport: false
             }
 
         ]
@@ -97,7 +87,7 @@ const config = {
     },
 };
 
-const includeDiamondTest = true;
+const includeDiamondTest = false;
 runBehaviorTests('Standard ERC721', config, function(deployFn) {
     const implementation = {
         name,
@@ -131,7 +121,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             ERC721Mintable: true,
             ERC721Burnable: true,
             ERC721Metadata: true,
-            Pausable: true
+            //Pausable: true
         },
         methods: {
             //TODO

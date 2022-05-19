@@ -121,7 +121,8 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                         isPaused = await this.token.connect(deployer).paused();
                         console.log("isPaused after pausing", isPaused);
                         // TODO: implement paused-check for burnFrom and batchBurnFrom
-                        //await expect(burnFunction.call(this, owner, nft1, owner)).to.be.revertedWith(revertMessages.AlreadyPaused);
+                        // await expect(burnFunction.call(this, owner, nft1, owner)).to.be.revertedWith(revertMessages.AlreadyPaused);
+
                     });
                 }
                 it('reverts if the token does not exist', async function() {

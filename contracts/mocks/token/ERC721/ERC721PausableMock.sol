@@ -1,30 +1,69 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import {IERC721} from "./../../../token/ERC721/interfaces/IERC721.sol";
 import {IERC721Burnable} from "./../../../token/ERC721/interfaces/IERC721Burnable.sol";
+import {IERC721Mintable} from "./../../../token/ERC721/interfaces/IERC721Mintable.sol";
+
 import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721Mintable} from "./../../../token/ERC721/ERC721Mintable.sol";
 import {ERC721Burnable} from "./../../../token/ERC721/ERC721Burnable.sol";
 import {ERC721BatchTransfer} from "./../../../token/ERC721/ERC721BatchTransfer.sol";
-import {ERC721TokenMetadataWithBaseURI} from "./../../../token/ERC721/ERC721TokenMetadataWithBaseURI.sol";
-import {Ownable} from "./../../../access/Ownable.sol";
-import {PausableBase} from "./../../../lifecycle/PausableBase.sol";
+import {Pausable} from "./../../../lifecycle/Pausable.sol";
 import {PauseStorage} from "./../../../lifecycle/libraries/PauseStorage.sol";
+import {ERC721BurnableMock} from "./ERC721BurnableMock.sol";
 
-contract ERC721PausableMock is ERC721, ERC721Mintable, ERC721Burnable, ERC721BatchTransfer, ERC721TokenMetadataWithBaseURI, PausableBase {
+contract ERC721PausableMock is ERC721BurnableMock, Pausable  {
     using PauseStorage for PauseStorage.Layout;
 
-    constructor(string memory name_, string memory symbol_, string memory tokenURI_) 
-        ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_)
-        {}
+    constructor(string memory name_, string memory symbol_, string memory tokenURI_, bool isPaused)
+        ERC721BurnableMock(name_, symbol_ , tokenURI_)
+        Pausable(isPaused)
+    {}
 
-    function enforceIsPaused() external view {
-        PauseStorage.layout().enforceIsPaused();
-    }
+    //=================================================== ERC721Mintable ====================================================//
 
-    function enforceIsNotPaused() external view {
+
+    /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender is not a minter.
+    function mint(address to, uint256 nftId) public virtual override {
         PauseStorage.layout().enforceIsNotPaused();
+        mint(to, nftId);
     }
+
+    /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender is not a minter.
+    function batchMint(address to, uint256[] memory nftIds) public virtual override {
+        PauseStorage.layout().enforceIsNotPaused();
+        batchMint(to, nftIds);
+    }
+
+    /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender is not a minter.
+    function safeMint(
+        address to,
+        uint256 nftId,
+        bytes memory data
+    ) public virtual override {
+        PauseStorage.layout().enforceIsNotPaused();
+        safeMint(to, nftId, data);
+    }
+
+    //=================================================== ERC721Burnable ====================================================//
+
+    /// @inheritdoc IERC721Burnable
+    /// @dev Reverts if the contract is paused.
+    function burnFrom(address from, uint256 tokenId) public virtual override {
+        PauseStorage.layout().enforceIsNotPaused();
+        burnFrom(from, tokenId);
+    }
+
+    /// @inheritdoc IERC721Burnable
+    /// @dev Reverts if the contract is paused.
+    function batchBurnFrom(address from, uint256[] memory tokenIds) public virtual override {
+        PauseStorage.layout().enforceIsNotPaused();
+        batchBurnFrom(from, tokenIds);
+    }
+
+
 
 }
