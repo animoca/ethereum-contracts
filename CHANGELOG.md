@@ -5,6 +5,7 @@
 ### Breaking changes
 
 - Removed HardHat plugin `import-artifacts` in favor of `hardhat-deploy`'s `external` configuration.
+- Use `animoca.core.` convention for storage slots.
 
 ### New features
 
@@ -15,6 +16,7 @@
 ### Bugfixes
 
 - Fix HardHat plugins import order to prevent `hardhat-ethers` to override functions provided by `hardhat-deploy-ethers`.
+- Add missing `forwarderRegistry()` getter in `ForwarderRegistryContext.sol`.
 
 ### Improvements
 

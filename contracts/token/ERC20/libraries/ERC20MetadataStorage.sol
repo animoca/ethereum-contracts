@@ -12,8 +12,8 @@ library ERC20MetadataStorage {
         string tokenURI;
     }
 
-    bytes32 public constant ERC20METADATA_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Metadata.storage")) - 1);
-    bytes32 public constant ERC20METADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Metadata.version")) - 1);
+    bytes32 public constant ERC20METADATA_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.storage")) - 1);
+    bytes32 public constant ERC20METADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.version")) - 1);
 
     /// @notice Initialises the storage with an initial token URI.
     /// @notice Sets the ERC20Metadata storage version to `1`.

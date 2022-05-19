@@ -16,8 +16,8 @@ library ERC20PermitStorage {
         mapping(address => uint256) nonces;
     }
 
-    bytes32 public constant ERC20PERMIT_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Permit.storage")) - 1);
-    bytes32 public constant ERC20PERMIT_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Permit.version")) - 1);
+    bytes32 public constant ERC20PERMIT_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Permit.storage")) - 1);
+    bytes32 public constant ERC20PERMIT_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Permit.version")) - 1);
 
     // 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9
     bytes32 internal constant PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");

@@ -11,7 +11,7 @@ library AccessControlStorage {
         mapping(bytes32 => mapping(address => bool)) roles;
     }
 
-    bytes32 public constant ACCESSCONTROL_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.access.AccessControl.storage")) - 1);
+    bytes32 public constant ACCESSCONTROL_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
 
     event RoleGranted(bytes32 role, address account, address operator);
     event RoleRevoked(bytes32 role, address account, address operator);

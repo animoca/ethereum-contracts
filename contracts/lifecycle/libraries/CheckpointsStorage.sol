@@ -13,8 +13,8 @@ library CheckpointsStorage {
         mapping(bytes32 => uint256) checkpoints;
     }
 
-    bytes32 public constant CHECKPOINTS_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.lifecycle.Checkpoints.storage")) - 1);
-    bytes32 public constant CHECKPOINTS_VERSION_SLOT = bytes32(uint256(keccak256("animoca.lifecycle.Checkpoints.version")) - 1);
+    bytes32 public constant CHECKPOINTS_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.storage")) - 1);
+    bytes32 public constant CHECKPOINTS_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.version")) - 1);
 
     event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 

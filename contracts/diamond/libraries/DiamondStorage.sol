@@ -26,7 +26,7 @@ library DiamondStorage {
         address[] facetAddresses;
     }
 
-    bytes32 public constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+    bytes32 public constant DIAMOND_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.Diamond.storage")) - 1);
 
     event DiamondCut(IDiamondCutBase.FacetCut[] cuts, address target, bytes data);
 

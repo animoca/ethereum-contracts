@@ -11,8 +11,10 @@ library InterfaceDetectionStorage {
         mapping(bytes4 => bool) supportedInterfaces;
     }
 
-    bytes32 public constant INTERFACEDETECTION_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.introspection.InterfaceDetection.storage")) - 1);
-    bytes32 public constant INTERFACEDETECTION_VERSION_SLOT = bytes32(uint256(keccak256("animoca.introspection.InterfaceDetection.version")) - 1);
+    bytes32 public constant INTERFACEDETECTION_STORAGE_POSITION =
+        bytes32(uint256(keccak256("animoca.core.introspection.InterfaceDetection.storage")) - 1);
+    bytes32 public constant INTERFACEDETECTION_VERSION_SLOT =
+        bytes32(uint256(keccak256("animoca.core.introspection.InterfaceDetection.version")) - 1);
 
     /// @notice Initialises the storage.
     /// @notice Sets the interface detection storage version to `1`.

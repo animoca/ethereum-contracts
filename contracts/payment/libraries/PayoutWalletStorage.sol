@@ -10,8 +10,8 @@ library PayoutWalletStorage {
         address payable payoutWallet;
     }
 
-    bytes32 public constant PAYOUTWALLET_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.payment.PayoutWallet.storage")) - 1);
-    bytes32 public constant PAYOUTWALLET_VERSION_SLOT = bytes32(uint256(keccak256("animoca.payment.PayoutWallet.version")) - 1);
+    bytes32 public constant PAYOUTWALLET_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.storage")) - 1);
+    bytes32 public constant PAYOUTWALLET_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.version")) - 1);
 
     event PayoutWalletSet(address payoutWallet);
 

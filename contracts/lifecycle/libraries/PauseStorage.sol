@@ -10,8 +10,8 @@ library PauseStorage {
         bool isPaused;
     }
 
-    bytes32 public constant PAUSE_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.lifecycle.Pause.storage")) - 1);
-    bytes32 public constant PAUSE_VERSION_SLOT = bytes32(uint256(keccak256("animoca.lifecycle.Pause.version")) - 1);
+    bytes32 public constant PAUSE_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.storage")) - 1);
+    bytes32 public constant PAUSE_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.version")) - 1);
 
     event Paused();
     event Unpaused();

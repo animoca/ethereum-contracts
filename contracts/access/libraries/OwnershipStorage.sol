@@ -12,8 +12,8 @@ library OwnershipStorage {
         address owner;
     }
 
-    bytes32 public constant OWNERSHIP_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.access.Ownership.storage")) - 1);
-    bytes32 public constant OWNERSHIP_VERSION_SLOT = bytes32(uint256(keccak256("animoca.access.Ownership.version")) - 1);
+    bytes32 public constant OWNERSHIP_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.access.Ownership.storage")) - 1);
+    bytes32 public constant OWNERSHIP_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.access.Ownership.version")) - 1);
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 

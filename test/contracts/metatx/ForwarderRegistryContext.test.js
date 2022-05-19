@@ -32,6 +32,12 @@ runBehaviorTests('ForwarderRegistryContext', config, function (deployFn) {
     await loadFixture(fixture, this);
   });
 
+  describe('forwarderRegistry()', function () {
+    it('returns the address of the ForwarderRegistry', async function () {
+      expect(await this.contract.forwarderRegistry()).to.equal(this.registryAddress);
+    });
+  });
+
   describe('isTrustedForwarder(address)', function () {
     it('returns true for the ForwarderRegistry', async function () {
       expect(await this.contract.isTrustedForwarder(this.registryAddress)).to.be.true;

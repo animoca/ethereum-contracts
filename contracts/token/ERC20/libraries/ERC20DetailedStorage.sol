@@ -14,8 +14,8 @@ library ERC20DetailedStorage {
         uint8 decimals;
     }
 
-    bytes32 public constant ERC20DETAILED_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Detailed.storage")) - 1);
-    bytes32 public constant ERC20DETAILED_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20Detailed.version")) - 1);
+    bytes32 public constant ERC20DETAILED_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.storage")) - 1);
+    bytes32 public constant ERC20DETAILED_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.version")) - 1);
 
     /// @notice Initialises the storage with the token details.
     /// @notice Sets the ERC20Detailed storage version to `1`.
