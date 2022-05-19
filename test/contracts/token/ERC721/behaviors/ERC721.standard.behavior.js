@@ -3,6 +3,8 @@ const { expect } = require('chai');
 const { ZeroAddress, Zero } = require('../../../../../src/constants');
 const { interfaces, it } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
+const { deployContract } = require('ethereum-waffle');
+const { ethers } = require('hardhat');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
@@ -23,6 +25,13 @@ function shouldBehaveLikeERC721Standard(implementation) {
         const nft5 = 5;
         const unknownNFT = 1000;
 
+        // TODO: Move to helpers
+        async function deployContract(name, args) {
+            const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
+            await receiverContract.deployed();
+            return receiverContract;
+        }
+
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
             await this.token.mint(owner.address, nft1);
@@ -30,8 +39,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft3);
             await this.token.mint(owner.address, nft4);
             await this.token.mint(owner.address, nft5);
-
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
+            this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
             this.nftBalance = await this.token.balanceOf(owner.address);
         };
 
@@ -117,6 +126,12 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         expect(await this.token.balanceOf(this.toWhom.address)).to.equal(ids.length);
                     });
                 }
+
+                if (safe && receiverType == ReceiverType.ERC721_RECEIVER) {
+                    it('should call on ERC721Received', async function() {
+                        await expect(this.receipt).to.emit(this.receiver721, 'Received');
+                    });
+                }
             }
 
             const shouldTransferTokenBySender = function(transferFunction, ids, data, safe, receiverType, selfTransfer) {
@@ -188,9 +203,9 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
                 context('when sent to an ERC721Receiver contract', function() {
                     this.beforeEach(async function() {
-                        // TODO
+                        this.toWhom = this.receiver721;
                     });
-                    // TODO
+                    shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.ERC721_RECEIVER);
                 });
                 if (interfaces.ERC1155) {
                     context('[ERC1155] when sent to an ERC1155TokenReceiver contract', function() {
