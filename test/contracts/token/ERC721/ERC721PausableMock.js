@@ -96,8 +96,8 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
 
             // Pausable
-            AlreadyPaused: 'Pausable: paused',
-            AlreadyUnpaused: 'Pausable: not paused',
+            AlreadyPaused: 'Pause: paused',
+            AlreadyUnpaused: 'Pause: not paused',
 
             // Admin
             NotMinter: 'MinterRole: not a Minter',
