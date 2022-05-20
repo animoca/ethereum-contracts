@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const { ZeroAddress } = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
+const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
@@ -467,6 +468,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 });
             });
         });
+
+        shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
     });
 }
 
