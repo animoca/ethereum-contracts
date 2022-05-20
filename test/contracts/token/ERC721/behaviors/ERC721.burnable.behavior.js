@@ -1,10 +1,9 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ZeroAddress, Zero } = require('../../../../../src/constants');
-const { interfaces } = require('mocha');
+
 const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
-const { BigNumber } = require('ethers');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 
@@ -12,8 +11,9 @@ function shouldBehaveLikeERC721Burnable(implementation) {
 
     const { deploy, features, revertMessages, interfaces } = implementation;
 
+
     describe('like a Burnable ERC721', function() {
-        let accounts, deployer, minter, owner, other, approved, operator;
+        let accounts, deployer, owner, other, approved, operator;
         let nft1 = 1;
         let nft2 = 2;
         let unknownNFT = 1000;
@@ -33,11 +33,10 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                 await this.token.connect(deployer).mint(owner.address, nft2);
             }
             await this.token.connect(owner).approve(approved.address, nft1);
+            await this.token.connect(owner).approve(approved.address, nft2);
+            await this.token.connect(owner).setApprovalForAll(operator.address, true);
 
             this.nftBalance = await this.token.balanceOf(owner.address);
-            if (interfaces.ERC1155Inventory) {
-                // TODO
-            }
         };
 
         beforeEach(async function() {
@@ -72,44 +71,43 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                 }
             });
 
-            it("emit Transfer event(s)", function() {
+            it("emit Transfer event(s)", async function() {
                 for (const id of ids) {
-                    // TODO
+                    await expect(this.receipt).to.emit(this.token, 'Transfer')
                 }
             });
-
-            if (interfaces.ERC1155) {
-                if (Array.isArray(tokenIds)) {
-                    if (Array.isArray(tokenIds)) {
-                        it('[ERC1155] emits a TransferBatch event', function() {
-                            // TODO
-                        });
-                    } else {
-                        it('[ERC1155] emits a TransferSingle event', function() {
-                            // TODO
-                        });
-                    }
-                }
-            }
 
             it("decreases the sender balance", async function() {
                 expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance - ids.length);
             });
-
-            if (features.ERC1155Inventory) {
-                // TODO
-            };
         };
 
         const shouldBurnTokenBySender = function(burnFunction, ids) {
+
             context('when called by the owner', function() {
+
                 beforeEach(async function() {
                     this.receipt = await burnFunction.call(this, owner, ids, owner);
                 });
                 burnWasSuccessful(ids, owner);
+
                 if (features.ERC721MintableOnce && ids.length > 0) {
                     shouldNotBeMintableAgain(ids);
                 }
+            });
+
+            context('when called by a wallet with single token approval', function() {
+                beforeEach(async function() {
+                    this.receipt = await burnFunction.call(this, owner, ids, approved);
+                });
+                burnWasSuccessful(ids, approved);
+            });
+
+            context('when called by an operator', function() {
+                beforeEach(async function() {
+                    this.receipt = await burnFunction.call(this, owner, ids, operator);
+                });
+                burnWasSuccessful(ids, operator);
             });
         }
 
