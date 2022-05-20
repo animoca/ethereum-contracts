@@ -2,7 +2,6 @@ const { shouldBehaveLikeERC721Standard } = require('./ERC721.standard.behavior')
 const { shouldBehaveLikeERC721Mintable } = require('./ERC721.mintable.behavior');
 const { shouldBehaveLikeERC721Burnable } = require('./ERC721.burnable.behavior');
 const { shouldBehaveLikeERC721Metadata } = require('./ERC721.metadata.behavior');
-const { shouldBehaveLikePausableContract } = require('../../../utils/Pausable.behavior');
 
 
 function behavesLikeERC721(implementation) {
@@ -18,9 +17,6 @@ function behavesLikeERC721(implementation) {
         }
         if (implementation.interfaces.ERC721Metadata) {
             shouldBehaveLikeERC721Metadata(implementation);
-        }
-        if (implementation.interfaces.Pausable) {
-            shouldBehaveLikePausableContract(implementation);
         }
     });
 }

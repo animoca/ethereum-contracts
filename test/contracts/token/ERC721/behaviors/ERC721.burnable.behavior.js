@@ -5,6 +5,8 @@ const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { BigNumber } = require('ethers');
+const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
+
 
 function shouldBehaveLikeERC721Burnable(implementation) {
 
@@ -163,9 +165,6 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             context('with a list of tokens from the same collection', function() {
                 shouldBurnTokenBySender(burnFn, [nft1, nft2]);
             });
-            if (interfaces.ERC1155Inventory) {
-                // TODO
-            }
         });
 
     });
