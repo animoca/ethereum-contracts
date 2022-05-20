@@ -1,9 +1,7 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
-const { ZeroAddress, Zero } = require('../../../../../src/constants');
-const { interfaces, it } = require('mocha');
+const { ZeroAddress } = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
-const { deployContract } = require('ethereum-waffle');
 const { ethers } = require('hardhat');
 
 function shouldBehaveLikeERC721Standard(implementation) {
@@ -21,8 +19,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
         const nft1 = 1;
         const nft2 = 2;
         const nft3 = 3;
-        const nft4 = 4;
-        const nft5 = 5;
         const unknownNFT = 1000;
 
         // TODO: Move to helpers
@@ -37,8 +33,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft1);
             await this.token.mint(owner.address, nft2);
             await this.token.mint(owner.address, nft3);
-            await this.token.mint(owner.address, nft4);
-            await this.token.mint(owner.address, nft5);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
             this.nftBalance = await this.token.balanceOf(owner.address);
@@ -52,7 +46,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
             context('when the given address owns some tokens', function() {
                 it('returns the amount of tokens owned by the given address', async function() {
-                    expect(await this.token.balanceOf(owner.address)).to.equal(5);
+                    expect(await this.token.balanceOf(owner.address)).to.equal(3);
                 });
             });
 
