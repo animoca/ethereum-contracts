@@ -35,6 +35,8 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft3);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
+            this.refusingReceiver721 = await deployContract("ERC721ReceiverMock", [false, this.token.address]);
+            this.wrongTokenReceiver721 = await deployContract("ERC721ReceiverMock", [true, ZeroAddress]);
             this.nftBalance = await this.token.balanceOf(owner.address);
         };
 
@@ -172,8 +174,13 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
                     if (safe) {
                         it('reverts when sent to a non-receiver contract', async function() {
-                            //TODO: Add revert message
-                            await expect(transferFunction.call(this, owner, this.token, nft1, data)).to.be.revertedWith('');
+                            await expect(transferFunction.call(this, owner, this.token, nft1, data)).to.be.reverted;
+                        });
+                        it('reverts when sent to an ERC721Receiver which refuses the transfer', async function() {
+                            await expect(transferFunction.call(this, owner, this.refusingReceiver721, nft1, data)).to.be.revertedWith(revertMessages.TransferRejected);
+                        });
+                        it('reverts when sent to an ERC721Receiver which accepts another token', async function() {
+                            await expect(transferFunction.call(this, owner, this.wrongTokenReceiver721, nft1, data)).to.be.reverted;
                         });
                     }
                 });
