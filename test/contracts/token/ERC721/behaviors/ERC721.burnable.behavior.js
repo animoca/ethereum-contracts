@@ -167,8 +167,7 @@ function shouldBehaveLikeERC721Burnable(implementation) {
             });
         });
 
-
-        // shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Burnable.sol:IERC721Burnable']);
+        shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Burnable.sol:IERC721Burnable']);
 
     });
 
