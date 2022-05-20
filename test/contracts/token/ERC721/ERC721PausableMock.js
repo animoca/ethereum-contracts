@@ -98,6 +98,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             // Pausable
             AlreadyPaused: 'Pause: paused',
             AlreadyUnpaused: 'Pause: not paused',
+            NotPauser: 'Ownership: not the owner',
 
             // Admin
             NotMinter: 'MinterRole: not a Minter',
