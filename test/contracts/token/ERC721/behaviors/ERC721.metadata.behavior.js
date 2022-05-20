@@ -1,6 +1,7 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function shouldBehaveLikeERC721Metadata(implementation) {
 
@@ -48,6 +49,7 @@ function shouldBehaveLikeERC721Metadata(implementation) {
             }
         });
 
+        shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
 
     });
 }
