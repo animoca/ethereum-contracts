@@ -19,6 +19,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
         const nft1 = 1;
         const nft2 = 2;
         const nft3 = 3;
+        const nft4 = 4;
         const unknownNFT = 1000;
 
         // TODO: Move to helpers
@@ -33,6 +34,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft1);
             await this.token.mint(owner.address, nft2);
             await this.token.mint(owner.address, nft3);
+            await this.token.mint(owner.address, nft4);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
             this.refusingReceiver721 = await deployContract("ERC721ReceiverMock", [false, this.token.address]);
@@ -48,7 +50,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
             context('when the given address owns some tokens', function() {
                 it('returns the amount of tokens owned by the given address', async function() {
-                    expect(await this.token.balanceOf(owner.address)).to.equal(3);
+                    expect(await this.token.balanceOf(owner.address)).to.equal(4);
                 });
             });
 
@@ -208,14 +210,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
                     });
                     shouldTransferTokenBySender(transferFunction, ids, data, safe, ReceiverType.ERC721_RECEIVER);
                 });
-                if (interfaces.ERC1155) {
-                    context('[ERC1155] when sent to an ERC1155TokenReceiver contract', function() {
-                        this.beforeEach(async function() {
-                            // TODO
-                        });
-                        // TODO
-                    });
-                }
             }
 
             describe('transferFrom(address,address,uint256)', function() {
@@ -245,14 +239,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
                 context('with a list of tokens from the same collection', function() {
                     shouldTransferTokenToRecipient(transferFn, [nft1, nft2], undefined, safe);
                 });
-                if (interfaces.ERC1155Inventory) {
-                    context('[ERC1155Inventory] with a list of tokens sorted by collection', function() {
-                        // TODO
-                    });
-                    context('[ERC1155Inventory] with an unsorted list of tokens from different collection', function() {
-                        // TODO
-                    });
-                }
             });
 
             describe('safeTransferFrom(address,address,uint256)', function() {
@@ -279,9 +265,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
         describe('approve(address,address)', function() {
             const tokenId = nft3;
-
-            let receipt = null;
-            let approvedAddress = null;
 
             const itClearsApproval = function() {
                 it('clears approval for the token', async function() {
@@ -406,8 +389,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
         describe('setApprovalForAll(address, bool)', function() {
             context('when the operatr being approved is not the owner', function() {
-                let receipt = null;
-                let approvedAddress = null;
 
                 const itApproves = function(isApproved) {
                     it(isApproved ? 'approves the operator' : 'unsets the operator approval', async function() {
@@ -464,23 +445,26 @@ function shouldBehaveLikeERC721Standard(implementation) {
                         itEmitsApprovalEvent(false);
                     });
                 });
+            });
 
-                describe('isApprovedForAll(address,address)', function() {
-                    context('when the token owner has approved the operator', function() {
-                        it('returns true', async function() {
-                            const actual = await this.token.isApprovedForAll(owner.address, operator.address);
-                            expect(actual).to.equal(true);
-                        });
-                    });
+            it('reverts if operator being approved is the onwer', async function() {
+                await expect(this.token.connect(owner).setApprovalForAll(owner.address, true)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
+            });
+        });
 
-                    context('when the token owner has not approved the operator', function() {
-                        it('returns false', async function() {
-                            const actual = await this.token.isApprovedForAll(owner.address, other.address);
-                            expect(actual).to.equal(false);
-                        });
-                    });
+        describe('isApprovedForAll(address,address)', function() {
+            context('when the token owner has approved the operator', function() {
+                it('returns true', async function() {
+                    const actual = await this.token.isApprovedForAll(owner.address, operator.address);
+                    expect(actual).to.equal(true);
                 });
+            });
 
+            context('when the token owner has not approved the operator', function() {
+                it('returns false', async function() {
+                    const actual = await this.token.isApprovedForAll(owner.address, other.address);
+                    expect(actual).to.equal(false);
+                });
             });
         });
     });
