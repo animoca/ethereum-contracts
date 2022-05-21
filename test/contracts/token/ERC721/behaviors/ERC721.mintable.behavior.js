@@ -20,8 +20,18 @@ function shouldBehaveLikeERC721Mintable(implementation) {
             [deployer, owner] = accounts;
         });
 
+        // TODO: Move to helpers
+        async function deployContract(name, args) {
+            const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
+            await receiverContract.deployed();
+            return receiverContract;
+        }
+
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
+            this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
+            this.refusingReceiver721 = await deployContract("ERC721ReceiverMock", [false, this.token.address]);
+            this.wrongTokenReceiver721 = await deployContract("ERC721ReceiverMock", [true, ZeroAddress]);
         };
 
         beforeEach(async function() {
@@ -49,22 +59,16 @@ function shouldBehaveLikeERC721Mintable(implementation) {
                 }
             });
 
-            if (interfaces.ERC1155) {
-                // TODO
-            }
-
             it('adjusts recipient balance', async function() {
                 const quantity = Array.isArray(tokenIds) ? tokenIds.length : 1;
                 expect(await this.token.balanceOf(this.toWhom.address)).to.equal(quantity);
             });
 
-            if (interfaces.ERC1155Inventory) {
-                // TODO
-            }
-
             if (safe && receiverType == ReceiverType.ERC721_RECEIVER) {
                 it("should call onERC721Received", async function() {
-                    // TODO
+                    it('should call on ERC721Received', async function() {
+                        await expect(this.receipt).to.emit(this.receiver721, 'Received');
+                    });
                 });
             }
         }

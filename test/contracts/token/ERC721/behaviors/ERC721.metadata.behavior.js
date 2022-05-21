@@ -43,10 +43,6 @@ function shouldBehaveLikeERC721Metadata(implementation) {
             it('reverts if NFT doesn\'t exist', async function() {
                 await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
             });
-
-            if (features.BaseMetadataURI) {
-                // TODO
-            }
         });
 
         shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
