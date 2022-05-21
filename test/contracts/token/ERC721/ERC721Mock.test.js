@@ -104,7 +104,7 @@ runBehaviorTests('Standard ERC721', config, function(deployFn) {
             ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
 
             // Admin
-            NotMinter: 'MinterRole: not a Minter',
+            NotMinter: 'AccessControl: missing \'minter\' role',
             NotContractOwner: 'Ownable: not the owner'
         },
         features: {},

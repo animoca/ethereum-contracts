@@ -86,7 +86,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
                     await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
                 });
                 it("reverts if sent by non-minter", async function() {
-                    // TODO: set minter
+                    await expect(mintFunction.call(this, owner, nft1, data, owner)).to.be.revertedWith(revertMessages.NotMinter);
                 });
             });
         };

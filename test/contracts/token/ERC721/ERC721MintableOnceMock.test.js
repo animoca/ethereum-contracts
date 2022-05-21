@@ -84,7 +84,7 @@ runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
             BurntNFT: 'ERC721: burnt NFT',
 
             // Admin
-            NotMinter: 'MinterRole: not a Minter',
+            NotMinter: 'AccessControl: missing \'minter\' role',
             NotContractOwner: 'Ownable: not the owner'
         },
         features: {
