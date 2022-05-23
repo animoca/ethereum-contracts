@@ -3,7 +3,6 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-
 function shouldBehaveLikeERC721Burnable(implementation) {
 
     const { deploy, features, revertMessages, interfaces } = implementation;
@@ -126,12 +125,6 @@ function shouldBehaveLikeERC721Burnable(implementation) {
                 it('reverts if the sender is not authorized for the token', async function() {
                     await expect(burnFunction.call(this, owner, nft1, other)).to.be.revertedWith(revertMessages.NonApproved);
                 });
-
-                if (interfaces.ERC1155) {
-                    if ('[ERC1155] reverts if the id is a Fungbile Token', async function() {
-                            // TODO
-                        });
-                }
             });
         }
 
