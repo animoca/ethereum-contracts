@@ -18,6 +18,15 @@ contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBa
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     // TODO: Add doc comments
+    /// @notice Initialises the storage with a name, symbol and initial token URI.
+    /// @notice Sets the ERC721ContractMetadata and ERC721TOkenMetadataWithBaseURI storage versions to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
+    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts if the ERC721ContractMetadata and ERC721TOkenMetadataWithBaseURI storage is already initialized to version `1` or above.
+    /// @param name The token name
+    /// @param symbol The token symbol
+    /// @param uri The token URI.
+
     function initERC721MetadataStorageWithBaseURIStorage(string memory name, string memory symbol, string memory uri) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721TokenMetadataWithBaseURIStorage.layout().init(name, symbol, uri);

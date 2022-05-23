@@ -9,7 +9,7 @@ import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
-/// @title Animoca Brands' custom extension to ERC721: MintableOnce (facet version).
+/// @title Custom extension to ERC721: MintableOnce (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721MintableOnceFacet is ERC721MintableOnceBase, ForwarderRegistryContextBase {
