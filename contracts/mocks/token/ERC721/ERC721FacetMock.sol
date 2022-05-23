@@ -4,6 +4,7 @@ pragma solidity 0.8.13;
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC721Facet} from "./../../../token/ERC721/ERC721Facet.sol";
 
+/// @title ERC721FacetMock
 contract ERC721FacetMock is ERC721Facet {
     constructor(IForwarderRegistry forwarderRegistry) ERC721Facet(forwarderRegistry) {}
 

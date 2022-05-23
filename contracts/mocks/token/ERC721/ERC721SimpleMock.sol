@@ -1,6 +1,0 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
-
-import {ERC721} from "./../../../token/ERC721/ERC721.sol";
-
-contract ERC721SimpleMock is ERC721 {}
