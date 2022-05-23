@@ -27,7 +27,7 @@ contract CheckpointsFacet is CheckpointsBase, ForwarderRegistryContextBase {
     /// @param timestamps the checkpoint timestamps.
     function initCheckpointsStorage(bytes32[] memory checkpointIds, uint256[] memory timestamps) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        CheckpointsStorage.layout().init(checkpointIds, timestamps);
+        CheckpointsStorage.layout().proxyInit(checkpointIds, timestamps);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

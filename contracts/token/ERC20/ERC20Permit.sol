@@ -10,10 +10,8 @@ import {ERC20PermitBase} from "./ERC20PermitBase.sol";
 /// @dev Note: This contract requires ERC20Detailed.
 abstract contract ERC20Permit is ERC20PermitBase {
     /// @notice Initialises the storage.
-    /// @notice Sets the ERC20Permit storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
-    /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.
     constructor() {
-        ERC20PermitStorage.init();
+        ERC20PermitStorage.constructorInit();
     }
 }

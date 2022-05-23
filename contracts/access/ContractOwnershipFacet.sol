@@ -26,7 +26,7 @@ contract ContractOwnershipFacet is ContractOwnershipBase, ForwarderRegistryConte
     /// @param initialOwner the initial contract owner.
     function initContractOwnershipStorage(address initialOwner) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ContractOwnershipStorage.layout().init(initialOwner);
+        ContractOwnershipStorage.layout().proxyInit(initialOwner);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

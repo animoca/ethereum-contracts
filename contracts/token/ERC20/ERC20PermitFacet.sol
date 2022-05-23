@@ -24,7 +24,7 @@ contract ERC20PermitFacet is ERC20PermitBase, ForwarderRegistryContextBase {
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC20PermitStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20PermitStorage.init();
+        ERC20PermitStorage.proxyInit();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

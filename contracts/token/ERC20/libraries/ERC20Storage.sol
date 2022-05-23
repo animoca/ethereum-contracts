@@ -26,8 +26,29 @@ library ERC20Storage {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
+    /// @dev Reverts if `holders` and `allocations` have different lengths.
+    /// @dev Reverts if one of `holders` is the zero address.
+    /// @dev Reverts if the total supply overflows.
+    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
+    /// @param holders The list of accounts to mint the tokens to.
+    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
+    function constructorInit(
+        Layout storage s,
+        address[] memory holders,
+        uint256[] memory allocations
+    ) internal {
+        s.batchMint(holders, allocations);
+        InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
+        erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
+        erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage with a list of initial allocations.
     /// @notice Sets the ERC20 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
@@ -35,16 +56,13 @@ library ERC20Storage {
     /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
     /// @param holders The list of accounts to mint the tokens to.
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function init(
+    function proxyInit(
         Layout storage s,
         address[] memory holders,
         uint256[] memory allocations
     ) internal {
         StorageVersion.setVersion(ERC20_VERSION_SLOT, 1);
-        s.batchMint(holders, allocations);
-        InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
-        erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
-        erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+        s.constructorInit(holders, allocations);
     }
 
     function approve(

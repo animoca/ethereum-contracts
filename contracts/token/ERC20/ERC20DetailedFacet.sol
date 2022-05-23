@@ -30,6 +30,6 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
         uint8 decimals_
     ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20DetailedStorage.layout().init(name_, symbol_, decimals_);
+        ERC20DetailedStorage.layout().proxyInit(name_, symbol_, decimals_);
     }
 }

@@ -19,18 +19,16 @@ library CheckpointsStorage {
     event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 
     /// @notice Initializes the storage with a list of initial checkpoints.
-    /// @notice Sets the checkpoints storage version to `1`.
-    /// @dev Reverts if the checkpoints storage is already initialized to version `1` or above.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
     /// @param checkpointIds the checkpoint identifiers.
     /// @param timestamps the checkpoint timestamps.
-    function init(
+    function constructorInit(
         Layout storage s,
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps
     ) internal {
-        StorageVersion.setVersion(CHECKPOINTS_VERSION_SLOT, 1);
         require(checkpointIds.length == timestamps.length, "Checkpoints: wrong array length");
         for (uint256 i; i < checkpointIds.length; ++i) {
             uint256 timestamp = timestamps[i];
@@ -40,6 +38,23 @@ library CheckpointsStorage {
                 emit CheckpointSet(checkpointId, timestamp);
             }
         }
+    }
+
+    /// @notice Initializes the storage with a list of initial checkpoints.
+    /// @notice Sets the checkpoints storage version to `1`.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the checkpoints storage is already initialized to version `1` or above.
+    /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
+    /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
+    /// @param checkpointIds the checkpoint identifiers.
+    /// @param timestamps the checkpoint timestamps.
+    function proxyInit(
+        Layout storage s,
+        bytes32[] memory checkpointIds,
+        uint256[] memory timestamps
+    ) internal {
+        StorageVersion.setVersion(CHECKPOINTS_VERSION_SLOT, 1);
+        s.constructorInit(checkpointIds, timestamps);
     }
 
     /// @notice Sets the checkpoint.

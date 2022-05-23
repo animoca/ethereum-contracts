@@ -6,6 +6,7 @@ import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ContractOwnershipStorage {
+    using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {
@@ -18,18 +19,28 @@ library ContractOwnershipStorage {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /// @notice Initialises the storage with an initial contract owner.
-    /// @notice Sets the ownership storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
-    /// @dev Reverts if the ownership storage is already initialized to version `1` or above.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
     /// @param initialOwner The initial contract owner.
-    function init(Layout storage s, address initialOwner) internal {
-        StorageVersion.setVersion(CONTRACTOWNERSHIP_VERSION_SLOT, 1);
+    function constructorInit(Layout storage s, address initialOwner) internal {
         if (initialOwner != address(0)) {
             s.contractOwner = initialOwner;
             emit OwnershipTransferred(address(0), initialOwner);
         }
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC173).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage with an initial contract owner.
+    /// @notice Sets the ownership storage version to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the ownership storage is already initialized to version `1` or above.
+    /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
+    /// @param initialOwner The initial contract owner.
+    function proxyInit(Layout storage s, address initialOwner) internal {
+        StorageVersion.setVersion(CONTRACTOWNERSHIP_VERSION_SLOT, 1);
+        s.constructorInit(initialOwner);
     }
 
     /// @notice Sets the address of the new contract owner.

@@ -25,7 +25,7 @@ contract PauseFacet is PauseBase, ForwarderRegistryContextBase {
     /// @param isPaused the initial pause state.
     function initPauseStorage(bool isPaused) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        PauseStorage.layout().init(isPaused);
+        PauseStorage.layout().proxyInit(isPaused);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

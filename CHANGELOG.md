@@ -30,6 +30,7 @@
 - Removed initialization function in `InterfaceDetectionStorage.sol`.
 - `runBehaviorTests`: Immutable tests are run only if there is an `immutable` section. Diamond tests will run only if there is a `diamond` section.
 - Added all getters logic in storage libraries.
+- Splitted the storage initialisation logic between immutable and proxied version for optimisation.
 - Improved README.
 
 ## 0.0.4

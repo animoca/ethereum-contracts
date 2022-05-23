@@ -25,7 +25,7 @@ contract ERC20MetadataFacet is ERC20MetadataBase, ForwarderRegistryContextBase {
     /// @param uri The token URI.
     function initERC20MetadataStorage(string memory uri) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20MetadataStorage.layout().init(uri);
+        ERC20MetadataStorage.layout().proxyInit(uri);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

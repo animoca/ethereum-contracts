@@ -5,6 +5,8 @@ import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {StorageVersion} from "./StorageVersion.sol";
 
 library ProxyAdminStorage {
+    using ProxyAdminStorage for ProxyAdminStorage.Layout;
+
     struct Layout {
         address admin;
     }
@@ -16,17 +18,27 @@ library ProxyAdminStorage {
     event AdminChanged(address previousAdmin, address newAdmin);
 
     /// @notice Initializes the storage with an initial admin.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
+    /// @dev Reverts if `initialAdmin` is the zero address.
+    /// @dev Emits an {AdminChanged} event.
+    /// @param initialAdmin The initial payout wallet.
+    function constructorInit(Layout storage s, address initialAdmin) internal {
+        // assert(PROXYADMIN_STORAGE_SLOT == bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1));
+        require(initialAdmin != address(0), "ProxyAdmin: no initial admin");
+        s.admin = initialAdmin;
+        emit AdminChanged(address(0), initialAdmin);
+    }
+
+    /// @notice Initializes the storage with an initial admin.
     /// @notice Sets the proxy admin storage version to `1`.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the proxy admin storage is already initialized to version `1` or above.
     /// @dev Reverts if `initialAdmin` is the zero address.
     /// @dev Emits an {AdminChanged} event.
     /// @param initialAdmin The initial payout wallet.
-    function init(Layout storage s, address initialAdmin) internal {
-        // assert(PROXYADMIN_STORAGE_SLOT == bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1));
+    function proxyInit(Layout storage s, address initialAdmin) internal {
         StorageVersion.setVersion(PROXYADMIN_VERSION_SLOT, 1);
-        require(initialAdmin != address(0), "ProxyAdmin: no initial admin");
-        s.admin = initialAdmin;
-        emit AdminChanged(address(0), initialAdmin);
+        s.constructorInit(initialAdmin);
     }
 
     /// @notice Sets a new proxy admin.

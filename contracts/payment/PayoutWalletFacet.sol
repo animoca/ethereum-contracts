@@ -26,7 +26,7 @@ contract PayoutWalletFacet is PayoutWalletBase, ForwarderRegistryContextBase {
     /// @param initialPayoutWallet The initial payout wallet.
     function initPayoutWalletStorage(address payable initialPayoutWallet) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        PayoutWalletStorage.layout().init(initialPayoutWallet);
+        PayoutWalletStorage.layout().proxyInit(initialPayoutWallet);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

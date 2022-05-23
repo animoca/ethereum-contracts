@@ -207,7 +207,7 @@ Run the coverage tests:
 yarn coverage
 ```
 
-Run the full pipeline:
+Run the full pipeline (should be run before commiting code):
 
 ```bash
 yarn run-all

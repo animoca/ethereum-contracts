@@ -7,6 +7,7 @@ import {InterfaceDetectionStorage} from "./../../../introspection/libraries/Inte
 
 library ERC20MetadataStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+    using ERC20MetadataStorage for ERC20MetadataStorage.Layout;
 
     struct Layout {
         string uri;
@@ -16,14 +17,23 @@ library ERC20MetadataStorage {
     bytes32 public constant ERC20METADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.version")) - 1);
 
     /// @notice Initialises the storage with an initial token URI.
-    /// @notice Sets the ERC20Metadata storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
-    /// @dev Reverts if the ERC20Metadata storage is already initialized to version `1` or above.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param uri The token URI.
-    function init(Layout storage s, string memory uri) internal {
-        StorageVersion.setVersion(ERC20METADATA_VERSION_SLOT, 1);
+    function constructorInit(Layout storage s, string memory uri) internal {
         s.uri = uri;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Metadata).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage with an initial token URI.
+    /// @notice Sets the ERC20Metadata storage version to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the ERC20Metadata storage is already initialized to version `1` or above.
+    /// @param uri The token URI.
+    function proxyInit(Layout storage s, string memory uri) internal {
+        StorageVersion.setVersion(ERC20METADATA_VERSION_SLOT, 1);
+        s.constructorInit(uri);
     }
 
     function setTokenURI(Layout storage s, string memory uri) internal {
