@@ -98,7 +98,6 @@ function shouldBehaveLikeERC721Mintable(implementation) {
                     });
                     it('reverts when sent to an ERC721Receiver which accepts another token', async function() {
                         await expect(mintFunction.call(this, this.wrongTokenReceiver721, nft1, data)).to.be.reverted;
-                        //await expectRevert.unspecified(mintFunction.call(this, this.wrongTokenReceiver721.address, nft1, data, options));
                     });
                 }
             });
