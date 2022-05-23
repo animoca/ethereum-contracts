@@ -9,7 +9,7 @@ import {ERC721BurnableBase} from "./ERC721BurnableBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
-/// @title ERC721 Fungible Token Standard, optional extension: Burnable (facet version).
+/// @title ERC721 Non-Fungible Token Standard, optional extension: Burnable (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721BurnableFacet is ERC721BurnableBase, ForwarderRegistryContextBase {

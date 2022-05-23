@@ -8,7 +8,7 @@ import {ERC721TokenMetadataWithBaseURIBase} from "./ERC721TokenMetadataWithBaseU
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 
-/// @title ERC721 Non Fungible Token Standard, optional extension: Metadata (facet version).
+/// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet} and {InterfaceDetectionFacet}.
 contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBase, ForwarderRegistryContextBase {

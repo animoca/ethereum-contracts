@@ -50,11 +50,13 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
     }
-
+    
+    /// @inheritdoc IERC721
     function getApproved(uint256 tokenId) external view returns (address operator) {
         return ERC721Storage.layout().getApproved(tokenId);
     }
     
+    /// @inheritdoc IERC721
     function isApprovedForAll(address owner, address operator) external view returns (bool) {
         return ERC721Storage.layout().operators[owner][operator];
     }

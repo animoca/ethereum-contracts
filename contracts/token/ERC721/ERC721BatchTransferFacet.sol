@@ -9,7 +9,7 @@ import {ERC721BatchTransferBase} from "./ERC721BatchTransferBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
-/// @title ERC721 Fungible Token Standard, optional extension: BatchTransfer (facet version).
+/// @title ERC721 Non-Fungible Token Standard, optional extension: BatchTransfer (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721BatchTransferFacet is ERC721BatchTransferBase, ForwarderRegistryContextBase {
