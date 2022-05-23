@@ -101,7 +101,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
 
             context('when sent to an ERC721Receiver contract', function() {
                 this.beforeEach(async function() {
-                    this.toWhom = owner;
+                    this.toWhom = this.receiver721;
                     this.receipt = await mintFunction.call(this, this.toWhom, ids, data, deployer);
                 });
                 mintWasSuccessful(ids, data, safe, ReceiverType.ERC721_RECEIVER);
