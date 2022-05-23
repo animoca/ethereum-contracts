@@ -238,7 +238,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
 
             describe('safeTransferFrom(address,address,uint256)', function() {
                 const transferFn = async function(from, to, tokenId, data = undefined, signer = from) {
-                    //safeTransferFrom is overloaded so we specify the function signature
                     return this.token.connect(signer)['safeTransferFrom(address,address,uint256)'](from.address, to.address, tokenId);
                 };
                 const safe = true;

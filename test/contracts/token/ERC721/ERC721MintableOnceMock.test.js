@@ -1,6 +1,5 @@
 const { behavesLikeERC721 } = require('./behaviors/ERC721.behavior');
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require('../../../helpers/run');
-const { ethers } = require('hardhat');
 
 const name = 'ERC721 MintableOnce Mock';
 const symbol = 'E721MINTABLEONCE';
@@ -100,12 +99,6 @@ runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
             return contract;
         },
     };
-
-    let deployer;
-
-    before(async function() {
-        [deployer] = await ethers.getSigners();
-    });
 
     behavesLikeERC721(implementation);
 
