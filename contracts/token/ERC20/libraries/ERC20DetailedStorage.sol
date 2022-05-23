@@ -9,9 +9,9 @@ library ERC20DetailedStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {
-        string name;
-        string symbol;
-        uint8 decimals;
+        string tokenName;
+        string tokenSymbol;
+        uint8 tokenDecimals;
     }
 
     bytes32 public constant ERC20DETAILED_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.storage")) - 1);
@@ -21,20 +21,32 @@ library ERC20DetailedStorage {
     /// @notice Sets the ERC20Detailed storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Reverts if the ERC20Detailed storage is already initialized to version `1` or above.
-    /// @param name The token name.
-    /// @param symbol The token symbol.
-    /// @param decimals The token decimals.
+    /// @param name_ The token name.
+    /// @param symbol_ The token symbol.
+    /// @param decimals_ The token decimals.
     function init(
         Layout storage s,
-        string memory name,
-        string memory symbol,
-        uint8 decimals
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
     ) internal {
         StorageVersion.setVersion(ERC20DETAILED_VERSION_SLOT, 1);
-        s.name = name;
-        s.symbol = symbol;
-        s.decimals = decimals;
+        s.tokenName = name_;
+        s.tokenSymbol = symbol_;
+        s.tokenDecimals = decimals_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Detailed).interfaceId, true);
+    }
+
+    function name(Layout storage s) internal view returns (string memory) {
+        return s.tokenName;
+    }
+
+    function symbol(Layout storage s) internal view returns (string memory) {
+        return s.tokenSymbol;
+    }
+
+    function decimals(Layout storage s) internal view returns (uint8) {
+        return s.tokenDecimals;
     }
 
     function layout() internal pure returns (Layout storage s) {

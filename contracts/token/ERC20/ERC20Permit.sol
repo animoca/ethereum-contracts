@@ -7,6 +7,7 @@ import {ERC20PermitBase} from "./ERC20PermitBase.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Permit (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
+/// @dev Note: This contract requires ERC20Detailed.
 abstract contract ERC20Permit is ERC20PermitBase {
     /// @notice Initialises the storage.
     /// @notice Sets the ERC20Permit storage version to `1`.

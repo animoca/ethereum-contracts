@@ -3,14 +3,14 @@ pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {PayoutWallet} from "./../../payment/PayoutWallet.sol";
-import {Ownable} from "./../../access/Ownable.sol";
+import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
 contract PayoutWalletMock is PayoutWallet, ForwarderRegistryContextBase {
     constructor(address payable initialPayoutWallet, IForwarderRegistry forwarderRegistry)
         PayoutWallet(initialPayoutWallet)
-        Ownable(msg.sender)
+        ContractOwnership(msg.sender)
         ForwarderRegistryContextBase(forwarderRegistry)
     {}
 

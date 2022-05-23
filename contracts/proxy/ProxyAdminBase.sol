@@ -16,17 +16,17 @@ abstract contract ProxyAdminBase is Context {
     /// @param newAdmin the new admin.
     event AdminChanged(address previousAdmin, address newAdmin);
 
-    /// @notice Gets the proxy admin.
-    /// @return admin The proxy admin
-    function proxyAdmin() public view returns (address admin) {
-        return ProxyAdminStorage.layout().proxyAdmin;
-    }
-
     /// @notice Sets a new proxy admin.
     /// @dev Reverts if `sender` is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.
     /// @param newAdmin The new proxy admin.
     function changeProxyAdmin(address newAdmin) external {
         ProxyAdminStorage.layout().changeProxyAdmin(_msgSender(), newAdmin);
+    }
+
+    /// @notice Gets the proxy admin.
+    /// @return admin The proxy admin
+    function proxyAdmin() public view returns (address admin) {
+        return ProxyAdminStorage.layout().proxyAdmin();
     }
 }

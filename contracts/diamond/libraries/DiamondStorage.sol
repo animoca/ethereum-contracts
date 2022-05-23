@@ -10,20 +10,20 @@ library DiamondStorage {
     using Address for address;
     using DiamondStorage for DiamondStorage.Layout;
 
-    struct FacetAddressAndPosition {
-        address facetAddress;
-        uint96 functionSelectorPosition; // position in facetFunctionSelectors.functionSelectors array
+    struct FunctionSelector {
+        address diamondFacetAddress;
+        uint96 position; // position in DiamondFacet.functionSelectors array
     }
 
-    struct FacetFunctionSelectors {
+    struct DiamondFacet {
         bytes4[] functionSelectors;
-        uint256 facetAddressPosition; // position of facetAddress in facetAddresses array
+        uint256 position; // position in diamondFacetAddresses array
     }
 
     struct Layout {
-        mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
-        mapping(address => FacetFunctionSelectors) functionSelectors;
-        address[] facetAddresses;
+        mapping(bytes4 => FunctionSelector) functionSelectors;
+        mapping(address => DiamondFacet) diamondFacets;
+        address[] diamondFacetAddresses;
     }
 
     bytes32 public constant DIAMOND_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.Diamond.storage")) - 1);
@@ -77,13 +77,13 @@ library DiamondStorage {
         require(facet != address(0), "Diamond: zero address facet");
         uint256 nbSelectors = selectors.length;
         require(nbSelectors > 0, "Diamond: no function selectors");
-        uint96 selectorPosition = uint96(s.functionSelectors[facet].functionSelectors.length);
+        uint96 selectorPosition = uint96(s.diamondFacets[facet].functionSelectors.length);
         if (selectorPosition == 0) {
             s.addFacet(facet);
         }
         for (uint256 selectorIndex; selectorIndex < nbSelectors; ++selectorIndex) {
             bytes4 selector = selectors[selectorIndex];
-            address oldFacetAddress = s.selectorToFacetAndPosition[selector].facetAddress;
+            address oldFacetAddress = s.functionSelectors[selector].diamondFacetAddress;
             require(oldFacetAddress == address(0), "Diamond: existing function");
             s.addFunction(selector, selectorPosition, facet);
             selectorPosition++;
@@ -98,13 +98,13 @@ library DiamondStorage {
         require(facet != address(0), "Diamond: zero address facet");
         uint256 nbSelectors = selectors.length;
         require(nbSelectors > 0, "Diamond: no function selectors");
-        uint96 selectorPosition = uint96(s.functionSelectors[facet].functionSelectors.length);
+        uint96 selectorPosition = uint96(s.diamondFacets[facet].functionSelectors.length);
         if (selectorPosition == 0) {
             s.addFacet(facet);
         }
         for (uint256 selectorIndex; selectorIndex < nbSelectors; ++selectorIndex) {
             bytes4 selector = selectors[selectorIndex];
-            address oldFacetAddress = s.selectorToFacetAndPosition[selector].facetAddress;
+            address oldFacetAddress = s.functionSelectors[selector].diamondFacetAddress;
             require(oldFacetAddress != facet, "Diamond: identical function");
             s.removeFunction(oldFacetAddress, selector);
             s.addFunction(selector, selectorPosition, facet);
@@ -122,7 +122,7 @@ library DiamondStorage {
         require(nbSelectors > 0, "Diamond: no function selectors");
         for (uint256 selectorIndex; selectorIndex < nbSelectors; ++selectorIndex) {
             bytes4 selector = selectors[selectorIndex];
-            address oldFacetAddress = s.selectorToFacetAndPosition[selector].facetAddress;
+            address oldFacetAddress = s.functionSelectors[selector].diamondFacetAddress;
             s.removeFunction(oldFacetAddress, selector);
         }
     }
@@ -131,8 +131,8 @@ library DiamondStorage {
         if (facet != address(this)) {
             require(facet.isContract(), "Diamond: facet has no code");
         }
-        s.functionSelectors[facet].facetAddressPosition = s.facetAddresses.length;
-        s.facetAddresses.push(facet);
+        s.diamondFacets[facet].position = s.diamondFacetAddresses.length;
+        s.diamondFacetAddresses.push(facet);
     }
 
     function addFunction(
@@ -141,9 +141,9 @@ library DiamondStorage {
         uint96 selectorPosition,
         address facet
     ) internal {
-        s.selectorToFacetAndPosition[selector].functionSelectorPosition = selectorPosition;
-        s.functionSelectors[facet].functionSelectors.push(selector);
-        s.selectorToFacetAndPosition[selector].facetAddress = facet;
+        s.functionSelectors[selector].position = selectorPosition;
+        s.diamondFacets[facet].functionSelectors.push(selector);
+        s.functionSelectors[selector].diamondFacetAddress = facet;
     }
 
     function removeFunction(
@@ -155,30 +155,30 @@ library DiamondStorage {
         // an immutable function is a function defined directly in a diamond
         require(facet != address(this), "Diamond: immutable function");
         // replace selector with last selector, then delete last selector
-        uint256 selectorPosition = s.selectorToFacetAndPosition[selector].functionSelectorPosition;
-        uint256 lastSelectorPosition = s.functionSelectors[facet].functionSelectors.length - 1;
+        uint256 selectorPosition = s.functionSelectors[selector].position;
+        uint256 lastSelectorPosition = s.diamondFacets[facet].functionSelectors.length - 1;
         // if not the same then replace selector with lastSelector
         if (selectorPosition != lastSelectorPosition) {
-            bytes4 lastSelector = s.functionSelectors[facet].functionSelectors[lastSelectorPosition];
-            s.functionSelectors[facet].functionSelectors[selectorPosition] = lastSelector;
-            s.selectorToFacetAndPosition[lastSelector].functionSelectorPosition = uint96(selectorPosition);
+            bytes4 lastSelector = s.diamondFacets[facet].functionSelectors[lastSelectorPosition];
+            s.diamondFacets[facet].functionSelectors[selectorPosition] = lastSelector;
+            s.functionSelectors[lastSelector].position = uint96(selectorPosition);
         }
         // delete the last selector
-        s.functionSelectors[facet].functionSelectors.pop();
-        delete s.selectorToFacetAndPosition[selector];
+        s.diamondFacets[facet].functionSelectors.pop();
+        delete s.functionSelectors[selector];
 
         // if no more selectors for facet address then delete the facet address
         if (lastSelectorPosition == 0) {
             // replace facet address with last facet address and delete last facet address
-            uint256 lastFacetAddressPosition = s.facetAddresses.length - 1;
-            uint256 facetAddressPosition = s.functionSelectors[facet].facetAddressPosition;
+            uint256 lastFacetAddressPosition = s.diamondFacetAddresses.length - 1;
+            uint256 facetAddressPosition = s.diamondFacets[facet].position;
             if (facetAddressPosition != lastFacetAddressPosition) {
-                address lastFacetAddress = s.facetAddresses[lastFacetAddressPosition];
-                s.facetAddresses[facetAddressPosition] = lastFacetAddress;
-                s.functionSelectors[lastFacetAddress].facetAddressPosition = facetAddressPosition;
+                address lastFacetAddress = s.diamondFacetAddresses[lastFacetAddressPosition];
+                s.diamondFacetAddresses[facetAddressPosition] = lastFacetAddress;
+                s.diamondFacets[lastFacetAddress].position = facetAddressPosition;
             }
-            s.facetAddresses.pop();
-            delete s.functionSelectors[facet].facetAddressPosition;
+            s.diamondFacetAddresses.pop();
+            delete s.diamondFacets[facet].position;
         }
     }
 
@@ -202,13 +202,25 @@ library DiamondStorage {
     }
 
     function facets(Layout storage s) internal view returns (IDiamondLoupe.Facet[] memory facets_) {
-        uint256 nbFacets = s.facetAddresses.length;
+        uint256 nbFacets = s.diamondFacetAddresses.length;
         facets_ = new IDiamondLoupe.Facet[](nbFacets);
         for (uint256 i; i < nbFacets; ++i) {
-            address facet = s.facetAddresses[i];
+            address facet = s.diamondFacetAddresses[i];
             facets_[i].facetAddress = facet;
-            facets_[i].functionSelectors = s.functionSelectors[facet].functionSelectors;
+            facets_[i].functionSelectors = s.diamondFacets[facet].functionSelectors;
         }
+    }
+
+    function facetFunctionSelectors(Layout storage s, address facet) internal view returns (bytes4[] memory) {
+        return s.diamondFacets[facet].functionSelectors;
+    }
+
+    function facetAddresses(Layout storage s) internal view returns (address[] memory facetAddresses_) {
+        return s.diamondFacetAddresses;
+    }
+
+    function facetAddress(Layout storage s, bytes4 functionSelector) internal view returns (address facetAddress_) {
+        return s.functionSelectors[functionSelector].diamondFacetAddress;
     }
 
     function layout() internal pure returns (Layout storage s) {

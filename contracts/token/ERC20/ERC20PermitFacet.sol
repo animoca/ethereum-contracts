@@ -11,7 +11,7 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 
 /// @title ERC20 Fungible Token Standard, optional extension: Permit (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet}, {InterfaceDetectionFacet} and {ERC20DetailedFacet}.
 contract ERC20PermitFacet is ERC20PermitBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 

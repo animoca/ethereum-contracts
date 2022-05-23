@@ -24,8 +24,9 @@ contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistry
     /// @dev Reverts if the sender is not the proxy admin.
     function initDiamondCutStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCut).interfaceId, true);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCutBatchInit).interfaceId, true);
+        InterfaceDetectionStorage.Layout storage interfaceDetectionLayout = InterfaceDetectionStorage.layout();
+        interfaceDetectionLayout.setSupportedInterface(type(IDiamondCut).interfaceId, true);
+        interfaceDetectionLayout.setSupportedInterface(type(IDiamondCutBatchInit).interfaceId, true);
     }
 
     /// @inheritdoc IDiamondCut

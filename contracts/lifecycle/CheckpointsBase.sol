@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {OwnershipStorage} from "./../access/libraries/OwnershipStorage.sol";
+import {ContractOwnershipStorage} from "./../access/libraries/ContractOwnershipStorage.sol";
 import {CheckpointsStorage} from "./libraries/CheckpointsStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
@@ -11,7 +11,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract CheckpointsBase is Context {
     using CheckpointsStorage for CheckpointsStorage.Layout;
-    using OwnershipStorage for OwnershipStorage.Layout;
+    using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     /// @notice Emitted when a checkpoint is set.
     /// @param checkpointId the checkpoint identifier.
@@ -25,7 +25,7 @@ abstract contract CheckpointsBase is Context {
     /// @param checkpointId the checkpoint identifier.
     /// @param timestamp the checkpoint's timestamp.
     function setCheckpoint(bytes32 checkpointId, uint256 timestamp) external {
-        OwnershipStorage.layout().enforceIsContractOwner(_msgSender());
+        ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         CheckpointsStorage.layout().setCheckpoint(checkpointId, timestamp);
     }
 
@@ -35,7 +35,7 @@ abstract contract CheckpointsBase is Context {
     /// @dev Emits a {CheckpointSet} event.
     /// @param checkpointId the checkpoint identifier.
     function triggerCheckpoint(bytes32 checkpointId) external {
-        OwnershipStorage.layout().enforceIsContractOwner(_msgSender());
+        ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         CheckpointsStorage.layout().triggerCheckpoint(checkpointId);
     }
 

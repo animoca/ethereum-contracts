@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {OwnershipStorage} from "./libraries/OwnershipStorage.sol";
+import {ContractOwnershipStorage} from "./libraries/ContractOwnershipStorage.sol";
 import {AccessControlStorage} from "./libraries/AccessControlStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
@@ -9,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract AccessControlBase is Context {
-    using OwnershipStorage for OwnershipStorage.Layout;
+    using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
     using AccessControlStorage for AccessControlStorage.Layout;
 
     /// @notice Emitted when a role is granted.
@@ -31,7 +31,7 @@ abstract contract AccessControlBase is Context {
     /// @param account The account to grant the role to.
     function grantRole(bytes32 role, address account) external {
         address operator = _msgSender();
-        OwnershipStorage.layout().enforceIsContractOwner(operator);
+        ContractOwnershipStorage.layout().enforceIsContractOwner(operator);
         AccessControlStorage.layout().grantRole(role, account, operator);
     }
 
@@ -42,7 +42,7 @@ abstract contract AccessControlBase is Context {
     /// @param account The account to revoke the role from.
     function revokeRole(bytes32 role, address account) external {
         address operator = _msgSender();
-        OwnershipStorage.layout().enforceIsContractOwner(operator);
+        ContractOwnershipStorage.layout().enforceIsContractOwner(operator);
         AccessControlStorage.layout().revokeRole(role, account, operator);
     }
 

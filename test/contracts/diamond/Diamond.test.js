@@ -30,7 +30,7 @@ const facetsConfig = [
   {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
   {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
   {name: 'DiamondLoupeFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondLoupeStorage'}},
-  {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
+  {name: 'InterfaceDetectionFacet'},
 ];
 
 describe('Diamond', function () {

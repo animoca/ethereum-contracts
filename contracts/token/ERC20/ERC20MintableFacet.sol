@@ -11,7 +11,7 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 
 /// @title ERC20 Fungible Token Standard, optional extension: Mintable (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet}, {ContractOwnershipFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC20MintableFacet is ERC20MintableBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;

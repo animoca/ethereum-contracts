@@ -24,7 +24,7 @@ contract Diamond {
         assembly {
             s.slot := position
         }
-        address facet = s.selectorToFacetAndPosition[msg.sig].facetAddress;
+        address facet = s.functionSelectors[msg.sig].diamondFacetAddress;
         require(facet != address(0), "Diamond: function not found");
         assembly {
             calldatacopy(0, 0, calldatasize())

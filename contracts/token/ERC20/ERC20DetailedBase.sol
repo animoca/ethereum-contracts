@@ -12,16 +12,16 @@ abstract contract ERC20DetailedBase is IERC20Detailed {
 
     /// @inheritdoc IERC20Detailed
     function name() external view override returns (string memory) {
-        return ERC20DetailedStorage.layout().name;
+        return ERC20DetailedStorage.layout().name();
     }
 
     /// @inheritdoc IERC20Detailed
     function symbol() external view override returns (string memory) {
-        return ERC20DetailedStorage.layout().symbol;
+        return ERC20DetailedStorage.layout().symbol();
     }
 
     /// @inheritdoc IERC20Detailed
     function decimals() external view override returns (uint8) {
-        return ERC20DetailedStorage.layout().decimals;
+        return ERC20DetailedStorage.layout().decimals();
     }
 }

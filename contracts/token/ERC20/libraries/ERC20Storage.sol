@@ -16,7 +16,7 @@ library ERC20Storage {
     struct Layout {
         mapping(address => uint256) balances;
         mapping(address => mapping(address => uint256)) allowances;
-        uint256 totalSupply;
+        uint256 supply;
     }
 
     bytes32 public constant ERC20_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
@@ -42,8 +42,9 @@ library ERC20Storage {
     ) internal {
         StorageVersion.setVersion(ERC20_VERSION_SLOT, 1);
         s.batchMint(holders, allocations);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20).interfaceId, true);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+        InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
+        erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
+        erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
     }
 
     function approve(
@@ -268,11 +269,11 @@ library ERC20Storage {
     ) internal {
         require(to != address(0), "ERC20: mint to zero");
         if (value != 0) {
-            uint256 supply = s.totalSupply;
+            uint256 supply = s.supply;
             unchecked {
                 uint256 newSupply = supply + value;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
                 s.balances[to] += value; // balance cannot overflow if supply does not
             }
         }
@@ -307,11 +308,11 @@ library ERC20Storage {
         }
 
         if (totalValue != 0) {
-            uint256 supply = s.totalSupply;
+            uint256 supply = s.supply;
             unchecked {
                 uint256 newSupply = supply + totalValue;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
             }
         }
     }
@@ -327,7 +328,7 @@ library ERC20Storage {
                 uint256 newBalance = balance - value;
                 require(newBalance < balance, "ERC20: insufficient balance");
                 s.balances[from] = newBalance;
-                s.totalSupply -= value; // will not underflow if balance does not
+                s.supply -= value; // will not underflow if balance does not
             }
         }
 
@@ -381,9 +382,25 @@ library ERC20Storage {
 
         if (totalValue != 0) {
             unchecked {
-                s.totalSupply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
+                s.supply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
             }
         }
+    }
+
+    function totalSupply(Layout storage s) internal view returns (uint256) {
+        return s.supply;
+    }
+
+    function balanceOf(Layout storage s, address account) internal view returns (uint256) {
+        return s.balances[account];
+    }
+
+    function allowance(
+        Layout storage s,
+        address owner,
+        address spender
+    ) internal view returns (uint256) {
+        return s.allowances[owner][spender];
     }
 
     function layout() internal pure returns (Layout storage s) {

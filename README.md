@@ -96,7 +96,7 @@ const {loadFixture} = require('@animoca/ethereum-contracts/test/helpers/fixtures
 
 describe('MyContract', function () {
   const fixture = async function () {
-    // contract initialisation
+    // contract(s) initialisation
   };
 
   beforeEach(async function () {
@@ -130,9 +130,8 @@ const config = {
   immutable: {name: 'MyImmutableContract', ctorArguments: ['myArg', 'forwarderRegistry']},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
       {
         name: 'MyFacetContract',
         ctorArguments: ['forwarderRegistry'],

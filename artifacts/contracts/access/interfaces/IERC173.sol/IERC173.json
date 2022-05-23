@@ -28,7 +28,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "contractOwner",
           "type": "address"
         }
       ],

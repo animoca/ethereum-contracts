@@ -4,16 +4,16 @@ const {loadFixture} = require('../../helpers/fixtures');
 const {shouldSupportInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
-  immutable: {name: 'OwnableMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'ContractOwnershipMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
+      {name: 'InterfaceDetectionFacet'},
       {
-        name: 'OwnableFacetMock',
+        name: 'ContractOwnershipFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, versionProtected: true},
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, versionProtected: true},
         metaTxSupport: true,
       },
     ],
@@ -25,7 +25,7 @@ const config = {
   },
 };
 
-runBehaviorTests('Ownable', config, function (deployFn) {
+runBehaviorTests('ContractOwnership', config, function (deployFn) {
   let deployer, other;
 
   before(async function () {
@@ -123,7 +123,7 @@ runBehaviorTests('Ownable', config, function (deployFn) {
       });
     });
 
-    describe('OwnershipStorage.enforceIsContractOwner(address)', function () {
+    describe('ContractOwnershipStorage.enforceIsContractOwner(address)', function () {
       it('reverts with a non-owner account', async function () {
         await expect(this.contract.enforceIsContractOwner(other.address)).to.be.revertedWith('Ownership: not the owner');
       });

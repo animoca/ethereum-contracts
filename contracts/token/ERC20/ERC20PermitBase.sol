@@ -8,19 +8,9 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC20 Fungible Token Standard, optional extension: Permit (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev `ERC20PermitStorage.init` should be called during contract initialization.
+/// @dev Note: This contract requires ERC20Detailed.
 abstract contract ERC20PermitBase is Context, IERC20Permit {
     using ERC20PermitStorage for ERC20PermitStorage.Layout;
-
-    /// @inheritdoc IERC20Permit
-    // solhint-disable-next-line func-name-mixedcase
-    function DOMAIN_SEPARATOR() external view override returns (bytes32) {
-        return ERC20PermitStorage.DOMAIN_SEPARATOR();
-    }
-
-    /// @inheritdoc IERC20Permit
-    function nonces(address account) external view override returns (uint256) {
-        return ERC20PermitStorage.layout().nonces[account];
-    }
 
     /// @inheritdoc IERC20Permit
     function permit(
@@ -33,5 +23,16 @@ abstract contract ERC20PermitBase is Context, IERC20Permit {
         bytes32 s
     ) external override {
         ERC20PermitStorage.layout().permit(owner, spender, value, deadline, v, r, s);
+    }
+
+    /// @inheritdoc IERC20Permit
+    function nonces(address account) external view override returns (uint256) {
+        return ERC20PermitStorage.layout().nonces(account);
+    }
+
+    /// @inheritdoc IERC20Permit
+    // solhint-disable-next-line func-name-mixedcase
+    function DOMAIN_SEPARATOR() external view override returns (bytes32) {
+        return ERC20PermitStorage.DOMAIN_SEPARATOR();
     }
 }

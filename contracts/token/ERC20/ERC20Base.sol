@@ -48,16 +48,16 @@ abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
 
     /// @inheritdoc IERC20
     function totalSupply() external view override returns (uint256) {
-        return ERC20Storage.layout().totalSupply;
+        return ERC20Storage.layout().totalSupply();
     }
 
     /// @inheritdoc IERC20
     function balanceOf(address account) external view override returns (uint256) {
-        return ERC20Storage.layout().balances[account];
+        return ERC20Storage.layout().balanceOf(account);
     }
 
     /// @inheritdoc IERC20
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
-        return ERC20Storage.layout().allowances[owner][spender];
+        return ERC20Storage.layout().allowance(owner, spender);
     }
 }

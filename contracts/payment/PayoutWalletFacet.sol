@@ -10,7 +10,7 @@ import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContext
 
 /// @title Payout wallet (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet} and {OwnableFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet} and {ContractOwnershipFacet}.
 contract PayoutWalletFacet is PayoutWalletBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using PayoutWalletStorage for PayoutWalletStorage.Layout;

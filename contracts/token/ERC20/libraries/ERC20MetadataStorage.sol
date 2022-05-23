@@ -9,7 +9,7 @@ library ERC20MetadataStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {
-        string tokenURI;
+        string uri;
     }
 
     bytes32 public constant ERC20METADATA_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.storage")) - 1);
@@ -22,8 +22,16 @@ library ERC20MetadataStorage {
     /// @param uri The token URI.
     function init(Layout storage s, string memory uri) internal {
         StorageVersion.setVersion(ERC20METADATA_VERSION_SLOT, 1);
-        s.tokenURI = uri;
+        s.uri = uri;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Metadata).interfaceId, true);
+    }
+
+    function setTokenURI(Layout storage s, string memory uri) internal {
+        s.uri = uri;
+    }
+
+    function tokenURI(Layout storage s) internal view returns (string memory) {
+        return s.uri;
     }
 
     function layout() internal pure returns (Layout storage s) {

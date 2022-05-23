@@ -7,7 +7,7 @@ library PayoutWalletStorage {
     using PayoutWalletStorage for PayoutWalletStorage.Layout;
 
     struct Layout {
-        address payable payoutWallet;
+        address payable wallet;
     }
 
     bytes32 public constant PAYOUTWALLET_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.storage")) - 1);
@@ -32,8 +32,14 @@ library PayoutWalletStorage {
     /// @param newPayoutWallet The payout wallet.
     function setPayoutWallet(Layout storage s, address payable newPayoutWallet) internal {
         require(newPayoutWallet != address(0), "PayoutWallet: zero address");
-        s.payoutWallet = newPayoutWallet;
+        s.wallet = newPayoutWallet;
         emit PayoutWalletSet(newPayoutWallet);
+    }
+
+    /// @notice Gets the payout wallet.
+    /// @return wallet The payout wallet.
+    function payoutWallet(Layout storage s) internal view returns (address payable) {
+        return s.wallet;
     }
 
     function layout() internal pure returns (Layout storage s) {

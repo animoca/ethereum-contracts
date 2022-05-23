@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {CheckpointsStorage} from "./../../lifecycle/libraries/CheckpointsStorage.sol";
 import {Checkpoints} from "./../../lifecycle/Checkpoints.sol";
-import {Ownable} from "./../../access/Ownable.sol";
+import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
@@ -17,7 +17,7 @@ contract CheckpointsMock is Checkpoints, ForwarderRegistryContextBase {
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps,
         IForwarderRegistry forwarderRegistry
-    ) Checkpoints(checkpointIds, timestamps) Ownable(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+    ) Checkpoints(checkpointIds, timestamps) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     function enforceCheckpointReached(bytes32 checkpointId) external view {
         CheckpointsStorage.layout().enforceCheckpointReached(checkpointId);
