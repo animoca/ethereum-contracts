@@ -1,8 +1,5 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
-const { ZeroAddress, Zero } = require('../../../../../src/constants');
-
-const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
@@ -10,7 +7,6 @@ const { shouldSupportInterfaces } = require('../../../introspection/behaviors/Su
 function shouldBehaveLikeERC721Burnable(implementation) {
 
     const { deploy, features, revertMessages, interfaces } = implementation;
-
 
     describe('like a Burnable ERC721', function() {
         let accounts, deployer, owner, other, approved, operator;

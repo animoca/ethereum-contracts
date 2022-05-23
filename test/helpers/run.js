@@ -1,4 +1,3 @@
-const { should } = require('chai');
 const { ethers, deployments } = require('hardhat');
 const { ZeroAddress } = require('../../src/constants');
 const { deployDiamond, facetInit } = require('./diamond');
@@ -128,8 +127,14 @@ function runBehaviorTests(name, config, behaviorFn, shouldRunDiamond) {
     });
 }
 
+async function deployTestHelperContract(name, args) {
+    const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
+    await receiverContract.deployed();
+    return receiverContract;
+}
 module.exports = {
     getDeployerAddress,
     getForwarderRegistryAddress,
     runBehaviorTests,
+    deployTestHelperContract
 };

@@ -93,9 +93,7 @@ runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
         interfaces: {
             ERC721Burnable: true
         },
-        methods: {
-            //TODO
-        },
+        methods: {},
         deploy: async function(name, symbol, tokenURI, deployer) {
             const contract = await deployFn({ name, symbol, tokenURI });
             await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);

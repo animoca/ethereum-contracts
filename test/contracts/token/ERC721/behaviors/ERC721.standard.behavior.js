@@ -4,6 +4,7 @@ const { ZeroAddress } = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const { deployTestHelperContract } = require('../../../../helpers/run');
 
 function shouldBehaveLikeERC721Standard(implementation) {
 
@@ -23,13 +24,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
         const nft4 = 4;
         const unknownNFT = 1000;
 
-        // TODO: Move to helpers
-        async function deployContract(name, args) {
-            const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
-            await receiverContract.deployed();
-            return receiverContract;
-        }
-
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
             await this.token.mint(owner.address, nft1);
@@ -37,9 +31,9 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft3);
             await this.token.mint(owner.address, nft4);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
-            this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
-            this.refusingReceiver721 = await deployContract("ERC721ReceiverMock", [false, this.token.address]);
-            this.wrongTokenReceiver721 = await deployContract("ERC721ReceiverMock", [true, ZeroAddress]);
+            this.receiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, this.token.address]);
+            this.refusingReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [false, this.token.address]);
+            this.wrongTokenReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, ZeroAddress]);
             this.nftBalance = await this.token.balanceOf(owner.address);
         };
 

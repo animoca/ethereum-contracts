@@ -1,17 +1,16 @@
 const { loadFixture } = require('../../../../helpers/fixtures');
 const { expect } = require('chai');
 const { ZeroAddress } = require('../../../../../src/constants');
-const { interfaces } = require('mocha');
 const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
-const { BigNumber } = require('ethers');
+const { deployTestHelperContract } = require('../../../../helpers/run');
 
 function shouldBehaveLikeERC721Mintable(implementation) {
 
     const { deploy, revertMessages } = implementation;
 
     describe('like a Mintable ERC721', function() {
-        let accounts, deployer, minter, owner;
+        let accounts, deployer, owner;
         let nft1 = 1;
         let unknownNFT = 1000;
 
@@ -20,18 +19,11 @@ function shouldBehaveLikeERC721Mintable(implementation) {
             [deployer, owner] = accounts;
         });
 
-        // TODO: Move to helpers
-        async function deployContract(name, args) {
-            const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
-            await receiverContract.deployed();
-            return receiverContract;
-        }
-
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            this.receiver721 = await deployContract("ERC721ReceiverMock", [true, this.token.address]);
-            this.refusingReceiver721 = await deployContract("ERC721ReceiverMock", [false, this.token.address]);
-            this.wrongTokenReceiver721 = await deployContract("ERC721ReceiverMock", [true, ZeroAddress]);
+            this.receiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, this.token.address]);
+            this.refusingReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [false, this.token.address]);
+            this.wrongTokenReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, ZeroAddress]);
         };
 
         beforeEach(async function() {
