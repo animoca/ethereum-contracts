@@ -8,7 +8,6 @@ import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 import "hardhat/console.sol";
 
-
 library ERC721Storage {
     using Address for address;
     using ERC721Storage for ERC721Storage.Layout;
@@ -26,7 +25,7 @@ library ERC721Storage {
 
     bytes4 internal constant _ERC721_RECEIVED = type(IERC721Receiver).interfaceId;
     uint256 internal constant _APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
-       // Burnt Non-Fungible Token owner's magic value
+    // Burnt Non-Fungible Token owner's magic value
     uint256 internal constant _BURNT_NFT_OWNER = 0xdead000000000000000000000000000000000000000000000000000000000000;
 
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
@@ -43,9 +42,9 @@ library ERC721Storage {
     }
 
     function approve(
-        Layout storage s, 
-        address sender, 
-        address to, 
+        Layout storage s,
+        address sender,
+        address to,
         uint256 tokenId
     ) internal {
         uint256 owner = s.owners[tokenId];
@@ -72,7 +71,7 @@ library ERC721Storage {
     function setApprovalForAll(
         Layout storage s,
         address sender,
-        address operator, 
+        address operator,
         bool approved
     ) internal {
         require(operator != sender, "ERC721: self-approval");
@@ -167,7 +166,7 @@ library ERC721Storage {
         }
 
         if (length != 0) {
-           _transferNFTUpdateBalances(s, from, to, length);
+            _transferNFTUpdateBalances(s, from, to, length);
         }
     }
 
@@ -210,9 +209,9 @@ library ERC721Storage {
     }
 
     function batchMintOnce(
-         Layout storage s,
-         address to, 
-         uint256[] memory tokenIds
+        Layout storage s,
+        address to,
+        uint256[] memory tokenIds
     ) internal {
         require(to != address(0), "ERC721: mint to zero");
 
@@ -229,9 +228,9 @@ library ERC721Storage {
     }
 
     function batchMint(
-         Layout storage s,
-         address to, 
-         uint256[] memory tokenIds
+        Layout storage s,
+        address to,
+        uint256[] memory tokenIds
     ) internal {
         require(to != address(0), "ERC721: mint to zero");
 
@@ -245,14 +244,24 @@ library ERC721Storage {
         s.nftBalances[to] += length;
     }
 
-    function burnFrom(Layout storage s, address sender, address from, uint256 tokenId) internal {
+    function burnFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        uint256 tokenId
+    ) internal {
         bool operatable = _isOperatable(s, from, sender);
 
         _burnNFT(s, sender, from, tokenId, operatable, false);
         emit Transfer(from, address(0), tokenId);
     }
 
-    function batchBurnFrom(Layout storage s, address sender, address from, uint256[] memory tokenIds) internal {
+    function batchBurnFrom(
+        Layout storage s,
+        address sender,
+        address from,
+        uint256[] memory tokenIds
+    ) internal {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
@@ -268,8 +277,7 @@ library ERC721Storage {
         }
     }
 
-
-     //============================================ Private Functions ============================================//
+    //============================================ Private Functions ============================================//
 
     function _transferFrom(
         Layout storage s,
@@ -388,7 +396,11 @@ library ERC721Storage {
      * @param sender The sender address.
      * @return True if sender is `from` or an operator for `from`, false otherwise.
      */
-    function _isOperatable(Layout storage s, address from, address sender) private view returns (bool) {
+    function _isOperatable(
+        Layout storage s,
+        address from,
+        address sender
+    ) private view returns (bool) {
         return (from == sender) || s.operators[from][sender];
     }
 
@@ -400,5 +412,4 @@ library ERC721Storage {
             s.slot := position
         }
     }
-
 }

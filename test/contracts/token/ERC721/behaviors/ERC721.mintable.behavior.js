@@ -6,7 +6,6 @@ const { ethers } = require('hardhat');
 const { deployTestHelperContract } = require('../../../../helpers/run');
 
 function shouldBehaveLikeERC721Mintable(implementation) {
-
     const { deploy, revertMessages } = implementation;
 
     describe('like a Mintable ERC721', function() {
@@ -21,9 +20,9 @@ function shouldBehaveLikeERC721Mintable(implementation) {
 
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            this.receiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, this.token.address]);
-            this.refusingReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [false, this.token.address]);
-            this.wrongTokenReceiver721 = await deployTestHelperContract("ERC721ReceiverMock", [true, ZeroAddress]);
+            this.receiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, this.token.address]);
+            this.refusingReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [false, this.token.address]);
+            this.wrongTokenReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, ZeroAddress]);
         };
 
         beforeEach(async function() {
@@ -46,8 +45,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
 
             it('emits Transfer event(s)', async function() {
                 for (const id of ids) {
-                    await expect(this.receipt).to.emit(this.token, 'Transfer')
-                        .withArgs(ZeroAddress, this.toWhom.address, id);
+                    await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ZeroAddress, this.toWhom.address, id);
                 }
             });
 
@@ -57,16 +55,13 @@ function shouldBehaveLikeERC721Mintable(implementation) {
             });
 
             if (safe && receiverType == ReceiverType.ERC721_RECEIVER) {
-                it("should call onERC721Received", async function() {
-                    it('should call on ERC721Received', async function() {
-                        await expect(this.receipt).to.emit(this.receiver721, 'Received');
-                    });
+                it('should call onERC721Received', async function() {
+                    await expect(this.receipt).to.emit(this.receiver721, 'Received');
                 });
             }
-        }
+        };
 
         const shouldRevertOnPreconditions = function(mintFunction, safe) {
-
             describe('Pre-conditions', function() {
                 const data = '0x42';
                 const signer = deployer;
@@ -77,7 +72,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
                     await mintFunction.call(this, owner, unknownNFT, data);
                     await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
                 });
-                it("reverts if sent by non-minter", async function() {
+                it('reverts if sent by non-minter', async function() {
                     await expect(mintFunction.call(this, owner, nft1, data, owner)).to.be.revertedWith(revertMessages.NotMinter);
                 });
 

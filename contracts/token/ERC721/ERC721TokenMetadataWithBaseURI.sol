@@ -18,7 +18,11 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
     /// @notice Sets the ERC721 storage version to `1`
     /// @notice Marks the following ERC165 interfaces as supported: IERCMetadata
     /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage is already initialized to version `1` or above.
-    constructor(string memory name_, string memory symbol_, string memory tokenURI_){
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        string memory tokenURI_
+    ) {
         ERC721TokenMetadataWithBaseURIStorage.layout().init(name_, symbol_, tokenURI_);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }

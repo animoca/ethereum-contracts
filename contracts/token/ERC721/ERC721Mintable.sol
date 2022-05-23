@@ -13,7 +13,7 @@ abstract contract ERC721Mintable is ERC721MintableBase, AccessControl {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Mintable.
-    constructor() Ownable (msg.sender) {
+    constructor() Ownable(msg.sender) {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }
 }

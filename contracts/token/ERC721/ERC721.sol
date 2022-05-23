@@ -17,5 +17,4 @@ contract ERC721 is ERC721Base {
     constructor() {
         ERC721Storage.layout().init();
     }
-
 }

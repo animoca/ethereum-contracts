@@ -8,7 +8,7 @@ import {InterfaceDetectionStorage} from "./../../introspection/libraries/Interfa
 /// @title ERC721 Non-Fungible Token Standard: optional extension: BatchTransfer (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ERC721BatchTransfer is ERC721BatchTransferBase {
-     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     /// @notice Marks the following ERC165 interfaces(s) as supported: ERC721BatchTransfer
     constructor() {

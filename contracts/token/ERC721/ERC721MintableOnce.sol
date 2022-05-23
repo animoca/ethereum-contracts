@@ -11,10 +11,9 @@ import {Ownable} from "./../../access/Ownable.sol";
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation
 abstract contract ERC721MintableOnce is ERC721MintableOnceBase, AccessControl {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
-    
-    /// @notice Marks the following ERC165 interface(s) as supported: IERC721MintableOnce.    
-    constructor(
-    ){
+
+    /// @notice Marks the following ERC165 interface(s) as supported: IERC721MintableOnce.
+    constructor() {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721MintableOnce).interfaceId, true);
     }
 }

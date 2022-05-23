@@ -18,7 +18,7 @@ library UInt256ToDecimalString {
         uint256 index = digits - 1;
         temp = value;
         while (temp != 0) {
-            unchecked { 
+            unchecked {
                 // TODO:  Find solution for 0.8+ and remove 'unchecked'.
                 // Below code ported from < 0.8 breaks on 0.8+, see: .
                 // https://ethereum.stackexchange.com/questions/94351/revert-reason-for-arithmetic-overflows-in-solidity-v0-8

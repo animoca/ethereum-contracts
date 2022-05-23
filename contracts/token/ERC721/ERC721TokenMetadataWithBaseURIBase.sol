@@ -18,14 +18,14 @@ abstract contract ERC721TokenMetadataWithBaseURIBase is Context, IERC721Metadata
     using ERC721TokenMetadataWithBaseURIStorage for ERC721TokenMetadataWithBaseURIStorage.Layout;
     using UInt256ToDecimalString for uint256;
 
-     /// @inheritdoc IERC721Metadata
+    /// @inheritdoc IERC721Metadata
     function name() external view returns (string memory) {
         return ERC721ContractMetadataStorage.layout().name;
     }
 
     /// @inheritdoc IERC721Metadata
     function symbol() external view returns (string memory) {
-        return  ERC721ContractMetadataStorage.layout().symbol;
+        return ERC721ContractMetadataStorage.layout().symbol;
     }
 
     /// @inheritdoc IERC721Metadata

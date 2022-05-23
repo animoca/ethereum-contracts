@@ -26,7 +26,11 @@ contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBa
     /// @param symbol The token symbol
     /// @param uri The token URI.
 
-    function initERC721MetadataStorageWithBaseURIStorage(string memory name, string memory symbol, string memory uri) external {
+    function initERC721MetadataStorageWithBaseURIStorage(
+        string memory name,
+        string memory symbol,
+        string memory uri
+    ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721TokenMetadataWithBaseURIStorage.layout().init(name, symbol, uri);
     }

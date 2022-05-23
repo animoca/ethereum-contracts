@@ -9,7 +9,7 @@ import {InterfaceDetectionStorage} from "./../../introspection/libraries/Interfa
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ERC721Burnable is ERC721BurnableBase {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
-    
+
     /// @notice Marks the fllowing ERC165 interface(s) as supported: ERC721Burnable
     constructor() {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Burnable).interfaceId, true);

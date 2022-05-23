@@ -27,38 +27,50 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     }
 
     /// @inheritdoc IERC721
-     function approve(address to, uint256 tokenId) public virtual override {
-         ERC721Storage.layout().approve(_msgSender(), to, tokenId);
-     }
-
-     /// @inheritdoc IERC721
-     function setApprovalForAll(address operator, bool _approved) public virtual override {
-         ERC721Storage.layout().setApprovalForAll(_msgSender(), operator, _approved);
-     }
+    function approve(address to, uint256 tokenId) public virtual override {
+        ERC721Storage.layout().approve(_msgSender(), to, tokenId);
+    }
 
     /// @inheritdoc IERC721
-     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
-         ERC721Storage.layout().transferFrom(_msgSender(), from, to, tokenId);
-     }
+    function setApprovalForAll(address operator, bool _approved) public virtual override {
+        ERC721Storage.layout().setApprovalForAll(_msgSender(), operator, _approved);
+    }
 
     /// @inheritdoc IERC721
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public virtual override {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        ERC721Storage.layout().transferFrom(_msgSender(), from, to, tokenId);
+    }
+
+    /// @inheritdoc IERC721
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public virtual override {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId, _data);
     }
 
     /// @inheritdoc IERC721
-    function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
     }
-    
+
     /// @inheritdoc IERC721
     function getApproved(uint256 tokenId) external view returns (address operator) {
         return ERC721Storage.layout().getApproved(tokenId);
     }
-    
+
     /// @inheritdoc IERC721
     function isApprovedForAll(address owner, address operator) external view returns (bool) {
         return ERC721Storage.layout().operators[owner][operator];
     }
-
 }
