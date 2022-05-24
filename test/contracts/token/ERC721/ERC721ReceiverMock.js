@@ -3,8 +3,8 @@ const {shouldSupportInterfaces} = require('../../introspection/behaviors/Support
 
 describe('ERC721ReceiverMock', function () {
   beforeEach(async function () {
-    const ERC20Receiver = await ethers.getContractFactory('ERC721ReceiverMock');
-    this.contract = await ERC20Receiver.deploy(true, ZeroAddress);
+    const ERC721Receiver = await ethers.getContractFactory('ERC721ReceiverMock');
+    this.contract = await ERC721Receiver.deploy(true, ZeroAddress);
     await this.contract.deployed();
   });
 
