@@ -24,7 +24,7 @@ const config = {
           method: 'initERC721Storage',
           arguments: [],
           adminProtected: true,
-          versionProtected: false,
+          versionProtected: true,
         },
         metaTxSupport: true,
       },
