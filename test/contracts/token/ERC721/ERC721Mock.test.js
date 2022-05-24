@@ -26,7 +26,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721TokenMetadataWithBaseURIFacetMock',
@@ -37,7 +37,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721MintableFacetMock',
@@ -48,7 +48,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721BurnableFacetMock',
@@ -59,7 +59,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721BatchTransferFacetMock',
@@ -70,7 +70,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
     ],
   },

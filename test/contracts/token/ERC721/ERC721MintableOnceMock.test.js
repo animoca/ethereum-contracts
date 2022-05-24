@@ -26,7 +26,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721MintableOnceFacetMock',
@@ -37,7 +37,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
       {
         name: 'ERC721BurnableFacetMock',
@@ -48,7 +48,7 @@ const config = {
           adminProtected: false,
           versionProtected: false,
         },
-        metaTxSupport: false,
+        metaTxSupport: true,
       },
     ],
   },
