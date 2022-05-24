@@ -10,6 +10,8 @@ function shouldBehaveLikeERC721Burnable(implementation) {
     let accounts, deployer, owner, other, approved, operator;
     let nft1 = 1;
     let nft2 = 2;
+    let nft3 = 3;
+    let nft4 = 4;
     let unknownNFT = 1000;
 
     before(async function () {
@@ -21,6 +23,7 @@ function shouldBehaveLikeERC721Burnable(implementation) {
       this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
       await this.token.connect(deployer).mint(owner.address, nft1);
       await this.token.connect(deployer).mint(owner.address, nft2);
+      await this.token.connect(deployer).batchMint(owner.address, [nft3, nft4]);
       await this.token.connect(owner).approve(approved.address, nft1);
       await this.token.connect(owner).approve(approved.address, nft2);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
