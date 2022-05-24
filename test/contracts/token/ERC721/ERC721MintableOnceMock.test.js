@@ -23,7 +23,7 @@ const config = {
         init: {
           method: 'initERC721Storage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -34,7 +34,7 @@ const config = {
         init: {
           method: 'initERC721MintableOnceStorage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -45,7 +45,7 @@ const config = {
         init: {
           method: 'initERC721BurnableStorage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,

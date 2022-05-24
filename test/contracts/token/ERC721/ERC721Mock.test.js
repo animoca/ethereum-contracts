@@ -23,7 +23,7 @@ const config = {
         init: {
           method: 'initERC721Storage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -34,7 +34,7 @@ const config = {
         init: {
           method: 'initERC721MetadataStorageWithBaseURIStorage',
           arguments: ['name', 'symbol', 'tokenURI'],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -45,7 +45,7 @@ const config = {
         init: {
           method: 'initERC721MintableStorage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -56,7 +56,7 @@ const config = {
         init: {
           method: 'initERC721BurnableStorage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
@@ -67,7 +67,7 @@ const config = {
         init: {
           method: 'initERC721BatchTransferStorage',
           arguments: [],
-          adminProtected: false,
+          adminProtected: true,
           versionProtected: false,
         },
         metaTxSupport: true,
