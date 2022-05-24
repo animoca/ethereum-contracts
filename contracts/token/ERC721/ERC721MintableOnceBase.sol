@@ -15,19 +15,19 @@ abstract contract ERC721MintableOnceBase is Context, IERC721MintableOnce {
     bytes32 public constant MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC721MintableOnce
-    function mintOnce(address to, uint256 tokenId) external {
+    function mint(address to, uint256 tokenId) external {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().mintOnce(_msgSender(), to, tokenId, "", false);
     }
 
     /// @inheritdoc IERC721MintableOnce
-    function batchMintOnce(address to, uint256[] calldata tokenIds) external {
+    function batchMint(address to, uint256[] calldata tokenIds) external {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().batchMintOnce(to, tokenIds);
     }
 
     /// @inheritdoc IERC721MintableOnce
-    function safeMintOnce(
+    function safeMint(
         address to,
         uint256 tokenId,
         bytes calldata data
