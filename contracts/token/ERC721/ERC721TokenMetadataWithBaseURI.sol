@@ -17,7 +17,8 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
     /// @notice Initialises the storage
     /// @notice Sets the ERC721 storage version to `1`
     /// @notice Marks the following ERC165 interfaces as supported: IERCMetadata
-    /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage is already initialized to version `1` or above.
+    /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage
+    /// is already initialized to version `1` or above.
     constructor(
         string memory name_,
         string memory symbol_,

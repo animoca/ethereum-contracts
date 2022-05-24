@@ -34,13 +34,18 @@ function shouldBehaveLikeERC721Burnable(implementation) {
     const shouldNotBeMintableAgain = function (ids) {
       ids = Array.isArray(ids) ? ids : [ids];
       context('ERC721MintableOnce', function () {
-        it('should not be mintable again, using mintOnce', async function () {
+        it('should not be mintable again, using mint', async function () {
           for (const id of ids) {
             await expect(this.token.connect(deployer).mint(owner.address, id)).to.be.revertedWith(revertMessages.BurntNFT);
           }
         });
-        it('should not be mintable again, using batchMintOnce', async function () {
+        it('should not be mintable again, using batchMint', async function () {
           await expect(this.token.connect(deployer).batchMint(owner.address, ids)).to.be.revertedWith(revertMessages.BurntNFT);
+        });
+        it('should not be mintable again, using safeMint', async function () {
+          for (const id of ids) {
+            await expect(this.token.connect(deployer).safeMint(owner.address, id, 0x0)).to.be.revertedWith(revertMessages.BurntNFT);
+          }
         });
       });
     };
