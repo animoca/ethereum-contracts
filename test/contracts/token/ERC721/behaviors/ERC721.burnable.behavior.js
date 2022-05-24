@@ -19,17 +19,11 @@ function shouldBehaveLikeERC721Burnable(implementation) {
 
         const fixture = async function() {
             this.token = await deploy(implementation.name, implementation.symbol, implementation.tokenURI, deployer);
-            //if (features.ERC721MintableOnce) {
-            //  await this.token.connect(deployer).mintOnce(owner.address, nft1);
-            //  await this.token.connect(deployer).mintOnce(owner.address, nft2);
-            //} else {
             await this.token.connect(deployer).mint(owner.address, nft1);
             await this.token.connect(deployer).mint(owner.address, nft2);
-            //}
             await this.token.connect(owner).approve(approved.address, nft1);
             await this.token.connect(owner).approve(approved.address, nft2);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
-
             this.nftBalance = await this.token.balanceOf(owner.address);
         };
 
