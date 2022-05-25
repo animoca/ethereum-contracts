@@ -92,6 +92,7 @@ runBehaviorTests(
         ERC721MintableOnce: true,
       },
       interfaces: {
+        ERC721Mintable: true, // MintableOnce should pass tests for Mintable
         ERC721Burnable: true,
       },
       methods: {},
