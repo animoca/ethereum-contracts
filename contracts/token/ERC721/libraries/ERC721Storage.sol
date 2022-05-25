@@ -177,6 +177,7 @@ library ERC721Storage {
         bytes memory data,
         bool safe
     ) internal {
+        require(to != address(0), "ERC721: mint to zero");
         uint256 owner = s.owners[tokenId];
         require(uint160(owner) == uint160(0), "ERC721: existing NFT");
         require(owner != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
