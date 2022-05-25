@@ -6,6 +6,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
+import "hardhat/console.sol";
 
 library ERC721Storage {
     using Address for address;
@@ -307,7 +308,15 @@ library ERC721Storage {
     ) private {
         uint256 owner = s.owners[id];
         require(from == address(uint160(owner)), "ERC721: non-owned NFT");
+        //console.log("HHHb from,sender,from == sender", from, sender, from == sender);
+        //console.log("HHHb s.operators[from][sender]", s.operators[from][sender]);
         if (!operatable) {
+            console.log("HHH operatable", operatable);
+            console.log("HHH from == sender", from, sender);
+            console.log("HHH s.operators[from][sender]", s.operators[from][sender]);
+            console.log("HHH, owner, owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0", owner, owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0);
+            console.log("HHH, sender, s.nftApprovals[id], sender == s.nftApprovals[id]", sender, s.nftApprovals[id], sender == s.nftApprovals[id]);
+            console.log("HHH ---");
             require((owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.nftApprovals[id], "ERC721: non-approved sender");
         }
         s.owners[id] = uint256(uint160(to));

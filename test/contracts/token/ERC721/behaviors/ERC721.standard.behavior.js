@@ -15,6 +15,13 @@ function shouldBehaveLikeERC721Standard(implementation) {
     before(async function () {
       accounts = await ethers.getSigners();
       [deployer, owner, approved, anotherApproved, operator, other] = accounts;
+
+      console.log('HHH deployer', deployer.address);
+      console.log('HHH owner', owner.address);
+      console.log('HHH approved', approved.address);
+      console.log('HHH anotherApproved', anotherApproved.address);
+      console.log('HHH operator', operator.address);
+      console.log('HHH other', other.address);
     });
 
     const nft1 = 1;
@@ -31,6 +38,7 @@ function shouldBehaveLikeERC721Standard(implementation) {
       await this.token.mint(owner.address, nft4);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
       this.receiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, this.token.address]);
+      console.log('HHH receiver721', this.receiver721.address);
       this.refusingReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [false, this.token.address]);
       this.wrongTokenReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, ZeroAddress]);
       this.nftBalance = await this.token.balanceOf(owner.address);
@@ -151,17 +159,26 @@ function shouldBehaveLikeERC721Standard(implementation) {
               await expect(transferFunction.call(this, owner, other, nft1, data)).to.be.revertedWith(revertMessages.AlreadyPaused);
             });
           }
+
           it('reverts if transferred to the zero address', async function () {
             await expect(transferFunction.call(this, owner, {address: ZeroAddress}, nft1, data)).to.be.revertedWith(revertMessages.TransferToZero);
           });
+
           it('reverts if the token does not exist', async function () {
             await expect(transferFunction.call(this, owner, other, unknownNFT, data)).to.be.revertedWith(revertMessages.NonOwnedNFT);
           });
+
           it('reverts if `from` is not the token owner', async function () {
             await expect(transferFunction.call(this, other, other, nft1, data)).to.be.revertedWith(revertMessages.NonOwnedNFT);
           });
+
           it('reverts if the sender is not authorized for the token', async function () {
             await expect(transferFunction.call(this, owner, other, nft1, data, other)).to.be.revertedWith(revertMessages.NonApproved);
+          });
+
+          it("doesn't revert if the sender is authorized for the token", async function () {
+            await this.token.connect(owner).approve(other.address, nft1);
+            await expect(transferFunction.call(this, owner, other, nft1, data, other));
           });
 
           if (safe) {
