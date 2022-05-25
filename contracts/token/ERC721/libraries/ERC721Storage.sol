@@ -178,9 +178,7 @@ library ERC721Storage {
         bool safe
     ) internal {
         require(to != address(0), "ERC721: mint to zero");
-        uint256 owner = s.owners[tokenId];
-        require(uint160(owner) == uint160(0), "ERC721: existing NFT");
-        require(owner != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
+        require(s.owners[tokenId] != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
 
         _mintNFT(s, to, tokenId, false);
 
@@ -218,8 +216,7 @@ library ERC721Storage {
         uint256 length = tokenIds.length;
         for (uint256 i; i != length; ++i) {
             uint256 tokenId = tokenIds[i];
-            uint256 owner = s.owners[tokenId];
-            require(owner != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
+            require(s.owners[tokenId] != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
             _mintNFT(s, to, tokenId, true);
             emit Transfer(address(0), to, tokenId);
         }
