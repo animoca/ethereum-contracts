@@ -7,7 +7,15 @@ const { shouldSupportInterfaces } = require('../../../introspection/behaviors/Su
 const { deployTestHelperContract } = require('../../../../helpers/run');
 
 function shouldBehaveLikeERC721Standard(implementation) {
-    const { deploy, revertMessages, interfaces } = implementation;
+    const { name, deploy, revertMessages, interfaces, methods } = implementation;
+
+    const { 'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721 } = methods;
+
+    if (batchTransferFrom_ERC721 === undefined) {
+        console.log(
+            `ERC721: non-standard ERC721 method batchTransfer(address,uint256[]) is not supported by ${name}, associated tests will be skipped`
+        );
+    }
 
     describe('like an ERC721 Standard', function() {
         let accounts, deployer, owner, approved, anotherApproved, operator, other;
@@ -31,7 +39,6 @@ function shouldBehaveLikeERC721Standard(implementation) {
             await this.token.mint(owner.address, nft4);
             await this.token.connect(owner).setApprovalForAll(operator.address, true);
             this.receiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, this.token.address]);
-            console.log('HHH receiver721', this.receiver721.address);
             this.refusingReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [false, this.token.address]);
             this.wrongTokenReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, ZeroAddress]);
             this.nftBalance = await this.token.balanceOf(owner.address);
@@ -225,9 +232,12 @@ function shouldBehaveLikeERC721Standard(implementation) {
             });
 
             describe('batchTransferFrom(address,adress,uint256[])', function() {
+                if (batchTransferFrom_ERC721 === undefined) {
+                    return;
+                }
                 const transferFn = async function(from, to, tokenIds, data = undefined, signer = from) {
                     const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-                    return this.token.connect(signer).batchTransferFrom(from.address, to.address, ids);
+                    return batchTransferFrom_ERC721(this.token, from.address, to.address, ids, signer);
                 };
                 const safe = false;
                 const data = undefined;
