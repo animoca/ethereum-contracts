@@ -109,6 +109,9 @@ runBehaviorTests(
         'batchMint(address,uint256[])': async function (contract, to, tokenIds, signer) {
           return contract.connect(signer).batchMint(to, tokenIds);
         },
+        'batchBurnFrom(address,uint256[])': async function (contract, from, tokenIds, signer) {
+          return contract.connect(signer).batchBurnFrom(from, tokenIds);
+        },
       },
       deploy: async function (name, symbol, tokenURI, deployer) {
         const contract = await deployFn({name, symbol, tokenURI});
