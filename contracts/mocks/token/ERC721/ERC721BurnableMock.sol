@@ -13,4 +13,9 @@ contract ERC721BurnableMock is ERC721, ERC721Mintable, ERC721Burnable, ERC721Tok
         string memory symbol_,
         string memory tokenURI_
     ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) {}
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
+    }
+    
 }

@@ -6,6 +6,8 @@ import {ERC721MintableOnce} from "./../../../token/ERC721/ERC721MintableOnce.sol
 import {ERC721Burnable} from "./../../../token/ERC721/ERC721Burnable.sol";
 import {ERC721TokenMetadataWithBaseURI} from "./../../../token/ERC721/ERC721TokenMetadataWithBaseURI.sol";
 import {Ownable} from "./../../../access/Ownable.sol";
+import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721MintableOnceFacetMock
 contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721Burnable, ERC721TokenMetadataWithBaseURI {
@@ -14,4 +16,8 @@ contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721Burnable, E
         string memory symbol_,
         string memory tokenURI_
     ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) Ownable(msg.sender) {}
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
+    }
 }

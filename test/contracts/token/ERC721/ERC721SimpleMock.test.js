@@ -1,4 +1,4 @@
-const {behavesLikeERC721} = require('./behaviors/ERC721.behavior');
+const {shouldBehaveLikeERC721} = require('./behaviors/ERC721.behavior');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
 const name = 'ERC721Mock';
@@ -95,5 +95,5 @@ runBehaviorTests('Simple ERC721', config, function (deployFn) {
     },
   };
 
-  behavesLikeERC721(implementation);
+  shouldBehaveLikeERC721(implementation);
 });
