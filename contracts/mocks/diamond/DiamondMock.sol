@@ -17,9 +17,9 @@ contract DiamondMock is Diamond {
         bytes4[] memory selectors = new bytes4[](1);
         selectors[0] = DiamondMock.immutableFunction.selector;
         IDiamondCutBase.FacetCut[] memory cut = new IDiamondCutBase.FacetCut[](1);
-        cut[0].facetAddress = address(this);
-        cut[0].action = IDiamondCutBase.FacetCutAction.Add;
-        cut[0].functionSelectors = selectors;
+        cut[0].facet = address(this);
+        cut[0].action = IDiamondCutBase.FacetCutAction.ADD;
+        cut[0].selectors = selectors;
 
         DiamondStorage.layout().diamondCut(cut, address(0), "");
     }

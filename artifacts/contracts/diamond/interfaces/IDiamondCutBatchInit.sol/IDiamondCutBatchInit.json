@@ -10,7 +10,7 @@
           "components": [
             {
               "internalType": "address",
-              "name": "facetAddress",
+              "name": "facet",
               "type": "address"
             },
             {
@@ -20,7 +20,7 @@
             },
             {
               "internalType": "bytes4[]",
-              "name": "functionSelectors",
+              "name": "selectors",
               "type": "bytes4[]"
             }
           ],
@@ -51,7 +51,7 @@
           "components": [
             {
               "internalType": "address",
-              "name": "facetAddress",
+              "name": "facet",
               "type": "address"
             },
             {
@@ -61,7 +61,7 @@
             },
             {
               "internalType": "bytes4[]",
-              "name": "functionSelectors",
+              "name": "selectors",
               "type": "bytes4[]"
             }
           ],
@@ -73,12 +73,12 @@
           "components": [
             {
               "internalType": "address",
-              "name": "initContract",
+              "name": "target",
               "type": "address"
             },
             {
               "internalType": "bytes",
-              "name": "initData",
+              "name": "data",
               "type": "bytes"
             }
           ],

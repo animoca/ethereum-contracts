@@ -44,6 +44,7 @@
 #### Solidity
 
 - Removed initialization function in `InterfaceDetectionStorage.sol`.
+- Optimised Diamond implementation.
 - Added all getters logic in storage libraries.
 - Splitted the storage initialization logic between immutable and proxied version for optimisation.
 - Improved in-line comments.

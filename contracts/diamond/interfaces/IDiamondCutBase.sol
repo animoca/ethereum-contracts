@@ -4,21 +4,21 @@ pragma experimental ABIEncoderV2;
 
 interface IDiamondCutBase {
     enum FacetCutAction {
-        Add,
-        Replace,
-        Remove
+        ADD,
+        REPLACE,
+        REMOVE
     }
     // Add=0, Replace=1, Remove=2
 
     struct FacetCut {
-        address facetAddress;
+        address facet;
         FacetCutAction action;
-        bytes4[] functionSelectors;
+        bytes4[] selectors;
     }
 
     struct Initialization {
-        address initContract;
-        bytes initData;
+        address target;
+        bytes data;
     }
 
     /// @notice Emitted when at least a cut action is operated on the diamond.
