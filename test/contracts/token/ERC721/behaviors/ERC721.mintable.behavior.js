@@ -6,7 +6,15 @@ const {ethers} = require('hardhat');
 const {deployTestHelperContract} = require('../../../../helpers/run');
 
 function shouldBehaveLikeERC721Mintable(implementation) {
-  const {deploy, revertMessages} = implementation;
+  const {name, deploy, revertMessages, methods} = implementation;
+
+  const {'mint(address,uint256)': mint_ERC721} = methods;
+
+  if (mint_ERC721 === undefined) {
+    console.log(
+      `ERC721Mintable: non-standard ERC721 method mint(address,uint256)` + ` is not supported by ${name}, associated tests will be skipped`
+    );
+  }
 
   describe('like a Mintable ERC721', function () {
     let accounts, deployer, owner;
@@ -109,8 +117,12 @@ function shouldBehaveLikeERC721Mintable(implementation) {
     };
 
     context('mint(address, uint256)', function () {
+      if (mint_ERC721 === undefined) {
+        return;
+      }
+
       const mintFn = async function (to, tokenId, data, signer = deployer) {
-        return this.token.connect(signer).mint(to.address, tokenId);
+        return mint_ERC721(this.token, to.address, tokenId, signer);
       };
       const safe = false;
       const data = undefined;

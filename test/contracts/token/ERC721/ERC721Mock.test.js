@@ -121,6 +121,9 @@ runBehaviorTests(
         'batchTransferFrom(address,address,uint256[])': async function (contract, from, to, ids, signer) {
           return contract.connect(signer).batchTransferFrom(from, to, ids);
         },
+        'mint(address,uint256)': async function (contract, to, tokenId, signer) {
+          return contract.connect(signer).mint(to, tokenId);
+        },
       },
       deploy: async function (name, symbol, tokenURI, deployer) {
         const contract = await deployFn({name, symbol, tokenURI});
