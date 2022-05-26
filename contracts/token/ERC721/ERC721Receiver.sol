@@ -1,20 +1,18 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.13;
 
-import {IERC165} from "./../../introspection/interfaces/IERC165.sol";
+import {ERC721ReceiverBase} from "./ERC721ReceiverBase.sol";
 import {IERC721Receiver} from "./interfaces/IERC721Receiver.sol";
+import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC165} from "./../../introspection/ERC165.sol";
 
 /// @title ERC721 Non-Fungble Token Standard, Safe Transfers Receiver Contract.
 /// @dev The function `onERC721Received(address,address,uint256,bytes)` needs to be implemented by a child contract.
-abstract contract ERC721Receiver is IERC165, IERC721Receiver {
-    bytes4 internal constant _ERC721_RECEIVED = type(IERC721Receiver).interfaceId;
-    bytes4 internal constant _ERC721_REJECTED = 0xffffffff;
+abstract contract ERC721Receiver is ERC721ReceiverBase, ERC165 {
+    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
-    //======================================================= ERC165 ========================================================//
-
-    /// @inheritdoc IERC165
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC721Receiver).interfaceId;
+    /// @notice Marks the following ERC165 interface(s) as supported: IERC721Receiver.
+    constructor() {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Receiver).interfaceId, true);
     }
 }
