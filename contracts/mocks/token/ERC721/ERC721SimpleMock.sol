@@ -9,13 +9,8 @@ import {Ownable} from "./../../../access/Ownable.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
-contract ERC721SimpleMock is ERC721, ERC721Mintable, ERC721TokenMetadataWithBaseURI, ForwarderRegistryContextBase {
-   constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory tokenURI_,
-        IForwarderRegistry forwarderRegistry
-    ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) ForwarderRegistryContextBase(forwarderRegistry) {}
+contract ERC721SimpleMock is ERC721, ERC721Mintable, ForwarderRegistryContextBase {
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     function __msgData() external view returns (bytes calldata) {
         return _msgData();
