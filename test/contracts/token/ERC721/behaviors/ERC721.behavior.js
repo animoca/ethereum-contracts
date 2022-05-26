@@ -7,13 +7,8 @@ function behavesLikeERC721(implementation) {
     describe('like an ERC721', function() {
 
         shouldBehaveLikeERC721Standard(implementation);
+        shouldBehaveLikeERC721Mintable(implementation);
 
-        if (implementation.interfaces.ERC721) {
-            shouldBehaveLikeERC721Standard(implementation);
-        }
-        if (implementation.interfaces.ERC721Mintable) {
-            shouldBehaveLikeERC721Mintable(implementation);
-        }
         if (implementation.interfaces.ERC721Burnable) {
             shouldBehaveLikeERC721Burnable(implementation);
         }
