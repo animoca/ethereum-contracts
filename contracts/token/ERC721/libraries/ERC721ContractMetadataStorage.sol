@@ -35,6 +35,14 @@ library ERC721ContractMetadataStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
+    function contractName(Layout storage s) internal view returns (string memory) {
+        return s.name;
+    }
+
+    function contractSymbol(Layout storage s) internal view returns (string memory) {
+        return s.symbol;
+    }
+
     function layout() internal pure returns (Layout storage s) {
         bytes32 position = ERC721CONTRACTMETADATA_STORAGE_POSITION;
         assembly {

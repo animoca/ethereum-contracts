@@ -38,6 +38,10 @@ library ERC721TokenMetadataWithBaseURIStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
+    function contractTokenURI(Layout storage s) internal view returns (string memory) {
+        return s.tokenURI;
+    }
+
     function layout() internal pure returns (Layout storage s) {
         bytes32 position = ERC721TOKENMETADATAWITHBASEURI_STORAGE_POSITION;
         assembly {
