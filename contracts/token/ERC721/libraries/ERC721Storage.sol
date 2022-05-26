@@ -41,6 +41,35 @@ library ERC721Storage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
     }
 
+    function balanceOf(Layout storage s, address owner) internal view returns (uint256) {
+        require(owner != address(0), "ERC721: zero address");
+        return s.nftBalances[owner];
+    }
+
+    function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address) {
+        address owner = address(uint160(s.owners[tokenId]));
+        require(owner != address(0), "ERC721: non-existing NFT");
+        return owner;
+    }
+
+    function isApprovedForAll(
+        Layout storage s,
+        address owner,
+        address operator
+    ) internal view returns (bool) {
+        return s.operators[owner][operator];
+    }
+
+    function getApproved(Layout storage s, uint256 tokenId) internal view returns (address) {
+        uint256 owner = s.owners[tokenId];
+        require(address(uint160(owner)) != address(0), "ERC721: non-existing NFT");
+        if (owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) {
+            return s.nftApprovals[tokenId];
+        } else {
+            return address(0);
+        }
+    }
+
     function approve(
         Layout storage s,
         address sender,
@@ -77,16 +106,6 @@ library ERC721Storage {
         require(operator != sender, "ERC721: self-approval");
         s.operators[sender][operator] = approved;
         emit ApprovalForAll(sender, operator, approved);
-    }
-
-    function getApproved(Layout storage s, uint256 tokenId) internal view returns (address) {
-        uint256 owner = s.owners[tokenId];
-        require(address(uint160(owner)) != address(0), "ERC721: non-existing NFT");
-        if (owner & _APPROVAL_BIT_TOKEN_OWNER_ != 0) {
-            return s.nftApprovals[tokenId];
-        } else {
-            return address(0);
-        }
     }
 
     function transferFrom(

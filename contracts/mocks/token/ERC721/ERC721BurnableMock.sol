@@ -17,5 +17,4 @@ contract ERC721BurnableMock is ERC721, ERC721Mintable, ERC721Burnable, ERC721Tok
     function __msgData() external view returns (bytes calldata) {
         return _msgData();
     }
-    
 }

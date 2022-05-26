@@ -15,15 +15,17 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
 
     /// @inheritdoc IERC721
     function balanceOf(address owner) public view virtual override returns (uint256) {
-        require(owner != address(0), "ERC721: zero address");
-        return ERC721Storage.layout().nftBalances[owner];
+        return ERC721Storage.layout().balanceOf(owner);
     }
 
     /// @inheritdoc IERC721
     function ownerOf(uint256 tokenId) public view virtual override returns (address) {
-        address owner = address(uint160(ERC721Storage.layout().owners[tokenId]));
-        require(owner != address(0), "ERC721: non-existing NFT");
-        return owner;
+        return ERC721Storage.layout().ownerOf(tokenId);
+    }
+
+    /// @inheritdoc IERC721
+    function getApproved(uint256 tokenId) external view returns (address operator) {
+        return ERC721Storage.layout().getApproved(tokenId);
     }
 
     /// @inheritdoc IERC721
@@ -65,12 +67,7 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     }
 
     /// @inheritdoc IERC721
-    function getApproved(uint256 tokenId) external view returns (address operator) {
-        return ERC721Storage.layout().getApproved(tokenId);
-    }
-
-    /// @inheritdoc IERC721
     function isApprovedForAll(address owner, address operator) external view returns (bool) {
-        return ERC721Storage.layout().operators[owner][operator];
+        return ERC721Storage.layout().isApprovedForAll(owner, operator);
     }
 }
