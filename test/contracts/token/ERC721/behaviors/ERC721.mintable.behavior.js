@@ -5,8 +5,8 @@ const ReceiverType = require('../../ReceiverType');
 const { ethers } = require('hardhat');
 const { deployTestHelperContract } = require('../../../../helpers/run');
 
-function shouldBehaveLikeERC721Mintable(implementation) {
-    const { name, deploy, revertMessages, methods } = implementation;
+function shouldBehaveLikeERC721Mintable({ name, deploy, revertMessages, methods }) {
+    //const { name, deploy, revertMessages, methods } = implementation;
 
     const {
         'mint(address,uint256)': mint_ERC721,

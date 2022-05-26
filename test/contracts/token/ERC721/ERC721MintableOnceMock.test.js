@@ -63,7 +63,6 @@ const config = {
     },
 };
 
-const includeDiamondTest = true;
 runBehaviorTests(
     'Mintable Once ERC721',
     config,
@@ -124,6 +123,5 @@ runBehaviorTests(
         };
 
         behavesLikeERC721(implementation);
-    },
-    includeDiamondTest
+    }
 );

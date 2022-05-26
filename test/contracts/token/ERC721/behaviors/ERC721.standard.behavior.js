@@ -6,8 +6,8 @@ const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const { deployTestHelperContract } = require('../../../../helpers/run');
 
-function shouldBehaveLikeERC721Standard(implementation) {
-    const { name, deploy, mint, revertMessages, interfaces, methods } = implementation;
+function shouldBehaveLikeERC721Standard({ name, deploy, mint, revertMessages, interfaces, methods }) {
+    //const { name, deploy, mint, revertMessages, interfaces, methods } = implementation;
 
     const { 'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721 } = methods;
 

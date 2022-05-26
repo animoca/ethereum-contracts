@@ -3,8 +3,8 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function shouldBehaveLikeERC721Burnable(implementation) {
-    const { name, deploy, mint, features, revertMessages, interfaces, methods } = implementation;
+function shouldBehaveLikeERC721Burnable({ name, deploy, mint, features, revertMessages, interfaces, methods }) {
+    //const { name, deploy, mint, features, revertMessages, interfaces, methods } = implementation;
 
     const { 'burnFrom(address,uint256)': burnFrom_ERC721, 'batchBurnFrom(address,uint256[])': batchBurnFrom_ERC721 } = methods;
 

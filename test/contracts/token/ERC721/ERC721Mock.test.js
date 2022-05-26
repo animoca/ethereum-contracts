@@ -85,12 +85,13 @@ const config = {
     },
 };
 
-const includeDiamondTest = true;
 runBehaviorTests(
     'Standard ERC721',
     config,
     function(deployFn) {
         const implementation = {
+            contractName: name,
+            nfMaskLength: 32,
             name,
             symbol,
             tokenURI,
@@ -148,6 +149,5 @@ runBehaviorTests(
         };
 
         behavesLikeERC721(implementation);
-    },
-    includeDiamondTest
+    }
 );

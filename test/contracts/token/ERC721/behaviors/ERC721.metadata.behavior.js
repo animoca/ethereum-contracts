@@ -3,8 +3,8 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const { shouldSupportInterfaces } = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function shouldBehaveLikeERC721Metadata(implementation) {
-    const { name, symbol, features, deploy, revertMessages } = implementation;
+function shouldBehaveLikeERC721Metadata({ name, symbol, features, deploy, revertMessages }) {
+    //const { name, symbol, features, deploy, revertMessages } = implementation;
 
     describe('like a ERC721Metadata', function() {
         let accounts, deployer, owner;
