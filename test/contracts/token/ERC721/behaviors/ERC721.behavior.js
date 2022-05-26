@@ -4,7 +4,7 @@ const { shouldBehaveLikeERC721Burnable } = require('./ERC721.burnable.behavior')
 const { shouldBehaveLikeERC721Metadata } = require('./ERC721.metadata.behavior');
 
 function behavesLikeERC721(implementation) {
-    describe.only('like an ERC721', function() {
+    describe('like an ERC721', function() {
         if (implementation.interfaces.ERC721) {
             shouldBehaveLikeERC721Standard(implementation);
         }
