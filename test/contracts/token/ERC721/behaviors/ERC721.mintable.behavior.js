@@ -10,6 +10,7 @@ function shouldBehaveLikeERC721Mintable(implementation) {
 
     const {
         'mint(address,uint256)': mint_ERC721,
+        'batchMint(address,uint256[])': batchMint_ERC721,
         'safeMint(address,uint256,bytes)': safeMint_ERC721
     } = methods;
 
@@ -18,7 +19,12 @@ function shouldBehaveLikeERC721Mintable(implementation) {
             `ERC721Mintable: non-standard ERC721 method mint(address,uint256)` + ` is not supported by ${name}, associated tests will be skipped`
         );
     }
-
+    if (batchMint_ERC721 === undefined) {
+        console.log(
+            `ERC721Mintable: non-standard ERC721 method batchMint(address,uint256[])` +
+            `is not supported by ${contractName}, associated tests will be skipped`
+        );
+    }
     if (safeMint_ERC721 === undefined) {
         console.log(
             `ERC721Mintable: non-standard ERC721 method safeMint(address,uint256,bytes)` +
@@ -142,9 +148,12 @@ function shouldBehaveLikeERC721Mintable(implementation) {
         });
 
         context('batchMint(address, uint256[])', function() {
+            if (batchMint_ERC721 === undefined) {
+                return;
+            }
             const mintFn = async function(to, tokenIds, data, signer = deployer) {
                 const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-                return this.token.connect(signer).batchMint(to.address, ids);
+                return batchMint_ERC721(this.token, to.address, ids, signer);
             };
             const safe = false;
             shouldRevertOnPreconditions(mintFn, safe);
@@ -163,8 +172,10 @@ function shouldBehaveLikeERC721Mintable(implementation) {
         });
 
         context('safeMint(address,uint256,bytes)', function() {
+            if (safeMint_ERC721 === undefined) {
+                return;
+            }
             const mintFn = async function(to, tokenId, data, signer = deployer) {
-                //return this.token.connect(signer).safeMint(to.address, tokenId, data);
                 return safeMint_ERC721(this.token, to.address, tokenId, data, signer);
             };
             const safe = true;

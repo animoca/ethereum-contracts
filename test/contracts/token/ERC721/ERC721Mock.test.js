@@ -127,6 +127,9 @@ runBehaviorTests(
                 'safeMint(address,uint256,bytes)': async function(contract, to, tokenId, data, signer) {
                     return contract.connect(signer).safeMint(to, tokenId, data);
                 },
+                'batchMint(address,uint256[])': async function(contract, to, tokenIds, signer) {
+                    return contract.connect(signer).batchMint(to, tokenIds);
+                },
             },
             deploy: async function(name, symbol, tokenURI, deployer) {
                 const contract = await deployFn({ name, symbol, tokenURI });
