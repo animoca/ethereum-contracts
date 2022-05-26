@@ -30,6 +30,9 @@ library InterfaceDetectionStorage {
     /// @param interfaceId The interface identifier to test.
     /// @return supported True if the interface is supported, false if `interfaceId` is `0xffffffff` or if the interface is not supported.
     function supportsInterface(Layout storage s, bytes4 interfaceId) internal view returns (bool supported) {
+        if (interfaceId == 0xffffffff) {
+            return false;
+        }
         if (interfaceId == type(IERC165).interfaceId) {
             return true;
         }

@@ -9,7 +9,7 @@ import {ERC20Base} from "./ERC20Base.sol";
 contract ERC20 is ERC20Base {
     using ERC20Storage for ERC20Storage.Layout;
 
-    /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.

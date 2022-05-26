@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 contract FacetMock {
     event FacetFunctionCalled();
 
-    function init() external {
+    function doSomething() external {
         emit FacetFunctionCalled();
     }
 

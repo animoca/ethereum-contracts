@@ -6,7 +6,7 @@ import {InterfaceDetectionStorage} from "../../introspection/libraries/Interface
 import {InterfaceDetection} from "../../introspection/InterfaceDetection.sol";
 import {ERC20ReceiverBase} from "./ERC20ReceiverBase.sol";
 
-/// @title ERC20 Fungible Token Standard, optional extension: Permit (immutable version).
+/// @title ERC20 Fungible Token Standard, Receiver (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ERC20Receiver is ERC20ReceiverBase, InterfaceDetection {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;

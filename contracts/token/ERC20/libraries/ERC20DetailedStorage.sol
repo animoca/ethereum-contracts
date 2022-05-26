@@ -18,7 +18,7 @@ library ERC20DetailedStorage {
     bytes32 public constant ERC20DETAILED_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.storage")) - 1);
     bytes32 public constant ERC20DETAILED_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.version")) - 1);
 
-    /// @notice Initialises the storage with the token details.
+    /// @notice Initializes the storage with the token details.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param name_ The token name.
@@ -36,7 +36,7 @@ library ERC20DetailedStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Detailed).interfaceId, true);
     }
 
-    /// @notice Initialises the storage with the token details.
+    /// @notice Initializes the storage with the token details.
     /// @notice Sets the ERC20Detailed storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.

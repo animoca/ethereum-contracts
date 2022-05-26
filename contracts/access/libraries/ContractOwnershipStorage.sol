@@ -18,7 +18,7 @@ library ContractOwnershipStorage {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    /// @notice Initialises the storage with an initial contract owner.
+    /// @notice Initializes the storage with an initial contract owner.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
@@ -31,7 +31,7 @@ library ContractOwnershipStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC173).interfaceId, true);
     }
 
-    /// @notice Initialises the storage with an initial contract owner.
+    /// @notice Initializes the storage with an initial contract owner.
     /// @notice Sets the ownership storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.

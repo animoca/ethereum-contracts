@@ -10,7 +10,7 @@ import {ContractOwnershipBase} from "./ContractOwnershipBase.sol";
 abstract contract ContractOwnership is ContractOwnershipBase, InterfaceDetection {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
-    /// @notice Initialises the storage with an initial contract owner.
+    /// @notice Initializes the storage with an initial contract owner.
     /// @notice Marks the following ERC165 interfaces as supported: ERC173.
     /// @dev Emits as {OwnershipTransferred} if `initialOwner` is not the zero address.
     /// @param initialOwner the initial contract owner.

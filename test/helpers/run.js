@@ -1,6 +1,6 @@
-const {ethers, deployments} = require('hardhat');
+const {ethers} = require('hardhat');
 const {ZeroAddress} = require('../../src/constants');
-const {deployDiamond, facetInit} = require('./diamond');
+const {deployDiamond, facetInit, mergeABIs} = require('./diamond');
 const {deployForwarderRegistry} = require('./metatx');
 
 async function getDeployerAddress() {
@@ -34,10 +34,12 @@ function runBehaviorTests(name, config, behaviorFn) {
     const abiExtensions = config.abiExtensions !== undefined ? config.abiExtensions : [];
     const artifact = await deployments.getArtifact(config.immutable.name);
     const abi = [...artifact.abi];
+    const extensionABIs = [];
     for (const extension of abiExtensions) {
       const extensionArtifact = await deployments.getArtifact(extension);
-      abi.push(...extensionArtifact.abi.filter((el) => el.type !== 'constructor'));
+      extensionABIs.push(extensionArtifact.abi);
     }
+    mergeABIs(abi, extensionABIs, (el) => el.type !== 'constructor');
     const Contract = await ethers.getContractFactory(abi, artifact.bytecode);
     const contract = await Contract.deploy(...ctorArguments);
     await contract.deployed();

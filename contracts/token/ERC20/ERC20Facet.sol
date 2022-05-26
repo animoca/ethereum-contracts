@@ -17,7 +17,7 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Sets the ERC20 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Reverts if the sender is not the proxy admin.

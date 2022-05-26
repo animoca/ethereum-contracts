@@ -23,14 +23,14 @@ library ERC20PermitStorage {
     // 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9
     bytes32 internal constant PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
     function constructorInit() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Permit).interfaceId, true);
     }
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Sets the ERC20Permit storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.

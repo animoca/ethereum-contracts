@@ -17,7 +17,7 @@ contract ERC20MetadataFacet is ERC20MetadataBase, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with an initial token URI.
+    /// @notice Initializes the storage with an initial token URI.
     /// @notice Sets the ERC20Metadata storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
     /// @dev Reverts if the sender is not the proxy admin.

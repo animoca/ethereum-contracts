@@ -16,7 +16,7 @@ library ERC20MetadataStorage {
     bytes32 public constant ERC20METADATA_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.storage")) - 1);
     bytes32 public constant ERC20METADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.version")) - 1);
 
-    /// @notice Initialises the storage with an initial token URI.
+    /// @notice Initializes the storage with an initial token URI.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param uri The token URI.
@@ -25,7 +25,7 @@ library ERC20MetadataStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Metadata).interfaceId, true);
     }
 
-    /// @notice Initialises the storage with an initial token URI.
+    /// @notice Initializes the storage with an initial token URI.
     /// @notice Sets the ERC20Metadata storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.

@@ -17,7 +17,7 @@ contract ERC20PermitFacet is ERC20PermitBase, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Sets the ERC20Permit storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
     /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.

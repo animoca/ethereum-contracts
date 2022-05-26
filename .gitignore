@@ -13,20 +13,18 @@ yalc.lock
 !.env.example
 
 cache/
-cache.coverage/
 
 artifacts/*
 !artifacts/contracts/
 !artifacts/build-info/
 
-artifacts.bak/
-artifacts.coverage/
+coverage/
+coverage.json
+*.coverage/
 
-coverage*
-.coverage*
 flattened*
 docs/
-gas-report.md
+gas-report*
 
 deployments/hardhat*
 deployments/localhost*

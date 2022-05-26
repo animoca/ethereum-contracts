@@ -9,7 +9,7 @@ import {ERC20DetailedBase} from "./ERC20DetailedBase.sol";
 abstract contract ERC20Detailed is ERC20DetailedBase {
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
 
-    /// @notice Initialises the storage with the token details.
+    /// @notice Initializes the storage with the token details.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @param name_ The token name.
     /// @param symbol_ The token symbol.

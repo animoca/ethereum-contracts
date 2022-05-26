@@ -17,7 +17,7 @@ contract ContractOwnershipFacet is ContractOwnershipBase, ForwarderRegistryConte
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with an initial contract owner.
+    /// @notice Initializes the storage with an initial contract owner.
     /// @notice Sets the ownership storage version to 1.
     /// @notice Marks the following ERC165 interfaces as supported: ERC173.
     /// @dev Reverts if the sender is not the proxy admin.

@@ -25,7 +25,7 @@ library ERC20Storage {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
@@ -45,7 +45,7 @@ library ERC20Storage {
         erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
     }
 
-    /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Sets the ERC20 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.

@@ -7,26 +7,27 @@ Solidity contracts development library which uses [HardHat](https://hardhat.org/
 
 ## Solidity contracts
 
-### Structure
+### Design
 
 The contracts are designed to be usable in any setup, behind a proxy or not. To achieve this, every storage is managed via [diamond storage pattern](https://dev.to/mudgen/how-diamond-storage-works-90e).
 
-The contracts are named using the following convention:
-| contract                       | description                                                                           |
-| ------------------------------ | ------------------------------------------------------------------------------------- |
-| `libraries/XXXXStorage.sol`    | Library managing the diamond storage and the core contract logic                      |
-| `XXXBase.sol`                  | The base proxiable contract. Should be inherited by a proxied implementation          |
-| `XXX.sol`                      | The base immutable contract. Should be inherited by an immutable implementation       |
-| `XXXFacet.sol`                 | The facet implementation. Should be deployed and used as a diamond facet              |
+The solidity files are named using the following convention:
 
-Most features come with a ready-to-deploy facet.
+- `libraries/XYZStorage.sol`: Library managing the diamond storage and the core contract logic.  
+  Does not deal with access control and sender-related logic (such as for meta-transactions).
+- `XYZBase.sol`: Base abstract proxiable contract. Should be inherited by a proxied contract implementation.  
+  Deals with access control and sender-related logic. Does not deal with initialization sequence.
+- `XYZ.sol`: Abstract immutable contract. Should be inherited by an immutable contract implementation.  
+  Provides the initialization sequence via its `constructor`.
+- `XYZFacet.sol`: Deployable diamond facet. Should be deployed and used via a diamond proxy.  
+  Provides the initialization sequence via an initialization function.
 
 To use a contract, simply import it in your code, for example:
 
 ```solidity
-import "@animoca/ethereum-contracts/contracts/access/Ownable.sol";
+import "@animoca/ethereum-contracts/contracts/access/ContractOwnership.sol";
 
-contract MyContract is Ownable {
+contract MyContract is ContractOwnership {
   // my code...
 }
 ```
@@ -49,22 +50,22 @@ Forwarding a meta-transaction can be done in a few different ways:
 
 - Direct forwarding: after the forwarder has been approved, it can directly call the target contract.
 - `ForwarderRegistry` forwarding: The `ForwarderRegistry` can also be used to forward the meta-transactions:
-    1. after a forwarder has been approved, it can call `forward(address target, bytes data)` on the `ForwarderRegistry`.
-    2. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `checkApprovalAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will forward the meta-transaction to the target contract without registering the forwarder approval.
-    3. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `approveAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will approve the forwarder and then forward the meta-transaction to the target contract. This method is a shortcut enabling meta-transactions usage from the first user transaction.
+  1. after a forwarder has been approved, it can call `forward(address target, bytes data)` on the `ForwarderRegistry`.
+  2. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `checkApprovalAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will forward the meta-transaction to the target contract without registering the forwarder approval.
+  3. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `approveAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will approve the forwarder and then forward the meta-transaction to the target contract. This method is a shortcut enabling meta-transactions usage from the first user transaction.
 
 ## HardHat plugins and configurations
 
 A set of plugins and configurations are provided to improve the development experience. They can be used in your own project in your `hardhat.config.js`:
 
 ```javascript
-const merge = require('lodash.merge');
+const merge = require("lodash.merge");
 
 // load all the plugins (you can also load them one by one)
-require('@animoca/ethereum-contracts/hardhat-plugins');
+require("@animoca/ethereum-contracts/hardhat-plugins");
 
 // deep merges your config on top of the default provided config
-module.exports = merge(require('@animoca/ethereum-contracts/hardhat-config'), {
+module.exports = merge(require("@animoca/ethereum-contracts/hardhat-config"), {
   // my config
 });
 ```
@@ -76,9 +77,9 @@ See the `README.md` of each plugin for more details.
 Some constants and reusable test behaviors can be used in your own testing code:
 
 ```javascript
-const {constants, behaviors} = require("@animoca/ethereum-contracts");
-const {ZeroAddress, EmptyByte} = constants;
-const {shouldSupportInterfaces} = behaviors;
+const { constants, behaviors } = require("@animoca/ethereum-contracts");
+const { ZeroAddress, EmptyByte } = constants;
+const { shouldSupportInterfaces } = behaviors;
 
 // Your tests
 ```
@@ -92,11 +93,11 @@ Some behaviors, such as some token standards extensively test the whole standard
 To speed up tests execution, fixtures based one `evm_snapshot`/`evm_revert` can be used. For example:
 
 ```javascript
-const {loadFixture} = require('@animoca/ethereum-contracts/test/helpers/fixtures');
+const { loadFixture } = require("@animoca/ethereum-contracts/test/helpers/fixtures");
 
-describe('MyContract', function () {
+describe("MyContract", function () {
   const fixture = async function () {
-    // contract(s) initialisation
+    // contract(s) initialization
   };
 
   beforeEach(async function () {
@@ -123,19 +124,19 @@ A test runner function allows to test some contract logic in immutable setup as 
 Here is a simple usage example where the same testing logic will be applied to both the immutable version and the facet version of a contract:
 
 ```javascript
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
+const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require("../../helpers/run");
+const { loadFixture } = require("../../helpers/fixtures");
 
 const config = {
-  immutable: {name: 'MyImmutableContract', ctorArguments: ['myArg', 'forwarderRegistry']},
+  immutable: { name: "MyImmutableContract", ctorArguments: ["myArg", "forwarderRegistry"] },
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
+      { name: "ProxyAdminFacet", ctorArguments: ["forwarderRegistry"], init: { method: "initProxyAdminStorage", arguments: ["initialAdmin"] } },
+      { name: "DiamondCutFacet", ctorArguments: ["forwarderRegistry"], init: { method: "initDiamondCutStorage" } },
       {
-        name: 'MyFacetContract',
-        ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initMyStorage', arguments: ['myArg']},
+        name: "MyFacetContract",
+        ctorArguments: ["forwarderRegistry"],
+        init: { method: "initMyStorage", arguments: ["myArg"] },
       },
     ],
   },
@@ -145,9 +146,9 @@ const config = {
   },
 };
 
-runBehaviorTests('MyContract', config, function (deployFn) {
+runBehaviorTests("MyContract", config, function (deployFn) {
   const fixture = async function () {
-    this.contract = await deployFn({myArg: 'test'});
+    this.contract = await deployFn({ myArg: "test" });
   };
 
   beforeEach(async function () {

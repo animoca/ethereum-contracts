@@ -16,7 +16,7 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with the token details.
+    /// @notice Initializes the storage with the token details.
     /// @notice Sets the ERC20Detailed storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Reverts if the sender is not the proxy admin.

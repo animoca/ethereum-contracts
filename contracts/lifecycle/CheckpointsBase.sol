@@ -14,16 +14,16 @@ abstract contract CheckpointsBase is Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     /// @notice Emitted when a checkpoint is set.
-    /// @param checkpointId the checkpoint identifier.
-    /// @param timestamp the timestamp associated to the checkpoint.
+    /// @param checkpointId The checkpoint identifier.
+    /// @param timestamp The timestamp associated to the checkpoint.
     event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 
     /// @notice Sets the checkpoint.
     /// @dev Reverts if the caller is not the contract owner.
     /// @dev Reverts if the checkpoint is already set.
     /// @dev Emits a {CheckpointSet} event if the timestamp is set to a non-zero value.
-    /// @param checkpointId the checkpoint identifier.
-    /// @param timestamp the checkpoint's timestamp.
+    /// @param checkpointId The checkpoint identifier.
+    /// @param timestamp The checkpoint's timestamp.
     function setCheckpoint(bytes32 checkpointId, uint256 timestamp) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         CheckpointsStorage.layout().setCheckpoint(checkpointId, timestamp);
@@ -33,7 +33,7 @@ abstract contract CheckpointsBase is Context {
     /// @dev Reverts if the caller is not the contract owner.
     /// @dev Reverts if the checkpoint is set and the current block timestamp has already reached it.
     /// @dev Emits a {CheckpointSet} event.
-    /// @param checkpointId the checkpoint identifier.
+    /// @param checkpointId The checkpoint identifier.
     function triggerCheckpoint(bytes32 checkpointId) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         CheckpointsStorage.layout().triggerCheckpoint(checkpointId);

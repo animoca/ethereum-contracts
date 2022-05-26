@@ -24,7 +24,13 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
     await loadFixture(fixture, this);
   });
 
-  shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
+  describe('supportsInterface(bytes4)', function () {
+    it('returns false with illegal value 0xffffffff', async function () {
+      expect(await this.contract.supportsInterface('0xffffffff')).to.be.false;
+    });
+
+    shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
+  });
 
   describe('setSupportedInterface(bytes4,bool)', function () {
     context('registering a new interface', function () {

@@ -62,7 +62,7 @@ describe('Diamond', function () {
 
   describe('fallback function', function () {
     it('reverts with an unknown function', async function () {
-      await expect(this.contract.init()).to.be.revertedWith('Diamond: function not found');
+      await expect(this.contract.doSomething()).to.be.revertedWith('Diamond: function not found');
     });
   });
 
@@ -207,7 +207,7 @@ describe('Diamond', function () {
 
         context('when successful (partial facet removal)', function () {
           beforeEach(async function () {
-            this.removedSelectors = getSelectors(this.facet, newFacetFilter);
+            this.removedSelectors = getSelectors(this.facet, (el) => el.name !== 'doSomething');
             this.cuts = [
               [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
               [ZeroAddress, FacetCutAction.Remove, this.removedSelectors],
@@ -349,7 +349,7 @@ describe('Diamond', function () {
             const Facet = await ethers.getContractFactory('FacetMock');
             this.newFacet = await Facet.deploy();
             await this.newFacet.deployed();
-            this.replacedSelectors = getSelectors(this.newFacet, newFacetFilter);
+            this.replacedSelectors = getSelectors(this.newFacet, (el) => el.name !== 'doSomething');
             this.cuts = [
               [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
               [this.newFacet.address, FacetCutAction.Replace, this.replacedSelectors],
@@ -432,7 +432,7 @@ describe('Diamond', function () {
 
       context('when successful (with a facet function)', function () {
         beforeEach(async function () {
-          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('init', [])];
+          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('doSomething', [])];
           this.receipt = await cutFn(this.contract, this.cuts, this.inits);
         });
 

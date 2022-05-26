@@ -17,6 +17,7 @@ library AccessControlStorage {
     event RoleRevoked(bytes32 role, address account, address operator);
 
     /// @notice Grants a role to an account.
+    /// @dev Note: Call to this function should be properly access controlled.
     /// @dev Emits a {RoleGranted} event if the account did not previously have the role.
     /// @param role The role to grant.
     /// @param account The account to grant the role to.
@@ -34,6 +35,7 @@ library AccessControlStorage {
     }
 
     /// @notice Revokes a role from an account.
+    /// @dev Note: Call to this function should be properly access controlled.
     /// @dev Emits a {RoleRevoked} event if the account previously had the role.
     /// @param role The role to revoke.
     /// @param account The account to revoke the role from.

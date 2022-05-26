@@ -9,7 +9,7 @@ import {ERC20PermitBase} from "./ERC20PermitBase.sol";
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 /// @dev Note: This contract requires ERC20Detailed.
 abstract contract ERC20Permit is ERC20PermitBase {
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
     constructor() {
         ERC20PermitStorage.constructorInit();

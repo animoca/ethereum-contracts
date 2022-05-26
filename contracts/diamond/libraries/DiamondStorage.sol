@@ -190,10 +190,14 @@ library DiamondStorage {
             if (init_ != address(this)) {
                 require(init_.isContract(), "Diamond: init_ has no code");
             }
-            (bool success, bytes memory error) = init_.delegatecall(calldata_);
+
+            (bool success, bytes memory returndata) = init_.delegatecall(calldata_);
             if (!success) {
-                if (error.length > 0) {
-                    revert(string(error));
+                uint256 returndataLength = returndata.length;
+                if (returndataLength != 0) {
+                    assembly {
+                        revert(add(32, returndata), returndataLength)
+                    }
                 } else {
                     revert("Diamond: init_ call reverted");
                 }

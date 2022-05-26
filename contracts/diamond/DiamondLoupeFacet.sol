@@ -18,7 +18,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Marks the following ERC165 interfaces as supported: DiamondLoupe.
     /// @dev Reverts if the sender is not the proxy admin.
     function initDiamondLoupeStorage() external {

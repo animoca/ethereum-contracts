@@ -22,8 +22,8 @@ library CheckpointsStorage {
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
-    /// @param checkpointIds the checkpoint identifiers.
-    /// @param timestamps the checkpoint timestamps.
+    /// @param checkpointIds The checkpoint identifiers.
+    /// @param timestamps The checkpoint timestamps.
     function constructorInit(
         Layout storage s,
         bytes32[] memory checkpointIds,
@@ -46,8 +46,8 @@ library CheckpointsStorage {
     /// @dev Reverts if the checkpoints storage is already initialized to version `1` or above.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
-    /// @param checkpointIds the checkpoint identifiers.
-    /// @param timestamps the checkpoint timestamps.
+    /// @param checkpointIds The checkpoint identifiers.
+    /// @param timestamps The checkpoint timestamps.
     function proxyInit(
         Layout storage s,
         bytes32[] memory checkpointIds,
@@ -60,8 +60,8 @@ library CheckpointsStorage {
     /// @notice Sets the checkpoint.
     /// @dev Reverts if the checkpoint is already set.
     /// @dev Emits a {CheckpointSet} event if the timestamp is set to a non-zero value.
-    /// @param checkpointId the checkpoint identifier.
-    /// @param timestamp the checkpoint's timestamp.
+    /// @param checkpointId The checkpoint identifier.
+    /// @param timestamp The checkpoint's timestamp.
     function setCheckpoint(
         Layout storage s,
         bytes32 checkpointId,
@@ -79,7 +79,7 @@ library CheckpointsStorage {
     /// @notice Sets the checkpoint to the current block timestamp.
     /// @dev Reverts if the checkpoint is set and the current block timestamp has already reached it.
     /// @dev Emits a {CheckpointSet} event.
-    /// @param checkpointId the checkpoint identifier.
+    /// @param checkpointId The checkpoint identifier.
     function triggerCheckpoint(Layout storage s, bytes32 checkpointId) internal {
         s.enforceCheckpointNotReached(checkpointId);
         s.checkpoints[checkpointId] = block.timestamp;
@@ -111,8 +111,8 @@ library CheckpointsStorage {
     }
 
     /// @notice Ensures that the checkpoint has not been reached yet.
-    /// @param checkpointId the checkpoint identifier.
-    /// @dev reverts if checkpoint is set and the current block timestamp has already reached it.
+    /// @dev Reverts if checkpoint is set and the current block timestamp has already reached it.
+    /// @param checkpointId The checkpoint identifier.
     function enforceCheckpointNotReached(Layout storage s, bytes32 checkpointId) internal view {
         if (s.checkpointReached(checkpointId)) {
             revert(string(abi.encodePacked("Checkpoints: checkpoint '", checkpointId.toASCIIString(), "' already reached")));
