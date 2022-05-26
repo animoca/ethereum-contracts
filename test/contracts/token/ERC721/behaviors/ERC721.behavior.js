@@ -8,10 +8,8 @@ function behavesLikeERC721(implementation) {
 
         shouldBehaveLikeERC721Standard(implementation);
         shouldBehaveLikeERC721Mintable(implementation);
+        shouldBehaveLikeERC721Burnable(implementation);
 
-        if (implementation.interfaces.ERC721Burnable) {
-            shouldBehaveLikeERC721Burnable(implementation);
-        }
         if (implementation.interfaces.ERC721Metadata) {
             shouldBehaveLikeERC721Metadata(implementation);
         }
