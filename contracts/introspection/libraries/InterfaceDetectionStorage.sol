@@ -5,23 +5,12 @@ import {IERC165} from "./../interfaces/IERC165.sol";
 import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
 
 library InterfaceDetectionStorage {
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
-
     struct Layout {
         mapping(bytes4 => bool) supportedInterfaces;
     }
 
-    bytes32 public constant INTERFACEDETECTION_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.introspection.InterfaceDetection.storage")) - 1);
-    bytes32 public constant INTERFACEDETECTION_VERSION_SLOT = bytes32(uint256(keccak256("animoca.introspection.InterfaceDetection.version")) - 1);
-
-    /// @notice Initialises the storage.
-    /// @notice Sets the interface detection storage version to `1`.
-    /// @notice Marks the following ERC165 interface(s) as supported: ERC165.
-    /// @dev Reverts if the interface detection storage is already initialized to version `1` or above.
-    function init(Layout storage s) internal {
-        StorageVersion.setVersion(INTERFACEDETECTION_VERSION_SLOT, 1);
-        s.setSupportedInterface(type(IERC165).interfaceId, true);
-    }
+    bytes32 public constant INTERFACEDETECTION_STORAGE_POSITION =
+        bytes32(uint256(keccak256("animoca.core.introspection.InterfaceDetection.storage")) - 1);
 
     /// @notice Sets or unsets an ERC165 interface.
     /// @dev Reverts if `interfaceId` is `0xffffffff`.
@@ -41,6 +30,12 @@ library InterfaceDetectionStorage {
     /// @param interfaceId The interface identifier to test.
     /// @return supported True if the interface is supported, false if `interfaceId` is `0xffffffff` or if the interface is not supported.
     function supportsInterface(Layout storage s, bytes4 interfaceId) internal view returns (bool supported) {
+        if (interfaceId == 0xffffffff) {
+            return false;
+        }
+        if (interfaceId == type(IERC165).interfaceId) {
+            return true;
+        }
         return s.supportedInterfaces[interfaceId];
     }
 

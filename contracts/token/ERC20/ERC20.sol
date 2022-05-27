@@ -9,10 +9,8 @@ import {ERC20Base} from "./ERC20Base.sol";
 contract ERC20 is ERC20Base {
     using ERC20Storage for ERC20Storage.Layout;
 
-    /// @notice Initialises the storage with a list of initial allocations.
-    /// @notice Sets the ERC20 storage version to `1`.
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
     /// @dev Reverts if the total supply overflows.
@@ -20,6 +18,6 @@ contract ERC20 is ERC20Base {
     /// @param holders The list of accounts to mint the tokens to.
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
     constructor(address[] memory holders, uint256[] memory allocations) {
-        ERC20Storage.layout().init(holders, allocations);
+        ERC20Storage.layout().constructorInit(holders, allocations);
     }
 }

@@ -16,18 +16,39 @@ library ERC20Storage {
     struct Layout {
         mapping(address => uint256) balances;
         mapping(address => mapping(address => uint256)) allowances;
-        uint256 totalSupply;
+        uint256 supply;
     }
 
-    bytes32 public constant ERC20_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20.storage")) - 1);
-    bytes32 public constant ERC20_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20.version")) - 1);
+    bytes32 public constant ERC20_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
+    bytes32 public constant ERC20_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.version")) - 1);
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    /// @notice Initialises the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
+    /// @dev Reverts if `holders` and `allocations` have different lengths.
+    /// @dev Reverts if one of `holders` is the zero address.
+    /// @dev Reverts if the total supply overflows.
+    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
+    /// @param holders The list of accounts to mint the tokens to.
+    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
+    function constructorInit(
+        Layout storage s,
+        address[] memory holders,
+        uint256[] memory allocations
+    ) internal {
+        s.batchMint(holders, allocations);
+        InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
+        erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
+        erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+    }
+
+    /// @notice Initializes the storage with a list of initial allocations.
     /// @notice Sets the ERC20 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
@@ -35,15 +56,13 @@ library ERC20Storage {
     /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
     /// @param holders The list of accounts to mint the tokens to.
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function init(
+    function proxyInit(
         Layout storage s,
         address[] memory holders,
         uint256[] memory allocations
     ) internal {
         StorageVersion.setVersion(ERC20_VERSION_SLOT, 1);
-        s.batchMint(holders, allocations);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20).interfaceId, true);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+        s.constructorInit(holders, allocations);
     }
 
     function approve(
@@ -268,11 +287,11 @@ library ERC20Storage {
     ) internal {
         require(to != address(0), "ERC20: mint to zero");
         if (value != 0) {
-            uint256 supply = s.totalSupply;
+            uint256 supply = s.supply;
             unchecked {
                 uint256 newSupply = supply + value;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
                 s.balances[to] += value; // balance cannot overflow if supply does not
             }
         }
@@ -307,11 +326,11 @@ library ERC20Storage {
         }
 
         if (totalValue != 0) {
-            uint256 supply = s.totalSupply;
+            uint256 supply = s.supply;
             unchecked {
                 uint256 newSupply = supply + totalValue;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
             }
         }
     }
@@ -327,7 +346,7 @@ library ERC20Storage {
                 uint256 newBalance = balance - value;
                 require(newBalance < balance, "ERC20: insufficient balance");
                 s.balances[from] = newBalance;
-                s.totalSupply -= value; // will not underflow if balance does not
+                s.supply -= value; // will not underflow if balance does not
             }
         }
 
@@ -381,9 +400,25 @@ library ERC20Storage {
 
         if (totalValue != 0) {
             unchecked {
-                s.totalSupply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
+                s.supply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
             }
         }
+    }
+
+    function totalSupply(Layout storage s) internal view returns (uint256) {
+        return s.supply;
+    }
+
+    function balanceOf(Layout storage s, address account) internal view returns (uint256) {
+        return s.balances[account];
+    }
+
+    function allowance(
+        Layout storage s,
+        address owner,
+        address spender
+    ) internal view returns (uint256) {
+        return s.allowances[owner][spender];
     }
 
     function layout() internal pure returns (Layout storage s) {

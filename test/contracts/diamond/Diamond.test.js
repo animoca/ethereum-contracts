@@ -30,7 +30,7 @@ const facetsConfig = [
   {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
   {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
   {name: 'DiamondLoupeFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondLoupeStorage'}},
-  {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
+  {name: 'InterfaceDetectionFacet'},
 ];
 
 describe('Diamond', function () {
@@ -62,7 +62,7 @@ describe('Diamond', function () {
 
   describe('fallback function', function () {
     it('reverts with an unknown function', async function () {
-      await expect(this.contract.init()).to.be.revertedWith('Diamond: function not found');
+      await expect(this.contract.doSomething()).to.be.revertedWith('Diamond: function not found');
     });
   });
 
@@ -75,7 +75,7 @@ describe('Diamond', function () {
       describe('ADD action', function () {
         it('reverts with a zero address facet', async function () {
           await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: zero address facet'
+            'Diamond: facet has no code'
           );
         });
 
@@ -94,7 +94,7 @@ describe('Diamond', function () {
         it('reverts with an existing function selector', async function () {
           const cutFacet = this.facets['DiamondCutFacet'];
           await expect(cutFn(this.contract, [[cutFacet.address, FacetCutAction.Add, getSelectors(cutFacet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: existing function'
+            'Diamond: selector already added'
           );
         });
 
@@ -106,13 +106,13 @@ describe('Diamond', function () {
 
           it('adds the facet in facets()', async function () {
             const facets = await this.contract.facets();
-            const facet = facets.find((f) => f.facetAddress == this.facet.address);
+            const facet = facets.find((f) => f.facet == this.facet.address);
             expect(facet).not.to.be.undefined;
 
             const selectors = getSelectors(this.facet);
-            expect(selectors.length).to.equal(facet.functionSelectors.length);
+            expect(selectors.length).to.equal(facet.selectors.length);
             for (const selector of selectors) {
-              expect(facet.functionSelectors.find((s) => s == selector)).not.to.be.undefined;
+              expect(facet.selectors.find((s) => s == selector)).not.to.be.undefined;
             }
           });
 
@@ -158,7 +158,7 @@ describe('Diamond', function () {
 
         it('reverts with a non-existing function selector', async function () {
           await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: function not found'
+            'Diamond: selector not found'
           );
         });
 
@@ -171,76 +171,159 @@ describe('Diamond', function () {
         });
 
         context('when successful (full facet removal)', function () {
-          beforeEach(async function () {
-            this.cuts = [
-              [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
-              [ZeroAddress, FacetCutAction.Remove, getSelectors(this.facet)],
-            ];
-            this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+          context('when selectors slot was fully filled', function () {
+            beforeEach(async function () {
+              await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
+              this.cuts = [[ZeroAddress, FacetCutAction.Remove, getSelectors(this.facet)]];
+              this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+            });
+
+            it('removes the facet in facets()', async function () {
+              const facets = await this.contract.facets();
+              expect(facets.find((facet) => facet.facet == this.facet.address)).to.be.undefined;
+            });
+
+            it('removes the selectors in facetFunctionSelectors(address)', async function () {
+              expect((await this.contract.facetFunctionSelectors(this.facet.address)).length).to.equal(0);
+            });
+
+            it('removes the facet address in facetAddresses()', async function () {
+              const facetAddresses = await this.contract.facetAddresses();
+              expect(facetAddresses.find((f) => f.address == this.facet.address)).to.be.undefined;
+            });
+
+            it('removes each function selector in facetAddress(bytes4)', async function () {
+              const selectors = getSelectors(this.facet);
+              for (const selector of selectors) {
+                expect(await this.contract.facetAddress(selector)).to.equal(ZeroAddress);
+              }
+            });
+
+            it('emits a DiamondCut event', async function () {
+              await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            });
           });
 
-          it('removes the facet in facets()', async function () {
-            const facets = await this.contract.facets();
-            expect(facets.find((facet) => facet.facetAddress == this.facet.address)).to.be.undefined;
-          });
+          context('when selectors slot was partially filled', function () {
+            beforeEach(async function () {
+              const selectors = getSelectors(this.facet, (el) => el.name !== 'c');
+              await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, selectors]], EmptyInit);
+              this.cuts = [[ZeroAddress, FacetCutAction.Remove, selectors]];
+              this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+            });
 
-          it('removes the selectors in facetFunctionSelectors(address)', async function () {
-            expect((await this.contract.facetFunctionSelectors(this.facet.address)).length).to.equal(0);
-          });
+            it('removes the facet in facets()', async function () {
+              const facets = await this.contract.facets();
+              expect(facets.find((facet) => facet.facet == this.facet.address)).to.be.undefined;
+            });
 
-          it('removes the facet address in facetAddresses()', async function () {
-            const facetAddresses = await this.contract.facetAddresses();
-            expect(facetAddresses.find((f) => f.address == this.facet.address)).to.be.undefined;
-          });
+            it('removes the selectors in facetFunctionSelectors(address)', async function () {
+              expect((await this.contract.facetFunctionSelectors(this.facet.address)).length).to.equal(0);
+            });
 
-          it('removes each function selector in facetAddress(bytes4)', async function () {
-            const selectors = getSelectors(this.facet);
-            for (const selector of selectors) {
-              expect(await this.contract.facetAddress(selector)).to.equal(ZeroAddress);
-            }
-          });
+            it('removes the facet address in facetAddresses()', async function () {
+              const facetAddresses = await this.contract.facetAddresses();
+              expect(facetAddresses.find((f) => f.address == this.facet.address)).to.be.undefined;
+            });
 
-          it('emits a DiamondCut event', async function () {
-            await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            it('removes each function selector in facetAddress(bytes4)', async function () {
+              const selectors = getSelectors(this.facet);
+              for (const selector of selectors) {
+                expect(await this.contract.facetAddress(selector)).to.equal(ZeroAddress);
+              }
+            });
+
+            it('emits a DiamondCut event', async function () {
+              await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            });
           });
         });
 
         context('when successful (partial facet removal)', function () {
-          beforeEach(async function () {
-            this.removedSelectors = getSelectors(this.facet, newFacetFilter);
-            this.cuts = [
-              [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
-              [ZeroAddress, FacetCutAction.Remove, this.removedSelectors],
-            ];
-            this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+          context('when removing down to a fully filled selectors slot', function () {
+            beforeEach(async function () {
+              await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
+              this.removedSelectors = getSelectors(
+                this.facet,
+                (el) =>
+                  el.name === 'a' ||
+                  el.name === 'b' ||
+                  el.name === 'c' ||
+                  el.name === 'd' ||
+                  el.name === 'e' ||
+                  el.name === 'f' ||
+                  el.name === 'g' ||
+                  el.name === 'h'
+              );
+              this.cuts = [[ZeroAddress, FacetCutAction.Remove, this.removedSelectors]];
+              this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+            });
+
+            it('keeps the facet in facets()', async function () {
+              const facets = await this.contract.facets();
+              expect(facets.find((facet) => facet.facet == this.facet.address)).not.to.be.undefined;
+            });
+
+            it('removes the removed selectors in facetFunctionSelectors(address)', async function () {
+              const facetFunctionSelectors = await this.contract.facetFunctionSelectors(this.facet.address);
+              expect(facetFunctionSelectors.length).not.to.equal(0);
+              for (const removedSelector of this.removedSelectors) {
+                expect(facetFunctionSelectors.find((s) => s == removedSelector)).to.be.undefined;
+              }
+            });
+
+            it('keeps the facet address in facetAddresses()', async function () {
+              const facetAddresses = await this.contract.facetAddresses();
+              expect(facetAddresses.find((f) => f == this.facet.address)).to.not.be.undefined;
+            });
+
+            it('removes each function selector in facetAddress(bytes4)', async function () {
+              for (const removedSelector of this.removedSelectors) {
+                expect(await this.contract.facetAddress(removedSelector)).to.equal(ZeroAddress);
+              }
+            });
+
+            it('emits a DiamondCut event', async function () {
+              await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            });
           });
 
-          it('keeps the facet in facets()', async function () {
-            const facets = await this.contract.facets();
-            expect(facets.find((facet) => facet.facetAddress == this.facet.address)).not.to.be.undefined;
-          });
+          context('when removing down to a partially filled selectors slot', function () {
+            beforeEach(async function () {
+              const selectors = getSelectors(this.facet, (el) => el.name !== 'doSomething');
+              await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, selectors]], EmptyInit);
+              this.removedSelectors = getSelectors(this.facet, (el) => el.name !== 'doSomething' && el.name === 'a');
+              this.cuts = [[ZeroAddress, FacetCutAction.Remove, this.removedSelectors]];
+              this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
+            });
 
-          it('removes the removed selectors in facetFunctionSelectors(address)', async function () {
-            const facetFunctionSelectors = await this.contract.facetFunctionSelectors(this.facet.address);
-            expect(facetFunctionSelectors.length).not.to.equal(0);
-            for (const removedSelector of this.removedSelectors) {
-              expect(facetFunctionSelectors.find((s) => s == removedSelector)).to.be.undefined;
-            }
-          });
+            it('keeps the facet in facets()', async function () {
+              const facets = await this.contract.facets();
+              expect(facets.find((facet) => facet.facet == this.facet.address)).not.to.be.undefined;
+            });
 
-          it('keeps the facet address in facetAddresses()', async function () {
-            const facetAddresses = await this.contract.facetAddresses();
-            expect(facetAddresses.find((f) => f == this.facet.address)).to.not.be.undefined;
-          });
+            it('removes the removed selectors in facetFunctionSelectors(address)', async function () {
+              const facetFunctionSelectors = await this.contract.facetFunctionSelectors(this.facet.address);
+              expect(facetFunctionSelectors.length).not.to.equal(0);
+              for (const removedSelector of this.removedSelectors) {
+                expect(facetFunctionSelectors.find((s) => s == removedSelector)).to.be.undefined;
+              }
+            });
 
-          it('removes each function selector in facetAddress(bytes4)', async function () {
-            for (const removedSelector of this.removedSelectors) {
-              expect(await this.contract.facetAddress(removedSelector)).to.equal(ZeroAddress);
-            }
-          });
+            it('keeps the facet address in facetAddresses()', async function () {
+              const facetAddresses = await this.contract.facetAddresses();
+              expect(facetAddresses.find((f) => f == this.facet.address)).to.not.be.undefined;
+            });
 
-          it('emits a DiamondCut event', async function () {
-            await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            it('removes each function selector in facetAddress(bytes4)', async function () {
+              for (const removedSelector of this.removedSelectors) {
+                expect(await this.contract.facetAddress(removedSelector)).to.equal(ZeroAddress);
+              }
+            });
+
+            it('emits a DiamondCut event', async function () {
+              await expectDiamondCutEvent(this.receipt, this.cuts, EmptyInit[0], EmptyInit[1]);
+            });
           });
         });
       });
@@ -248,7 +331,7 @@ describe('Diamond', function () {
       describe('REPLACE action', function () {
         it('reverts with a zero address facet', async function () {
           await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: zero address facet'
+            'Diamond: facet has no code'
           );
         });
 
@@ -284,32 +367,44 @@ describe('Diamond', function () {
           ).to.be.revertedWith('Diamond: identical function');
         });
 
+        it('reverts when replacing a function does not exist', async function () {
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
+            'Diamond: selector not found'
+          );
+        });
+
+        it('reverts with an immutable function selector', async function () {
+          const artifact = await ethers.getContractFactory('DiamondMock');
+          const selectors = [ethers.utils.Interface.getSighash(artifact.interface.functions['immutableFunction()'])];
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, selectors]], EmptyInit)).to.be.revertedWith(
+            'Diamond: immutable function'
+          );
+        });
+
         context('when successful (full facet replacement)', function () {
           beforeEach(async function () {
+            await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
             const Facet = await ethers.getContractFactory('FacetMock');
             this.newFacet = await Facet.deploy();
             await this.newFacet.deployed();
-            this.cuts = [
-              [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
-              [this.newFacet.address, FacetCutAction.Replace, getSelectors(this.newFacet)],
-            ];
+            this.cuts = [[this.newFacet.address, FacetCutAction.Replace, getSelectors(this.newFacet)]];
             this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
           });
 
           it('removes the old facet in facets()', async function () {
             const facets = await this.contract.facets();
-            expect(facets.find((facet) => facet.facetAddress == this.facet.address)).to.be.undefined;
+            expect(facets.find((facet) => facet.facet == this.facet.address)).to.be.undefined;
           });
 
           it('adds the new facet in facets()', async function () {
             const facets = await this.contract.facets();
-            const newFacet = facets.find((f) => f.facetAddress == this.newFacet.address);
+            const newFacet = facets.find((f) => f.facet == this.newFacet.address);
             expect(newFacet).not.to.be.undefined;
 
             const selectors = getSelectors(this.newFacet);
-            expect(selectors.length).to.equal(newFacet.functionSelectors.length);
+            expect(selectors.length).to.equal(newFacet.selectors.length);
             for (const selector of selectors) {
-              expect(newFacet.functionSelectors.find((s) => s == selector)).not.to.be.undefined;
+              expect(newFacet.selectors.find((s) => s == selector)).not.to.be.undefined;
             }
           });
 
@@ -346,28 +441,26 @@ describe('Diamond', function () {
 
         context('when successful (partial facet replacement)', function () {
           beforeEach(async function () {
+            await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
             const Facet = await ethers.getContractFactory('FacetMock');
             this.newFacet = await Facet.deploy();
             await this.newFacet.deployed();
-            this.replacedSelectors = getSelectors(this.newFacet, newFacetFilter);
-            this.cuts = [
-              [this.facet.address, FacetCutAction.Add, getSelectors(this.facet)],
-              [this.newFacet.address, FacetCutAction.Replace, this.replacedSelectors],
-            ];
+            this.replacedSelectors = getSelectors(this.newFacet, (el) => el.name !== 'doSomething');
+            this.cuts = [[this.newFacet.address, FacetCutAction.Replace, this.replacedSelectors]];
             this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
           });
 
           it('keeps the old facet in facets()', async function () {
             const facets = await this.contract.facets();
-            expect(facets.find((facet) => facet.facetAddress == this.facet.address)).not.to.be.undefined;
+            expect(facets.find((facet) => facet.facet == this.facet.address)).not.to.be.undefined;
           });
 
           it('adds the new facet in facets()', async function () {
             const facets = await this.contract.facets();
-            const newFacet = facets.find((facet) => facet.facetAddress == this.newFacet.address);
-            expect(this.replacedSelectors.length).to.equal(newFacet.functionSelectors.length);
+            const newFacet = facets.find((facet) => facet.facet == this.newFacet.address);
+            expect(this.replacedSelectors.length).to.equal(newFacet.selectors.length);
             for (const replaceSelector of this.replacedSelectors) {
-              expect(newFacet.functionSelectors.find((s) => s == replaceSelector)).not.to.be.undefined;
+              expect(newFacet.selectors.find((s) => s == replaceSelector)).not.to.be.undefined;
             }
           });
 
@@ -407,21 +500,21 @@ describe('Diamond', function () {
         this.cuts = [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]];
       });
       it('reverts with a zero address as init target and a non-empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [ZeroAddress, '0x00'])).to.be.revertedWith('Diamond: calldata_ is not empty');
+        await expect(cutFn(this.contract, [], [ZeroAddress, '0x00'])).to.be.revertedWith('Diamond: data is not empty');
       });
 
       it('reverts with a non-zero address as init target and an empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [this.facet.address, EmptyByte])).to.be.revertedWith('Diamond: calldata_ is empty');
+        await expect(cutFn(this.contract, [], [this.facet.address, EmptyByte])).to.be.revertedWith('Diamond: data is empty');
       });
 
       it('reverts with non-contract target address', async function () {
-        await expect(cutFn(this.contract, [], [deployer.address, '0x00'])).to.be.revertedWith('Diamond: init_ has no code');
+        await expect(cutFn(this.contract, [], [deployer.address, '0x00'])).to.be.revertedWith('Diamond: target has no code');
       });
 
       it('reverts when the init function reverts (without an error message)', async function () {
         await expect(
           cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithoutMessage', [])])
-        ).to.be.revertedWith('Diamond: init_ call reverted');
+        ).to.be.revertedWith('Diamond: init call reverted');
       });
 
       it('reverts when the init function reverts (with an error message)', async function () {
@@ -432,7 +525,7 @@ describe('Diamond', function () {
 
       context('when successful (with a facet function)', function () {
         beforeEach(async function () {
-          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('init', [])];
+          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('doSomething', [])];
           this.receipt = await cutFn(this.contract, this.cuts, this.inits);
         });
 
@@ -489,4 +582,24 @@ describe('Diamond', function () {
   });
 
   shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
+});
+
+describe('Facet', function () {
+  it('calls all the empty functions (for code coverage)', async function () {
+    const Facet = await ethers.getContractFactory('FacetMock');
+    const facet = await Facet.deploy();
+    await facet.deployed();
+
+    await facet.a();
+    await facet.b();
+    await facet.c();
+    await facet.d();
+    await facet.e();
+    await facet.f();
+    await facet.g();
+    await facet.h();
+    await facet.i();
+    await facet.j();
+    await facet.k();
+  });
 });

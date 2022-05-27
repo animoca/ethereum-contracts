@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 pragma experimental ABIEncoderV2;
 
 import {IDiamondCutBase} from "./interfaces/IDiamondCutBase.sol";
@@ -19,12 +19,7 @@ contract Diamond {
     }
 
     fallback() external payable {
-        bytes32 position = DiamondStorage.DIAMOND_STORAGE_POSITION;
-        DiamondStorage.Layout storage s;
-        assembly {
-            s.slot := position
-        }
-        address facet = s.selectorToFacetAndPosition[msg.sig].facetAddress;
+        address facet = DiamondStorage.layout().facetAddress(msg.sig);
         require(facet != address(0), "Diamond: function not found");
         assembly {
             calldatacopy(0, 0, calldatasize())

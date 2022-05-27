@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC20} from "./../../../token/ERC20/ERC20.sol";
 import {ERC20Mintable} from "./../../../token/ERC20/ERC20Mintable.sol";
-import {Ownable} from "./../../../access/Ownable.sol";
+import {ContractOwnership} from "./../../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
@@ -13,7 +13,7 @@ contract ERC20SimpleMock is ERC20, ERC20Mintable, ForwarderRegistryContextBase {
         address[] memory holders,
         uint256[] memory allocations,
         IForwarderRegistry forwarderRegistry
-    ) ERC20(holders, allocations) Ownable(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+    ) ERC20(holders, allocations) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     function __msgData() external view returns (bytes calldata) {
         return _msgData();

@@ -1,18 +1,14 @@
 const {ZeroAddress} = require('../../../src/constants');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
+const {getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
   immutable: {name: 'ForwarderRegistryReceiverMock', ctorArguments: ['forwarderRegistry']},
   diamond: {
-    facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'ForwarderRegistryContextFacet', ctorArguments: ['forwarderRegistry']},
-    ],
+    facets: [{name: 'ForwarderRegistryContextFacet', ctorArguments: ['forwarderRegistry']}],
   },
   defaultArguments: {
     forwarderRegistry: getForwarderRegistryAddress,
-    initialAdmin: getDeployerAddress,
   },
 };
 
@@ -30,6 +26,12 @@ runBehaviorTests('ForwarderRegistryContext', config, function (deployFn) {
 
   beforeEach(async function () {
     await loadFixture(fixture, this);
+  });
+
+  describe('forwarderRegistry()', function () {
+    it('returns the address of the ForwarderRegistry', async function () {
+      expect(await this.contract.forwarderRegistry()).to.equal(this.registryAddress);
+    });
   });
 
   describe('isTrustedForwarder(address)', function () {

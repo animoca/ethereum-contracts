@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.14;
 
 import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";

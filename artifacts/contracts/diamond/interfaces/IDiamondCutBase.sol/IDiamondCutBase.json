@@ -10,7 +10,7 @@
           "components": [
             {
               "internalType": "address",
-              "name": "facetAddress",
+              "name": "facet",
               "type": "address"
             },
             {
@@ -20,7 +20,7 @@
             },
             {
               "internalType": "bytes4[]",
-              "name": "functionSelectors",
+              "name": "selectors",
               "type": "bytes4[]"
             }
           ],

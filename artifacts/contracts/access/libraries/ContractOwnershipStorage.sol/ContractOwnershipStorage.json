@@ -1,0 +1,56 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ContractOwnershipStorage",
+  "sourceName": "contracts/access/libraries/ContractOwnershipStorage.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "CONTRACTOWNERSHIP_STORAGE_POSITION",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CONTRACTOWNERSHIP_VERSION_SLOT",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x61012561003a600b82828239805160001a60731461002d57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c80634f73286d146042578063f49bcf2a14605a575b600080fd5b60486060565b60405190815260200160405180910390f35b6048608c565b608960017fee885d75c0137bd61d17159c129386ad43dafce94360ecf87196edc1ebf47f8a60b2565b81565b608960017fc9ed16f33ab3a66c84bfd83099ccb2a8845871e2e1c1928f63797152f0fd54cd5b60008282101560ea577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea26469706673582212208418f02c1ce422a2202ab63791b7361b9d703039b239155abd60426ca7422d7c64736f6c634300080e0033",
+  "deployedBytecode": "0x7300000000000000000000000000000000000000003014608060405260043610603d5760003560e01c80634f73286d146042578063f49bcf2a14605a575b600080fd5b60486060565b60405190815260200160405180910390f35b6048608c565b608960017fee885d75c0137bd61d17159c129386ad43dafce94360ecf87196edc1ebf47f8a60b2565b81565b608960017fc9ed16f33ab3a66c84bfd83099ccb2a8845871e2e1c1928f63797152f0fd54cd5b60008282101560ea577f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b50039056fea26469706673582212208418f02c1ce422a2202ab63791b7361b9d703039b239155abd60426ca7422d7c64736f6c634300080e0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

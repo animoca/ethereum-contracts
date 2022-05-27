@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
 import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
@@ -16,7 +16,7 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with the token details.
+    /// @notice Initializes the storage with the token details.
     /// @notice Sets the ERC20Detailed storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Reverts if the sender is not the proxy admin.
@@ -30,6 +30,6 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
         uint8 decimals_
     ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20DetailedStorage.layout().init(name_, symbol_, decimals_);
+        ERC20DetailedStorage.layout().proxyInit(name_, symbol_, decimals_);
     }
 }

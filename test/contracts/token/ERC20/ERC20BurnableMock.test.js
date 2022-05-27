@@ -14,10 +14,14 @@ const config = {
   },
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
-      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'InterfaceDetectionFacet'},
+      {
+        name: 'ContractOwnershipFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
+      },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
         name: 'ERC20FacetMock',
@@ -122,9 +126,6 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
       BurnExceedsBalance: 'ERC20: insufficient balance',
       BurnExceedsAllowance: 'ERC20: insufficient allowance',
       BatchBurnValuesOverflow: 'ERC20: insufficient balance',
-
-      // ERC20Receiver
-      DirectReceiverCall: 'ChildERC20: wrong sender',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",

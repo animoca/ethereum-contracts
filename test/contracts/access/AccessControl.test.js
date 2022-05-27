@@ -5,9 +5,12 @@ const config = {
   immutable: {name: 'AccessControlMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {
+        name: 'ContractOwnershipFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
+      },
       {name: 'AccessControlFacetMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
     ],
   },

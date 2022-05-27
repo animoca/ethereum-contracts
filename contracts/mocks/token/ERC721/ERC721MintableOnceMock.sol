@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721MintableOnce} from "./../../../token/ERC721/ERC721MintableOnce.sol";
 import {ERC721Burnable} from "./../../../token/ERC721/ERC721Burnable.sol";
 import {ERC721TokenMetadataWithBaseURI} from "./../../../token/ERC721/ERC721TokenMetadataWithBaseURI.sol";
-import {Ownable} from "./../../../access/Ownable.sol";
+import {ContractOwnership} from "./../../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
@@ -17,7 +17,7 @@ contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721Burnable, E
         string memory symbol_,
         string memory tokenURI_,
         IForwarderRegistry forwarderRegistry
-    ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) ForwarderRegistryContextBase(forwarderRegistry) Ownable(msg.sender) {}
+    ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) ForwarderRegistryContextBase(forwarderRegistry) ContractOwnership(msg.sender) {}
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ForwarderRegistryContextBase) returns (address) {

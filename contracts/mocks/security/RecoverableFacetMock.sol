@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {RecoverableFacet} from "./../../security/RecoverableFacet.sol";
+import {TokenRecoveryFacet} from "./../../security/TokenRecoveryFacet.sol";
 
-contract RecoverableFacetMock is RecoverableFacet {
-    constructor(IForwarderRegistry forwarderRegistry) RecoverableFacet(forwarderRegistry) {}
+contract TokenRecoveryFacetMock is TokenRecoveryFacet {
+    constructor(IForwarderRegistry forwarderRegistry) TokenRecoveryFacet(forwarderRegistry) {}
+
+    receive() external payable {}
 
     function __msgData() external view returns (bytes calldata) {
         return _msgData();

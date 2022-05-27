@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.14;
 
 /// @title ERC721 Non-Fungible Token Standard, Tokens Receiver.
 /// Interface for any contract that wants to support safeTransfers from ERC721 asset contracts.

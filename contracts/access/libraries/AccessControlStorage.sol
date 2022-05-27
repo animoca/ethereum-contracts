@@ -11,12 +11,13 @@ library AccessControlStorage {
         mapping(bytes32 => mapping(address => bool)) roles;
     }
 
-    bytes32 public constant ACCESSCONTROL_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.access.AccessControl.storage")) - 1);
+    bytes32 public constant ACCESSCONTROL_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
 
     event RoleGranted(bytes32 role, address account, address operator);
     event RoleRevoked(bytes32 role, address account, address operator);
 
     /// @notice Grants a role to an account.
+    /// @dev Note: Call to this function should be properly access controlled.
     /// @dev Emits a {RoleGranted} event if the account did not previously have the role.
     /// @param role The role to grant.
     /// @param account The account to grant the role to.
@@ -34,6 +35,7 @@ library AccessControlStorage {
     }
 
     /// @notice Revokes a role from an account.
+    /// @dev Note: Call to this function should be properly access controlled.
     /// @dev Emits a {RoleRevoked} event if the account previously had the role.
     /// @param role The role to revoke.
     /// @param account The account to revoke the role from.

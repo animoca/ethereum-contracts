@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 contract FacetMock {
     event FacetFunctionCalled();
 
-    function init() external {
+    function doSomething() external {
         emit FacetFunctionCalled();
     }
 
@@ -16,4 +16,27 @@ contract FacetMock {
     function revertsWithMessage() external pure {
         revert("Facet: reverted");
     }
+
+    // These functions are placeholders for tests to manipulate the selectorCount in different scenarios
+    function a() external pure {}
+
+    function b() external pure {}
+
+    function c() external pure {}
+
+    function d() external pure {}
+
+    function e() external pure {}
+
+    function f() external pure {}
+
+    function g() external pure {}
+
+    function h() external pure {}
+
+    function i() external pure {}
+
+    function j() external pure {}
+
+    function k() external pure {}
 }

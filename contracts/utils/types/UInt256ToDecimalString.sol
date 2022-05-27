@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.14;
 
 library UInt256ToDecimalString {
     function toDecimalString(uint256 value) internal pure returns (string memory) {
