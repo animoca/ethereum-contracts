@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
-import {IERC721MintableOnce} from "./interfaces/IERC721MintableOnce.sol";
+import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 import {Ownable} from "./../../access/Ownable.sol";
@@ -14,6 +14,6 @@ abstract contract ERC721MintableOnce is ERC721MintableOnceBase, AccessControl {
 
     /// @notice Marks the following ERC165 interface(s) as supported: IERC721MintableOnce.
     constructor() {
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721MintableOnce).interfaceId, true);
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }
 }

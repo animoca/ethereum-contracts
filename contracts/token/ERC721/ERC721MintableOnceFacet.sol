@@ -2,7 +2,7 @@
 pragma solidity 0.8.13;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {IERC721MintableOnce} from "./interfaces/IERC721MintableOnce.sol";
+import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
@@ -22,7 +22,7 @@ contract ERC721MintableOnceFacet is ERC721MintableOnceBase, ForwarderRegistryCon
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC721MintableOnceStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721MintableOnce).interfaceId, true);
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase
