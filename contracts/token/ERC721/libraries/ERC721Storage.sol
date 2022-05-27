@@ -2,11 +2,10 @@
 pragma solidity ^0.8.8;
 
 import {IERC721} from "./../interfaces/IERC721.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
-import "hardhat/console.sol";
 
 library ERC721Storage {
     using Address for address;
@@ -39,17 +38,6 @@ library ERC721Storage {
     function init(Layout storage) internal {
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
-    }
-
-    function balanceOf(Layout storage s, address owner) internal view returns (uint256) {
-        require(owner != address(0), "ERC721: zero address");
-        return s.nftBalances[owner];
-    }
-
-    function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address) {
-        address owner = address(uint160(s.owners[tokenId]));
-        require(owner != address(0), "ERC721: non-existing NFT");
-        return owner;
     }
 
     function isApprovedForAll(
@@ -294,7 +282,23 @@ library ERC721Storage {
         }
     }
 
-    //============================================ Private Functions ============================================//
+    function balanceOf(Layout storage s, address owner) internal view returns (uint256) {
+        require(owner != address(0), "ERC721: zero address");
+        return s.nftBalances[owner];
+    }
+
+    function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address) {
+        address owner = address(uint160(s.owners[tokenId]));
+        require(owner != address(0), "ERC721: non-existing NFT");
+        return owner;
+    }
+
+    function layout() internal pure returns (Layout storage s) {
+        bytes32 position = ERC721_STORAGE_POSITION;
+        assembly {
+            s.slot := position
+        }
+    }
 
     function _transferFrom(
         Layout storage s,
@@ -419,14 +423,5 @@ library ERC721Storage {
         address sender
     ) private view returns (bool) {
         return (from == sender) || s.operators[from][sender];
-    }
-
-    //============================================== Internal Layout Getter Function ==============================================//
-
-    function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC721_STORAGE_POSITION;
-        assembly {
-            s.slot := position
-        }
     }
 }
