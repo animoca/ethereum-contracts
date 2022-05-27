@@ -1,5 +1,5 @@
-const { behavesLikeERC721 } = require('./behaviors/ERC721.behavior');
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require('../../../helpers/run');
+const { behavesLikeERC721Mintable } = require('./behaviors/ERC721.mintable.behavior');
 
 const name = 'ERC721 MintableOnce Mock';
 const symbol = 'E721MINTABLEONCE';
@@ -126,6 +126,6 @@ runBehaviorTests('Mintable Once ERC721', config, function(deployFn) {
                 }
             });
         });
-        behavesLikeERC721(implementation);
+        behavesLikeERC721Mintable(implementation);
     });
 });

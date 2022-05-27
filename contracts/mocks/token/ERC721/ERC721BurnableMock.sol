@@ -28,5 +28,4 @@ contract ERC721BurnableMock is ERC721Mock, ERC721Burnable {
     function _msgData() internal view virtual override(Context, ERC721Mock) returns (bytes calldata) {
         return ERC721Mock._msgData();
     }
-
 }
