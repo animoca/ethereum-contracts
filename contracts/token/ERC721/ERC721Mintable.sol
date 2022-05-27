@@ -2,9 +2,9 @@
 pragma solidity ^0.8.8;
 
 import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
+import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {ERC721MintableBase} from "./ERC721MintableBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {Ownable} from "./../../access/Ownable.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Mintable (immutable version).

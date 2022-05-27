@@ -2,8 +2,8 @@
 pragma solidity ^0.8.8;
 
 import {IERC721Burnable} from "./interfaces/IERC721Burnable.sol";
-import {ERC721BurnableBase} from "./ERC721BurnableBase.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC721BurnableBase} from "./ERC721BurnableBase.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Burnable (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
 import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 import {Ownable} from "./../../access/Ownable.sol";
 
