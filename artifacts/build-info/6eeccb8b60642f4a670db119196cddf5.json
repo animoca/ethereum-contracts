@@ -1,0 +1,578 @@
+{
+  "id": "6eeccb8b60642f4a670db119196cddf5",
+  "_format": "hh-sol-build-info-1",
+  "solcVersion": "0.8.14",
+  "solcLongVersion": "0.8.14+commit.80d49f37",
+  "input": {
+    "language": "Solidity",
+    "sources": {
+      "contracts/token/ERC721/interfaces/IERC721Events.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.8;\n\n/// @title ERC721 Non-Fungible Token Standard, basic interface (events).\n/// @dev See https://eips.ethereum.org/EIPS/eip-721\n/// @dev This interface only contains the standard events, see IERC721 for the functions.\n/// @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd.\ninterface IERC721Events {\n    /// @notice Emitted when a token is transferred.\n    /// @param from The previous token owner.\n    /// @param to The new token owner.\n    /// @param tokenId The transferred token identifier.\n    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);\n\n    /// @notice Emitted when a single token approval is set.\n    /// @param owner The token owner.\n    /// @param approved The approved address.\n    /// @param tokenId The approved token identifier.\n    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);\n\n    /// @notice Emitted when an approval for all tokens is set or unset.\n    /// @param owner The tokens owner.\n    /// @param operator The approved address.\n    /// @param approved True when then approval is set, false when it is unset.\n    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);\n}\n"
+      }
+    },
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 99999
+      },
+      "outputSelection": {
+        "*": {
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata",
+            "devdoc",
+            "userdoc",
+            "storageLayout",
+            "evm.gasEstimates"
+          ],
+          "": [
+            "ast"
+          ]
+        }
+      },
+      "metadata": {
+        "useLiteralContent": true
+      }
+    }
+  },
+  "output": {
+    "contracts": {
+      "contracts/token/ERC721/interfaces/IERC721Events.sol": {
+        "IERC721Events": {
+          "abi": [
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "approved",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Approval",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "operator",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "bool",
+                  "name": "approved",
+                  "type": "bool"
+                }
+              ],
+              "name": "ApprovalForAll",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "internalType": "uint256",
+                  "name": "tokenId",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Transfer",
+              "type": "event"
+            }
+          ],
+          "devdoc": {
+            "details": "See https://eips.ethereum.org/EIPS/eip-721This interface only contains the standard events, see IERC721 for the functions.Note: The ERC-165 identifier for this interface is 0x80ac58cd.",
+            "events": {
+              "Approval(address,address,uint256)": {
+                "params": {
+                  "approved": "The approved address.",
+                  "owner": "The token owner.",
+                  "tokenId": "The approved token identifier."
+                }
+              },
+              "ApprovalForAll(address,address,bool)": {
+                "params": {
+                  "approved": "True when then approval is set, false when it is unset.",
+                  "operator": "The approved address.",
+                  "owner": "The tokens owner."
+                }
+              },
+              "Transfer(address,address,uint256)": {
+                "params": {
+                  "from": "The previous token owner.",
+                  "to": "The new token owner.",
+                  "tokenId": "The transferred token identifier."
+                }
+              }
+            },
+            "kind": "dev",
+            "methods": {},
+            "title": "ERC721 Non-Fungible Token Standard, basic interface (events).",
+            "version": 1
+          },
+          "evm": {
+            "bytecode": {
+              "functionDebugData": {},
+              "generatedSources": [],
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "deployedBytecode": {
+              "functionDebugData": {},
+              "generatedSources": [],
+              "immutableReferences": {},
+              "linkReferences": {},
+              "object": "",
+              "opcodes": "",
+              "sourceMap": ""
+            },
+            "gasEstimates": null,
+            "methodIdentifiers": {}
+          },
+          "metadata": "{\"compiler\":{\"version\":\"0.8.14+commit.80d49f37\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"}],\"devdoc\":{\"details\":\"See https://eips.ethereum.org/EIPS/eip-721This interface only contains the standard events, see IERC721 for the functions.Note: The ERC-165 identifier for this interface is 0x80ac58cd.\",\"events\":{\"Approval(address,address,uint256)\":{\"params\":{\"approved\":\"The approved address.\",\"owner\":\"The token owner.\",\"tokenId\":\"The approved token identifier.\"}},\"ApprovalForAll(address,address,bool)\":{\"params\":{\"approved\":\"True when then approval is set, false when it is unset.\",\"operator\":\"The approved address.\",\"owner\":\"The tokens owner.\"}},\"Transfer(address,address,uint256)\":{\"params\":{\"from\":\"The previous token owner.\",\"to\":\"The new token owner.\",\"tokenId\":\"The transferred token identifier.\"}}},\"kind\":\"dev\",\"methods\":{},\"title\":\"ERC721 Non-Fungible Token Standard, basic interface (events).\",\"version\":1},\"userdoc\":{\"events\":{\"Approval(address,address,uint256)\":{\"notice\":\"Emitted when a single token approval is set.\"},\"ApprovalForAll(address,address,bool)\":{\"notice\":\"Emitted when an approval for all tokens is set or unset.\"},\"Transfer(address,address,uint256)\":{\"notice\":\"Emitted when a token is transferred.\"}},\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/token/ERC721/interfaces/IERC721Events.sol\":\"IERC721Events\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":99999},\"remappings\":[]},\"sources\":{\"contracts/token/ERC721/interfaces/IERC721Events.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.8;\\n\\n/// @title ERC721 Non-Fungible Token Standard, basic interface (events).\\n/// @dev See https://eips.ethereum.org/EIPS/eip-721\\n/// @dev This interface only contains the standard events, see IERC721 for the functions.\\n/// @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd.\\ninterface IERC721Events {\\n    /// @notice Emitted when a token is transferred.\\n    /// @param from The previous token owner.\\n    /// @param to The new token owner.\\n    /// @param tokenId The transferred token identifier.\\n    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);\\n\\n    /// @notice Emitted when a single token approval is set.\\n    /// @param owner The token owner.\\n    /// @param approved The approved address.\\n    /// @param tokenId The approved token identifier.\\n    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);\\n\\n    /// @notice Emitted when an approval for all tokens is set or unset.\\n    /// @param owner The tokens owner.\\n    /// @param operator The approved address.\\n    /// @param approved True when then approval is set, false when it is unset.\\n    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);\\n}\\n\",\"keccak256\":\"0x51c6ab5b83bd7820341e18923ff59f7d02b9e664644bbb8affd4249473bd5c98\",\"license\":\"MIT\"}},\"version\":1}",
+          "storageLayout": {
+            "storage": [],
+            "types": null
+          },
+          "userdoc": {
+            "events": {
+              "Approval(address,address,uint256)": {
+                "notice": "Emitted when a single token approval is set."
+              },
+              "ApprovalForAll(address,address,bool)": {
+                "notice": "Emitted when an approval for all tokens is set or unset."
+              },
+              "Transfer(address,address,uint256)": {
+                "notice": "Emitted when a token is transferred."
+              }
+            },
+            "kind": "user",
+            "methods": {},
+            "version": 1
+          }
+        }
+      }
+    },
+    "sources": {
+      "contracts/token/ERC721/interfaces/IERC721Events.sol": {
+        "ast": {
+          "absolutePath": "contracts/token/ERC721/interfaces/IERC721Events.sol",
+          "exportedSymbols": {
+            "IERC721Events": [
+              30
+            ]
+          },
+          "id": 31,
+          "license": "MIT",
+          "nodeType": "SourceUnit",
+          "nodes": [
+            {
+              "id": 1,
+              "literals": [
+                "solidity",
+                "^",
+                "0.8",
+                ".8"
+              ],
+              "nodeType": "PragmaDirective",
+              "src": "32:23:0"
+            },
+            {
+              "abstract": false,
+              "baseContracts": [],
+              "canonicalName": "IERC721Events",
+              "contractDependencies": [],
+              "contractKind": "interface",
+              "documentation": {
+                "id": 2,
+                "nodeType": "StructuredDocumentation",
+                "src": "57:287:0",
+                "text": "@title ERC721 Non-Fungible Token Standard, basic interface (events).\n @dev See https://eips.ethereum.org/EIPS/eip-721\n @dev This interface only contains the standard events, see IERC721 for the functions.\n @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd."
+              },
+              "fullyImplemented": true,
+              "id": 30,
+              "linearizedBaseContracts": [
+                30
+              ],
+              "name": "IERC721Events",
+              "nameLocation": "354:13:0",
+              "nodeType": "ContractDefinition",
+              "nodes": [
+                {
+                  "anonymous": false,
+                  "documentation": {
+                    "id": 3,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "374:190:0",
+                    "text": "@notice Emitted when a token is transferred.\n @param from The previous token owner.\n @param to The new token owner.\n @param tokenId The transferred token identifier."
+                  },
+                  "eventSelector": "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                  "id": 11,
+                  "name": "Transfer",
+                  "nameLocation": "575:8:0",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 10,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 5,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "from",
+                        "nameLocation": "600:4:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 11,
+                        "src": "584:20:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 4,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "584:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 7,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "to",
+                        "nameLocation": "622:2:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 11,
+                        "src": "606:18:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 6,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "606:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 9,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "tokenId",
+                        "nameLocation": "642:7:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 11,
+                        "src": "626:23:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 8,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "626:7:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "583:67:0"
+                  },
+                  "src": "569:82:0"
+                },
+                {
+                  "anonymous": false,
+                  "documentation": {
+                    "id": 12,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "657:194:0",
+                    "text": "@notice Emitted when a single token approval is set.\n @param owner The token owner.\n @param approved The approved address.\n @param tokenId The approved token identifier."
+                  },
+                  "eventSelector": "8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925",
+                  "id": 20,
+                  "name": "Approval",
+                  "nameLocation": "862:8:0",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 19,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 14,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "owner",
+                        "nameLocation": "887:5:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 20,
+                        "src": "871:21:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 13,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "871:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 16,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "approved",
+                        "nameLocation": "910:8:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 20,
+                        "src": "894:24:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 15,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "894:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 18,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "tokenId",
+                        "nameLocation": "936:7:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 20,
+                        "src": "920:23:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        "typeName": {
+                          "id": 17,
+                          "name": "uint256",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "920:7:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "870:74:0"
+                  },
+                  "src": "856:89:0"
+                },
+                {
+                  "anonymous": false,
+                  "documentation": {
+                    "id": 21,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "951:233:0",
+                    "text": "@notice Emitted when an approval for all tokens is set or unset.\n @param owner The tokens owner.\n @param operator The approved address.\n @param approved True when then approval is set, false when it is unset."
+                  },
+                  "eventSelector": "17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31",
+                  "id": 29,
+                  "name": "ApprovalForAll",
+                  "nameLocation": "1195:14:0",
+                  "nodeType": "EventDefinition",
+                  "parameters": {
+                    "id": 28,
+                    "nodeType": "ParameterList",
+                    "parameters": [
+                      {
+                        "constant": false,
+                        "id": 23,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "owner",
+                        "nameLocation": "1226:5:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 29,
+                        "src": "1210:21:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 22,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1210:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 25,
+                        "indexed": true,
+                        "mutability": "mutable",
+                        "name": "operator",
+                        "nameLocation": "1249:8:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 29,
+                        "src": "1233:24:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "typeName": {
+                          "id": 24,
+                          "name": "address",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1233:7:0",
+                          "stateMutability": "nonpayable",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "visibility": "internal"
+                      },
+                      {
+                        "constant": false,
+                        "id": 27,
+                        "indexed": false,
+                        "mutability": "mutable",
+                        "name": "approved",
+                        "nameLocation": "1264:8:0",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 29,
+                        "src": "1259:13:0",
+                        "stateVariable": false,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "typeName": {
+                          "id": 26,
+                          "name": "bool",
+                          "nodeType": "ElementaryTypeName",
+                          "src": "1259:4:0",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "visibility": "internal"
+                      }
+                    ],
+                    "src": "1209:64:0"
+                  },
+                  "src": "1189:85:0"
+                }
+              ],
+              "scope": 31,
+              "src": "344:932:0",
+              "usedErrors": []
+            }
+          ],
+          "src": "32:1245:0"
+        },
+        "id": 0
+      }
+    }
+  }
+}
