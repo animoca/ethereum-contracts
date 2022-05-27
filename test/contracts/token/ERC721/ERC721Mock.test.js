@@ -52,17 +52,6 @@ const config = {
         metaTxSupport: true,
       },
       {
-        name: 'ERC721BurnableFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721BurnableStorage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: false,
-        },
-        metaTxSupport: true,
-      },
-      {
         name: 'ERC721BatchTransferFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
@@ -113,7 +102,6 @@ runBehaviorTests('Standard ERC721', config, function (deployFn) {
     interfaces: {
       ERC721: true,
       ERC721Mintable: true,
-      ERC721Burnable: true,
       ERC721Metadata: true,
     },
     methods: {
@@ -128,12 +116,6 @@ runBehaviorTests('Standard ERC721', config, function (deployFn) {
       },
       'batchMint(address,uint256[])': async function (contract, to, tokenIds, signer) {
         return contract.connect(signer).batchMint(to, tokenIds);
-      },
-      'burnFrom(address,uint256)': async function (contract, from, id, signer) {
-        return contract.connect(signer).burnFrom(from, id);
-      },
-      'batchBurnFrom(address,uint256[])': async function (contract, from, tokenIds, signer) {
-        return contract.connect(signer).batchBurnFrom(from, tokenIds);
       },
     },
     deploy: async function (deployer) {
