@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
+import {IERC721Receiver} from "./../../../token/ERC721/interfaces/IERC721Receiver.sol";
 import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721Receiver} from "./../../../token/ERC721/ERC721Receiver.sol";
-import {IERC721Receiver} from "./../../../token/ERC721/interfaces/IERC721Receiver.sol";
 
 /// @title ERC721 Receiver Mock
 contract ERC721ReceiverMock is ERC721Receiver {

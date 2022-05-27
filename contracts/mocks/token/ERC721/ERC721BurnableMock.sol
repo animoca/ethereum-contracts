@@ -5,10 +5,10 @@ import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistr
 import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721Burnable} from "./../../../token/ERC721/ERC721Burnable.sol";
 import {ERC721Mintable} from "./../../../token/ERC721/ERC721Mintable.sol";
-import {ERC721Mock} from "./ERC721Mock.sol";
 import {ERC721TokenMetadataWithBaseURI} from "./../../../token/ERC721/ERC721TokenMetadataWithBaseURI.sol";
-import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
+import {ERC721Mock} from "./ERC721Mock.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title ERC721BurnableMock
 contract ERC721BurnableMock is ERC721Mock, ERC721Burnable {
