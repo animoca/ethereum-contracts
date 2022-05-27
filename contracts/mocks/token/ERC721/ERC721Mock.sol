@@ -12,7 +12,7 @@ import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryC
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721Mock
-contract ERC721Mock is ERC721SimpleMock, ERC721Burnable, ERC721BatchTransfer, ERC721TokenMetadataWithBaseURI {
+contract ERC721Mock is ERC721SimpleMock, ERC721BatchTransfer, ERC721TokenMetadataWithBaseURI {
     constructor(
         string memory name_,
         string memory symbol_,
