@@ -25,7 +25,6 @@ contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBa
     /// @param name The token name
     /// @param symbol The token symbol
     /// @param uri The token URI.
-
     function initERC721MetadataStorageWithBaseURIStorage(
         string memory name,
         string memory symbol,

@@ -14,21 +14,6 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     using ERC721Storage for ERC721Storage.Layout;
 
     /// @inheritdoc IERC721
-    function balanceOf(address owner) external view override returns (uint256) {
-        return ERC721Storage.layout().balanceOf(owner);
-    }
-
-    /// @inheritdoc IERC721
-    function ownerOf(uint256 tokenId) external view override returns (address) {
-        return ERC721Storage.layout().ownerOf(tokenId);
-    }
-
-    /// @inheritdoc IERC721
-    function getApproved(uint256 tokenId) external view override returns (address operator) {
-        return ERC721Storage.layout().getApproved(tokenId);
-    }
-
-    /// @inheritdoc IERC721
     function approve(address to, uint256 tokenId) external virtual override {
         ERC721Storage.layout().approve(_msgSender(), to, tokenId);
     }
@@ -51,6 +36,15 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     function safeTransferFrom(
         address from,
         address to,
+        uint256 tokenId
+    ) external virtual override {
+        ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
+    }
+
+    /// @inheritdoc IERC721
+    function safeTransferFrom(
+        address from,
+        address to,
         uint256 tokenId,
         bytes memory _data
     ) external virtual override {
@@ -58,12 +52,18 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     }
 
     /// @inheritdoc IERC721
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external virtual override {
-        ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
+    function balanceOf(address owner) external view override returns (uint256) {
+        return ERC721Storage.layout().balanceOf(owner);
+    }
+
+    /// @inheritdoc IERC721
+    function ownerOf(uint256 tokenId) external view override returns (address) {
+        return ERC721Storage.layout().ownerOf(tokenId);
+    }
+
+    /// @inheritdoc IERC721
+    function getApproved(uint256 tokenId) external view override returns (address operator) {
+        return ERC721Storage.layout().getApproved(tokenId);
     }
 
     /// @inheritdoc IERC721
