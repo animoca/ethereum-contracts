@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.8;
+
 /// @title ERC721 Non-Fungible Token Standard, basic interface (events).
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev This interface only contains the standard events, see IERC721 for the functions.

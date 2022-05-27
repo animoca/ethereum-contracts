@@ -19,17 +19,17 @@ abstract contract ERC721TokenMetadataWithBaseURIBase is Context, IERC721Metadata
     using UInt256ToDecimalString for uint256;
 
     /// @inheritdoc IERC721Metadata
-    function name() external view returns (string memory) {
+    function name() external view override returns (string memory) {
         return ERC721ContractMetadataStorage.layout().contractName();
     }
 
     /// @inheritdoc IERC721Metadata
-    function symbol() external view returns (string memory) {
+    function symbol() external view override returns (string memory) {
         return ERC721ContractMetadataStorage.layout().contractSymbol();
     }
 
     /// @inheritdoc IERC721Metadata
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
+    function tokenURI(uint256 tokenId) external view override returns (string memory) {
         require(address(uint160(ERC721Storage.layout().owners[tokenId])) != address(0), "ERC721: non-existing NFT");
         return string(abi.encodePacked(ERC721TokenMetadataWithBaseURIStorage.layout().contractTokenURI(), tokenId.toDecimalString()));
     }

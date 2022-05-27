@@ -16,7 +16,7 @@ abstract contract ERC721BatchTransferBase is Context, IERC721BatchTransfer {
         address from,
         address to,
         uint256[] memory tokenIds
-    ) public virtual override {
+    ) external virtual override {
         ERC721Storage.layout().batchTransferFrom(_msgSender(), from, to, tokenIds);
     }
 }

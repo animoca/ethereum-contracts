@@ -16,14 +16,14 @@ abstract contract ERC721MintableOnceBase is Context, IERC721Mintable {
 
     /// @inheritdoc IERC721Mintable
     /// @dev Reverts if `tokenId` has been previously burnt.
-    function mint(address to, uint256 tokenId) external {
+    function mint(address to, uint256 tokenId) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().mintOnce(_msgSender(), to, tokenId, "", false);
     }
 
     /// @inheritdoc IERC721Mintable
     /// @dev Reverts if `tokenId` has been previously burnt.
-    function batchMint(address to, uint256[] calldata tokenIds) external {
+    function batchMint(address to, uint256[] calldata tokenIds) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().batchMintOnce(to, tokenIds);
     }
@@ -34,7 +34,7 @@ abstract contract ERC721MintableOnceBase is Context, IERC721Mintable {
         address to,
         uint256 tokenId,
         bytes calldata data
-    ) external {
+    ) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().mintOnce(_msgSender(), to, tokenId, data, true);
     }
