@@ -13,7 +13,7 @@ const config = {
     },
     diamond: {
         facets: [
-            { name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: { method: 'initProxyAdminStorage', arguments: ['initialAdmin'] } },
+            { name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initProxyAdminStorage', arguments: ['initialAdmin'] } },
             { name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initDiamondCutStorage' } },
             { name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: { method: 'initInterfaceDetectionStorage' } },
             { name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: { method: 'initOwnershipStorage', arguments: ['initialOwner'] } },
