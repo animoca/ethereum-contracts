@@ -1,4 +1,5 @@
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
+const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
 
 const name = 'ERC721 MintableOnce Mock';
@@ -131,5 +132,6 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
       });
     });
     behavesLikeERC721Mintable(implementation);
+    behavesLikeERC721Burnable(implementation);
   });
 });
