@@ -20,7 +20,7 @@ contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721Burnable, E
     ) ERC721TokenMetadataWithBaseURI(name_, symbol_, tokenURI_) ForwarderRegistryContextBase(forwarderRegistry) ContractOwnership(msg.sender) {}
 
     /// @dev mock coverage function
-    function msgData() external view returns (bytes calldata) {
+    function __msgData() external view returns (bytes calldata) {
         return _msgData();
     }
 

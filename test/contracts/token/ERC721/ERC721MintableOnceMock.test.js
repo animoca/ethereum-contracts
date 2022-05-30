@@ -122,12 +122,12 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
   };
 
   describe('ERC721MintableOnceMock', function () {
-    context('msgData()', function () {
+    context('__msgData()', function () {
       it('it is called for 100% coverage', async function () {
         const [deployer] = await ethers.getSigners();
         const token = await implementation.deploy(deployer);
-        if (token.msgData) {
-          await token.msgData();
+        if (token.__msgData) {
+          await token.__msgData();
         }
       });
     });
