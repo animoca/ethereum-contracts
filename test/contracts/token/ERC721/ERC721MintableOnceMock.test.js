@@ -121,17 +121,17 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
     },
   };
 
-  describe('ERC721BurnableMock', function () {
-    context('_msgData()', function () {
+  describe('ERC721MintableOnceMock', function () {
+    context('msgData()', function () {
       it('it is called for 100% coverage', async function () {
         const [deployer] = await ethers.getSigners();
         const token = await implementation.deploy(deployer);
-        if (token.__msgData) {
-          await token.__msgData();
+        if (token.msgData) {
+          await token.msgData();
         }
       });
     });
     behavesLikeERC721Mintable(implementation);
-    behavesLikeERC721Burnable(implementation);
+    behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
   });
 });
