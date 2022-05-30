@@ -24,16 +24,17 @@ library ERC721TokenMetadataWithBaseURIStorage {
     /// @notice Sets the ERC721TokenMetadataWithBaseURIStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
     /// @dev Reverts if the ERC721TokenMetadataWithBaseURIStorage storage is already initialized to version `1` or above.
-
+    /// @param name_ The Non-Fungible token name.
+    /// @param symbol_ The Non-Fungible token symbol.
     /// @param tokenURI_ the Non-Fungle token tokenURI.
     function init(
         Layout storage s,
-        string memory name,
-        string memory symbol,
+        string memory name_,
+        string memory symbol_,
         string memory tokenURI_
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().init(name, symbol);
+        ERC721ContractMetadataStorage.layout().init(name_, symbol_);
         s.tokenURI = tokenURI_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
