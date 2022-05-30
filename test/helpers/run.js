@@ -26,7 +26,7 @@ async function buildDefaultArguments(defaultArguments) {
   return result;
 }
 
-function runBehaviorTests(name, config, behaviorFn, shouldRunDiamond) {
+function runBehaviorTests(name, config, behaviorFn) {
   async function deployAsImmutableContract(args = {}) {
     const defaultArguments = await buildDefaultArguments(config.defaultArguments);
     const arguments_ = {...defaultArguments, ...args};
@@ -121,9 +121,7 @@ function runBehaviorTests(name, config, behaviorFn, shouldRunDiamond) {
             }
           });
         }
-        if (shouldRunDiamond) {
-          behaviorFn(deployAsDiamondFacet);
-        }
+        behaviorFn(deployAsDiamondFacet);
       });
     }
   });
