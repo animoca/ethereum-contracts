@@ -38,6 +38,7 @@
 #### Tools
 
 - Fixed HardHat plugins import order to prevent `hardhat-ethers` to override functions provided by `hardhat-deploy-ethers`.
+- Fixed a bug in `createFixtureLoader`.
 
 ### Improvements
 
@@ -47,6 +48,7 @@
 - Optimised Diamond implementation.
 - Added all getters logic in storage libraries.
 - Splitted the storage initialization logic between immutable and proxied version for optimisation.
+- Expanded `unchecked` blocks to include the for loops increments.
 - Improved in-line comments.
 
 ##### Tools
