@@ -49,12 +49,13 @@ library ERC721TokenMetadataStorage {
         string[] calldata tokenURIs
     ) internal {
         require(tokenIds.length == tokenURIs.length, "Array lengths not equal");
-        for (uint8 i; i <= tokenIds.length; ++i) {
+        for (uint8 i; i < tokenIds.length; ++i) {
             s.tokenURIs[tokenIds[i]] = tokenURIs[i];
         }
     }
 
     function contractTokenURI(Layout storage s, uint256 tokenId) internal view returns (string memory) {
+        require(bytes(s.tokenURIs[tokenId]).length != 0, "ERC721: non-existing NFT");
         return s.tokenURIs[tokenId];
     }
 

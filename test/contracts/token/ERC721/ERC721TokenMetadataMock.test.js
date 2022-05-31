@@ -87,7 +87,7 @@ runBehaviorTests('TokenMetadata ERC721', config, function(deployFn) {
 
             // Admin
             NotMinter: "AccessControl: missing 'minter' role",
-            NotContractOwner: 'Ownable: not the owner',
+            NotContractOwner: 'Ownership: not the owner',
         },
         features: {},
         interfaces: {

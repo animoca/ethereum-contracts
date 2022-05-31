@@ -6,6 +6,7 @@ import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnersh
 import {ERC721TokenMetadataStorage} from "./libraries/ERC721TokenMetadataStorage.sol";
 import {ERC721ContractMetadataStorage} from "./libraries/ERC721ContractMetadataStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import "hardhat/console.sol";
 
 /// @title ERC721 Non-Fungible Token Standard (proxiable version), optional extension: Metadata (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
