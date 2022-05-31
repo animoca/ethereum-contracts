@@ -16,9 +16,9 @@ abstract contract ERC721TokenMetadataBase is Context, IERC721Metadata {
     using ERC721TokenMetadataStorage for ERC721TokenMetadataStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
-    function setTokenURI(uint256 tokenId, string memory tokenURI) external {
+    function setTokenURI(uint256 tokenId, string memory uri) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
-        ERC721TokenMetadataStorage.layout().setTokenURI(tokenId, tokenURI);
+        ERC721TokenMetadataStorage.layout().setTokenURI(tokenId, uri);
     }
 
     function batchSetTokenURI(uint256[] calldata tokenIds, string[] calldata tokenURIs) external {
