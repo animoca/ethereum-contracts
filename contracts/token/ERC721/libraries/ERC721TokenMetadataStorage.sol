@@ -26,7 +26,7 @@ library ERC721TokenMetadataStorage {
     /// @param name_ The Non-Fungible token name.
     /// @param symbol_ The Non-Fungible token symbol.
     function init(
-        Layout storage s,
+        Layout storage,
         string memory name_,
         string memory symbol_
     ) internal {
