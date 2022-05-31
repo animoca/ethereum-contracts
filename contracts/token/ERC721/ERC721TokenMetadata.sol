@@ -5,11 +5,10 @@ import {IERC721Metadata} from "./interfaces/IERC721Metadata.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {ERC721TokenMetadataStorage} from "./libraries/ERC721TokenMetadataStorage.sol";
 import {ERC721TokenMetadataBase} from "./ERC721TokenMetadataBase.sol";
-import {AccessControl} from "./../../access/AccessControl.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (immutable version)
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation
-abstract contract ERC721TokenMetadata is ERC721TokenMetadataBase, AccessControl {
+abstract contract ERC721TokenMetadata is ERC721TokenMetadataBase {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721TokenMetadataStorage for ERC721TokenMetadataStorage.Layout;
 
@@ -24,6 +23,4 @@ abstract contract ERC721TokenMetadata is ERC721TokenMetadataBase, AccessControl 
         ERC721TokenMetadataStorage.layout().init(name_, symbol_);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
-
-    // add setters for URIs
 }
