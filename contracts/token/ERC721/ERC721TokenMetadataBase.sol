@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IERC721Metadata} from "./interfaces/IERC721Metadata.sol";
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
+import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {ERC721TokenMetadataStorage} from "./libraries/ERC721TokenMetadataStorage.sol";
 import {ERC721ContractMetadataStorage} from "./libraries/ERC721ContractMetadataStorage.sol";
 import {UInt256ToDecimalString} from "./../../utils/types/UInt256ToDecimalString.sol";
@@ -17,6 +18,7 @@ abstract contract ERC721TokenMetadataBase is Context, IERC721Metadata {
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
     using ERC721TokenMetadataStorage for ERC721TokenMetadataStorage.Layout;
     using UInt256ToDecimalString for uint256;
+    using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     /// @inheritdoc IERC721Metadata
     function name() external view override returns (string memory) {
@@ -34,10 +36,12 @@ abstract contract ERC721TokenMetadataBase is Context, IERC721Metadata {
     }
 
     function setTokenURI(uint256 tokenId, string memory tokenURI) external {
+        ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         ERC721TokenMetadataStorage.layout().setTokenURI(tokenId, tokenURI);
     }
 
     function batchSetTokenURI(uint256[] calldata tokenIds, string[] calldata tokenURIs) external {
+        ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         ERC721TokenMetadataStorage.layout().batchSetTokenURI(tokenIds, tokenURIs);
     }
 }
