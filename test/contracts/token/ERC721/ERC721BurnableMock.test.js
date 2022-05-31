@@ -37,7 +37,7 @@ const config = {
         name: 'ERC721TokenMetadataWithBaseURIFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
-          method: 'initERC721MetadataStorageWithBaseURIStorage',
+          method: 'initERC721MetadataWithBaseURIStorage',
           arguments: ['name', 'symbol', 'tokenURI'],
           adminProtected: true,
           versionProtected: true,
