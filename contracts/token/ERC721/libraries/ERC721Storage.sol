@@ -165,11 +165,12 @@ library ERC721Storage {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
-
-        for (uint256 i; i != length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            _transferNFT(s, sender, from, to, tokenId, operatable, true);
-            emit Transfer(from, to, tokenId);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                uint256 tokenId = tokenIds[i];
+                _transferNFT(s, sender, from, to, tokenId, operatable, true);
+                emit Transfer(from, to, tokenId);
+            }
         }
 
         if (length != 0) {
@@ -222,11 +223,13 @@ library ERC721Storage {
         require(to != address(0), "ERC721: mint to zero");
 
         uint256 length = tokenIds.length;
-        for (uint256 i; i != length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            require(s.owners[tokenId] != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
-            _mintNFT(s, to, tokenId, true);
-            emit Transfer(address(0), to, tokenId);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                uint256 tokenId = tokenIds[i];
+                require(s.owners[tokenId] != _BURNT_NFT_OWNER, "ERC721: burnt NFT");
+                _mintNFT(s, to, tokenId, true);
+                emit Transfer(address(0), to, tokenId);
+            }
         }
 
         s.nftBalances[to] += length;
@@ -240,10 +243,12 @@ library ERC721Storage {
         require(to != address(0), "ERC721: mint to zero");
 
         uint256 length = tokenIds.length;
-        for (uint256 i; i != length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            _mintNFT(s, to, tokenId, true);
-            emit Transfer(address(0), to, tokenId);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                uint256 tokenId = tokenIds[i];
+                _mintNFT(s, to, tokenId, true);
+                emit Transfer(address(0), to, tokenId);
+            }
         }
 
         s.nftBalances[to] += length;
@@ -271,10 +276,12 @@ library ERC721Storage {
 
         uint256 length = tokenIds.length;
 
-        for (uint256 i; i != length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            _burnNFT(s, sender, from, tokenId, operatable, true);
-            emit Transfer(from, address(0), tokenId);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                uint256 tokenId = tokenIds[i];
+                _burnNFT(s, sender, from, tokenId, operatable, true);
+                emit Transfer(from, address(0), tokenId);
+            }
         }
 
         if (length != 0) {
@@ -347,10 +354,12 @@ library ERC721Storage {
         uint256 amount
     ) private {
         if (from != to) {
-            // cannot underflow as balance is verified through ownership
-            s.nftBalances[from] -= amount;
-            //  cannot overflow as supply cannot overflow
-            s.nftBalances[to] += amount;
+            unchecked {
+                // cannot underflow as balance is verified through ownership
+                s.nftBalances[from] -= amount;
+                //  cannot overflow as supply cannot overflow
+                s.nftBalances[to] += amount;
+            }
         }
     }
 
@@ -365,8 +374,10 @@ library ERC721Storage {
         s.owners[id] = uint256(uint160(to));
 
         if (!isBatch) {
-            // cannot overflow due to the cost of minting individual tokens
-            ++s.nftBalances[to];
+            unchecked {
+                // cannot overflow due to the cost of minting individual tokens
+                ++s.nftBalances[to];
+            }
         }
     }
 
@@ -386,8 +397,10 @@ library ERC721Storage {
         s.owners[id] = _BURNT_NFT_OWNER;
 
         if (!isBatch) {
-            // cannot underflow as balance is verified through NFT ownership
-            --s.nftBalances[from];
+            unchecked {
+                // cannot underflow as balance is verified through NFT ownership
+                --s.nftBalances[from];
+            }
         }
     }
 
