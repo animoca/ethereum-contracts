@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.14;
 
 import {IERC721Metadata} from "./interfaces/IERC721Metadata.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";

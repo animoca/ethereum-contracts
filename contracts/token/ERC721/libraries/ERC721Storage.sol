@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity 0.8.14;
 
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
