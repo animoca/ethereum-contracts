@@ -48,9 +48,11 @@ library ERC721TokenMetadataStorage {
         uint256[] calldata tokenIds,
         string[] calldata tokenURIs
     ) internal {
-        require(tokenIds.length == tokenURIs.length, "Array lengths not equal");
-        for (uint8 i; i < tokenIds.length; ++i) {
-            s.tokenURIs[tokenIds[i]] = tokenURIs[i];
+        require(tokenIds.length == tokenURIs.length, "ERC721: Input counts not equal");
+        unchecked {
+            for (uint8 i; i < tokenIds.length; ++i) {
+                s.tokenURIs[tokenIds[i]] = tokenURIs[i];
+            }
         }
     }
 
