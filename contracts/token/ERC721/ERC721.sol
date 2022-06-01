@@ -13,7 +13,7 @@ contract ERC721 is ERC721Base {
     /// @notice Initialises the storage
     /// @notice Sets the ERC721 storage version to `1`
     /// @notice Marks the following ERC165 interfaces as supported: IERC721
-    /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
+    /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     constructor() {
         ERC721Storage.layout().init();
     }
