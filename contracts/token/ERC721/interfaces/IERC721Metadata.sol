@@ -5,17 +5,17 @@ pragma solidity 0.8.14;
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev Note: The ERC-165 identifier for this interface is 0x5b5e139f.
 interface IERC721Metadata {
-    /// @dev Gets the token name
-    /// @return string representing the token name
-    function name() external view returns (string memory);
+    /// @notice Gets the name of the token. E.g. "My Token".
+    /// @return tokenName The name of the token.
+    function name() external view returns (string memory tokenName);
 
-    /// @dev Gets the token symbol
-    /// @return string representing the token symbol
-    function symbol() external view returns (string memory);
+    /// @notice Gets the symbol of the token. E.g. "TOK".
+    /// @return tokenSymbol The symbol of the token.
+    function symbol() external view returns (string memory tokenSymbol);
 
-    /// @dev Returns an URI for a given token ID
-    /// Throws if the token ID does not exist. May return an empty string.
-    /// @param tokenId uint256 ID of the token to query
-    /// @return string URI of given token ID
-    function tokenURI(uint256 tokenId) external view returns (string memory);
+    /// @notice Gets the metadata URI for a token identifier.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @param tokenId The token identifier.
+    /// @return uri The metadata URI for the token identifier.
+    function tokenURI(uint256 tokenId) external view returns (string memory uri);
 }

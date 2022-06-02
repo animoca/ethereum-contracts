@@ -26,13 +26,14 @@ interface IERC721 {
 
     /// @notice Unsafely transfers the ownership of a token identifier to a recipient.
     /// @dev Note: Usage of this method is discouraged, use `safeTransferFrom` whenever possible.
+    /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if the sender is not `from` or has not been approved by `from`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
     /// @dev Emits a {Transfer} event.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer. Self-transfers are possible.
-    /// @param tokenId The token identifier to transfer.
+    /// @param tokenId The identifier of the token to transfer.
     function transferFrom(
         address from,
         address to,
@@ -40,15 +41,15 @@ interface IERC721 {
     ) external;
 
     /// @notice Safely transfers the ownership of a token identifier to a recipient.
-    /// @notice Note: If the target address is a contract, it must implement `onERC721Received`.
+    /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if the sender is not `from` or has not been approved by `from`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails or is refused.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} reverts or is refused.
     /// @dev Emits a {Transfer} event.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
-    /// @param tokenId The token identifier to transfer.
+    /// @param tokenId The identifier of the token to transfer.
     function safeTransferFrom(
         address from,
         address to,
@@ -56,15 +57,15 @@ interface IERC721 {
     ) external;
 
     /// @notice Safely transfers the ownership of a token identifier to a recipient.
-    /// @notice Note: If the target address is a contract, it must implement `onERC721Received`.
+    /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if the sender is not `from` or has not been approved by `from`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails or is refused.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} reverts or is refused.
     /// @dev Emits a {Transfer} event.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
-    /// @param tokenId The token identifier to transfer.
+    /// @param tokenId The identifier of the token to transfer.
     /// @param data Optional data to send along to a receiver contract.
     function safeTransferFrom(
         address from,

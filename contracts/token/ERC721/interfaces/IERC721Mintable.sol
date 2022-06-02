@@ -6,7 +6,7 @@ pragma solidity 0.8.14;
 interface IERC721Mintable {
     /// @notice Unsafely mints a token.
     /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` has already been minted.
+    /// @dev Reverts if `tokenId` already exists.
     /// @dev Emits an {IERC721-Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
@@ -14,7 +14,7 @@ interface IERC721Mintable {
 
     /// @notice Unsafely mints a batch of tokens.
     /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if one of `tokenIds` has already been minted.
+    /// @dev Reverts if one of `tokenIds` already exists.
     /// @dev Emits an {IERC721-Transfer} event from the zero address for each of `tokenIds`.
     /// @param to Address of the new tokens owner.
     /// @param tokenIds Identifiers of the tokens to mint.
@@ -22,7 +22,7 @@ interface IERC721Mintable {
 
     /// @notice Safely mints a token.
     /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` has already ben minted.
+    /// @dev Reverts if `tokenId` already exists.
     /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails or is refused.
     /// @dev Emits an {IERC721-Transfer} event from the zero address.
     /// @param to Address of the new token owner.

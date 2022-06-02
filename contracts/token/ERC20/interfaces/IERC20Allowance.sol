@@ -9,7 +9,7 @@ interface IERC20Allowance {
     /// @notice This is an alternative to {approve} that can be used as a mitigation for transaction ordering problems.
     /// @dev Reverts if `spender` is the zero address.
     /// @dev Reverts if `spender`'s allowance by the sender overflows.
-    /// @dev Emits an {Approval} event with an updated allowance for `spender` by the sender.
+    /// @dev Emits an {IERC20-Approval} event with an updated allowance for `spender` by the sender.
     /// @param spender The account whose allowance is being increased.
     /// @param value The allowance amount increase.
     /// @return result Whether the operation succeeded.
@@ -19,7 +19,7 @@ interface IERC20Allowance {
     /// @notice This is an alternative to {approve} that can be used as a mitigation for transaction ordering problems.
     /// @dev Reverts if `spender` is the zero address.
     /// @dev Reverts if `spender` does not have at least `value` of allowance by the sender.
-    /// @dev Emits an {Approval} event with an updated allowance for `spender` by the sender.
+    /// @dev Emits an {IERC20-Approval} event with an updated allowance for `spender` by the sender.
     /// @param spender The account whose allowance is being decreased.
     /// @param value The allowance amount decrease.
     /// @return result Whether the operation succeeded.

@@ -9,7 +9,7 @@ interface IERC20BatchTransfers {
     /// @dev Reverts if `recipients` and `values` have different lengths.
     /// @dev Reverts if one of `recipients` is the zero address.
     /// @dev Reverts if the sender does not have at least `sum(values)` of balance.
-    /// @dev Emits a {Transfer} event for each transfer.
+    /// @dev Emits an {IERC20-Transfer} event for each transfer.
     /// @param recipients The list of accounts to transfer the tokens to.
     /// @param values The list of amounts of tokens to transfer to each of `recipients`.
     /// @return result Whether the operation succeeded.
@@ -20,7 +20,7 @@ interface IERC20BatchTransfers {
     /// @dev Reverts if one of `recipients` is the zero address.
     /// @dev Reverts if `from` does not have at least `sum(values)` of balance.
     /// @dev Reverts if the sender is not `from` and does not have at least `sum(values)` of allowance by `from`.
-    /// @dev Emits a {Transfer} event for each transfer.
+    /// @dev Emits an {IERC20-Transfer} event for each transfer.
     /// @dev Optionally emits an {Approval} event if the sender is not `from` (non-standard).
     /// @param from The account which owns the tokens to be transferred.
     /// @param recipients The list of accounts to transfer the tokens to.

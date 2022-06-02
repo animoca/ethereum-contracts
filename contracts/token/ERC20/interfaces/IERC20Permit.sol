@@ -7,11 +7,11 @@ pragma solidity ^0.8.8;
 /// @dev Note: the ERC-165 identifier for this interface is 0x9d8ff7da.
 interface IERC20Permit {
     /// @notice Sets the allowance to an account from another account using a signed permit.
-    /// @notice Warning: The standard ERC-20 race condition for approvals applies to `permit()` as well: https://swcregistry.io/docs/SWC-114
+    /// @notice Warning: The standard ERC20 race condition for approvals applies to `permit()` as well: https://swcregistry.io/docs/SWC-114
     /// @dev Reverts if `owner` is the zero address.
     /// @dev Reverts if the current blocktime is greather than `deadline`.
     /// @dev Reverts if `r`, `s`, and `v` do not represent a valid `secp256k1` signature from `owner`.
-    /// @dev Emits an {Approval} event.
+    /// @dev Emits an {IERC20-Approval} event.
     /// @param owner The token owner granting the allowance to `spender`.
     /// @param spender The token spender being granted the allowance by `owner`.
     /// @param value The allowance amount to grant.

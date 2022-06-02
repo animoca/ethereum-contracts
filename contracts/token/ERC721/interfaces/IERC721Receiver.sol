@@ -6,22 +6,18 @@ pragma solidity 0.8.14;
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev Note: The ERC-165 identifier for this interface is 0x150b7a02.
 interface IERC721Receiver {
-    /// @notice Handles the receipt of an NFT.
-    /// @dev The ERC721 smart contract calls this function on the recipient
-    ///  after a {IERC721-safeTransferFrom}. This function MUST return the function selector,
-    ///  otherwise the caller will revert the transaction. The selector to be
-    ///  returned can be obtained as `this.onERC721Received.selector`. This
-    ///  function MAY throw to revert and reject the transfer.
-    /// @dev Note: the ERC721 contract address is always the message sender.
-    /// @param operator The address which called `safeTransferFrom` function
-    /// @param from The address which previously owned the token
-    /// @param tokenId The NFT identifier which is being transferred
-    /// @param data Additional data with no specified format
-    /// @return bytes4 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    /// @notice Handles the receipt of an ERC721 token.
+    /// @dev Note: This function is called by an ERC721 contract after a safe transfer.
+    /// @dev Note: The ERC721 contract address is always the message sender.
+    /// @param operator The initiator of the safe transfer.
+    /// @param from The previous token owner.
+    /// @param tokenId The token identifier.
+    /// @param data Optional additional data with no specified format.
+    /// @return magicValue `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))` (`0x150b7a02`) to accept, any other value to refuse.
     function onERC721Received(
         address operator,
         address from,
         uint256 tokenId,
         bytes calldata data
-    ) external returns (bytes4);
+    ) external returns (bytes4 magicValue);
 }

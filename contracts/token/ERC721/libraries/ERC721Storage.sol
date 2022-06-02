@@ -404,16 +404,14 @@ library ERC721Storage {
         }
     }
 
-    /**
-     * Calls {IERC721Receiver-onERC721Received} on a target contract.
-     * @dev Reverts if `to` is not a contract.
-     * @dev Reverts if the call to the target fails or is refused.
-     * @param sender sender of the message.
-     * @param from Previous token owner.
-     * @param to New token owner.
-     * @param tokenId Identifier of the token transferred.
-     * @param data Optional data to send along with the receiver contract call.
-     */
+    /// @notice Calls {IERC721Receiver-onERC721Received} on a target contract.
+    /// @dev Reverts if `to` is not a contract.
+    /// @dev Reverts if the call to the target fails or is refused.
+    /// @param sender sender of the message.
+    /// @param from Previous token owner.
+    /// @param to New token owner.
+    /// @param tokenId Identifier of the token transferred.
+    /// @param data Optional data to send along with the receiver contract call.
     function _callOnERC721Received(
         address sender,
         address from,
@@ -424,17 +422,15 @@ library ERC721Storage {
         require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == _ERC721_RECEIVED, "ERC721: transfer refused");
     }
 
-    /**
-     * Returns whether `sender` is authorised to make a transfer on behalf of `from`.
-     * @param from The address to check operatibility upon.
-     * @param sender The sender address.
-     * @return True if sender is `from` or an operator for `from`, false otherwise.
-     */
+    /// @notice Returns whether `sender` is authorised to make a transfer on behalf of `from`.
+    /// @param from The token owner.
+    /// @param sender The sender to check the operatability of.
+    /// @return operatable True if sender is `from` or an operator for `from`, false otherwise.
     function _isOperatable(
         Layout storage s,
         address from,
         address sender
-    ) private view returns (bool) {
+    ) private view returns (bool operatable) {
         return (from == sender) || s.operators[from][sender];
     }
 }

@@ -7,7 +7,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "sender",
+          "name": "operator",
           "type": "address"
         },
         {

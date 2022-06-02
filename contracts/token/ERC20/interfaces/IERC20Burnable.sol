@@ -7,7 +7,7 @@ pragma solidity ^0.8.8;
 interface IERC20Burnable {
     /// @notice Burns an amount of tokens from the sender, decreasing the total supply.
     /// @dev Reverts if the sender does not have at least `value` of balance.
-    /// @dev Emits a {Transfer} event with `to` set to the zero address.
+    /// @dev Emits a {IERC20-Transfer} event with `to` set to the zero address.
     /// @param value The amount of tokens to burn.
     /// @return result Whether the operation succeeded.
     function burn(uint256 value) external returns (bool result);
@@ -15,7 +15,7 @@ interface IERC20Burnable {
     /// @notice Burns an amount of tokens from a specified address, decreasing the total supply.
     /// @dev Reverts if `from` does not have at least `value` of balance.
     /// @dev Reverts if the sender is not `from` and does not have at least `value` of allowance by `from`.
-    /// @dev Emits a {Transfer} event with `to` set to the zero address.
+    /// @dev Emits an {IERC20-Transfer} event with `to` set to the zero address.
     /// @dev Optionally emits an {Approval} event if the sender is not `from` (non-standard).
     /// @param from The account to burn the tokens from.
     /// @param value The amount of tokens to burn.
@@ -26,7 +26,7 @@ interface IERC20Burnable {
     /// @dev Reverts if `owners` and `values` have different lengths.
     /// @dev Reverts if an `owner` does not have at least the corresponding `value` of balance.
     /// @dev Reverts if the sender is not an `owner` and does not have at least the corresponding `value` of allowance by this `owner`.
-    /// @dev Emits a {Transfer} event for each transfer with `to` set to the zero address.
+    /// @dev Emits an {IERC20-Transfer} event for each transfer with `to` set to the zero address.
     /// @dev Optionally emits an {Approval} event for each transfer if the sender is not this `owner` (non-standard).
     /// @param owners The list of accounts to burn the tokens from.
     /// @param values The list of amounts of tokens to burn.

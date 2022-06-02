@@ -62,7 +62,7 @@ interface IERC20 {
     /// @return balance The account balance.
     function balanceOf(address owner) external view returns (uint256 balance);
 
-    /// @notice Returns the amount that an account is allowed to spend on behalf of another.
+    /// @notice Gets the amount that an account is allowed to spend on behalf of another.
     /// @param owner The account that has granted an allowance to `spender`.
     /// @param spender The account that was granted an allowance by `owner`.
     /// @return value The amount which `spender` is allowed to spend on behalf of `owner`.

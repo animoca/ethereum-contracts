@@ -7,13 +7,14 @@ pragma solidity ^0.8.8;
 /// @dev Note: the ERC-165 identifier for this interface is 0x4fc35859.
 interface IERC20Receiver {
     /// @notice Handles the receipt of ERC20 tokens.
-    /// @param sender The initiator of the transfer.
-    /// @param from The account which transferred the tokens.
+    /// @dev Note: this function is called by an {ERC20SafeTransfer} contract after a safe transfer.
+    /// @param operator The initiator of the safe transfer.
+    /// @param from The previous tokens owner.
     /// @param value The amount of tokens transferred.
     /// @param data Optional additional data with no specified format.
-    /// @return magicValue `bytes4(keccak256("onERC20Received(address,address,uint256,bytes)"))` (`0x4fc35859`).
+    /// @return magicValue `bytes4(keccak256("onERC20Received(address,address,uint256,bytes)"))` (`0x4fc35859`) to accept, any other value to refuse.
     function onERC20Received(
-        address sender,
+        address operator,
         address from,
         uint256 value,
         bytes calldata data
