@@ -19,44 +19,46 @@ library ERC721TokenMetadataStorage {
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC721TokenMetadata.storage")) - 1);
     bytes32 public constant ERC721TOKENMETADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC712TokenMetadata.version")) - 1);
 
-    /// @notice Initialises the storage with name and symbol
+    /// @notice Initialises the storage with name and symbol.
+    /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
     /// @notice Sets the ERC721TokenMetadataStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @dev Reverts if the ERC721ContractMetadataStorage storage is already initialized to version `1` or above.
     /// @dev Reverts if the ERC721TokenMetadataStorage storage is already initialized to version `1` or above.
-    /// @param name_ The Non-Fungible token name.
-    /// @param symbol_ The Non-Fungible token symbol.
+    /// @param tokenName The name of the token.
+    /// @param tokenSymbol The symbol of the token.
     function init(
         Layout storage,
-        string memory name_,
-        string memory symbol_
+        string memory tokenName,
+        string memory tokenSymbol
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATA_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().init(name_, symbol_);
+        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
     function setTokenURI(
         Layout storage s,
         uint256 tokenId,
-        string memory tokenURI
+        string memory uri
     ) internal {
-        s.tokenURIs[tokenId] = tokenURI;
+        s.tokenURIs[tokenId] = uri;
     }
 
     function batchSetTokenURI(
         Layout storage s,
         uint256[] calldata tokenIds,
-        string[] calldata tokenURIs
+        string[] calldata uris
     ) internal {
-        require(tokenIds.length == tokenURIs.length, "ERC721: Input counts not equal");
+        require(tokenIds.length == uris.length, "ERC721: inconsistent arrays");
         unchecked {
             for (uint8 i; i < tokenIds.length; ++i) {
-                s.tokenURIs[tokenIds[i]] = tokenURIs[i];
+                s.tokenURIs[tokenIds[i]] = uris[i];
             }
         }
     }
 
-    function contractTokenURI(Layout storage s, uint256 tokenId) internal view returns (string memory) {
+    function tokenURI(Layout storage s, uint256 tokenId) internal view returns (string memory) {
         require(bytes(s.tokenURIs[tokenId]).length != 0, "ERC721: non-existing NFT");
         return s.tokenURIs[tokenId];
     }

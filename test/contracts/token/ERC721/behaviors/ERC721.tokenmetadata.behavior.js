@@ -53,7 +53,7 @@ function behavesLikeERC721TokenMetadata({name, symbol, features, deploy, revertM
           );
         });
         it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
-          await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InputCountsNotEqual);
+          await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InconsistentArrays);
         });
       });
     });

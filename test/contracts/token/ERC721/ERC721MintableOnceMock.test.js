@@ -23,33 +23,13 @@ const config = {
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
-      {
-        name: 'ERC721FacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721Storage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: true,
-        },
-        metaTxSupport: true,
-      },
+      {name: 'ERC721Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721Storage'}},
+      {name: 'ERC721BurnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721BurnableStorage'}},
       {
         name: 'ERC721MintableOnceFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MintableOnceStorage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: false,
-        },
-        metaTxSupport: true,
-      },
-      {
-        name: 'ERC721BurnableFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721BurnableStorage',
           arguments: [],
           adminProtected: true,
           versionProtected: false,
@@ -121,17 +101,6 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
     },
   };
 
-  describe('ERC721MintableOnceMock', function () {
-    context('__msgData()', function () {
-      it('it is called for 100% coverage', async function () {
-        const [deployer] = await ethers.getSigners();
-        const token = await implementation.deploy(deployer);
-        if (token.__msgData) {
-          await token.__msgData();
-        }
-      });
-    });
-    behavesLikeERC721Mintable(implementation);
-    behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
-  });
+  behavesLikeERC721Mintable(implementation);
+  behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
 });

@@ -9,8 +9,8 @@ library ERC721ContractMetadataStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {
-        string name;
-        string symbol;
+        string tokenName;
+        string tokenSymbol;
     }
 
     bytes32 public constant ERC721CONTRACTMETADATA_STORAGE_POSITION =
@@ -20,27 +20,25 @@ library ERC721ContractMetadataStorage {
 
     /// @notice Initialises the storage with a name and symbol.
     /// @notice Sets the ERC721ContractMetadata storage version to `1`.
-    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
     /// @dev Reverts if the ERC721ContractMetadata storage is already initialized to version `1` or above.
-    /// @param name_ The Non-Fungible token name.
-    /// @param symbol_ The Non-Fungible token symbol.
+    /// @param tokenName The Non-Fungible token name.
+    /// @param tokenSymbol The Non-Fungible token symbol.
     function init(
         Layout storage s,
-        string memory name_,
-        string memory symbol_
+        string memory tokenName,
+        string memory tokenSymbol
     ) internal {
         StorageVersion.setVersion(ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
-        s.name = name_;
-        s.symbol = symbol_;
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+        s.tokenName = tokenName;
+        s.tokenSymbol = tokenSymbol;
     }
 
-    function contractName(Layout storage s) internal view returns (string memory) {
-        return s.name;
+    function name(Layout storage s) internal view returns (string memory) {
+        return s.tokenName;
     }
 
-    function contractSymbol(Layout storage s) internal view returns (string memory) {
-        return s.symbol;
+    function symbol(Layout storage s) internal view returns (string memory) {
+        return s.tokenSymbol;
     }
 
     function layout() internal pure returns (Layout storage s) {

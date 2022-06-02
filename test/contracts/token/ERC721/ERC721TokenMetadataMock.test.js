@@ -3,7 +3,6 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 
 const name = 'ERC721TokenMetadataMock';
 const symbol = 'ERC721TokenMetadataMock';
-const tokenURI = 'uri';
 
 const config = {
   immutable: {
@@ -22,17 +21,8 @@ const config = {
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
-      {
-        name: 'ERC721FacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721Storage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: true,
-        },
-        metaTxSupport: true,
-      },
+      {name: 'ERC721Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721Storage'}},
+      {name: 'ERC721MintableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721MintableStorage'}},
       {
         name: 'ERC721TokenMetadataFacetMock',
         ctorArguments: ['forwarderRegistry'],
@@ -41,17 +31,6 @@ const config = {
           arguments: ['name', 'symbol'],
           adminProtected: true,
           versionProtected: true,
-        },
-        metaTxSupport: true,
-      },
-      {
-        name: 'ERC721MintableFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721MintableStorage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: false,
         },
         metaTxSupport: true,
       },
@@ -72,11 +51,10 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     nfMaskLength: 32,
     name,
     symbol,
-    tokenURI,
     revertMessages: {
       NonExistingNFT: 'ERC721: non-existing NFT',
       NonOwnedNFT: 'ERC721: non-owned NFT',
-      InputCountsNotEqual: 'ERC721: Input counts not equal',
+      InconsistentArrays: 'ERC721: inconsistent arrays',
       // Admin
       NotContractOwner: 'Ownership: not the owner',
     },
@@ -88,7 +66,7 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     },
     methods: {},
     deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol, tokenURI});
+      const contract = await deployFn({name, symbol});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },

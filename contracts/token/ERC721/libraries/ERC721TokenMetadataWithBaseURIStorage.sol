@@ -2,6 +2,7 @@
 pragma solidity 0.8.14;
 
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
+import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
 import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
@@ -10,9 +11,10 @@ import {ERC721ContractMetadataStorage} from "./ERC721ContractMetadataStorage.sol
 library ERC721TokenMetadataWithBaseURIStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
+    using UInt256ToDecimalString for uint256;
 
     struct Layout {
-        string tokenURI;
+        string baseURI;
     }
 
     bytes32 public constant ERC721TOKENMETADATAWITHBASEURI_STORAGE_POSITION =
@@ -20,27 +22,33 @@ library ERC721TokenMetadataWithBaseURIStorage {
     bytes32 public constant ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT =
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712Metadata.version")) - 1);
 
-    /// @notice Initialises the storage with a tokenURI.
+    /// @notice Initialises the storage with a name, symbol and base metadata URI.
+    /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
     /// @notice Sets the ERC721TokenMetadataWithBaseURIStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @dev Reverts if the ERC721ContractMetadataStorage storage is already initialized to version `1` or above.
     /// @dev Reverts if the ERC721TokenMetadataWithBaseURIStorage storage is already initialized to version `1` or above.
-    /// @param name_ The Non-Fungible token name.
-    /// @param symbol_ The Non-Fungible token symbol.
-    /// @param tokenURI_ the Non-Fungle token tokenURI.
+    /// @param tokenName The name of the token.
+    /// @param tokenSymbol The symbol of the token.
+    /// @param baseURI The base metadata URI.
     function init(
         Layout storage s,
-        string memory name_,
-        string memory symbol_,
-        string memory tokenURI_
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseURI
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().init(name_, symbol_);
-        s.tokenURI = tokenURI_;
+        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
+        s.baseURI = baseURI;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
-    function contractTokenURI(Layout storage s) internal view returns (string memory) {
-        return s.tokenURI;
+    function baseMetadataURI(Layout storage s) internal view returns (string memory) {
+        return s.baseURI;
+    }
+
+    function tokenURI(Layout storage s, uint256 tokenId) internal view returns (string memory) {
+        return string(abi.encodePacked(s.baseURI, tokenId.toDecimalString()));
     }
 
     function layout() internal pure returns (Layout storage s) {
