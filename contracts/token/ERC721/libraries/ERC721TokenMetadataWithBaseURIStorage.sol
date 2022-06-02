@@ -22,6 +22,8 @@ library ERC721TokenMetadataWithBaseURIStorage {
     bytes32 public constant ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT =
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712Metadata.version")) - 1);
 
+    event BaseMetadataURISet(string baseMetadataURI);
+
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
     /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
     /// @notice Sets the ERC721TokenMetadataWithBaseURIStorage storage version to `1`.
@@ -41,6 +43,11 @@ library ERC721TokenMetadataWithBaseURIStorage {
         ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
         s.baseURI = baseURI;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+    }
+
+    function setBaseMetadataURI(Layout storage s, string calldata baseMetadataURI_) internal {
+        s.baseURI = baseMetadataURI_;
+        emit BaseMetadataURISet(baseMetadataURI_);
     }
 
     function baseMetadataURI(Layout storage s) internal view returns (string memory) {
