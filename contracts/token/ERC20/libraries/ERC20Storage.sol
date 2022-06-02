@@ -169,13 +169,13 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: to zero address");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: to zero address");
 
-            uint256 value = values[i];
-            if (value != 0) {
-                unchecked {
+                uint256 value = values[i];
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
@@ -186,12 +186,10 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
+                emit Transfer(sender, to, value);
             }
-            emit Transfer(sender, to, value);
-        }
 
-        if (totalValue != 0 && totalValue != selfTransferTotalValue) {
-            unchecked {
+            if (totalValue != 0 && totalValue != selfTransferTotalValue) {
                 uint256 newBalance = balance - totalValue;
                 require(newBalance < balance, "ERC20: insufficient balance"); // balance must be sufficient, including self-transfers
                 s.balances[sender] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
@@ -215,14 +213,14 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: to zero address");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: to zero address");
 
-            uint256 value = values[i];
+                uint256 value = values[i];
 
-            if (value != 0) {
-                unchecked {
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
@@ -233,13 +231,11 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
+
+                emit Transfer(from, to, value);
             }
 
-            emit Transfer(from, to, value);
-        }
-
-        if (totalValue != 0 && totalValue != selfTransferTotalValue) {
-            unchecked {
+            if (totalValue != 0 && totalValue != selfTransferTotalValue) {
                 uint256 newBalance = balance - totalValue;
                 require(newBalance < balance, "ERC20: insufficient balance"); // balance must be sufficient, including self-transfers
                 s.balances[from] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
@@ -309,25 +305,23 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: mint to zero");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: mint to zero");
 
-            uint256 value = values[i];
-            if (value != 0) {
-                unchecked {
+                uint256 value = values[i];
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
                     s.balances[to] += value; // balance cannot overflow if supply does not
                 }
+                emit Transfer(address(0), to, value);
             }
-            emit Transfer(address(0), to, value);
-        }
 
-        if (totalValue != 0) {
-            uint256 supply = s.supply;
-            unchecked {
+            if (totalValue != 0) {
+                uint256 supply = s.supply;
                 uint256 newSupply = supply + totalValue;
                 require(newSupply > supply, "ERC20: supply overflow");
                 s.supply = newSupply;
@@ -377,29 +371,27 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        for (uint256 i; i != length; ++i) {
-            address from = owners[i];
-            uint256 value = values[i];
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address from = owners[i];
+                uint256 value = values[i];
 
-            if (from != sender) {
-                s.decreaseAllowance(from, sender, value);
-            }
+                if (from != sender) {
+                    s.decreaseAllowance(from, sender, value);
+                }
 
-            if (value != 0) {
-                uint256 balance = s.balances[from];
-                unchecked {
+                if (value != 0) {
+                    uint256 balance = s.balances[from];
                     uint256 newBalance = balance - value;
                     require(newBalance < balance, "ERC20: insufficient balance");
                     s.balances[from] = newBalance;
                     totalValue += value; // totalValue cannot overflow if the individual balances do not underflow
                 }
+
+                emit Transfer(from, address(0), value);
             }
 
-            emit Transfer(from, address(0), value);
-        }
-
-        if (totalValue != 0) {
-            unchecked {
+            if (totalValue != 0) {
                 s.supply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
             }
         }

@@ -42,7 +42,7 @@
     "clean:coverage": "rm -rf coverage *.coverage",
     "clean:doc": "rm -rf docs",
     "clean": "run-p clean:compile clean:artifacts:soft clean:hardhat clean:flatten clean:coverage clean:doc",
-    "run-all": "run-s format fix clean clean:artifacts:hard compile docgen flatten coverage",
+    "run-all": "run-s format fix clean clean:artifacts:hard compile docgen flatten test-p coverage",
     "prepack": "run-s clean:artifacts:hard compile clean"
   },
   "devDependencies": {
@@ -54,13 +54,13 @@
     "eslint": "^8.16.0",
     "eslint-config-mocha": "^0.0.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-mocha": "^10.0.4",
+    "eslint-plugin-mocha": "^10.0.5",
     "eslint-plugin-prettier": "^4.0.0",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.8",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
-    "hardhat": "=2.9.5",
+    "hardhat": "^2.9.7",
     "hardhat-deploy": "^0.11.10",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "lodash.isequal": "^4.5.0",
@@ -73,6 +73,6 @@
     "solhint": "^3.3.7",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.21",
-    "solidity-docgen": "^0.6.0-beta.10"
+    "solidity-docgen": "^0.6.0-beta.16"
   }
 }
