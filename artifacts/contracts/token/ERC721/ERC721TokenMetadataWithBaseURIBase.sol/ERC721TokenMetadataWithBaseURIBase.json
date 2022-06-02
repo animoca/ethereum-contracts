@@ -5,6 +5,19 @@
   "abi": [
     {
       "inputs": [],
+      "name": "baseMetadataURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "name",
       "outputs": [
         {
@@ -14,6 +27,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "baseMetadataURI_",
+          "type": "string"
+        }
+      ],
+      "name": "setBaseMetadataURI",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
