@@ -22,7 +22,8 @@ library ERC721TokenMetadataWithBaseURIStorage {
     bytes32 public constant ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT =
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712Metadata.version")) - 1);
 
-    event BaseMetadataURISet(string baseMetadataURI);
+    /// @dev this event needs to be declared also in contact that uses this lib
+    event BaseMetadataURISet(string indexed baseMetadataURI);
 
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
     /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.

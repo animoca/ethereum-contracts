@@ -44,12 +44,16 @@ function behavesLikeERC721Metadata({ name, symbol, features, deploy, revertMessa
                 describe('[BaseMetadataURI] setBaseMetadataURI(string)', function() {
                     const newBaseMetadataURI = 'test/';
                     it('reverts if not called by the contract owner', async function() {
-                        //account 'owner' is the token owner, not contract owner.
+                        // account 'owner' is the token owner, not contract owner.
                         await expect(this.token.connect(owner).setBaseMetadataURI(newBaseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
                     });
                     it('updates the base token URI', async function() {
                         await this.token.setBaseMetadataURI(newBaseMetadataURI); // doesn't revert
                         expect(await this.token.tokenURI(nft1)).to.equal(newBaseMetadataURI + nft1.toString());
+                    });
+                    it('emits the BaseMetadataURISet event', async function() {
+                        let receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
+                        await expect(receipt).to.emit(this.token, 'BaseMetadataURISet');
                     });
                 });
             }
