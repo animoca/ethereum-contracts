@@ -20,22 +20,6 @@ library ERC721ContractMetadataStorage {
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712ContractMetadata.version")) - 1);
 
     /// @notice Initialises the storage with a name and symbol.
-    /// @notice Sets the ERC721ContractMetadata storage version to `1`.
-    /// @dev Reverts if the ERC721ContractMetadata storage is already initialized to version `1` or above.
-    /// @param tokenName The Non-Fungible token name.
-    /// @param tokenSymbol The Non-Fungible token symbol.
-
-    function init(
-        Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol
-    ) internal {
-        StorageVersion.setVersion(ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
-        s.tokenName = tokenName;
-        s.tokenSymbol = tokenSymbol;
-    }
-
-    /// @notice Initialises the storage with a name and symbol.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param tokenName The Non-Fungible token name.
     /// @param tokenSymbol The Non-Fungible token symbol.

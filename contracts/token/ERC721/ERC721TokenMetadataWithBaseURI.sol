@@ -26,7 +26,7 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
         string memory symbol_,
         string memory tokenURI_
     ) {
-        ERC721TokenMetadataWithBaseURIStorage.layout().init(name_, symbol_, tokenURI_);
+        ERC721TokenMetadataWithBaseURIStorage.layout().constructorInit(name_, symbol_, tokenURI_);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 }

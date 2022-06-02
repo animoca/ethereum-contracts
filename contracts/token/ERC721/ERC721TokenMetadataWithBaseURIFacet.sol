@@ -31,7 +31,7 @@ contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBa
         string memory uri
     ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721TokenMetadataWithBaseURIStorage.layout().init(name, symbol, uri);
+        ERC721TokenMetadataWithBaseURIStorage.layout().proxyInit(name, symbol, uri);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

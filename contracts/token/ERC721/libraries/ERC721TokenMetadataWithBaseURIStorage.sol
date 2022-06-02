@@ -11,6 +11,7 @@ import {ERC721ContractMetadataStorage} from "./ERC721ContractMetadataStorage.sol
 library ERC721TokenMetadataWithBaseURIStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
+    using ERC721TokenMetadataWithBaseURIStorage for ERC721TokenMetadataWithBaseURIStorage.Layout;
     using UInt256ToDecimalString for uint256;
 
     struct Layout {
@@ -26,6 +27,22 @@ library ERC721TokenMetadataWithBaseURIStorage {
     event BaseMetadataURISet(string indexed baseMetadataURI);
 
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @param tokenName The name of the token.
+    /// @param tokenSymbol The symbol of the token.
+    /// @param baseURI The base metadata URI.
+    function constructorInit(
+        Layout storage s,
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseURI
+    ) internal {
+        ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
+        s.baseURI = baseURI;
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage with a name, symbol and base metadata URI.
     /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
     /// @notice Sets the ERC721TokenMetadataWithBaseURIStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
@@ -34,16 +51,15 @@ library ERC721TokenMetadataWithBaseURIStorage {
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
     /// @param baseURI The base metadata URI.
-    function init(
+    function proxyInit(
         Layout storage s,
         string memory tokenName,
         string memory tokenSymbol,
         string memory baseURI
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
-        s.baseURI = baseURI;
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
+        s.constructorInit(tokenName, tokenSymbol, baseURI);
     }
 
     function setBaseMetadataURI(Layout storage s, string calldata baseMetadataURI_) internal {
