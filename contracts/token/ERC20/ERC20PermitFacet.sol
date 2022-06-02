@@ -14,6 +14,7 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {InterfaceDetectionFacet} and {ERC20DetailedFacet}.
 contract ERC20PermitFacet is ERC20PermitBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
+    using ERC20PermitStorage for ERC20PermitStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
@@ -24,7 +25,7 @@ contract ERC20PermitFacet is ERC20PermitBase, ForwarderRegistryContextBase {
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC20PermitStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20PermitStorage.proxyInit();
+        ERC20PermitStorage.layout().proxyInit();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

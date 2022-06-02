@@ -12,6 +12,7 @@ library ERC20PermitStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC20Storage for ERC20Storage.Layout;
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
+    using ERC20PermitStorage for ERC20PermitStorage.Layout;
 
     struct Layout {
         mapping(address => uint256) accountNonces;
@@ -26,7 +27,7 @@ library ERC20PermitStorage {
     /// @notice Initializes the storage.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
-    function constructorInit() internal {
+    function constructorInit(Layout storage) internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Permit).interfaceId, true);
     }
 
@@ -35,9 +36,10 @@ library ERC20PermitStorage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.
-    function proxyInit() internal {
+    function proxyInit(Layout storage s) internal {
         StorageVersion.setVersion(ERC20PERMIT_VERSION_SLOT, 1);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Permit).interfaceId, true);
+        s.constructorInit();
     }
 
     function permit(
