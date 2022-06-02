@@ -32,12 +32,20 @@ library ERC721Storage {
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
     /// @notice Initialises the storage.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
+    function constructorInit(Layout storage) internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage.
     /// @notice Sets the ERC721 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
-    function init(Layout storage) internal {
+    function proxyInit(Layout storage s) internal {
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
+        s.constructorInit();    
     }
 
     function isApprovedForAll(

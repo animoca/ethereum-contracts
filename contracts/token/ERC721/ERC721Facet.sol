@@ -21,7 +21,7 @@ contract ERC721Facet is ERC721Base, ForwarderRegistryContextBase {
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC721Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721Storage.layout().init();
+        ERC721Storage.layout().proxyInit();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase
