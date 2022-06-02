@@ -38,7 +38,6 @@ library ERC20PermitStorage {
     /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.
     function proxyInit(Layout storage s) internal {
         StorageVersion.setVersion(ERC20PERMIT_VERSION_SLOT, 1);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Permit).interfaceId, true);
         s.constructorInit();
     }
 
