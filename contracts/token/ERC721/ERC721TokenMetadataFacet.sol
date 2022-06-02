@@ -26,7 +26,7 @@ contract ERC721TokenMetadataFacet is ERC721TokenMetadataBase, ForwarderRegistryC
     /// @param symbol The token symbol
     function initERC721MetadataStorage(string memory name, string memory symbol) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721TokenMetadataStorage.layout().init(name, symbol);
+        ERC721TokenMetadataStorage.layout().proxyInit(name, symbol);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

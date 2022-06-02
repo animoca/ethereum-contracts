@@ -7,6 +7,7 @@ import {InterfaceDetectionStorage} from "./../../../introspection/libraries/Inte
 
 library ERC721ContractMetadataStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
+    using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
 
     struct Layout {
         string tokenName;
@@ -23,6 +24,7 @@ library ERC721ContractMetadataStorage {
     /// @dev Reverts if the ERC721ContractMetadata storage is already initialized to version `1` or above.
     /// @param tokenName The Non-Fungible token name.
     /// @param tokenSymbol The Non-Fungible token symbol.
+
     function init(
         Layout storage s,
         string memory tokenName,
@@ -31,6 +33,34 @@ library ERC721ContractMetadataStorage {
         StorageVersion.setVersion(ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;
+    }
+
+    /// @notice Initialises the storage with a name and symbol.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
+    /// @param tokenName The Non-Fungible token name.
+    /// @param tokenSymbol The Non-Fungible token symbol.
+    function constructorInit(
+        Layout storage s,
+        string memory tokenName,
+        string memory tokenSymbol
+    ) internal {
+        s.tokenName = tokenName;
+        s.tokenSymbol = tokenSymbol;
+    }
+
+    /// @notice Initialises the storage with a name and symbol.
+    /// @notice Sets the ERC721ContractMetadata storage version to `1`.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the ERC721ContractMetadata storage is already initialized to version `1` or above.
+    /// @param tokenName The Non-Fungible token name.
+    /// @param tokenSymbol The Non-Fungible token symbol.
+    function proxyInit(
+        Layout storage s,
+        string memory tokenName,
+        string memory tokenSymbol
+    ) internal {
+        StorageVersion.setVersion(ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
+        s.constructorInit(tokenName, tokenSymbol);
     }
 
     function name(Layout storage s) internal view returns (string memory) {

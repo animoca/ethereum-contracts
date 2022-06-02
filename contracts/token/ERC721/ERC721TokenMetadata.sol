@@ -20,7 +20,7 @@ abstract contract ERC721TokenMetadata is ERC721TokenMetadataBase {
     /// @param name_ The Non-Fungible token name.
     /// @param symbol_ The Non-Fungible token symbol.
     constructor(string memory name_, string memory symbol_) {
-        ERC721TokenMetadataStorage.layout().init(name_, symbol_);
+        ERC721TokenMetadataStorage.layout().constructorInit(name_, symbol_);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 }

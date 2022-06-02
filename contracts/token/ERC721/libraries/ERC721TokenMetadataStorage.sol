@@ -10,6 +10,7 @@ import {ERC721ContractMetadataStorage} from "./ERC721ContractMetadataStorage.sol
 library ERC721TokenMetadataStorage {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
+    using ERC721TokenMetadataStorage for ERC721TokenMetadataStorage.Layout;
 
     struct Layout {
         mapping(uint256 => string) tokenURIs;
@@ -20,21 +21,36 @@ library ERC721TokenMetadataStorage {
     bytes32 public constant ERC721TOKENMETADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC712TokenMetadata.version")) - 1);
 
     /// @notice Initialises the storage with name and symbol.
-    /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
-    /// @notice Sets the ERC721TokenMetadataStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
-    /// @dev Reverts if the ERC721ContractMetadataStorage storage is already initialized to version `1` or above.
-    /// @dev Reverts if the ERC721TokenMetadataStorage storage is already initialized to version `1` or above.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
-    function init(
+    function constructorInit(
         Layout storage,
         string memory tokenName,
         string memory tokenSymbol
     ) internal {
-        StorageVersion.setVersion(ERC721TOKENMETADATA_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
+        ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+    }
+
+    /// @notice Initialises the storage with name and symbol.
+    /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
+    /// @notice Sets the ERC721TokenMetadataStorage storage version to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the ERC721ContractMetadataStorage storage is already initialized to version `1` or above.
+    /// @dev Reverts if the ERC721TokenMetadataStorage storage is already initialized to version `1` or above.
+    /// @param tokenName The name of the token.
+    /// @param tokenSymbol The symbol of the token.
+    function proxyInit(
+        Layout storage s,
+        string memory tokenName,
+        string memory tokenSymbol
+    ) internal {
+        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
+        StorageVersion.setVersion(ERC721TOKENMETADATA_VERSION_SLOT, 1);
+        s.constructorInit(tokenName, tokenSymbol);
     }
 
     function setTokenURI(
