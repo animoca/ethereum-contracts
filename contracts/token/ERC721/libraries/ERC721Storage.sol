@@ -45,7 +45,7 @@ library ERC721Storage {
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     function proxyInit(Layout storage s) internal {
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
-        s.constructorInit();    
+        s.constructorInit();
     }
 
     function isApprovedForAll(
