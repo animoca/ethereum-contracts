@@ -28,7 +28,6 @@ const config = {
         name: 'ERC721Facet',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initERC721Storage'},
-        metaTxSupport: true,
       },
       {
         name: 'ERC721MintableOnceFacetMock',
@@ -45,7 +44,6 @@ const config = {
         name: 'ERC721BurnableFacet',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initERC721BurnableStorage'},
-        metaTxSupport: true,
       },
       {
         name: 'ERC721TokenMetadataWithBaseURIFacet',
