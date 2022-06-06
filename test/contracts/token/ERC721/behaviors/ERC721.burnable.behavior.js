@@ -118,12 +118,6 @@ function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages
 
     const shouldRevertOnPreconditions = function (burnFunction) {
       describe('Pre-condition', function () {
-        if (interfaces.Pausable) {
-          it('[Pausable] reverts when paused', async function () {
-            await this.token.connect(deployer).pause();
-            await expect(burnFunction.call(this, owner, nft1, owner)).to.be.revertedWith(revertMessages.AlreadyPaused);
-          });
-        }
         it('reverts if the token does not exist', async function () {
           await expect(burnFunction.call(this, owner, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedNFT);
         });

@@ -86,7 +86,6 @@ const config = {
     name,
     symbol,
     tokenURI,
-    paused: false,
   },
 };
 
