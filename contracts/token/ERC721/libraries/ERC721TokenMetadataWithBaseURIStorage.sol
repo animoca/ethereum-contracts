@@ -59,7 +59,8 @@ library ERC721TokenMetadataWithBaseURIStorage {
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
         ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
-        s.constructorInit(tokenName, tokenSymbol, baseURI);
+        // Don't call s.contructorInit as ERC721ContractMetadataStorage's proxyInit method will call ERC721ContractMetadataStorage's contructorInit
+        s.baseURI = baseURI;
     }
 
     function setBaseMetadataURI(Layout storage s, string calldata baseMetadataURI_) internal {

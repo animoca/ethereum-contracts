@@ -44,13 +44,13 @@ library ERC721TokenMetadataStorage {
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
     function proxyInit(
-        Layout storage s,
+        Layout storage,
         string memory tokenName,
         string memory tokenSymbol
     ) internal {
-        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
         StorageVersion.setVersion(ERC721TOKENMETADATA_VERSION_SLOT, 1);
-        s.constructorInit(tokenName, tokenSymbol);
+        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
+        // Don't call s.contructorInit as ERC721ContractMetadataStorage's proxyInit method will call ERC721ContractMetadataStorage's contructorInit
     }
 
     function setTokenURI(

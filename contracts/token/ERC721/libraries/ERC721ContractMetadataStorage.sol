@@ -30,6 +30,7 @@ library ERC721ContractMetadataStorage {
     ) internal {
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
     /// @notice Initialises the storage with a name and symbol.
