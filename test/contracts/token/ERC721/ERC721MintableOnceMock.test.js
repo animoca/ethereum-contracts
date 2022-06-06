@@ -1,5 +1,6 @@
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
+const {behavesLikeERC721Metadata} = require('./behaviors/ERC721.metadata.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
 
 const name = 'ERC721 MintableOnce Mock';
@@ -23,14 +24,35 @@ const config = {
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
-      {name: 'ERC721Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721Storage'}},
-      {name: 'ERC721BurnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC721BurnableStorage'}},
+      {
+        name: 'ERC721Facet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC721Storage', adminProtected: true, versionProtected: false},
+        metaTxSupport: true,
+      },
       {
         name: 'ERC721MintableOnceFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MintableOnceStorage',
           arguments: [],
+          adminProtected: true,
+          versionProtected: false,
+        },
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC721BurnableFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initERC721BurnableStorage', adminProtected: true, versionProtected: false},
+        metaTxSupport: true,
+      },
+      {
+        name: 'ERC721TokenMetadataWithBaseURIFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {
+          method: 'initERC721MetadataWithBaseURIStorage',
+          arguments: ['name', 'symbol', 'tokenURI'],
           adminProtected: true,
           versionProtected: false,
         },
@@ -72,6 +94,7 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
     },
     features: {
       ERC721MintableOnce: true,
+      BaseMetadataURI: true,
     },
     interfaces: {
       ERC721Mintable: true, // MintableOnce should pass tests for Mintable
@@ -103,4 +126,5 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
 
   behavesLikeERC721Mintable(implementation);
   behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
+  behavesLikeERC721Metadata(implementation); //tests ERC721TokenMetadataWithBaseURI
 });
