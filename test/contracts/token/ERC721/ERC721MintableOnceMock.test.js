@@ -27,7 +27,7 @@ const config = {
       {
         name: 'ERC721Facet',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC721Storage', adminProtected: true, versionProtected: false},
+        init: {method: 'initERC721Storage'},
         metaTxSupport: true,
       },
       {
@@ -44,7 +44,7 @@ const config = {
       {
         name: 'ERC721BurnableFacet',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC721BurnableStorage', adminProtected: true, versionProtected: false},
+        init: {method: 'initERC721BurnableStorage'},
         metaTxSupport: true,
       },
       {
