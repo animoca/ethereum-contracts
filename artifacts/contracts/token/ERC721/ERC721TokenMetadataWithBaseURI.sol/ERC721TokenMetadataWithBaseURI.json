@@ -7,7 +7,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "string",
           "name": "baseMetadataURI",
           "type": "string"

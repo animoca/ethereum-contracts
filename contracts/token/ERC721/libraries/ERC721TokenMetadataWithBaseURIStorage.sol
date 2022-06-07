@@ -24,7 +24,7 @@ library ERC721TokenMetadataWithBaseURIStorage {
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712Metadata.version")) - 1);
 
     /// @dev this event needs to be declared also in contact that uses this lib
-    event BaseMetadataURISet(string indexed baseMetadataURI);
+    event BaseMetadataURISet(string baseMetadataURI);
 
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.

@@ -56,7 +56,7 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
           });
           it('emits the BaseMetadataURISet event', async function () {
             let receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
-            await expect(receipt).to.emit(this.token, 'BaseMetadataURISet');
+            await expect(receipt).to.emit(this.token, 'BaseMetadataURISet').withArgs(newBaseMetadataURI);
           });
           it('updates the base URI returned from the baseMetadataURI method', async function () {
             await this.token.setBaseMetadataURI(newBaseMetadataURI);
