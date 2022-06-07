@@ -1,4 +1,3 @@
-const {behavesLikeERC721TokenMetadata} = require('./behaviors/ERC721.tokenmetadata.behavior');
 const {behavesLikeERC721Metadata} = require('./behaviors/ERC721.metadata.behavior');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
@@ -76,7 +75,5 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     },
   };
 
-  // TODO use one file
-  behavesLikeERC721TokenMetadata(implementation);
   behavesLikeERC721Metadata(implementation);
 });
