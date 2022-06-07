@@ -60,8 +60,6 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     },
     features: {},
     interfaces: {
-      ERC721: true,
-      ERC721Mintable: true,
       ERC721Metadata: true,
     },
     methods: {},
