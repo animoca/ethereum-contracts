@@ -24,7 +24,7 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
       await this.token.mint(owner.address, nft1);
     });
 
-    describe('Contract Metadata', function () {
+    describe('ERC721Metadata', function () {
       it('has a name', async function () {
         expect(await this.token.name()).to.equal(name);
       });
@@ -32,14 +32,15 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
       it('has a symbol', async function () {
         expect(await this.token.symbol()).to.equal(symbol);
       });
+
+      it('reverts if the NFT does not exist', async function () {
+        await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
+      });
     });
 
     describe('TokenMetadata', function () {
       if (features.BaseMetadataURI) {
         describe('[TokenMetadataWithBaseURI] tokenURI(uint256)', function () {
-          it('reverts if the NFT does not exist', async function () {
-            await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
-          });
           it('does not revert if the NFT exists', async function () {
             await this.token.tokenURI(nft1);
           });
@@ -68,9 +69,6 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
           it('returns tokenURI if NFT exists and uri set', async function () {
             await this.token.setTokenURI(nft1, 'uri1');
             await this.token.tokenURI(nft1);
-          });
-          it("reverts if NFT doesn't exist", async function () {
-            await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
           });
           it("reverts if NFT exists but uri isn't set", async function () {
             await expect(this.token.tokenURI(nft1)).to.be.revertedWith(revertMessages.NonExistingNFT);
