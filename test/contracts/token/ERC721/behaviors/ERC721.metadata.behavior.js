@@ -36,56 +36,52 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
 
     describe('TokenMetadata', function () {
       if (features.BaseMetadataURI) {
-        describe('When setting baseMetadataURI', function () {
-          context('setBaseMetadataURI(string)', function () {
-            it('can read token uri', async function () {
-              await this.token.tokenURI(nft1); //doesn't revert
-              await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
-            });
-            const newBaseMetadataURI = 'test/';
-            it('reverts if not called by the contract owner', async function () {
-              // account 'owner' is the token owner, not contract owner.
-              await expect(this.token.connect(owner).setBaseMetadataURI(newBaseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
-            });
-            it('updates the base token URI for a token', async function () {
-              await this.token.setBaseMetadataURI(newBaseMetadataURI); // doesn't revert
-              expect(await this.token.tokenURI(nft1)).to.equal(newBaseMetadataURI + nft1.toString());
-            });
-            it('emits the BaseMetadataURISet event', async function () {
-              let receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
-              await expect(receipt).to.emit(this.token, 'BaseMetadataURISet');
-            });
-            it('updates the base URI returned from the baseMetadataURI method', async function () {
-              await this.token.setBaseMetadataURI(newBaseMetadataURI);
-              expect(await this.token.baseMetadataURI()).to.equal(newBaseMetadataURI);
-            });
+        context('setBaseMetadataURI(string)', function () {
+          it('can read token uri', async function () {
+            await this.token.tokenURI(nft1); //doesn't revert
+            await expect(this.token.tokenURI(nft2)).to.be.revertedWith(revertMessages.NonExistingNFT);
+          });
+          const newBaseMetadataURI = 'test/';
+          it('reverts if not called by the contract owner', async function () {
+            // account 'owner' is the token owner, not contract owner.
+            await expect(this.token.connect(owner).setBaseMetadataURI(newBaseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
+          });
+          it('updates the base token URI for a token', async function () {
+            await this.token.setBaseMetadataURI(newBaseMetadataURI); // doesn't revert
+            expect(await this.token.tokenURI(nft1)).to.equal(newBaseMetadataURI + nft1.toString());
+          });
+          it('emits the BaseMetadataURISet event', async function () {
+            let receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
+            await expect(receipt).to.emit(this.token, 'BaseMetadataURISet');
+          });
+          it('updates the base URI returned from the baseMetadataURI method', async function () {
+            await this.token.setBaseMetadataURI(newBaseMetadataURI);
+            expect(await this.token.baseMetadataURI()).to.equal(newBaseMetadataURI);
           });
         });
       } else {
-        describe('When setting tokenURI', function () {
-          context('setTokenURI(uint256,string)', function () {
-            it('does not revert if set by contract owner', async function () {
-              await this.token.connect(deployer).setTokenURI(nft1, 'uri');
-            });
-            it('reverts when set by other than contract owner', async function () {
-              await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotContractOwner);
-            });
+        context('setTokenURI(uint256,string)', function () {
+          it('does not revert if set by contract owner', async function () {
+            await this.token.connect(deployer).setTokenURI(nft1, 'uri');
           });
-          context('batchSetTokenURI(uint256[],string[])', function () {
-            it('does not revert if batch set by contract owner', async function () {
-              await this.token.connect(deployer).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2']);
-            });
-            it('reverts when batch set by other than contract owner', async function () {
-              await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(
-                revertMessages.NotContractOwner
-              );
-            });
-            it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
-              await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InconsistentArrays);
-            });
+          it('reverts when set by other than contract owner', async function () {
+            await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotContractOwner);
           });
         });
-        describe('when requesting tokenURI', function () {
+        context('batchSetTokenURI(uint256[],string[])', function () {
+          it('does not revert if batch set by contract owner', async function () {
+            await this.token.connect(deployer).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2']);
+          });
+          it('reverts when batch set by other than contract owner', async function () {
+            await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(
+              revertMessages.NotContractOwner
+            );
+          });
+          it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
+            await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InconsistentArrays);
+          });
+        });
+        context('tokenURI(uint256)', function () {
           it('returns tokenURI if NFT exists and uri set', async function () {
             await this.token.setTokenURI(nft1, 'uri1');
             await this.token.tokenURI(nft1);
