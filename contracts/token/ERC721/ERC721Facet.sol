@@ -13,15 +13,17 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721Facet is ERC721Base, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using ERC721Storage for ERC721Storage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Marks the following ERC165 interface(s) as supported.
+    /// @notice Initialises the storage.
+    /// @notice Sets the ERC721 storage version to `1`.
+    /// @notice Marks the following ERC165 interfaces as supported: ERC721.
     /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     function initERC721Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721Storage.layout().proxyInit();
+        ERC721Storage.proxyInit();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

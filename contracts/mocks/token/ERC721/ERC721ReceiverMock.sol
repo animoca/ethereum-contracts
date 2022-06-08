@@ -32,7 +32,7 @@ contract ERC721ReceiverMock is ERC721Receiver {
             emit Received(operator, from, tokenId, data, gasleft());
             return _ERC721_RECEIVED;
         } else {
-            return _ERC721_REJECTED;
+            return 0x0;
         }
     }
 }

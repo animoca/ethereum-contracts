@@ -4,15 +4,13 @@ const {behavesLikeERC721Burnable} = require('./ERC721.burnable.behavior');
 const {behavesLikeERC721Metadata} = require('./ERC721.metadata.behavior');
 
 function behavesLikeERC721(implementation) {
-  describe('like an ERC721', function () {
-    behavesLikeERC721Standard(implementation);
-    behavesLikeERC721Mintable(implementation);
-    behavesLikeERC721Burnable(implementation);
+  behavesLikeERC721Standard(implementation);
+  behavesLikeERC721Mintable(implementation);
+  behavesLikeERC721Burnable(implementation);
 
-    if (implementation.interfaces.ERC721Metadata) {
-      behavesLikeERC721Metadata(implementation);
-    }
-  });
+  if (implementation.interfaces.ERC721Metadata) {
+    behavesLikeERC721Metadata(implementation);
+  }
 }
 
 module.exports = {

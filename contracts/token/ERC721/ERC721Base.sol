@@ -19,8 +19,8 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     }
 
     /// @inheritdoc IERC721
-    function setApprovalForAll(address operator, bool _approved) external virtual override {
-        ERC721Storage.layout().setApprovalForAll(_msgSender(), operator, _approved);
+    function setApprovalForAll(address operator, bool approved) external virtual override {
+        ERC721Storage.layout().setApprovalForAll(_msgSender(), operator, approved);
     }
 
     /// @inheritdoc IERC721

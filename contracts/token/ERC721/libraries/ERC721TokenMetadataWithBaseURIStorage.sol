@@ -23,7 +23,6 @@ library ERC721TokenMetadataWithBaseURIStorage {
     bytes32 public constant ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT =
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712Metadata.version")) - 1);
 
-    /// @dev this event needs to be declared also in contact that uses this lib
     event BaseMetadataURISet(string baseMetadataURI);
 
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
@@ -37,7 +36,7 @@ library ERC721TokenMetadataWithBaseURIStorage {
         string memory tokenSymbol,
         string memory baseMetadataURI_
     ) internal {
-        ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
+        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
         s.baseURI = baseMetadataURI_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
         emit BaseMetadataURISet(baseMetadataURI_);
@@ -59,9 +58,8 @@ library ERC721TokenMetadataWithBaseURIStorage {
         string memory baseMetadataURI_
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
-        // Don't call s.contructorInit as ERC721ContractMetadataStorage's proxyInit method will call ERC721ContractMetadataStorage's contructorInit
-        s.baseURI = baseMetadataURI_;
+        StorageVersion.setVersion(ERC721ContractMetadataStorage.ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
+        s.constructorInit(tokenName, tokenSymbol, baseMetadataURI_);
     }
 
     function setBaseMetadataURI(Layout storage s, string calldata baseMetadataURI_) internal {

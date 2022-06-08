@@ -1,9 +1,9 @@
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {loadFixture} = require('../../../../helpers/fixtures');
+const {deployContract} = require('../../../../helpers/contract');
 const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
-const {ethers} = require('hardhat');
-const {deployTestHelperContract} = require('../../../../helpers/run');
 
 function behavesLikeERC721Mintable({name, deploy, revertMessages, methods}) {
   const {
@@ -41,9 +41,9 @@ function behavesLikeERC721Mintable({name, deploy, revertMessages, methods}) {
 
     const fixture = async function () {
       this.token = await deploy(deployer);
-      this.receiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, this.token.address]);
-      this.refusingReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [false, this.token.address]);
-      this.wrongTokenReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, ZeroAddress]);
+      this.receiver721 = await deployContract('ERC721ReceiverMock', [true, this.token.address]);
+      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', [false, this.token.address]);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', [true, ZeroAddress]);
     };
 
     beforeEach(async function () {

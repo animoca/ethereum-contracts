@@ -12,15 +12,15 @@ abstract contract ERC721TokenMetadata is ERC721TokenMetadataBase {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721TokenMetadataStorage for ERC721TokenMetadataStorage.Layout;
 
-    /// @notice Initialises the storage
-    /// @notice Sets the ERC721 storage version to `1`
-    /// @notice Marks the following ERC165 interfaces as supported: IERCMetadata
-    /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage
-    /// is already initialized to version `1` or above.
-    /// @param name_ The Non-Fungible token name.
-    /// @param symbol_ The Non-Fungible token symbol.
-    constructor(string memory name_, string memory symbol_) {
-        ERC721TokenMetadataStorage.layout().constructorInit(name_, symbol_);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+    /// @notice Initialises the storage.
+    /// @notice Sets the ERC721ContractMetadata storage version to `1`.
+    /// @notice Sets the ERC721TokenMetadata storage version to `1`.
+    /// @notice Marks the following ERC165 interfaces as supported: ERC721Metadata.
+    /// @dev Reverts if the ERC721ContractMetadata storage is already initialized to version `1` or above.
+    /// @dev Reverts if the ERC721TokenMetadata storage is already initialized to version `1` or above.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    constructor(string memory tokenName, string memory tokenSymbol) {
+        ERC721TokenMetadataStorage.constructorInit(tokenName, tokenSymbol);
     }
 }

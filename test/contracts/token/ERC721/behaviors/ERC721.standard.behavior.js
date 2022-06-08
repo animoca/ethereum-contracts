@@ -1,14 +1,12 @@
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {loadFixture} = require('../../../../helpers/fixtures');
+const {deployContract} = require('../../../../helpers/contract');
+const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
-const {ethers} = require('hardhat');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {deployTestHelperContract} = require('../../../../helpers/run');
 
-function behavesLikeERC721Standard({name, deploy, mint, revertMessages, interfaces, methods}) {
-  //const { name, deploy, mint, revertMessages, interfaces, methods } = implementation;
-
+function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}) {
   const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods;
 
   if (batchTransferFrom_ERC721 === undefined) {
@@ -34,9 +32,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, interfac
       await mint(this.token, owner.address, nft2, 1, deployer);
       await mint(this.token, owner.address, nft3, 1, deployer);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
-      this.receiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, this.token.address]);
-      this.refusingReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [false, this.token.address]);
-      this.wrongTokenReceiver721 = await deployTestHelperContract('ERC721ReceiverMock', [true, ZeroAddress]);
+      this.receiver721 = await deployContract('ERC721ReceiverMock', [true, this.token.address]);
+      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', [false, this.token.address]);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', [true, ZeroAddress]);
       this.nftBalance = await this.token.balanceOf(owner.address);
     };
 

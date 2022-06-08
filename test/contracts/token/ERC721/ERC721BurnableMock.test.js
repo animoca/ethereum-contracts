@@ -3,12 +3,12 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 
 const name = 'ERC721BurnableMock';
 const symbol = 'ERC721BurnableMock';
-const tokenURI = 'uri';
+const baseMetadataURI = 'uri';
 
 const config = {
   immutable: {
     name: 'ERC721BurnableMock',
-    ctorArguments: ['name', 'symbol', 'tokenURI', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'baseMetadataURI', 'forwarderRegistry'],
     metaTxSupport: true,
   },
   diamond: {
@@ -38,7 +38,7 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MetadataWithBaseURIStorage',
-          arguments: ['name', 'symbol', 'tokenURI'],
+          arguments: ['name', 'symbol', 'baseMetadataURI'],
           adminProtected: true,
           versionProtected: true,
         },
@@ -85,7 +85,7 @@ const config = {
     initialOwner: getDeployerAddress,
     name,
     symbol,
-    tokenURI,
+    baseMetadataURI,
   },
 };
 
@@ -95,7 +95,7 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
     nfMaskLength: 32,
     name,
     symbol,
-    tokenURI,
+    baseMetadataURI,
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',
       SelfApproval: 'ERC721: self-approval',
@@ -142,12 +142,12 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
       },
     },
     deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol, tokenURI});
+      const contract = await deployFn({name, symbol, baseMetadataURI});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },
-    mint: async function (contract, to, id, _value, signer) {
-      return contract.connect(signer).safeMint(to, id, '0x');
+    mint: async function (contract, to, id, _value) {
+      return contract.mint(to, id);
     },
   };
 

@@ -13,10 +13,10 @@ import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryC
 /// @title ERC721TokenMetadataMock
 contract ERC721TokenMetadataMock is ERC721SimpleMock, ERC721TokenMetadata {
     constructor(
-        string memory name_,
-        string memory symbol_,
+        string memory tokenName,
+        string memory tokenSymbol,
         IForwarderRegistry forwarderRegistry
-    ) ERC721TokenMetadata(name_, symbol_) ERC721SimpleMock(forwarderRegistry) {}
+    ) ERC721TokenMetadata(tokenName, tokenSymbol) ERC721SimpleMock(forwarderRegistry) {}
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ERC721SimpleMock) returns (address) {

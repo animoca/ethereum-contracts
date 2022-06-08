@@ -6,12 +6,12 @@ import {InterfaceDetectionStorage} from "./../../introspection/libraries/Interfa
 import {ERC721ReceiverBase} from "./ERC721ReceiverBase.sol";
 import {InterfaceDetection} from "./../../introspection/InterfaceDetection.sol";
 
-/// @title ERC721 Non-Fungble Token Standard, Safe Transfers Receiver Contract.
-/// @dev The function `onERC721Received(address,address,uint256,bytes)` needs to be implemented by a child contract.
+/// @title ERC721 Non-Fungible Token Standard, Receiver (immutable version).
+/// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ERC721Receiver is ERC721ReceiverBase, InterfaceDetection {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
-    /// @notice Marks the following ERC165 interface(s) as supported: IERC721Receiver.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Receiver.
     constructor() {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Receiver).interfaceId, true);
     }

@@ -1,16 +1,15 @@
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
-const {behavesLikeERC721Metadata} = require('./behaviors/ERC721.metadata.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
 
 const name = 'ERC721 MintableOnce Mock';
 const symbol = 'E721MINTABLEONCE';
-const tokenURI = 'uri';
+const baseMetadataURI = 'uri';
 
 const config = {
   immutable: {
     name: 'ERC721MintableOnceMock',
-    ctorArguments: ['name', 'symbol', 'tokenURI', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'baseMetadataURI', 'forwarderRegistry'],
     metaTxSupport: true,
   },
   diamond: {
@@ -30,15 +29,12 @@ const config = {
         init: {method: 'initERC721Storage'},
       },
       {
-        name: 'ERC721MintableOnceFacetMock',
+        name: 'ERC721TokenMetadataWithBaseURIFacet',
         ctorArguments: ['forwarderRegistry'],
         init: {
-          method: 'initERC721MintableOnceStorage',
-          arguments: [],
-          adminProtected: true,
-          versionProtected: false,
+          method: 'initERC721MetadataWithBaseURIStorage',
+          arguments: ['name', 'symbol', 'baseMetadataURI'],
         },
-        metaTxSupport: true,
       },
       {
         name: 'ERC721BurnableFacet',
@@ -46,11 +42,11 @@ const config = {
         init: {method: 'initERC721BurnableStorage'},
       },
       {
-        name: 'ERC721TokenMetadataWithBaseURIFacet',
+        name: 'ERC721MintableOnceFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
-          method: 'initERC721MetadataWithBaseURIStorage',
-          arguments: ['name', 'symbol', 'tokenURI'],
+          method: 'initERC721MintableOnceStorage',
+          arguments: [],
           adminProtected: true,
           versionProtected: false,
         },
@@ -64,7 +60,7 @@ const config = {
     initialOwner: getDeployerAddress,
     name,
     symbol,
-    tokenURI,
+    baseMetadataURI,
   },
 };
 
@@ -72,7 +68,7 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
   const implementation = {
     name,
     symbol,
-    tokenURI,
+    baseMetadataURI,
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',
       SelfApproval: 'ERC721: self-approval',
@@ -95,7 +91,7 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
       BaseMetadataURI: true,
     },
     interfaces: {
-      ERC721Mintable: true, // MintableOnce should pass tests for Mintable
+      ERC721Mintable: true,
       ERC721Burnable: true,
     },
     methods: {
@@ -108,21 +104,23 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
       'batchMint(address,uint256[])': async function (contract, to, tokenIds, signer) {
         return contract.connect(signer).batchMint(to, tokenIds);
       },
+      'burnFrom(address,uint256)': async function (contract, from, id, signer) {
+        return contract.connect(signer).burnFrom(from, id);
+      },
       'batchBurnFrom(address,uint256[])': async function (contract, from, tokenIds, signer) {
         return contract.connect(signer).batchBurnFrom(from, tokenIds);
       },
     },
     deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol, tokenURI});
+      const contract = await deployFn({name, symbol, baseMetadataURI});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },
-    mint: async function (contract, to, id, _value, signer) {
-      return contract.connect(signer).safeMint(to, id, '0x');
+    mint: async function (contract, to, id, _value) {
+      return contract.mint(to, id);
     },
   };
 
   behavesLikeERC721Mintable(implementation);
   behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
-  behavesLikeERC721Metadata(implementation); //tests ERC721TokenMetadataWithBaseURI
 });

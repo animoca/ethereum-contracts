@@ -1,5 +1,6 @@
 const {ethers, deployments} = require('hardhat');
 const {utils} = ethers;
+const {deployContract} = require('./contract');
 
 const isEqual = require('lodash.isequal');
 
@@ -43,9 +44,7 @@ async function deployFacets(facetsConfig, args, abiFilter) {
   const inits = [];
   for (const config of facetsConfig) {
     const ctorArguments = config.ctorArguments !== undefined ? config.ctorArguments.map((arg) => args[arg]) : [];
-    const Facet = await ethers.getContractFactory(config.name);
-    const facet = await Facet.deploy(...ctorArguments);
-    await facet.deployed();
+    const facet = await deployContract(config.name, ctorArguments);
     facets[config.name] = facet;
     cuts.push([facet.address, FacetCutAction.Add, getSelectors(facet, abiFilter)]);
     if (config.init !== undefined) {

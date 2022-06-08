@@ -19,6 +19,8 @@ abstract contract ERC721TokenMetadataWithBaseURIBase is Context, IERC721Metadata
     using ERC721TokenMetadataWithBaseURIStorage for ERC721TokenMetadataWithBaseURIStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
+    /// @notice Thrown when the base token metadata URI is updated.
+    /// @param baseMetadataURI The new base metadata URI.
     event BaseMetadataURISet(string baseMetadataURI);
 
     function setBaseMetadataURI(string calldata baseMetadataURI_) external {

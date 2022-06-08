@@ -18,15 +18,14 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
     /// @notice Marks the following ERC165 interfaces as supported: IERCMetadata
     /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage
     /// is already initialized to version `1` or above.
-    /// @param name_ The Non-Fungible token name.
-    /// @param symbol_ The Non-Fungible token symbol.
-    /// @param baseMetadataURI_ the Non-Fungle token baseMetadata URI.
+    /// @param tokenName The Non-Fungible token name.
+    /// @param tokenSymbol The Non-Fungible token symbol.
+    /// @param baseMetadataURI the Non-Fungle token baseMetadata URI.
     constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseMetadataURI_
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseMetadataURI
     ) {
-        ERC721TokenMetadataWithBaseURIStorage.layout().constructorInit(name_, symbol_, baseMetadataURI_);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+        ERC721TokenMetadataWithBaseURIStorage.layout().constructorInit(tokenName, tokenSymbol, baseMetadataURI);
     }
 }

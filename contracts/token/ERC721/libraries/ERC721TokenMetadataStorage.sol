@@ -25,12 +25,8 @@ library ERC721TokenMetadataStorage {
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
-    function constructorInit(
-        Layout storage,
-        string memory tokenName,
-        string memory tokenSymbol
-    ) internal {
-        ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
+    function constructorInit(string memory tokenName, string memory tokenSymbol) internal {
+        ERC721ContractMetadataStorage.layout().init(tokenName, tokenSymbol);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
@@ -43,14 +39,10 @@ library ERC721TokenMetadataStorage {
     /// @dev Reverts if the ERC721TokenMetadataStorage storage is already initialized to version `1` or above.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
-    function proxyInit(
-        Layout storage,
-        string memory tokenName,
-        string memory tokenSymbol
-    ) internal {
+    function proxyInit(string memory tokenName, string memory tokenSymbol) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATA_VERSION_SLOT, 1);
-        ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
-        // Don't call s.contructorInit as ERC721ContractMetadataStorage's proxyInit method will call ERC721ContractMetadataStorage's contructorInit
+        StorageVersion.setVersion(ERC721ContractMetadataStorage.ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
+        constructorInit(tokenName, tokenSymbol);
     }
 
     function setTokenURI(

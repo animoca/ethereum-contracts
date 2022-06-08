@@ -11,7 +11,7 @@ import {AccessControl} from "./../../access/AccessControl.sol";
 abstract contract ERC721MintableOnce is ERC721MintableOnceBase, AccessControl {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
-    /// @notice Marks the following ERC165 interface(s) as supported: IERC721MintableOnce.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
     constructor() {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }

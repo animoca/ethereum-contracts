@@ -68,8 +68,8 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },
-    mint: async function (contract, to, id, _value, signer) {
-      return contract.connect(signer).safeMint(to, id, '0x');
+    mint: async function (contract, to, id, _value) {
+      return contract.mint(to, id);
     },
   };
 

@@ -1,6 +1,6 @@
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {expect} = require('chai');
 const {ethers} = require('hardhat');
+const {expect} = require('chai');
+const {loadFixture} = require('../../../../helpers/fixtures');
 const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages, interfaces, methods}) {

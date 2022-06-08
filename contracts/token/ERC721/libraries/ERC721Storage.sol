@@ -34,7 +34,7 @@ library ERC721Storage {
     /// @notice Initialises the storage.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    function constructorInit(Layout storage) internal {
+    function constructorInit() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
     }
 
@@ -43,9 +43,9 @@ library ERC721Storage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
-    function proxyInit(Layout storage s) internal {
+    function proxyInit() internal {
         StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
-        s.constructorInit();
+        constructorInit();
     }
 
     function isApprovedForAll(

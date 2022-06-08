@@ -18,7 +18,7 @@ contract ERC721BatchTransferFacet is ERC721BatchTransferBase, ForwarderRegistryC
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Marks the following ERC165 interface(s) as supported: IERC721BatchTransfer.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721BatchTransfer.
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC721BatchTransferStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());

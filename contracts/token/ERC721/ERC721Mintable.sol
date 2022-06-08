@@ -12,7 +12,7 @@ import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 abstract contract ERC721Mintable is ERC721MintableBase, AccessControl {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
-    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Mintable.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
     constructor() ContractOwnership(msg.sender) {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }
