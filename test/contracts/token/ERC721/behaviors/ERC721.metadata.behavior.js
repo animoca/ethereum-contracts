@@ -104,17 +104,18 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
           });
         });
         describe('setTokenURI(uint256,string)', function () {
-          it('does not revert if set by contract owner', async function () {
-            await this.token.connect(deployer).setTokenURI(nft1, 'uri');
-          });
           it('reverts when set by other than contract owner', async function () {
             await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotContractOwner);
           });
+          it('does not revert if set by contract owner', async function () {
+            await this.token.connect(deployer).setTokenURI(nft1, 'uri');
+          });
+          it('sets the correct value when set by owner', async function () {
+            await this.token.connect(deployer).setTokenURI(nft1, 'uri');
+            expect(await this.token.tokenURI(nft1)).to.equal('uri');
+          });
         });
         describe('batchSetTokenURI(uint256[],string[])', function () {
-          it('does not revert if batch set by contract owner', async function () {
-            await this.token.connect(deployer).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2']);
-          });
           it('reverts when batch set by other than contract owner', async function () {
             await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(
               revertMessages.NotContractOwner
@@ -122,6 +123,12 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
           });
           it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
             await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InconsistentArrays);
+          });
+          it('sets the correct values when set by owner', async function () {
+            await this.token.batchMint(owner.address, [nft2, nft3]);
+            await this.token.connect(deployer).batchSetTokenURI([nft2, nft3], ['uri2', 'uri3']);
+            expect(await this.token.tokenURI(nft2)).to.equal('uri2');
+            expect(await this.token.tokenURI(nft3)).to.equal('uri3');
           });
         });
       }
