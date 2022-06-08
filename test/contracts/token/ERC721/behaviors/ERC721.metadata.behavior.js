@@ -28,6 +28,7 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
 
     const fixture = async function () {
       this.token = await deploy(deployer);
+      // We deploy a mock contract to get access to the creation tx receipt, to test constructor events.
       const [contract, txReceipt] = await getObjectsForTestingConstructorEventEmission();
       this.contractWithBaseMetadataURIEventInConstructor = contract;
       this.creationTxReceipt = txReceipt;
@@ -54,7 +55,8 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
 
     describe('TokenMetadata', function () {
       if (features.BaseMetadataURI) {
-        const newBaseMetadataURI = 'test/';
+        const originalBaseMetadataURI = 'uri';
+        const newBaseMetadataURI = 'new-uri';
         describe('[TokenMetadataWithBaseURI] tokenURI(uint256)', function () {
           it('does not revert if the NFT exists', async function () {
             await this.token.tokenURI(nft1);
@@ -67,6 +69,9 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
         describe('contructor(string,string,string,address)', function () {
           it(' emits BaseMetadataURISet event on contract creation', async function () {
             await expect(this.creationTxReceipt).to.emit(this.contractWithBaseMetadataURIEventInConstructor, 'BaseMetadataURISet').withArgs('uri');
+          });
+          it('baseMetadataURI() returns base uri after contract creation, but before calling setBaseMetadataURI', async function () {
+            expect(await this.token.baseMetadataURI()).to.equal(originalBaseMetadataURI);
           });
         });
         describe('setBaseMetadataURI(string)', function () {
