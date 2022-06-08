@@ -128,13 +128,19 @@ function runBehaviorTests(name, config, behaviorFn) {
 }
 
 async function deployTestHelperContract(name, args) {
-  const receiverContract = await (await ethers.getContractFactory(name)).deploy(...args);
-  await receiverContract.deployed();
-  return receiverContract;
+  const contract = await (await ethers.getContractFactory(name)).deploy(...args);
+  await contract.deployed();
+  return contract;
+}
+async function deployTestHelperContractWithTxReceipt(name, args) {
+  const contract = await (await ethers.getContractFactory(name)).deploy(...args);
+  await contract.deployed();
+  return [contract, contract.deployTransaction];
 }
 module.exports = {
   getDeployerAddress,
   getForwarderRegistryAddress,
   runBehaviorTests,
   deployTestHelperContract,
+  deployTestHelperContractWithTxReceipt,
 };

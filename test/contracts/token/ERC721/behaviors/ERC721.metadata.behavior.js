@@ -2,7 +2,7 @@ const {loadFixture} = require('../../../../helpers/fixtures');
 const {expect} = require('chai');
 const {ethers} = require('hardhat');
 const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-
+const {deployTestHelperContractWithTxReceipt, getForwarderRegistryAddress} = require('../../../../helpers/run');
 function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessages}) {
   describe('like a ERC721Metadata', function () {
     let accounts, deployer, owner, other;
@@ -15,8 +15,22 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
       [deployer, owner, other] = accounts;
     });
 
+    async function getObjectsForTestingConstructorEventEmission() {
+      const forwarderRegistryAddress = await getForwarderRegistryAddress();
+      const [contract, txReceipt] = await deployTestHelperContractWithTxReceipt('ERC721BurnableMock', [
+        'ERC721BurnableMock',
+        'ERC721BurnableMock',
+        'uri',
+        forwarderRegistryAddress,
+      ]);
+      return [contract, txReceipt];
+    }
+
     const fixture = async function () {
       this.token = await deploy(deployer);
+      const [contract, txReceipt] = await getObjectsForTestingConstructorEventEmission();
+      this.contractWithBaseMetadataURIEventInConstructor = contract;
+      this.creationTxReceipt = txReceipt;
     };
 
     beforeEach(async function () {
@@ -43,6 +57,11 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
         describe('[TokenMetadataWithBaseURI] tokenURI(uint256)', function () {
           it('does not revert if the NFT exists', async function () {
             await this.token.tokenURI(nft1);
+          });
+        });
+        describe('contructorInit()', function () {
+          it(' emits BaseMetadataURISet event on contract creation', async function () {
+            await expect(this.creationTxReceipt).to.emit(this.contractWithBaseMetadataURIEventInConstructor, 'BaseMetadataURISet').withArgs('uri');
           });
         });
         describe('setBaseMetadataURI(string)', function () {

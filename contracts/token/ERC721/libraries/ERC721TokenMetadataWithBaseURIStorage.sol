@@ -40,6 +40,7 @@ library ERC721TokenMetadataWithBaseURIStorage {
         ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
         s.baseURI = baseMetadataURI_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+        emit BaseMetadataURISet(baseMetadataURI_);
     }
 
     /// @notice Initialises the storage with a name, symbol and base metadata URI.
