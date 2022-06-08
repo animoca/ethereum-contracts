@@ -54,24 +54,27 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
 
     describe('TokenMetadata', function () {
       if (features.BaseMetadataURI) {
+        const newBaseMetadataURI = 'test/';
         describe('[TokenMetadataWithBaseURI] tokenURI(uint256)', function () {
           it('does not revert if the NFT exists', async function () {
             await this.token.tokenURI(nft1);
           });
+          it('includes the base token URI', async function () {
+            await this.token.setBaseMetadataURI(newBaseMetadataURI);
+            expect(await this.token.tokenURI(nft1)).to.equal(newBaseMetadataURI + nft1.toString());
+          });
         });
-        describe('contructorInit()', function () {
+        describe('contructor(string,string,string,address)', function () {
           it(' emits BaseMetadataURISet event on contract creation', async function () {
             await expect(this.creationTxReceipt).to.emit(this.contractWithBaseMetadataURIEventInConstructor, 'BaseMetadataURISet').withArgs('uri');
           });
         });
         describe('setBaseMetadataURI(string)', function () {
-          const newBaseMetadataURI = 'test/';
           it('reverts if not called by the contract owner', async function () {
             await expect(this.token.connect(other).setBaseMetadataURI(newBaseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
           });
-          it('updates the base token URI for a token', async function () {
-            await this.token.setBaseMetadataURI(newBaseMetadataURI); // doesn't revert
-            expect(await this.token.tokenURI(nft1)).to.equal(newBaseMetadataURI + nft1.toString());
+          it('does not revert when set by owner', async function () {
+            await this.token.setBaseMetadataURI(newBaseMetadataURI);
           });
           it('emits the BaseMetadataURISet event', async function () {
             let receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
