@@ -69,9 +69,6 @@ function behavesLikeERC721Metadata({name, symbol, features, deploy, revertMessag
             await this.token.setTokenURI(nft1, 'uri1');
             await this.token.tokenURI(nft1);
           });
-          it("reverts if NFT exists but uri isn't set", async function () {
-            await expect(this.token.tokenURI(nft1)).to.be.revertedWith(revertMessages.NonExistingNFT);
-          });
           it('the correct uri is returned', async function () {
             await this.token.batchMint(owner.address, [nft2, nft3]);
             await this.token.connect(deployer).batchSetTokenURI([nft2, nft3], ['uri2', 'uri3']);

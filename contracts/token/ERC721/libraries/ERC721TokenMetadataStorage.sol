@@ -75,7 +75,6 @@ library ERC721TokenMetadataStorage {
     }
 
     function tokenURI(Layout storage s, uint256 tokenId) internal view returns (string memory) {
-        require(bytes(s.tokenURIs[tokenId]).length != 0, "ERC721: non-existing NFT");
         return s.tokenURIs[tokenId];
     }
 
