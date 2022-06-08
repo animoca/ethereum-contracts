@@ -20,13 +20,13 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
     /// is already initialized to version `1` or above.
     /// @param name_ The Non-Fungible token name.
     /// @param symbol_ The Non-Fungible token symbol.
-    /// @param tokenURI_ the Non-Fungle token tokenURI.
+    /// @param baseMetadataURI_ the Non-Fungle token baseMetadata URI.
     constructor(
         string memory name_,
         string memory symbol_,
-        string memory tokenURI_
+        string memory baseMetadataURI_
     ) {
-        ERC721TokenMetadataWithBaseURIStorage.layout().constructorInit(name_, symbol_, tokenURI_);
+        ERC721TokenMetadataWithBaseURIStorage.layout().constructorInit(name_, symbol_, baseMetadataURI_);
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 }

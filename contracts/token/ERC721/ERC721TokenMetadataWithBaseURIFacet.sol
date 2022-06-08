@@ -24,14 +24,14 @@ contract ERC721TokenMetadataWithBaseURIFacet is ERC721TokenMetadataWithBaseURIBa
     /// @dev Reverts if the ERC721ContractMetadata and ERC721TokenMetadataWithBaseURI storage is already initialized to version `1` or above.
     /// @param name The token name
     /// @param symbol The token symbol
-    /// @param uri The token URI.
+    /// @param baseMetadataURI The base metadata URI.
     function initERC721MetadataWithBaseURIStorage(
         string memory name,
         string memory symbol,
-        string memory uri
+        string memory baseMetadataURI
     ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721TokenMetadataWithBaseURIStorage.layout().proxyInit(name, symbol, uri);
+        ERC721TokenMetadataWithBaseURIStorage.layout().proxyInit(name, symbol, baseMetadataURI);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

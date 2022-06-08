@@ -30,15 +30,15 @@ library ERC721TokenMetadataWithBaseURIStorage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
-    /// @param baseURI The base metadata URI.
+    /// @param baseMetadataURI_ The base metadata URI.
     function constructorInit(
         Layout storage s,
         string memory tokenName,
         string memory tokenSymbol,
-        string memory baseURI
+        string memory baseMetadataURI_
     ) internal {
         ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
-        s.baseURI = baseURI;
+        s.baseURI = baseMetadataURI_;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
@@ -50,17 +50,17 @@ library ERC721TokenMetadataWithBaseURIStorage {
     /// @dev Reverts if the ERC721TokenMetadataWithBaseURIStorage storage is already initialized to version `1` or above.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
-    /// @param baseURI The base metadata URI.
+    /// @param baseMetadataURI_ The base metadata URI.
     function proxyInit(
         Layout storage s,
         string memory tokenName,
         string memory tokenSymbol,
-        string memory baseURI
+        string memory baseMetadataURI_
     ) internal {
         StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
         ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
         // Don't call s.contructorInit as ERC721ContractMetadataStorage's proxyInit method will call ERC721ContractMetadataStorage's contructorInit
-        s.baseURI = baseURI;
+        s.baseURI = baseMetadataURI_;
     }
 
     function setBaseMetadataURI(Layout storage s, string calldata baseMetadataURI_) internal {
