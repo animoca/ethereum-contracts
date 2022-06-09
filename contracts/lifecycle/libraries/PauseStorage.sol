@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PauseStorage {
     using PauseStorage for PauseStorage.Layout;
@@ -34,7 +34,7 @@ library PauseStorage {
     /// @dev Emits a {Paused} event if `isPaused` is true.
     /// @param isPaused the initial pause state.
     function proxyInit(Layout storage s, bool isPaused) internal {
-        StorageVersion.setVersion(PAUSE_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PAUSE_VERSION_SLOT, 1);
         s.constructorInit(isPaused);
     }
 

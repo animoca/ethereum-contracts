@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC721ContractMetadataStorage {
@@ -19,9 +19,9 @@ library ERC721ContractMetadataStorage {
     bytes32 public constant ERC721CONTRACTMETADATA_VERSION_SLOT =
         bytes32(uint256(keccak256("animoca.token.ERC721.ERC712ContractMetadata.version")) - 1);
 
-    /// @notice Initialises the storage with a name and symbol.
+    /// @notice Initializes the storage with a name and symbol.
     /// @dev Note: This function should be called by the init function of an ERC721 token metadata strategy library.
-    /// @dev Note: If called by a `proxyInit` function, should perform `StorageVersion.setVersion(ERC721CONTRACTMETADATA_VERSION_SLOT, 1)`.
+    /// @dev Note: If called by a `proxyInit` function, should perform `ProxyInitialization.setPhase(ERC721CONTRACTMETADATA_VERSION_SLOT, 1)`.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     function init(

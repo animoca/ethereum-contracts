@@ -11,6 +11,7 @@
 - Renamed `Ownable` contracts to `ContractOwnership`.
 - Renamed `Recoverable` contracts to `TokenRecovery`.
 - Renamed `Pausable` contracts to `Pause`.
+- Renamed `StorageVersion` to `ProxyInitialization` and `setVersion` to `setPhase`.
 - Used `animoca.core.` convention for storage slots.
 - Normalised value of `PROXYADMIN_VERSION_SLOT` to follow convention.
 

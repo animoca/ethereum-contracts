@@ -26,25 +26,25 @@ const config = {
       {
         name: 'ERC20FacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20DetailedFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20DetailedStorage', arguments: ['name', 'symbol', 'decimals'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20DetailedStorage', arguments: ['name', 'symbol', 'decimals'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20MetadataFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20PermitFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20PermitStorage', adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20PermitStorage', adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {

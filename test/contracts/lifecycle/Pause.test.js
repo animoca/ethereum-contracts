@@ -15,7 +15,7 @@ const config = {
       {
         name: 'PauseFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initPauseStorage', arguments: ['paused'], adminProtected: true, versionProtected: true},
+        init: {method: 'initPauseStorage', arguments: ['paused'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

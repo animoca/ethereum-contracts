@@ -20,7 +20,7 @@ const config = {
       {
         name: 'CheckpointsFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, versionProtected: true},
+        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

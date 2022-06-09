@@ -10,7 +10,7 @@ const config = {
       {
         name: 'ProxyAdminFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin'], versionProtected: true},
+        init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin'], phaseProtected: true},
         metaTxSupport: true,
       },
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},

@@ -3,7 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IERC20Permit} from "./../interfaces/IERC20Permit.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {ERC20Storage} from "./ERC20Storage.sol";
 import {ERC20DetailedStorage} from "./ERC20DetailedStorage.sol";
@@ -37,7 +37,7 @@ library ERC20PermitStorage {
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.
     function proxyInit(Layout storage s) internal {
-        StorageVersion.setVersion(ERC20PERMIT_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC20PERMIT_VERSION_SLOT, 1);
         s.constructorInit();
     }
 

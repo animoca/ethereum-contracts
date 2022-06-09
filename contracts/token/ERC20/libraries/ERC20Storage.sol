@@ -5,7 +5,7 @@ import {IERC20} from "./../interfaces/IERC20.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
 import {IERC20Receiver} from "./../interfaces/IERC20Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC20Storage {
@@ -61,7 +61,7 @@ library ERC20Storage {
         address[] memory holders,
         uint256[] memory allocations
     ) internal {
-        StorageVersion.setVersion(ERC20_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC20_VERSION_SLOT, 1);
         s.constructorInit(holders, allocations);
     }
 

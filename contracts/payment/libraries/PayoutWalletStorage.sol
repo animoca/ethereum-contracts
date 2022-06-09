@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PayoutWalletStorage {
     using PayoutWalletStorage for PayoutWalletStorage.Layout;
@@ -32,7 +32,7 @@ library PayoutWalletStorage {
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function proxyInit(Layout storage s, address payable initialPayoutWallet) internal {
-        StorageVersion.setVersion(PAYOUTWALLET_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PAYOUTWALLET_VERSION_SLOT, 1);
         s.setPayoutWallet(initialPayoutWallet);
     }
 

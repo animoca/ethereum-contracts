@@ -13,7 +13,7 @@ const config = {
       {
         name: 'ContractOwnershipFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, versionProtected: true},
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

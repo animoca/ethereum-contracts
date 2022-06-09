@@ -16,7 +16,7 @@ const config = {
       {
         name: 'PayoutWalletFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, versionProtected: true},
+        init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

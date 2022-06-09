@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {IERC173} from "./../interfaces/IERC173.sol";
-import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ContractOwnershipStorage {
@@ -39,7 +39,7 @@ library ContractOwnershipStorage {
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
     /// @param initialOwner The initial contract owner.
     function proxyInit(Layout storage s, address initialOwner) internal {
-        StorageVersion.setVersion(CONTRACTOWNERSHIP_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(CONTRACTOWNERSHIP_VERSION_SLOT, 1);
         s.constructorInit(initialOwner);
     }
 

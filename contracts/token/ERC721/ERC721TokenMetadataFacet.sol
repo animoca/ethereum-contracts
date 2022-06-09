@@ -17,7 +17,7 @@ contract ERC721TokenMetadataFacet is ERC721TokenMetadataBase, ForwarderRegistryC
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Sets the ERC721ContractMetadata storage version to `1`.
     /// @notice Sets the ERC721TokenMetadata storage version to `1`.
     /// @notice Marks the following ERC165 interfaces as supported: ERC721Metadata.

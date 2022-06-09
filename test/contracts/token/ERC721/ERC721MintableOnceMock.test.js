@@ -48,7 +48,7 @@ const config = {
           method: 'initERC721MintableOnceStorage',
           arguments: [],
           adminProtected: true,
-          versionProtected: false,
+          phaseProtected: false,
         },
         metaTxSupport: true,
       },

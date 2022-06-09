@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import {StorageVersion} from "./StorageVersion.sol";
+import {ProxyInitialization} from "./ProxyInitialization.sol";
 
 library ProxyAdminStorage {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
@@ -37,7 +37,7 @@ library ProxyAdminStorage {
     /// @dev Emits an {AdminChanged} event.
     /// @param initialAdmin The initial payout wallet.
     function proxyInit(Layout storage s, address initialAdmin) internal {
-        StorageVersion.setVersion(PROXYADMIN_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXYADMIN_VERSION_SLOT, 1);
         s.constructorInit(initialAdmin);
     }
 

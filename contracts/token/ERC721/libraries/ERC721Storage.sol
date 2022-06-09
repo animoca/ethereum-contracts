@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC721Storage {
@@ -31,20 +31,20 @@ library ERC721Storage {
     event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
     event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     function constructorInit() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
     }
 
-    /// @notice Initialises the storage.
+    /// @notice Initializes the storage.
     /// @notice Sets the ERC721 storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     function proxyInit() internal {
-        StorageVersion.setVersion(ERC721_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC721_VERSION_SLOT, 1);
         constructorInit();
     }
 

@@ -13,7 +13,7 @@ abstract contract ERC721TokenMetadataWithBaseURI is ERC721TokenMetadataWithBaseU
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using ERC721TokenMetadataWithBaseURIStorage for ERC721TokenMetadataWithBaseURIStorage.Layout;
 
-    /// @notice Initialises the storage
+    /// @notice Initializes the storage
     /// @notice Sets the ERC721 storage version to `1`
     /// @notice Marks the following ERC165 interfaces as supported: IERCMetadata
     /// @dev Reverts if the ERC721 ContractMetadataStorage or the ERC721TokenMetadataWithBaseURIStorage

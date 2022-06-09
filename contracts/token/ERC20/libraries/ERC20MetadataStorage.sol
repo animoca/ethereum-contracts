@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {IERC20Metadata} from "./../interfaces/IERC20Metadata.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC20MetadataStorage {
@@ -32,7 +32,7 @@ library ERC20MetadataStorage {
     /// @dev Reverts if the ERC20Metadata storage is already initialized to version `1` or above.
     /// @param uri The token URI.
     function proxyInit(Layout storage s, string memory uri) internal {
-        StorageVersion.setVersion(ERC20METADATA_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC20METADATA_VERSION_SLOT, 1);
         s.constructorInit(uri);
     }
 

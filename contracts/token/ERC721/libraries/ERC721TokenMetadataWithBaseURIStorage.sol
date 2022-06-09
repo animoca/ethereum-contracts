@@ -3,7 +3,7 @@ pragma solidity 0.8.14;
 
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 import {UInt256ToDecimalString} from "./../../../utils/types/UInt256ToDecimalString.sol";
 import {ERC721ContractMetadataStorage} from "./ERC721ContractMetadataStorage.sol";
@@ -25,7 +25,7 @@ library ERC721TokenMetadataWithBaseURIStorage {
 
     event BaseMetadataURISet(string baseMetadataURI);
 
-    /// @notice Initialises the storage with a name, symbol and base metadata URI.
+    /// @notice Initializes the storage with a name, symbol and base metadata URI.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
     /// @param tokenName The name of the token.
     /// @param tokenSymbol The symbol of the token.
@@ -42,7 +42,7 @@ library ERC721TokenMetadataWithBaseURIStorage {
         emit BaseMetadataURISet(baseMetadataURI_);
     }
 
-    /// @notice Initialises the storage with a name, symbol and base metadata URI.
+    /// @notice Initializes the storage with a name, symbol and base metadata URI.
     /// @notice Sets the ERC721ContractMetadataStorage storage version to `1`.
     /// @notice Sets the ERC721TokenMetadataWithBaseURIStorage storage version to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
@@ -57,8 +57,8 @@ library ERC721TokenMetadataWithBaseURIStorage {
         string memory tokenSymbol,
         string memory baseMetadataURI_
     ) internal {
-        StorageVersion.setVersion(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
-        StorageVersion.setVersion(ERC721ContractMetadataStorage.ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC721TOKENMETADATAWITHBASEURI_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC721ContractMetadataStorage.ERC721CONTRACTMETADATA_VERSION_SLOT, 1);
         s.constructorInit(tokenName, tokenSymbol, baseMetadataURI_);
     }
 

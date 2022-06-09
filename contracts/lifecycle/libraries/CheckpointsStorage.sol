@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {Bytes32} from "./../../utils/libraries/Bytes32.sol";
-import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library CheckpointsStorage {
     using Bytes32 for bytes32;
@@ -53,7 +53,7 @@ library CheckpointsStorage {
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps
     ) internal {
-        StorageVersion.setVersion(CHECKPOINTS_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(CHECKPOINTS_VERSION_SLOT, 1);
         s.constructorInit(checkpointIds, timestamps);
     }
 

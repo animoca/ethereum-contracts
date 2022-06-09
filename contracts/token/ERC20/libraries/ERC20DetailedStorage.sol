@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {IERC20Detailed} from "./../interfaces/IERC20Detailed.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC20DetailedStorage {
@@ -50,7 +50,7 @@ library ERC20DetailedStorage {
         string memory symbol_,
         uint8 decimals_
     ) internal {
-        StorageVersion.setVersion(ERC20DETAILED_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(ERC20DETAILED_VERSION_SLOT, 1);
         s.constructorInit(name_, symbol_, decimals_);
     }
 

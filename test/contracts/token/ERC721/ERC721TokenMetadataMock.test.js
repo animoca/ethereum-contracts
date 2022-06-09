@@ -30,7 +30,7 @@ const config = {
           method: 'initERC721MetadataStorage',
           arguments: ['name', 'symbol'],
           adminProtected: true,
-          versionProtected: true,
+          phaseProtected: true,
         },
         metaTxSupport: true,
       },

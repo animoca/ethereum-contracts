@@ -91,7 +91,7 @@ function runBehaviorTests(name, config, behaviorFn) {
                   });
                 }
 
-                if (facet.init.versionProtected) {
+                if (facet.init.phaseProtected) {
                   it('reverts when trying to initialize the storage twice', async function () {
                     const facets = [...config.diamond.facets];
                     const abiExtensions = config.abiExtensions !== undefined ? config.abiExtensions : [];
@@ -101,7 +101,7 @@ function runBehaviorTests(name, config, behaviorFn) {
                     const cut = facetInit(deployments.facets[facet.name], facet.init.method, mainFacetInitArguments);
                     await expect(
                       deployments.diamond.functions['diamondCut((address,uint8,bytes4[])[],address,bytes)']([], ...cut)
-                    ).to.be.revertedWith('Storage: version reached');
+                    ).to.be.revertedWith('Storage: phase reached');
                   });
                 }
               });
