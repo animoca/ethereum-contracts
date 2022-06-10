@@ -17,6 +17,6 @@ interface IERC173 {
     function transferOwnership(address newOwner) external;
 
     /// @notice Gets the address of the contract owner.
-    /// @return The address of the contract owner.
-    function owner() external view returns (address);
+    /// @return contractOwner The address of the contract owner.
+    function owner() external view returns (address contractOwner);
 }

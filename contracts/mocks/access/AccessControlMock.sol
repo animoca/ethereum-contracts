@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
-import {Ownable} from "./../../access/Ownable.sol";
+import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
@@ -13,7 +13,7 @@ contract AccessControlMock is AccessControl, ForwarderRegistryContextBase {
 
     bytes32 public constant TEST_ROLE = "tester";
 
-    constructor(IForwarderRegistry forwarderRegistry) Ownable(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     function enforceHasRole(bytes32 role, address account) external view {
         AccessControlStorage.layout().enforceHasRole(role, account);

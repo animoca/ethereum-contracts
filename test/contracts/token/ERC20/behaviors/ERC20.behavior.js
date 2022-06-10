@@ -9,38 +9,36 @@ const {behavesLikeERC20Burnable} = require('./ERC20.burnable.behavior');
 const {behavesLikeERC20Mintable} = require('./ERC20.mintable.behavior');
 
 function behavesLikeERC20(implementation) {
-  describe('like an ERC20', function () {
-    if (implementation.interfaces.ERC20) {
-      behavesLikeERC20Standard(implementation);
-    }
+  if (implementation.interfaces.ERC20) {
+    behavesLikeERC20Standard(implementation);
+  }
 
-    if (implementation.interfaces.ERC20Allowance) {
-      behavesLikeERC20Allowance(implementation);
-    }
+  if (implementation.interfaces.ERC20Allowance) {
+    behavesLikeERC20Allowance(implementation);
+  }
 
-    if (implementation.interfaces.ERC20Detailed) {
-      behavesLikeERC20Detailed(implementation);
-    }
+  if (implementation.interfaces.ERC20Detailed) {
+    behavesLikeERC20Detailed(implementation);
+  }
 
-    if (implementation.interfaces.ERC20Metadata) {
-      behavesLikeERC20Metadata(implementation);
-    }
+  if (implementation.interfaces.ERC20Metadata) {
+    behavesLikeERC20Metadata(implementation);
+  }
 
-    if (implementation.interfaces.ERC20Permit) {
-      behavesLikeERC20Permit(implementation);
-    }
+  if (implementation.interfaces.ERC20Permit) {
+    behavesLikeERC20Permit(implementation);
+  }
 
-    if (implementation.interfaces.ERC20BatchTransfer) {
-      behavesLikeERC20Batch(implementation);
-    }
+  if (implementation.interfaces.ERC20BatchTransfer) {
+    behavesLikeERC20Batch(implementation);
+  }
 
-    if (implementation.interfaces.ERC20Safe) {
-      behavesLikeERC20Safe(implementation);
-    }
+  if (implementation.interfaces.ERC20Safe) {
+    behavesLikeERC20Safe(implementation);
+  }
 
-    behavesLikeERC20Burnable(implementation);
-    behavesLikeERC20Mintable(implementation);
-  });
+  behavesLikeERC20Burnable(implementation);
+  behavesLikeERC20Mintable(implementation);
 }
 
 module.exports = {

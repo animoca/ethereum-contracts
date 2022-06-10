@@ -1,11 +1,12 @@
-const {loadFixture} = require('../../helpers/fixtures');
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {ZeroBytes32} = require('../../../src/constants');
+const {loadFixture} = require('../../helpers/fixtures');
+const {deployContract} = require('../../helpers/contract');
 
 describe('Bytes32', function () {
   const fixture = async function () {
-    const Bytes32 = await ethers.getContractFactory('Bytes32Mock');
-    this.contract = await Bytes32.deploy();
-    await this.contract.deployed();
+    this.contract = await deployContract('Bytes32Mock');
   };
   beforeEach(async function () {
     await loadFixture(fixture, this);

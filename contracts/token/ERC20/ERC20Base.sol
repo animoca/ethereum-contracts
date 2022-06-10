@@ -8,7 +8,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `ERC20Storage.init` should be called during contract initialization.
 abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
     using ERC20Storage for ERC20Storage.Layout;
 
@@ -48,16 +47,16 @@ abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
 
     /// @inheritdoc IERC20
     function totalSupply() external view override returns (uint256) {
-        return ERC20Storage.layout().totalSupply;
+        return ERC20Storage.layout().totalSupply();
     }
 
     /// @inheritdoc IERC20
     function balanceOf(address account) external view override returns (uint256) {
-        return ERC20Storage.layout().balances[account];
+        return ERC20Storage.layout().balanceOf(account);
     }
 
     /// @inheritdoc IERC20
     function allowance(address owner, address spender) public view virtual override returns (uint256) {
-        return ERC20Storage.layout().allowances[owner][spender];
+        return ERC20Storage.layout().allowance(owner, spender);
     }
 }

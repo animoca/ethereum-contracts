@@ -3,9 +3,13 @@ pragma solidity ^0.8.8;
 
 import {IERC20} from "./../interfaces/IERC20.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
+import {IERC20BatchTransfers} from "./../interfaces/IERC20BatchTransfers.sol";
+import {IERC20SafeTransfers} from "./../interfaces/IERC20SafeTransfers.sol";
+import {IERC20Mintable} from "./../interfaces/IERC20Mintable.sol";
+import {IERC20Burnable} from "./../interfaces/IERC20Burnable.sol";
 import {IERC20Receiver} from "./../interfaces/IERC20Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {StorageVersion} from "./../../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC20Storage {
@@ -16,34 +20,75 @@ library ERC20Storage {
     struct Layout {
         mapping(address => uint256) balances;
         mapping(address => mapping(address => uint256)) allowances;
-        uint256 totalSupply;
+        uint256 supply;
     }
 
-    bytes32 public constant ERC20_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20.storage")) - 1);
-    bytes32 public constant ERC20_VERSION_SLOT = bytes32(uint256(keccak256("animoca.token.ERC20.ERC20.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.phase")) - 1);
+
+    bytes4 internal constant ERC20_RECEIVED = IERC20Receiver.onERC20Received.selector;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    /// @notice Initialises the storage with a list of initial allocations.
-    /// @notice Sets the ERC20 storage version to `1`.
+    /// @notice Initializes the storage with a list of initial allocations (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
     /// @dev Reverts if the total supply overflows.
     /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
     /// @param holders The list of accounts to mint the tokens to.
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function init(
+    function constructorInit(
         Layout storage s,
         address[] memory holders,
         uint256[] memory allocations
     ) internal {
-        StorageVersion.setVersion(ERC20_VERSION_SLOT, 1);
         s.batchMint(holders, allocations);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20).interfaceId, true);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+        InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
+        erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
+        erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+    }
+
+    /// @notice Initializes the storage with a list of initial allocations (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts if `holders` and `allocations` have different lengths.
+    /// @dev Reverts if one of `holders` is the zero address.
+    /// @dev Reverts if the total supply overflows.
+    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
+    /// @param holders The list of accounts to mint the tokens to.
+    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
+    function proxyInit(
+        Layout storage s,
+        address[] memory holders,
+        uint256[] memory allocations
+    ) internal {
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
+        s.constructorInit(holders, allocations);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20BatchTransfers.
+    function initERC20BatchTransfers() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20BatchTransfers).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20SafeTransfers.
+    function initERC20SafeTransfers() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20SafeTransfers).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Mintable.
+    function initERC20Mintable() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Mintable).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Burnable.
+    function initERC20Burnable() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Burnable).interfaceId, true);
     }
 
     function approve(
@@ -52,7 +97,7 @@ library ERC20Storage {
         address spender,
         uint256 value
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         s.allowances[owner][spender] = value;
         emit Approval(owner, spender, value);
     }
@@ -63,7 +108,7 @@ library ERC20Storage {
         address spender,
         uint256 subtractedValue
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
 
         if (allowance_ != type(uint256).max && subtractedValue != 0) {
@@ -84,7 +129,7 @@ library ERC20Storage {
         address spender,
         uint256 addedValue
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
         if (addedValue != 0) {
             unchecked {
@@ -103,7 +148,7 @@ library ERC20Storage {
         address to,
         uint256 value
     ) internal {
-        require(to != address(0), "ERC20: to zero address");
+        require(to != address(0), "ERC20: transfer to address(0)");
 
         if (value != 0) {
             uint256 balance = s.balances[from];
@@ -150,13 +195,13 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: to zero address");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: transfer to address(0)");
 
-            uint256 value = values[i];
-            if (value != 0) {
-                unchecked {
+                uint256 value = values[i];
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
@@ -167,12 +212,10 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
+                emit Transfer(sender, to, value);
             }
-            emit Transfer(sender, to, value);
-        }
 
-        if (totalValue != 0 && totalValue != selfTransferTotalValue) {
-            unchecked {
+            if (totalValue != 0 && totalValue != selfTransferTotalValue) {
                 uint256 newBalance = balance - totalValue;
                 require(newBalance < balance, "ERC20: insufficient balance"); // balance must be sufficient, including self-transfers
                 s.balances[sender] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
@@ -196,14 +239,14 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: to zero address");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: transfer to address(0)");
 
-            uint256 value = values[i];
+                uint256 value = values[i];
 
-            if (value != 0) {
-                unchecked {
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
@@ -214,13 +257,11 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
+
+                emit Transfer(from, to, value);
             }
 
-            emit Transfer(from, to, value);
-        }
-
-        if (totalValue != 0 && totalValue != selfTransferTotalValue) {
-            unchecked {
+            if (totalValue != 0 && totalValue != selfTransferTotalValue) {
                 uint256 newBalance = balance - totalValue;
                 require(newBalance < balance, "ERC20: insufficient balance"); // balance must be sufficient, including self-transfers
                 s.balances[from] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
@@ -243,7 +284,7 @@ library ERC20Storage {
     ) internal {
         s.transfer(sender, to, value);
         if (to.isContract()) {
-            require(IERC20Receiver(to).onERC20Received(sender, sender, value, data) == type(IERC20Receiver).interfaceId, "ERC20: transfer refused");
+            _callOnERC20Received(sender, sender, to, value, data);
         }
     }
 
@@ -257,7 +298,7 @@ library ERC20Storage {
     ) internal {
         s.transferFrom(sender, from, to, value);
         if (to.isContract()) {
-            require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == type(IERC20Receiver).interfaceId, "ERC20: transfer refused");
+            _callOnERC20Received(sender, from, to, value, data);
         }
     }
 
@@ -266,13 +307,13 @@ library ERC20Storage {
         address to,
         uint256 value
     ) internal {
-        require(to != address(0), "ERC20: mint to zero");
+        require(to != address(0), "ERC20: mint to address(0)");
         if (value != 0) {
-            uint256 supply = s.totalSupply;
+            uint256 supply = s.supply;
             unchecked {
                 uint256 newSupply = supply + value;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
                 s.balances[to] += value; // balance cannot overflow if supply does not
             }
         }
@@ -290,28 +331,26 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        for (uint256 i; i != length; ++i) {
-            address to = recipients[i];
-            require(to != address(0), "ERC20: mint to zero");
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC20: mint to address(0)");
 
-            uint256 value = values[i];
-            if (value != 0) {
-                unchecked {
+                uint256 value = values[i];
+                if (value != 0) {
                     uint256 newTotalValue = totalValue + value;
                     require(newTotalValue > totalValue, "ERC20: values overflow");
                     totalValue = newTotalValue;
                     s.balances[to] += value; // balance cannot overflow if supply does not
                 }
+                emit Transfer(address(0), to, value);
             }
-            emit Transfer(address(0), to, value);
-        }
 
-        if (totalValue != 0) {
-            uint256 supply = s.totalSupply;
-            unchecked {
+            if (totalValue != 0) {
+                uint256 supply = s.supply;
                 uint256 newSupply = supply + totalValue;
                 require(newSupply > supply, "ERC20: supply overflow");
-                s.totalSupply = newSupply;
+                s.supply = newSupply;
             }
         }
     }
@@ -327,7 +366,7 @@ library ERC20Storage {
                 uint256 newBalance = balance - value;
                 require(newBalance < balance, "ERC20: insufficient balance");
                 s.balances[from] = newBalance;
-                s.totalSupply -= value; // will not underflow if balance does not
+                s.supply -= value; // will not underflow if balance does not
             }
         }
 
@@ -358,38 +397,69 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        for (uint256 i; i != length; ++i) {
-            address from = owners[i];
-            uint256 value = values[i];
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                address from = owners[i];
+                uint256 value = values[i];
 
-            if (from != sender) {
-                s.decreaseAllowance(from, sender, value);
-            }
+                if (from != sender) {
+                    s.decreaseAllowance(from, sender, value);
+                }
 
-            if (value != 0) {
-                uint256 balance = s.balances[from];
-                unchecked {
+                if (value != 0) {
+                    uint256 balance = s.balances[from];
                     uint256 newBalance = balance - value;
                     require(newBalance < balance, "ERC20: insufficient balance");
                     s.balances[from] = newBalance;
                     totalValue += value; // totalValue cannot overflow if the individual balances do not underflow
                 }
+
+                emit Transfer(from, address(0), value);
             }
 
-            emit Transfer(from, address(0), value);
-        }
-
-        if (totalValue != 0) {
-            unchecked {
-                s.totalSupply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
+            if (totalValue != 0) {
+                s.supply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
             }
         }
     }
 
+    function totalSupply(Layout storage s) internal view returns (uint256) {
+        return s.supply;
+    }
+
+    function balanceOf(Layout storage s, address account) internal view returns (uint256) {
+        return s.balances[account];
+    }
+
+    function allowance(
+        Layout storage s,
+        address owner,
+        address spender
+    ) internal view returns (uint256) {
+        return s.allowances[owner][spender];
+    }
+
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC20_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }
+    }
+
+    /// @notice Calls {IERC20Receiver-onERC20Received} on a target contract.
+    /// @dev Reverts if the call to the target fails, reverts or is rejected.
+    /// @param sender sender of the message.
+    /// @param from Previous token owner.
+    /// @param to New token owner.
+    /// @param value The value transferred.
+    /// @param data Optional data to send along with the receiver contract call.
+    function _callOnERC20Received(
+        address sender,
+        address from,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) private {
+        require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == ERC20_RECEIVED, "ERC20: safe transfer rejected");
     }
 }

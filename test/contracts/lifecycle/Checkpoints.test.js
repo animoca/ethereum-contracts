@@ -1,3 +1,5 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {latest} = require('../../helpers/time');
@@ -10,13 +12,17 @@ const config = {
   },
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {
+        name: 'ContractOwnershipFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
+      },
       {
         name: 'CheckpointsFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, versionProtected: true},
+        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

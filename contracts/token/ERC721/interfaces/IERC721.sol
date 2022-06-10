@@ -6,83 +6,95 @@ pragma solidity ^0.8.8;
 /// @dev This interface only contains the standard functions. See IERC721Events for the events.
 /// @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd.
 interface IERC721 {
-    /// @notice Gets the balance of the specified address.
-    /// @param owner address to query the balance of.
-    /// @return balance uint256 representing the amount owned by the passed address.
-    function balanceOf(address owner) external view returns (uint256 balance);
-
-    /// @notice Gets the owner of the specified ID.
-    /// @param tokenId uint256 ID to query the owner of.
-    /// @return owner address currently marked as the owner of the given ID.
-    function ownerOf(uint256 tokenId) external view returns (address owner);
-
-    /// @notice Approves another address to transfer the given token ID.
-    /// @dev The zero address indicates there is no approved address.
-    /// @dev There can only be one approved address per token at a given time.
-    /// @dev Can only be called by the token owner or an approved operator.
-    /// @param to address to be approved for the given token ID.
-    /// @param tokenId uint256 ID of the token to be approved.
+    /// @notice Sets or unsets an approval to transfer a single token identifier on behalf of its owner.
+    /// @dev Note: There can only be one approved address per token at a given time.
+    /// @dev Note: A token approval gets reset when this token is transferred, including a self-transfer.
+    /// @dev Reverts if the token identifier does not exist.
+    /// @dev Reverts if the sender is approving itself.
+    /// @dev Reverts if the sender is not the token owner or has not been approved by the token owner.
+    /// @dev Emits an {Approval} event.
+    /// @param to The address to approve, or the zero address to remove any existing approval.
+    /// @param tokenId The token identifier to give approval for.
     function approve(address to, uint256 tokenId) external;
 
-    /// @notice Gets the approved address for a token ID, or zero if no address set.
-    /// @dev Reverts if the token ID does not exist.
-    /// @param tokenId uint256 ID of the token to query the approval of.
-    /// @return operator address currently approved for the given token ID.
-    function getApproved(uint256 tokenId) external view returns (address operator);
-
-    /// @notice Sets or unsets the approval of a given operator.
-    /// @dev An operator is allowed to transfer all tokens of the sender on their behalf.
-    /// @param operator operator address to set the approval.
-    /// @param approved representing the status of the approval to be set.
+    /// @notice Sets or unsets an approval to transfer all tokens on behalf of its current owner.
+    /// @dev Reverts if the sender is approving itself.
+    /// @dev Emits an {ApprovalForAll} event.
+    /// @param operator The address to approve for all tokens.
+    /// @param approved True to set an approval for all tokens, false to unset it.
     function setApprovalForAll(address operator, bool approved) external;
 
-    /// @notice Tells whether an operator is approved by a given owner.
-    /// @param owner owner address which you want to query the approval of.
-    /// @param operator operator address which you want to query the approval of.
-    /// @return bool whether the given operator is approved by the given owner.
-    function isApprovedForAll(address owner, address operator) external view returns (bool);
-
-    /// @notice Transfers the ownership of a given token ID to another address.
-    /// @dev Usage of this method is discouraged, use `safeTransferFrom` whenever possible.
-    /// @dev Requires the msg sender to be the owner, approved, or operator.
-    /// @param from current owner of the token.
-    /// @param to address to receive the ownership of the given token ID.
-    /// @param tokenId uint256 ID of the token to be transferred.
+    /// @notice Unsafely transfers the ownership of a token identifier to a recipient.
+    /// @dev Note: Usage of this method is discouraged, use `safeTransferFrom` whenever possible.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Emits a {Transfer} event.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer. Self-transfers are possible.
+    /// @param tokenId The identifier of the token to transfer.
     function transferFrom(
         address from,
         address to,
         uint256 tokenId
     ) external;
 
-    /// @notice  Safely transfers the ownership of a given token ID to another address.
-    /// @notice If the target address is a contract, it must implement `onERC721Received`,
-    ///  which is called upon a safe transfer, and return the magic value
-    ///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
-    ///  the transfer is reverted.
-    /// @dev Requires the msg sender to be the owner, approved, or operator.
-    /// @param from current owner of the token.
-    /// @param to address to receive the ownership of the given token ID.
-    /// @param tokenId uint256 ID of the token to be transferred.
+    /// @notice Safely transfers the ownership of a token identifier to a recipient.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer.
+    /// @param tokenId The identifier of the token to transfer.
     function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId
     ) external;
 
-    /// @notice Safely transfers the ownership of a given token ID to another address.
-    /// @notice If the target address is a contract, it must implement `onERC721Received`,
-    ///  which is called upon a safe transfer, and return the magic value
-    ///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
-    ///  the transfer is reverted.
-    /// @dev Requires the msg sender to be the owner, approved, or operator.
-    /// @param from current owner of the token.
-    /// @param to address to receive the ownership of the given token ID.
-    /// @param tokenId uint256 ID of the token to be transferred.
-    /// @param data bytes data to send along with a safe transfer check.
+    /// @notice Safely transfers the ownership of a token identifier to a recipient.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer.
+    /// @param tokenId The identifier of the token to transfer.
+    /// @param data Optional data to send along to a receiver contract.
     function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId,
         bytes calldata data
     ) external;
+
+    /// @notice Gets the balance of an address.
+    /// @dev Reverts if `owner` is the zero address.
+    /// @param owner The address to query the balance of.
+    /// @return balance The amount owned by the owner.
+    function balanceOf(address owner) external view returns (uint256 balance);
+
+    /// @notice Gets the owner of a token identifier.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @param tokenId The token identifier to query the owner of.
+    /// @return owner The owner of the token identifier.
+    function ownerOf(uint256 tokenId) external view returns (address owner);
+
+    /// @notice Gets the approved address for a token identifier.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @param tokenId The token identifier to query the approval of.
+    /// @return approved The approved address for the token identifier, or the zero address if no approval is set.
+    function getApproved(uint256 tokenId) external view returns (address approved);
+
+    /// @notice Gets whether an operator is approved for all tokens by an owner.
+    /// @param owner The address which gives the approval for all tokens.
+    /// @param operator The address which receives the approval for all tokens.
+    /// @return approvedForAll Whether the operator is approved for all tokens by the owner.
+    function isApprovedForAll(address owner, address operator) external view returns (bool approvedForAll);
 }

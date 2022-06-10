@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {StorageVersion} from "./../../proxy/libraries/StorageVersion.sol";
+import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PauseStorage {
     using PauseStorage for PauseStorage.Layout;
@@ -10,23 +10,32 @@ library PauseStorage {
         bool isPaused;
     }
 
-    bytes32 public constant PAUSE_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.lifecycle.Pause.storage")) - 1);
-    bytes32 public constant PAUSE_VERSION_SLOT = bytes32(uint256(keccak256("animoca.lifecycle.Pause.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.phase")) - 1);
 
     event Paused();
     event Unpaused();
 
-    /// @notice Initializes the storage with an initial paused state.
-    /// @notice Sets the pause storage version to `1`.
-    /// @dev Reverts if the pause storage is already initialized to version `1` or above.
+    /// @notice Initializes the storage with an initial pause state (immutable version).
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Emits a {Paused} event if `isPaused` is true.
-    /// @param isPaused the initial pause state.
-    function init(Layout storage s, bool isPaused) internal {
-        StorageVersion.setVersion(PAUSE_VERSION_SLOT, 1);
+    /// @param isPaused The initial pause state.
+    function constructorInit(Layout storage s, bool isPaused) internal {
         if (isPaused) {
             s.isPaused = true;
             emit Paused();
         }
+    }
+
+    /// @notice Initializes the storage with an initial pause state (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Emits a {Paused} event if `isPaused` is true.
+    /// @param isPaused The initial pause state.
+    function proxyInit(Layout storage s, bool isPaused) internal {
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
+        s.constructorInit(isPaused);
     }
 
     /// @notice Pauses the contract.
@@ -66,7 +75,7 @@ library PauseStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = PAUSE_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

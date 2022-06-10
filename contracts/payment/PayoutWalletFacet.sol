@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
@@ -10,7 +10,7 @@ import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContext
 
 /// @title Payout wallet (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet} and {OwnableFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet} and {ContractOwnershipFacet}.
 contract PayoutWalletFacet is PayoutWalletBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using PayoutWalletStorage for PayoutWalletStorage.Layout;
@@ -18,15 +18,15 @@ contract PayoutWalletFacet is PayoutWalletBase, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Initializes the storage with an initial payout wallet.
-    /// @notice Sets the payout wallet storage version to `1`.
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the payout wallet storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Reverts if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function initPayoutWalletStorage(address payable initialPayoutWallet) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        PayoutWalletStorage.layout().init(initialPayoutWallet);
+        PayoutWalletStorage.layout().proxyInit(initialPayoutWallet);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

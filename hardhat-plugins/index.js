@@ -1,9 +1,7 @@
-require('@nomiclabs/hardhat-ethers');
 require('hardhat-deploy');
 require('./waffle-tests');
-require('./solidity-coverage-skips');
-require('./gas-reporter-skips');
+require('hardhat-deploy-ethers');
+require('solidity-coverage');
+require('solidity-docgen');
 require('./flatten-all');
-require('./import-artifacts');
-require('./solidity-docgen');
 require('./output-config');

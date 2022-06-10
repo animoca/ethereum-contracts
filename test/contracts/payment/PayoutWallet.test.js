@@ -1,3 +1,5 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {ZeroAddress} = require('../../../src/constants');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
@@ -6,13 +8,17 @@ const config = {
   immutable: {name: 'PayoutWalletMock', ctorArguments: ['payoutWallet', 'forwarderRegistry'], metaTxSupport: true},
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {
+        name: 'ContractOwnershipFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
+      },
       {
         name: 'PayoutWalletFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, versionProtected: true},
+        init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
     ],

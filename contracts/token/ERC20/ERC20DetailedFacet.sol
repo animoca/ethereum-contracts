@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
 import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
@@ -16,20 +16,20 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with the token details.
-    /// @notice Sets the ERC20Detailed storage version to `1`.
+    /// @notice Initializes the storage with the token details.
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the ERC20Detailed storage is already initialized to version `1` or above.
-    /// @param name_ The token name.
-    /// @param symbol_ The token symbol.
-    /// @param decimals_ The token decimals.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    /// @param tokenDecimals The token decimals.
     function initERC20DetailedStorage(
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals
     ) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20DetailedStorage.layout().init(name_, symbol_, decimals_);
+        ERC20DetailedStorage.layout().proxyInit(tokenName, tokenSymbol, tokenDecimals);
     }
 }

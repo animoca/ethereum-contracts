@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
@@ -17,11 +17,11 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage with a list of initial allocations.
-    /// @notice Sets the ERC20 storage version to `1`.
+    /// @notice Initializes the storage with a list of initial allocations.
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
     /// @dev Reverts if the total supply overflows.
@@ -30,7 +30,7 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
     function initERC20Storage(address[] memory holders, uint256[] memory allocations) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20Storage.layout().init(holders, allocations);
+        ERC20Storage.layout().proxyInit(holders, allocations);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

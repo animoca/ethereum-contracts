@@ -11,11 +11,9 @@ abstract contract ProxyAdmin is ProxyAdminBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 
     /// @notice Initializes the storage with an initial admin.
-    /// @notice Sets the proxy admin storage version to `1`.
-    /// @dev Reverts if the proxy admin storage is already initialized to version `1` or above.
     /// @dev Emits an {AdminChanged} event if `initialAdmin` is not the zero address.
     /// @param initialAdmin The initial payout wallet.
     constructor(address initialAdmin) {
-        ProxyAdminStorage.layout().init(initialAdmin);
+        ProxyAdminStorage.layout().constructorInit(initialAdmin);
     }
 }

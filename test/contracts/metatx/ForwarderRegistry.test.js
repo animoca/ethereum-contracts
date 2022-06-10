@@ -1,6 +1,8 @@
-const {loadFixture} = require('../../helpers/fixtures');
-const {ZeroAddress} = require('../../../src/constants');
+const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {ZeroAddress} = require('../../../src/constants');
+const {loadFixture} = require('../../helpers/fixtures');
+const {deployContract} = require('../../helpers/contract');
 
 const ApproveForwarderType = {
   ApproveForwarder: [
@@ -18,21 +20,12 @@ describe('Meta Transactions', function () {
   });
 
   const fixture = async function () {
-    const ForwarderRegistry = await ethers.getContractFactory('ForwarderRegistry');
-    this.contract = await ForwarderRegistry.deploy();
-    await this.contract.deployed();
-    const Forwarder = await ethers.getContractFactory('ForwarderMock');
-    this.forwarder = await Forwarder.deploy();
-    await this.forwarder.deployed();
-    const ForwarderRegistryReceiver = await ethers.getContractFactory('ForwarderRegistryReceiverMock');
-    this.receiver = await ForwarderRegistryReceiver.deploy(this.contract.address);
-    await this.receiver.deployed();
-    const ERC1271 = await ethers.getContractFactory('ERC1271Mock');
-    this.erc1271 = await ERC1271.deploy(deployer.address);
-    await this.erc1271.deployed();
-    const ERC1654 = await ethers.getContractFactory('ERC1654Mock');
-    this.erc1654 = await ERC1654.deploy(deployer.address);
-    await this.erc1654.deployed();
+    this.contract = await deployContract('ForwarderRegistry');
+    this.forwarder = await deployContract('ForwarderMock');
+    this.receiver = await deployContract('ForwarderRegistryReceiverMock', this.contract.address);
+    this.erc1271 = await deployContract('ERC1271Mock', deployer.address);
+    this.erc1654 = await deployContract('ERC1654Mock', deployer.address);
+
     this.domain = {
       name: 'ForwarderRegistry',
       chainId: await getChainId(),

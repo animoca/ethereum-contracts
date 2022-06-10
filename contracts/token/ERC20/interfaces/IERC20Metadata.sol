@@ -5,7 +5,7 @@ pragma solidity ^0.8.8;
 /// @dev See https://eips.ethereum.org/EIPS/eip-1046
 /// @dev Note: the ERC-165 identifier for this interface is 0x3c130d90.
 interface IERC20Metadata {
-    /// Gets a distinct Uniform Resource Identifier (URI) for the token metadata.
-    /// @return uri A distinct Uniform Resource Identifier (URI) for the token metadata.
+    /// @notice Gets the token metadata URI.
+    /// @return uri The token metadata URI.
     function tokenURI() external view returns (string memory uri);
 }

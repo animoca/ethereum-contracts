@@ -52,7 +52,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "operator",
+          "name": "approved",
           "type": "address"
         }
       ],
@@ -76,7 +76,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "approvedForAll",
           "type": "bool"
         }
       ],

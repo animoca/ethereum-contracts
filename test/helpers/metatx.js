@@ -1,14 +1,13 @@
 const {ethers} = require('hardhat');
+const {deployContract} = require('./contract');
 
 let forwarderRegistry = undefined;
 
 async function deployForwarderRegistry() {
-  if (forwarderRegistry !== undefined) {
-    return forwarderRegistry;
+  if (forwarderRegistry === undefined) {
+    forwarderRegistry = await deployContract('ForwarderRegistry');
   }
-  const ForwarderRegistry = await ethers.getContractFactory('ForwarderRegistry');
-  forwarderRegistry = await ForwarderRegistry.deploy();
-  return forwarderRegistry.deployed();
+  return forwarderRegistry;
 }
 
 module.exports = {

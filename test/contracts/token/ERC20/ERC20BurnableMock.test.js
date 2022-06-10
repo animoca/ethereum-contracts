@@ -14,33 +14,37 @@ const config = {
   },
   diamond: {
     facets: [
-      {name: 'ProxyAdminFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
+      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {name: 'ERC165Facet', ctorArguments: ['forwarderRegistry'], init: {method: 'initInterfaceDetectionStorage'}},
-      {name: 'OwnableFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initOwnershipStorage', arguments: ['initialOwner']}},
+      {name: 'InterfaceDetectionFacet'},
+      {
+        name: 'ContractOwnershipFacet',
+        ctorArguments: ['forwarderRegistry'],
+        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
+      },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
         name: 'ERC20FacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20DetailedFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20DetailedStorage', arguments: ['name', 'symbol', 'decimals'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20DetailedStorage', arguments: ['name', 'symbol', 'decimals'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20MetadataFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, phaseProtected: true},
         metaTxSupport: true,
       },
       {
         name: 'ERC20PermitFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20PermitStorage', adminProtected: true, versionProtected: true},
+        init: {method: 'initERC20PermitStorage', adminProtected: true},
         metaTxSupport: true,
       },
       {
@@ -90,11 +94,10 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
     tokenURI,
     revertMessages: {
       // ERC20
-      ApproveToZero: 'ERC20: zero address spender',
+      ApproveToZero: 'ERC20: approval to address(0)',
       TransferExceedsBalance: 'ERC20: insufficient balance',
-      TransferToZero: 'ERC20: to zero address',
+      TransferToZero: 'ERC20: transfer to address(0)',
       TransferExceedsAllowance: 'ERC20: insufficient allowance',
-      TransferFromZero: 'ERC20: insufficient balance',
       InconsistentArrays: 'ERC20: inconsistent arrays',
       SupplyOverflow: 'ERC20: supply overflow',
 
@@ -104,27 +107,23 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
 
       // ERC20BatchTransfers
       BatchTransferValuesOverflow: 'ERC20: values overflow',
-      BatchTransferFromZero: 'ERC20: insufficient balance',
 
       // ERC20SafeTransfers
-      TransferRefused: 'ERC20: transfer refused',
+      SafeTransferRejected: 'ERC20: safe transfer rejected',
 
       // ERC2612
-      PermitFromZero: 'ERC20: zero address owner',
+      PermitFromZero: 'ERC20: permit from address(0)',
       PermitExpired: 'ERC20: expired permit',
       PermitInvalid: 'ERC20: invalid permit',
 
       // ERC20Mintable
-      MintToZero: 'ERC20: mint to zero',
+      MintToZero: 'ERC20: mint to address(0)',
       BatchMintValuesOverflow: 'ERC20: values overflow',
 
       // ERC20Burnable
       BurnExceedsBalance: 'ERC20: insufficient balance',
       BurnExceedsAllowance: 'ERC20: insufficient allowance',
       BatchBurnValuesOverflow: 'ERC20: insufficient balance',
-
-      // ERC20Receiver
-      DirectReceiverCall: 'ChildERC20: wrong sender',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",

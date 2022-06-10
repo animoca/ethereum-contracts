@@ -8,7 +8,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Mintable (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `InterfaceDetectionStorage.setSupportedInterface` for ERC20Mintable interface should be called during contract initialization.
 /// @dev Note: This contract requires AccessControl.
 abstract contract ERC20MintableBase is Context, IERC20Mintable {
     using AccessControlStorage for AccessControlStorage.Layout;

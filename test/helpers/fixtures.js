@@ -3,7 +3,7 @@ const {config, network} = require('hardhat');
 function createFixtureLoader() {
   let snapshots = [];
 
-  if (network.name === 'coverage' || config.gasReporter.enabled) {
+  if (network.name === 'coverage' || (config.gasReporter !== undefined && config.gasReporter.enabled)) {
     return async (fixture, context) => {
       return await fixture.bind(context)();
     };

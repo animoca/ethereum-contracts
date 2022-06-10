@@ -9,18 +9,16 @@ import {ERC20DetailedBase} from "./ERC20DetailedBase.sol";
 abstract contract ERC20Detailed is ERC20DetailedBase {
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
 
-    /// @notice Initialises the storage with the token details.
-    /// @notice Sets the ERC20Detailed storage version to `1`.
+    /// @notice Initializes the storage with the token details.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
-    /// @dev Reverts if the ERC20Detailed storage is already initialized to version `1` or above.
-    /// @param name_ The token name.
-    /// @param symbol_ The token symbol.
-    /// @param decimals_ The token decimals.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    /// @param tokenDecimals The token decimals.
     constructor(
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals
     ) {
-        ERC20DetailedStorage.layout().init(name_, symbol_, decimals_);
+        ERC20DetailedStorage.layout().constructorInit(tokenName, tokenSymbol, tokenDecimals);
     }
 }

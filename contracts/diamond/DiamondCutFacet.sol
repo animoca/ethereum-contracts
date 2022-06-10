@@ -1,31 +1,28 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 pragma experimental ABIEncoderV2;
 
 import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./interfaces/IDiamondCutBatchInit.sol";
 import {ProxyAdminStorage} from "./../proxy/libraries/ProxyAdminStorage.sol";
-import {InterfaceDetectionStorage} from "./../introspection/libraries/InterfaceDetectionStorage.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title Diamond Cut (facet version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-2535
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
     using DiamondStorage for DiamondStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initialises the storage.
-    /// @notice Marks the following ERC165 interfaces as supported: DiamondCut, DiamondCutBatchInit.
+    /// @notice Marks the following ERC165 interface(s) as supported: DiamondCut, DiamondCutBatchInit.
     /// @dev Reverts if the sender is not the proxy admin.
     function initDiamondCutStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCut).interfaceId, true);
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondCutBatchInit).interfaceId, true);
+        DiamondStorage.initDiamondCut();
     }
 
     /// @inheritdoc IDiamondCut

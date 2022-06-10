@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {IERC20SafeTransfers} from "./interfaces/IERC20SafeTransfers.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC20Storage} from "./libraries/ERC20Storage.sol";
 import {ERC20SafeTransfersBase} from "./ERC20SafeTransfersBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
@@ -14,7 +13,6 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract ERC20SafeTransfersFacet is ERC20SafeTransfersBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
@@ -22,7 +20,7 @@ contract ERC20SafeTransfersFacet is ERC20SafeTransfersBase, ForwarderRegistryCon
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC20SafeTransfersStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20SafeTransfers).interfaceId, true);
+        ERC20Storage.initERC20SafeTransfers();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

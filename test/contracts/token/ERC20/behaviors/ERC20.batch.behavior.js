@@ -1,3 +1,5 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
@@ -139,7 +141,9 @@ function behavesLikeERC20Batch(implementation) {
     describe('batchTransferFrom(address,address[],uint256[])', function () {
       context('Pre-conditions', function () {
         it('reverts when from is the zero address', async function () {
-          await expect(this.contract.batchTransferFrom(ZeroAddress, [recipient1.address], [One])).to.be.revertedWith(revertMessages.TransferFromZero);
+          await expect(this.contract.batchTransferFrom(ZeroAddress, [recipient1.address], [One])).to.be.revertedWith(
+            revertMessages.TransferExceedsBalance
+          );
         });
 
         it('reverts with inconsistent arrays', async function () {

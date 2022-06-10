@@ -15,7 +15,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "facetAddress_",
+          "name": "diamondFacetAddress",
           "type": "address"
         }
       ],
@@ -28,7 +28,7 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "facetAddresses_",
+          "name": "diamondFacetsAddresses",
           "type": "address[]"
         }
       ],
@@ -47,7 +47,7 @@
       "outputs": [
         {
           "internalType": "bytes4[]",
-          "name": "facetFunctionSelectors_",
+          "name": "selectors",
           "type": "bytes4[]"
         }
       ],
@@ -62,17 +62,17 @@
           "components": [
             {
               "internalType": "address",
-              "name": "facetAddress",
+              "name": "facet",
               "type": "address"
             },
             {
               "internalType": "bytes4[]",
-              "name": "functionSelectors",
+              "name": "selectors",
               "type": "bytes4[]"
             }
           ],
           "internalType": "struct IDiamondLoupe.Facet[]",
-          "name": "facets_",
+          "name": "diamondFacets",
           "type": "tuple[]"
         }
       ],
