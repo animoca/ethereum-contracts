@@ -10,6 +10,7 @@ import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title Diamond Cut (facet version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-2535
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;

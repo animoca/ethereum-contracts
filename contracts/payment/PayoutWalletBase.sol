@@ -7,7 +7,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title Payout wallet (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `PayoutWalletStorage.init` should be called during contract initialization.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract PayoutWalletBase is Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;

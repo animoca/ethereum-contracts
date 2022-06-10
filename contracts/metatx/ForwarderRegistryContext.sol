@@ -5,6 +5,8 @@ import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
 import {IERC2771} from "./interfaces/IERC2771.sol";
 import {ForwarderRegistryContextBase} from "./ForwarderRegistryContextBase.sol";
 
+/// @title Meta-Transactions Forwarder Registry Context (immutable version).
+/// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 abstract contract ForwarderRegistryContext is ForwarderRegistryContextBase, IERC2771 {
     constructor(IForwarderRegistry forwarderRegistry_) ForwarderRegistryContextBase(forwarderRegistry_) {}

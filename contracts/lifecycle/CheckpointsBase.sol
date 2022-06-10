@@ -7,7 +7,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title Timestamp-based checkpoints management (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `CheckpointsStorage.init` should be called during contract initialization.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract CheckpointsBase is Context {
     using CheckpointsStorage for CheckpointsStorage.Layout;

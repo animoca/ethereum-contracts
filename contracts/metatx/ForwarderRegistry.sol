@@ -10,7 +10,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /// @title Universal Meta-Transactions Forwarder Registry.
-/// @notice Users can record specific forwarders that will be allowed to forward meta-transactions on their behalf.
+/// @notice Users can allow specific forwarders to forward meta-transactions on their behalf.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 contract ForwarderRegistry is IERC2771, IForwarderRegistry {
     using Address for address;

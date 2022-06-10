@@ -4,11 +4,10 @@ pragma solidity ^0.8.8;
 import {IERC20} from "./../interfaces/IERC20.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-// Inspired by OpenZeppelin SafeERC20, see:
-// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/b13bdb02492cca68091d56c31072b60f10e6142e/contracts/token/ERC20/utils/SafeERC20.sol
 /// @title ERC20Wrapper
 /// @notice Wraps ERC20 functions to support non-standard implementations which do not return a bool value.
 /// @notice Calls to the wrapped functions revert only if they throw or if they return false.
+/// @dev Derived from https://github.com/OpenZeppelin/openzeppelin-contracts (MIT licence)
 library ERC20Wrapper {
     using Address for address;
 

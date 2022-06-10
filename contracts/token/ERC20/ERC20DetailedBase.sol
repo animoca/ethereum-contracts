@@ -6,7 +6,6 @@ import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Detailed (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `ERC20DetailedStorage.init` should be called during contract initialization.
 abstract contract ERC20DetailedBase is IERC20Detailed {
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
 

@@ -8,7 +8,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Metadata (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `ERC20MetadataStorage.init` should be called during contract initialization.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract ERC20MetadataBase is Context, IERC20Metadata {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;

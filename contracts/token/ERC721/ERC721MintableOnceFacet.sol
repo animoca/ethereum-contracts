@@ -8,9 +8,10 @@ import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
 
-/// @title Custom extension to ERC721: MintableOnce (facet version).
+/// @title ERC721 Non-Fungible Token Standard, optional extension: Mintable (facet version).
+/// @notice ERC721Mintable implementation where burnt tokens cannot be minted again.
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721MintableOnceFacet is ERC721MintableOnceBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 

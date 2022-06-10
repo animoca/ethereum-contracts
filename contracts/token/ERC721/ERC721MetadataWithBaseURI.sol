@@ -4,11 +4,12 @@ pragma solidity ^0.8.8;
 import {ERC721ContractMetadataStorage} from "./libraries/ERC721ContractMetadataStorage.sol";
 import {TokenMetadataWithBaseURIStorage} from "./../metadata/libraries/TokenMetadataWithBaseURIStorage.sol";
 import {ERC721MetadataWithBaseURIBase} from "./ERC721MetadataWithBaseURIBase.sol";
-import {AccessControl} from "./../../access/AccessControl.sol";
+import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 
-/// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (immutable version)
-/// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation
-abstract contract ERC721MetadataWithBaseURI is ERC721MetadataWithBaseURIBase, AccessControl {
+/// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (immutable version).
+/// @notice ERC721Metadata implementation where tokenURIs are the concatenation of a base metadata URI and the token identifier (decimal).
+/// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
+abstract contract ERC721MetadataWithBaseURI is ERC721MetadataWithBaseURIBase, ContractOwnership {
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
     using TokenMetadataWithBaseURIStorage for TokenMetadataWithBaseURIStorage.Layout;
 

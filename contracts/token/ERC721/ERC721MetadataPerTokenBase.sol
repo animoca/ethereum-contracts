@@ -8,10 +8,10 @@ import {ERC721ContractMetadataStorage} from "./libraries/ERC721ContractMetadataS
 import {TokenMetadataPerTokenStorage} from "./../metadata/libraries/TokenMetadataPerTokenStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
-/// @title ERC721 Non-Fungible Token Standard (proxiable version), optional extension: Metadata (proxiable version).
-/// @dev Extending from this contract enables the child contract owner to set a unique URI for each tokens.
+/// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (proxiable version).
+/// @notice ERC721Metadata implementation where tokenURIs are set individually per token.
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `ERC721TokenMetadataStorage.layout().init(name_, symbol_)` should be called during contract initialization.
+/// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract ERC721MetadataPerTokenBase is Context, IERC721Metadata {
     using ERC721Storage for ERC721Storage.Layout;
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;

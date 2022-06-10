@@ -9,8 +9,9 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (facet version).
+/// @notice ERC721Metadata implementation where tokenURIs are set individually per token.
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet} and {InterfaceDetectionFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet}, {ContractOwnershipFacet} and {InterfaceDetectionFacet}.
 contract ERC721MetadataPerTokenFacet is ERC721MetadataPerTokenBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;

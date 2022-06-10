@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Mintable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
+/// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
 interface IERC721Mintable {
     /// @notice Unsafely mints a token.
     /// @dev Reverts if `to` is the zero address.

@@ -10,7 +10,7 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Burnable (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract ERC721BurnableFacet is ERC721BurnableBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 

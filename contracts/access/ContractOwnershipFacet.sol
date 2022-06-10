@@ -9,6 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title ERC173 Contract Ownership Standard (facet version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-173
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract ContractOwnershipFacet is ContractOwnershipBase, ForwarderRegistryContextBase {

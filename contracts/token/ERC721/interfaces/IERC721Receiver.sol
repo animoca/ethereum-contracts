@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 /// @title ERC721 Non-Fungible Token Standard, Tokens Receiver.
-/// Interface for any contract that wants to support safeTransfers from ERC721 asset contracts.
+/// @notice Interface for supporting safe transfers from ERC721 contracts.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev Note: The ERC-165 identifier for this interface is 0x150b7a02.
 interface IERC721Receiver {

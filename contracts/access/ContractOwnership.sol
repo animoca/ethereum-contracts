@@ -6,6 +6,7 @@ import {InterfaceDetection} from "./../introspection/InterfaceDetection.sol";
 import {ContractOwnershipBase} from "./ContractOwnershipBase.sol";
 
 /// @title ERC173 Contract Ownership Standard (immutable version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-173
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 abstract contract ContractOwnership is ContractOwnershipBase, InterfaceDetection {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;

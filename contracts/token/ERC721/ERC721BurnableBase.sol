@@ -7,7 +7,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Burnable (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `InterfaceDetectionStorage.setSupportedInterface` for ERC721Burnable interface should be called during contract initialization.
 abstract contract ERC721BurnableBase is Context, IERC721Burnable {
     using ERC721Storage for ERC721Storage.Layout;
 

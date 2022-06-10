@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 /// @title ERC20 Token Standard, Tokens Receiver.
-/// @notice Interface for supporting safeTransfers from ERC20 contracts with Safe Transfers extension.
+/// @notice Interface for supporting safe transfers from ERC20 contracts with the Safe Transfers extension.
 /// @dev See https://eips.ethereum.org/EIPS/eip-20
 /// @dev Note: the ERC-165 identifier for this interface is 0x4fc35859.
 interface IERC20Receiver {

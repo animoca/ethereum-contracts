@@ -7,7 +7,6 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title Pausing mechanism (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `PauseStorage.init` should be called during contract initialization.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract PauseBase is Context {
     using PauseStorage for PauseStorage.Layout;

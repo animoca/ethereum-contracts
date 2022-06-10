@@ -6,8 +6,8 @@ import {ContractOwnershipStorage} from "./libraries/ContractOwnershipStorage.sol
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC173 Contract Ownership Standard (proxiable version).
+/// @dev See https://eips.ethereum.org/EIPS/eip-173
 /// @dev This contract is to be used via inheritance in a proxied implementation.
-/// @dev `ContractOwnershipStorage.init` should be called during contract initialization.
 abstract contract ContractOwnershipBase is Context, IERC173 {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 

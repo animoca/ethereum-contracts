@@ -8,7 +8,7 @@ import {ERC20Wrapper} from "./../token/ERC20/libraries/ERC20Wrapper.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
-/// @title Recovery mechanism for ERC20/ERC721 tokens accidentally sent to this contract (proxiable version).
+/// @title Recovery mechanism for ETH/ERC20/ERC721 tokens accidentally sent to this contract (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 contract TokenRecoveryBase is Context {

@@ -4,6 +4,8 @@ pragma solidity ^0.8.8;
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
 import {ERC2771Data} from "./libraries/ERC2771Data.sol";
 
+/// @title Meta-Transactions Forwarder Registry Context (proxiable version).
+/// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 abstract contract ForwarderRegistryContextBase {
     IForwarderRegistry internal immutable _forwarderRegistry;
