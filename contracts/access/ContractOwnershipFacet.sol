@@ -17,13 +17,13 @@ contract ContractOwnershipFacet is ContractOwnershipBase, ForwarderRegistryConte
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initializes the storage with an initial contract owner.
-    /// @notice Sets the ownership storage version to 1.
-    /// @notice Marks the following ERC165 interfaces as supported: ERC173.
+    /// @notice Initializes the storage with an initial contract owner (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the ownership storage is already initialized to version `1` or above.
-    /// @dev Emits as {OwnershipTransferred} if `initialOwner` is not the zero address.
-    /// @param initialOwner the initial contract owner.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
+    /// @param initialOwner The initial contract owner.
     function initContractOwnershipStorage(address initialOwner) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ContractOwnershipStorage.layout().proxyInit(initialOwner);

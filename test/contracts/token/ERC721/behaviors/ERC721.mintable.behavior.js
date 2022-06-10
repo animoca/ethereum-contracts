@@ -41,9 +41,9 @@ function behavesLikeERC721Mintable({name, deploy, revertMessages, methods}) {
 
     const fixture = async function () {
       this.token = await deploy(deployer);
-      this.receiver721 = await deployContract('ERC721ReceiverMock', [true, this.token.address]);
-      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', [false, this.token.address]);
-      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', [true, ZeroAddress]);
+      this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
+      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, this.token.address);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
     };
 
     beforeEach(async function () {

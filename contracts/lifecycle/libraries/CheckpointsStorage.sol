@@ -13,12 +13,12 @@ library CheckpointsStorage {
         mapping(bytes32 => uint256) checkpoints;
     }
 
-    bytes32 public constant CHECKPOINTS_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.storage")) - 1);
-    bytes32 public constant CHECKPOINTS_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.phase")) - 1);
 
     event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 
-    /// @notice Initializes the storage with a list of initial checkpoints.
+    /// @notice Initializes the storage with a list of initial checkpoints (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
@@ -30,20 +30,22 @@ library CheckpointsStorage {
         uint256[] memory timestamps
     ) internal {
         require(checkpointIds.length == timestamps.length, "Checkpoints: wrong array length");
-        for (uint256 i; i < checkpointIds.length; ++i) {
-            uint256 timestamp = timestamps[i];
-            if (timestamp != 0) {
-                bytes32 checkpointId = checkpointIds[i];
-                s.checkpoints[checkpointId] = timestamp;
-                emit CheckpointSet(checkpointId, timestamp);
+        unchecked {
+            for (uint256 i; i != checkpointIds.length; ++i) {
+                uint256 timestamp = timestamps[i];
+                if (timestamp != 0) {
+                    bytes32 checkpointId = checkpointIds[i];
+                    s.checkpoints[checkpointId] = timestamp;
+                    emit CheckpointSet(checkpointId, timestamp);
+                }
             }
         }
     }
 
-    /// @notice Initializes the storage with a list of initial checkpoints.
-    /// @notice Sets the checkpoints storage version to `1`.
+    /// @notice Initializes the storage with a list of initial checkpoints (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the checkpoints storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
     /// @param checkpointIds The checkpoint identifiers.
@@ -53,7 +55,7 @@ library CheckpointsStorage {
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps
     ) internal {
-        ProxyInitialization.setPhase(CHECKPOINTS_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(checkpointIds, timestamps);
     }
 
@@ -120,7 +122,7 @@ library CheckpointsStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = CHECKPOINTS_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

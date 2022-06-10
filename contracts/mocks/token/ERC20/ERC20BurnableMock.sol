@@ -11,12 +11,12 @@ contract ERC20BurnableMock is ERC20Mock, ERC20Burnable {
     constructor(
         address[] memory holders,
         uint256[] memory allocations,
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_,
-        string memory tokenURI_,
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals,
+        string memory uri,
         IForwarderRegistry forwarderRegistry
-    ) ERC20Mock(holders, allocations, name_, symbol_, decimals_, tokenURI_, forwarderRegistry) {}
+    ) ERC20Mock(holders, allocations, tokenName, tokenSymbol, tokenDecimals, uri, forwarderRegistry) {}
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ERC20Mock) returns (address) {

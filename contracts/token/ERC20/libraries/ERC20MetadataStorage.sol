@@ -13,10 +13,10 @@ library ERC20MetadataStorage {
         string uri;
     }
 
-    bytes32 public constant ERC20METADATA_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.storage")) - 1);
-    bytes32 public constant ERC20METADATA_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Metadata.phase")) - 1);
 
-    /// @notice Initializes the storage with an initial token URI.
+    /// @notice Initializes the storage with an initial token URI (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param uri The token URI.
@@ -25,14 +25,14 @@ library ERC20MetadataStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Metadata).interfaceId, true);
     }
 
-    /// @notice Initializes the storage with an initial token URI.
-    /// @notice Sets the ERC20Metadata storage version to `1`.
+    /// @notice Initializes the storage with an initial token URI (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the ERC20Metadata storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @param uri The token URI.
     function proxyInit(Layout storage s, string memory uri) internal {
-        ProxyInitialization.setPhase(ERC20METADATA_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(uri);
     }
 
@@ -45,7 +45,7 @@ library ERC20MetadataStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC20METADATA_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

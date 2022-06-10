@@ -3,6 +3,10 @@ pragma solidity ^0.8.8;
 
 import {IERC20} from "./../interfaces/IERC20.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
+import {IERC20BatchTransfers} from "./../interfaces/IERC20BatchTransfers.sol";
+import {IERC20SafeTransfers} from "./../interfaces/IERC20SafeTransfers.sol";
+import {IERC20Mintable} from "./../interfaces/IERC20Mintable.sol";
+import {IERC20Burnable} from "./../interfaces/IERC20Burnable.sol";
 import {IERC20Receiver} from "./../interfaces/IERC20Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
@@ -19,13 +23,15 @@ library ERC20Storage {
         uint256 supply;
     }
 
-    bytes32 public constant ERC20_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
-    bytes32 public constant ERC20_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.phase")) - 1);
+
+    bytes4 internal constant ERC20_RECEIVED = IERC20Receiver.onERC20Received.selector;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    /// @notice Initializes the storage with a list of initial allocations.
+    /// @notice Initializes the storage with a list of initial allocations (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
@@ -45,11 +51,11 @@ library ERC20Storage {
         erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
     }
 
-    /// @notice Initializes the storage with a list of initial allocations.
-    /// @notice Sets the ERC20 storage version to `1`.
+    /// @notice Initializes the storage with a list of initial allocations (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the ERC20 storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Reverts if `holders` and `allocations` have different lengths.
     /// @dev Reverts if one of `holders` is the zero address.
     /// @dev Reverts if the total supply overflows.
@@ -61,8 +67,28 @@ library ERC20Storage {
         address[] memory holders,
         uint256[] memory allocations
     ) internal {
-        ProxyInitialization.setPhase(ERC20_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(holders, allocations);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20BatchTransfers.
+    function initERC20BatchTransfers() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20BatchTransfers).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20SafeTransfers.
+    function initERC20SafeTransfers() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20SafeTransfers).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Mintable.
+    function initERC20Mintable() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Mintable).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Burnable.
+    function initERC20Burnable() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Burnable).interfaceId, true);
     }
 
     function approve(
@@ -258,7 +284,7 @@ library ERC20Storage {
     ) internal {
         s.transfer(sender, to, value);
         if (to.isContract()) {
-            require(IERC20Receiver(to).onERC20Received(sender, sender, value, data) == type(IERC20Receiver).interfaceId, "ERC20: transfer refused");
+            _callOnERC20Received(sender, sender, to, value, data);
         }
     }
 
@@ -272,7 +298,7 @@ library ERC20Storage {
     ) internal {
         s.transferFrom(sender, from, to, value);
         if (to.isContract()) {
-            require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == type(IERC20Receiver).interfaceId, "ERC20: transfer refused");
+            _callOnERC20Received(sender, from, to, value, data);
         }
     }
 
@@ -414,9 +440,19 @@ library ERC20Storage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC20_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }
+    }
+
+    function _callOnERC20Received(
+        address sender,
+        address from,
+        address to,
+        uint256 value,
+        bytes memory data
+    ) private {
+        require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == ERC20_RECEIVED, "ERC20: transfer refused");
     }
 }

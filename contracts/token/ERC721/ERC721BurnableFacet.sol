@@ -2,9 +2,8 @@
 pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {IERC721Burnable} from "./interfaces/IERC721Burnable.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC721Storage} from "./libraries/ERC721Storage.sol";
 import {ERC721BurnableBase} from "./ERC721BurnableBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
@@ -14,7 +13,6 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet}, {OwnableFacet}, {InterfaceDetectionFacet} and {AccessControlFacet}.
 contract ERC721BurnableFacet is ERC721BurnableBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
@@ -22,7 +20,7 @@ contract ERC721BurnableFacet is ERC721BurnableBase, ForwarderRegistryContextBase
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC721BurnableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Burnable).interfaceId, true);
+        ERC721Storage.initERC721Burnable();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

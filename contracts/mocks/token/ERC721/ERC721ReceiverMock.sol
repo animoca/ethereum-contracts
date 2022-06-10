@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {IERC721Receiver} from "./../../../token/ERC721/interfaces/IERC721Receiver.sol";
-import {ERC721} from "./../../../token/ERC721/ERC721.sol";
+import {ERC721Storage} from "./../../../token/ERC721/libraries/ERC721Storage.sol";
 import {ERC721Receiver} from "./../../../token/ERC721/ERC721Receiver.sol";
 
 /// @title ERC721 Receiver Mock
@@ -30,7 +30,7 @@ contract ERC721ReceiverMock is ERC721Receiver {
         require(msg.sender == _tokenAddress721, "ERC721Receiver: wrong token");
         if (_accept721) {
             emit Received(operator, from, tokenId, data, gasleft());
-            return _ERC721_RECEIVED;
+            return ERC721Storage.ERC721_RECEIVED;
         } else {
             return 0x0;
         }

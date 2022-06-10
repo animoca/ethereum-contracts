@@ -32,9 +32,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       await mint(this.token, owner.address, nft2, 1, deployer);
       await mint(this.token, owner.address, nft3, 1, deployer);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
-      this.receiver721 = await deployContract('ERC721ReceiverMock', [true, this.token.address]);
-      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', [false, this.token.address]);
-      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', [true, ZeroAddress]);
+      this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
+      this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, this.token.address);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
       this.nftBalance = await this.token.balanceOf(owner.address);
     };
 

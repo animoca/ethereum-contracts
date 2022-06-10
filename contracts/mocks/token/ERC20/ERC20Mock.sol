@@ -15,12 +15,12 @@ contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit
     constructor(
         address[] memory holders,
         uint256[] memory allocations,
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_,
-        string memory tokenURI_,
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals,
+        string memory uri,
         IForwarderRegistry forwarderRegistry
-    ) ERC20SimpleMock(holders, allocations, forwarderRegistry) ERC20Detailed(name_, symbol_, decimals_) ERC20Metadata(tokenURI_) {}
+    ) ERC20SimpleMock(holders, allocations, forwarderRegistry) ERC20Detailed(tokenName, tokenSymbol, tokenDecimals) ERC20Metadata(uri) {}
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ERC20SimpleMock) returns (address) {

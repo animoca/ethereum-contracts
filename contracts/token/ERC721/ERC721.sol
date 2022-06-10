@@ -8,11 +8,8 @@ import {ERC721Base} from "./ERC721Base.sol";
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 
 contract ERC721 is ERC721Base {
-    /// @notice Initializes the storage.
-    /// @notice Sets the ERC721 storage version to `1`.
     /// @notice Marks the following ERC165 interfaces as supported: ERC721.
-    /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     constructor() {
-        ERC721Storage.constructorInit();
+        ERC721Storage.init();
     }
 }

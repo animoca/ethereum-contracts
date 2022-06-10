@@ -44,7 +44,7 @@ async function deployFacets(facetsConfig, args, abiFilter) {
   const inits = [];
   for (const config of facetsConfig) {
     const ctorArguments = config.ctorArguments !== undefined ? config.ctorArguments.map((arg) => args[arg]) : [];
-    const facet = await deployContract(config.name, ctorArguments);
+    const facet = await deployContract(config.name, ...ctorArguments);
     facets[config.name] = facet;
     cuts.push([facet.address, FacetCutAction.Add, getSelectors(facet, abiFilter)]);
     if (config.init !== undefined) {

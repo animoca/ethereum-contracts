@@ -4,7 +4,6 @@ pragma solidity 0.8.14;
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721Mintable} from "./../../../token/ERC721/ERC721Mintable.sol";
-import {ERC721TokenMetadataWithBaseURI} from "./../../../token/ERC721/ERC721TokenMetadataWithBaseURI.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 

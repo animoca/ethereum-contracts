@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.14;
+pragma solidity ^0.8.8;
 
 import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
@@ -17,7 +17,8 @@ abstract contract ERC721MintableBase is Context, IERC721Mintable {
     /// @inheritdoc IERC721Mintable
     function mint(address to, uint256 tokenId) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
-        ERC721Storage.layout().mint(_msgSender(), to, tokenId, "", false);
+        //todo change signature of mint()
+        ERC721Storage.layout().mint(address(0), to, tokenId, "", false);
     }
 
     /// @inheritdoc IERC721Mintable

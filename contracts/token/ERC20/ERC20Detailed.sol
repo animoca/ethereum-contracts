@@ -11,14 +11,14 @@ abstract contract ERC20Detailed is ERC20DetailedBase {
 
     /// @notice Initializes the storage with the token details.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
-    /// @param name_ The token name.
-    /// @param symbol_ The token symbol.
-    /// @param decimals_ The token decimals.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    /// @param tokenDecimals The token decimals.
     constructor(
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals
     ) {
-        ERC20DetailedStorage.layout().constructorInit(name_, symbol_, decimals_);
+        ERC20DetailedStorage.layout().constructorInit(tokenName, tokenSymbol, tokenDecimals);
     }
 }

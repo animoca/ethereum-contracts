@@ -30,8 +30,10 @@ contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         require(length == amounts.length, "Recovery: inconsistent arrays");
-        for (uint256 i; i != length; ++i) {
-            accounts[i].sendValue(amounts[i]);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                accounts[i].sendValue(amounts[i]);
+            }
         }
     }
 
@@ -52,8 +54,10 @@ contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         require(length == tokens.length && length == amounts.length, "Recovery: inconsistent arrays");
-        for (uint256 i; i != length; ++i) {
-            IERC20(tokens[i]).wrappedTransfer(accounts[i], amounts[i]);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                IERC20(tokens[i]).wrappedTransfer(accounts[i], amounts[i]);
+            }
         }
     }
 
@@ -74,8 +78,10 @@ contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         require(length == contracts.length && length == tokenIds.length, "Recovery: inconsistent arrays");
-        for (uint256 i; i != length; ++i) {
-            IERC721(contracts[i]).transferFrom(address(this), accounts[i], tokenIds[i]);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                IERC721(contracts[i]).transferFrom(address(this), accounts[i], tokenIds[i]);
+            }
         }
     }
 }

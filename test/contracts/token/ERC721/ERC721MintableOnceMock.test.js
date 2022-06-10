@@ -2,14 +2,10 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
 
-const name = 'ERC721 MintableOnce Mock';
-const symbol = 'E721MINTABLEONCE';
-const baseMetadataURI = 'uri';
-
 const config = {
   immutable: {
     name: 'ERC721MintableOnceMock',
-    ctorArguments: ['name', 'symbol', 'baseMetadataURI', 'forwarderRegistry'],
+    ctorArguments: ['forwarderRegistry'],
     metaTxSupport: true,
   },
   diamond: {
@@ -27,14 +23,6 @@ const config = {
         name: 'ERC721Facet',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initERC721Storage'},
-      },
-      {
-        name: 'ERC721TokenMetadataWithBaseURIFacet',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC721MetadataWithBaseURIStorage',
-          arguments: ['name', 'symbol', 'baseMetadataURI'],
-        },
       },
       {
         name: 'ERC721BurnableFacet',
@@ -58,17 +46,11 @@ const config = {
     forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
-    name,
-    symbol,
-    baseMetadataURI,
   },
 };
 
 runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
   const implementation = {
-    name,
-    symbol,
-    baseMetadataURI,
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',
       SelfApproval: 'ERC721: self-approval',
@@ -88,7 +70,6 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
     },
     features: {
       ERC721MintableOnce: true,
-      BaseMetadataURI: true,
     },
     interfaces: {
       ERC721Mintable: true,
@@ -112,7 +93,7 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
       },
     },
     deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol, baseMetadataURI});
+      const contract = await deployFn();
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },

@@ -61,10 +61,7 @@ contract ForwarderRegistry is IERC2771, IForwarderRegistry {
     function approveForwarder(address forwarder, bool approved) external {
         address signer = msg.sender;
         Forwarder storage forwarderData = _forwarders[signer][forwarder];
-        uint256 nonce = uint256(forwarderData.nonce);
-        forwarderData.approved = approved;
-        forwarderData.nonce = uint248(nonce + 1);
-        emit ForwarderApproved(signer, forwarder, approved, nonce);
+        _approveForwarder(forwarderData, signer, forwarder, approved, forwarderData.nonce);
     }
 
     /// @notice Approves or disapproves a forwarder using EIP-2771 (msg.sender is the forwarder and the approval signer is appended to the calldata).
@@ -76,7 +73,14 @@ contract ForwarderRegistry is IERC2771, IForwarderRegistry {
         bytes calldata signature,
         SignatureType signatureType
     ) external {
-        _approveForwarderWithSignature(ERC2771Data.msgSender(), msg.sender, approved, signature, signatureType);
+        address signer = ERC2771Data.msgSender();
+        address forwarder = msg.sender;
+
+        Forwarder storage forwarderData = _forwarders[signer][forwarder];
+        uint256 nonce = uint256(forwarderData.nonce);
+
+        _requireValidSignature(signer, forwarder, approved, nonce, signature, signatureType);
+        _approveForwarder(forwarderData, signer, forwarder, approved, nonce);
     }
 
     /// @notice Forwards the meta-transaction (assuming the caller has been approved by the signer as a forwarder).
@@ -99,7 +103,14 @@ contract ForwarderRegistry is IERC2771, IForwarderRegistry {
         bytes calldata data
     ) external payable {
         address signer = ERC2771Data.msgSender();
-        _approveForwarderWithSignature(signer, msg.sender, true, signature, signatureType);
+        address forwarder = msg.sender;
+
+        Forwarder storage forwarderData = _forwarders[signer][forwarder];
+        uint256 nonce = uint256(forwarderData.nonce);
+
+        _requireValidSignature(signer, forwarder, true, nonce, signature, signatureType);
+        _approveForwarder(forwarderData, signer, forwarder, true, nonce);
+
         target.functionCallWithValue(abi.encodePacked(data, signer), msg.value);
     }
 
@@ -163,20 +174,17 @@ contract ForwarderRegistry is IERC2771, IForwarderRegistry {
         }
     }
 
-    function _approveForwarderWithSignature(
+    function _approveForwarder(
+        Forwarder storage forwarderData,
         address signer,
         address forwarder,
         bool approved,
-        bytes memory signature,
-        SignatureType signatureType
+        uint256 nonce
     ) internal {
-        Forwarder storage forwarderData = _forwarders[signer][forwarder];
-        uint256 nonce = uint256(forwarderData.nonce);
-
-        _requireValidSignature(signer, forwarder, approved, nonce, signature, signatureType);
-
         forwarderData.approved = approved;
-        forwarderData.nonce = uint248(nonce + 1);
+        unchecked {
+            forwarderData.nonce = uint248(nonce + 1);
+        }
         emit ForwarderApproved(signer, forwarder, approved, nonce);
     }
 

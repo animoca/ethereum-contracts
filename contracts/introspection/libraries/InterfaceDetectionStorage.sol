@@ -9,8 +9,9 @@ library InterfaceDetectionStorage {
         mapping(bytes4 => bool) supportedInterfaces;
     }
 
-    bytes32 public constant INTERFACEDETECTION_STORAGE_POSITION =
-        bytes32(uint256(keccak256("animoca.core.introspection.InterfaceDetection.storage")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.introspection.InterfaceDetection.storage")) - 1);
+
+    bytes4 internal constant ILLEGAL_INTERFACE_ID = 0xffffffff;
 
     /// @notice Sets or unsets an ERC165 interface.
     /// @dev Reverts if `interfaceId` is `0xffffffff`.
@@ -21,7 +22,7 @@ library InterfaceDetectionStorage {
         bytes4 interfaceId,
         bool supported
     ) internal {
-        require(interfaceId != 0xffffffff, "InterfaceDetection: wrong value");
+        require(interfaceId != ILLEGAL_INTERFACE_ID, "InterfaceDetection: wrong value");
         s.supportedInterfaces[interfaceId] = supported;
     }
 
@@ -30,7 +31,7 @@ library InterfaceDetectionStorage {
     /// @param interfaceId The interface identifier to test.
     /// @return supported True if the interface is supported, false if `interfaceId` is `0xffffffff` or if the interface is not supported.
     function supportsInterface(Layout storage s, bytes4 interfaceId) internal view returns (bool supported) {
-        if (interfaceId == 0xffffffff) {
+        if (interfaceId == ILLEGAL_INTERFACE_ID) {
             return false;
         }
         if (interfaceId == type(IERC165).interfaceId) {
@@ -40,7 +41,7 @@ library InterfaceDetectionStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = INTERFACEDETECTION_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

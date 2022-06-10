@@ -10,9 +10,9 @@ import {ContractOwnership} from "../access/ContractOwnership.sol";
 abstract contract Pause is PauseBase, ContractOwnership {
     using PauseStorage for PauseStorage.Layout;
 
-    /// @notice Initializes the storage with an initial paused state.
+    /// @notice Initializes the storage with an initial pause state.
     /// @dev Emits a {Paused} event if `isPaused` is true.
-    /// @param isPaused the initial pause state.
+    /// @param isPaused The initial pause state.
     constructor(bool isPaused) {
         PauseStorage.layout().constructorInit(isPaused);
     }

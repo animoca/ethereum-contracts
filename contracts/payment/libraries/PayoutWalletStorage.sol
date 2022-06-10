@@ -10,12 +10,12 @@ library PayoutWalletStorage {
         address payable wallet;
     }
 
-    bytes32 public constant PAYOUTWALLET_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.storage")) - 1);
-    bytes32 public constant PAYOUTWALLET_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.payment.PayoutWallet.phase")) - 1);
 
     event PayoutWalletSet(address payoutWallet);
 
-    /// @notice Initializes the storage with an initial payout wallet.
+    /// @notice Initializes the storage with an initial payout wallet (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
@@ -24,20 +24,20 @@ library PayoutWalletStorage {
         s.setPayoutWallet(initialPayoutWallet);
     }
 
-    /// @notice Initializes the storage with an initial payout wallet.
-    /// @notice Sets the payout wallet storage version to `1`.
+    /// @notice Initializes the storage with an initial payout wallet (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the payout wallet storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Reverts if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function proxyInit(Layout storage s, address payable initialPayoutWallet) internal {
-        ProxyInitialization.setPhase(PAYOUTWALLET_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.setPayoutWallet(initialPayoutWallet);
     }
 
     /// @notice Sets the payout wallet.
-    /// @dev Reverts if `payoutWallet_` is the zero address.
+    /// @dev Reverts if `newPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param newPayoutWallet The payout wallet.
     function setPayoutWallet(Layout storage s, address payable newPayoutWallet) internal {
@@ -53,7 +53,7 @@ library PayoutWalletStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = PAYOUTWALLET_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

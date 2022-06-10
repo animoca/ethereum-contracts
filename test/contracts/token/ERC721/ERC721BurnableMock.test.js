@@ -29,15 +29,14 @@ const config = {
           method: 'initERC721Storage',
           arguments: [],
           adminProtected: true,
-          phaseProtected: true,
         },
         metaTxSupport: true,
       },
       {
-        name: 'ERC721TokenMetadataWithBaseURIFacetMock',
+        name: 'ERC721MetadataWithBaseURIFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
-          method: 'initERC721MetadataWithBaseURIStorage',
+          method: 'initERC721MetadataStorage',
           arguments: ['name', 'symbol', 'baseMetadataURI'],
           adminProtected: true,
           phaseProtected: true,

@@ -13,7 +13,6 @@
 - Renamed `Pausable` contracts to `Pause`.
 - Renamed `StorageVersion` to `ProxyInitialization` and `setVersion` to `setPhase`.
 - Used `animoca.core.` convention for storage slots.
-- Normalised value of `PROXYADMIN_VERSION_SLOT` to follow convention.
 
 #### Tools
 

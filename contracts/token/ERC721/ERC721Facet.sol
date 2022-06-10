@@ -16,14 +16,11 @@ contract ERC721Facet is ERC721Base, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initializes the storage.
-    /// @notice Sets the ERC721 storage version to `1`.
     /// @notice Marks the following ERC165 interfaces as supported: ERC721.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the ERC721 storage is already initialized to version `1` or above.
     function initERC721Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC721Storage.proxyInit();
+        ERC721Storage.init();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

@@ -13,8 +13,8 @@ abstract contract Checkpoints is CheckpointsBase, ContractOwnership {
     /// @notice Initializes the storage with a list of initial checkpoints.
     /// @dev Reverts if `checkpointIds` and `timestamps` have different lengths.
     /// @dev Emits a {CheckpointSet} event for each timestamp set with a non-zero value.
-    /// @param checkpointIds the checkpoint identifiers.
-    /// @param timestamps the checkpoint timestamps.
+    /// @param checkpointIds The checkpoint identifiers.
+    /// @param timestamps The checkpoint timestamps.
     constructor(bytes32[] memory checkpointIds, uint256[] memory timestamps) {
         CheckpointsStorage.layout().constructorInit(checkpointIds, timestamps);
     }

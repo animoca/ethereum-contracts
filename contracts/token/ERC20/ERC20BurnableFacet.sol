@@ -2,9 +2,8 @@
 pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {IERC20Burnable} from "./interfaces/IERC20Burnable.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC20Storage} from "./libraries/ERC20Storage.sol";
 import {ERC20BurnableBase} from "./ERC20BurnableBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
@@ -14,7 +13,6 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract ERC20BurnableFacet is ERC20BurnableBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
@@ -22,7 +20,7 @@ contract ERC20BurnableFacet is ERC20BurnableBase, ForwarderRegistryContextBase {
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC20BurnableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Burnable).interfaceId, true);
+        ERC20Storage.initERC20Burnable();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

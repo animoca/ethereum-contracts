@@ -18,27 +18,14 @@ library ERC20PermitStorage {
         mapping(address => uint256) accountNonces;
     }
 
-    bytes32 public constant ERC20PERMIT_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Permit.storage")) - 1);
-    bytes32 public constant ERC20PERMIT_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Permit.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Permit.storage")) - 1);
 
     // 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9
     bytes32 internal constant PERMIT_TYPEHASH = keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
-    /// @notice Initializes the storage.
-    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
-    function constructorInit(Layout storage) internal {
+    function init() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Permit).interfaceId, true);
-    }
-
-    /// @notice Initializes the storage.
-    /// @notice Sets the ERC20Permit storage version to `1`.
-    /// @notice Marks the following ERC165 interface(s) as supported: ERC20Permit.
-    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the ERC20Permit storage is already initialized to version `1` or above.
-    function proxyInit(Layout storage s) internal {
-        ProxyInitialization.setPhase(ERC20PERMIT_VERSION_SLOT, 1);
-        s.constructorInit();
     }
 
     function permit(
@@ -53,10 +40,12 @@ library ERC20PermitStorage {
     ) internal {
         require(owner != address(0), "ERC20: zero address owner");
         require(block.timestamp <= deadline, "ERC20: expired permit");
-        bytes32 hashStruct = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, st.accountNonces[owner]++, deadline));
-        bytes32 hash = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), hashStruct));
-        address signer = ecrecover(hash, v, r, s);
-        require(signer == owner, "ERC20: invalid permit");
+        unchecked {
+            bytes32 hashStruct = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, st.accountNonces[owner]++, deadline));
+            bytes32 hash = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), hashStruct));
+            address signer = ecrecover(hash, v, r, s);
+            require(signer == owner, "ERC20: invalid permit");
+        }
         ERC20Storage.layout().approve(owner, spender, value);
     }
 
@@ -83,7 +72,7 @@ library ERC20PermitStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC20PERMIT_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

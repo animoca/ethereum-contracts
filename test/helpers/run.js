@@ -64,7 +64,7 @@ function runBehaviorTests(name, config, behaviorFn) {
           it('__msgData()', async function () {
             const ctorArguments =
               config.immutable.ctorArguments !== undefined ? config.immutable.ctorArguments.map((arg) => this.defaultArguments[arg]) : [];
-            const contract = await deployContract(config.immutable.name, ctorArguments);
+            const contract = await deployContract(config.immutable.name, ...ctorArguments);
             try {
               await contract.__msgData();
             } catch (e) {}
@@ -110,7 +110,7 @@ function runBehaviorTests(name, config, behaviorFn) {
             if (facet.metaTxSupport) {
               it('__msgData()', async function () {
                 const ctorArguments = facet.ctorArguments !== undefined ? facet.ctorArguments.map((arg) => this.defaultArguments[arg]) : [];
-                const contract = await deployContract(facet.name, ctorArguments);
+                const contract = await deployContract(facet.name, ...ctorArguments);
                 try {
                   await contract.__msgData();
                 } catch (e) {}

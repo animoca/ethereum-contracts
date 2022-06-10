@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.14;
+pragma solidity ^0.8.8;
 
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
@@ -14,23 +14,38 @@ library ERC721ContractMetadataStorage {
         string tokenSymbol;
     }
 
-    bytes32 public constant ERC721CONTRACTMETADATA_STORAGE_POSITION =
-        bytes32(uint256(keccak256("animoca.token.ERC721.ERC721ContractMetadata.storage")) - 1);
-    bytes32 public constant ERC721CONTRACTMETADATA_VERSION_SLOT =
-        bytes32(uint256(keccak256("animoca.token.ERC721.ERC712ContractMetadata.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC721ContractMetadata.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC712ContractMetadata.phase")) - 1);
 
-    /// @notice Initializes the storage with a name and symbol.
-    /// @dev Note: This function should be called by the init function of an ERC721 token metadata strategy library.
-    /// @dev Note: If called by a `proxyInit` function, should perform `ProxyInitialization.setPhase(ERC721CONTRACTMETADATA_VERSION_SLOT, 1)`.
+    /// @notice Initializes the storage with a name and symbol (immutable version).
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
-    function init(
+    function constructorInit(
         Layout storage s,
         string memory tokenName,
         string memory tokenSymbol
     ) internal {
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
+    }
+
+    /// @notice Initializes the storage with a name and symbol (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    function proxyInit(
+        Layout storage s,
+        string memory tokenName,
+        string memory tokenSymbol
+    ) internal {
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
+        s.constructorInit(tokenName, tokenSymbol);
     }
 
     function name(Layout storage s) internal view returns (string memory) {
@@ -42,7 +57,7 @@ library ERC721ContractMetadataStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC721CONTRACTMETADATA_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

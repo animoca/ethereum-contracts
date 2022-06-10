@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
-const {deployForwarderRegistry} = require('../../helpers/metatx');
 const {loadFixture} = require('../../helpers/fixtures');
+const {deployContract} = require('../../helpers/contract');
 
 const config = {
   immutable: {name: 'TokenRecoveryMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
@@ -34,16 +34,13 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
   const fixture = async function () {
     this.contract = await deployFn();
     await deployer.sendTransaction({to: this.contract.address, value: ethers.BigNumber.from('1000')});
-    const forwarderRegistry = await deployForwarderRegistry();
-    const ERC20 = await ethers.getContractFactory('ERC20Mock');
-    this.erc20 = await ERC20.deploy([this.contract.address], ['1000'], '', '', '1', '', forwarderRegistry.address);
-    await this.erc20.deployed();
-    const ERC721 = await ethers.getContractFactory('ERC721PresetMinterPauserAutoId');
-    this.erc721 = await ERC721.deploy('test', 'test', 'test');
-    await this.erc721.deployed();
-    await this.erc721.mint(this.contract.address); // tokenId 0
-    await this.erc721.mint(this.contract.address); // tokenId 1
-    await this.erc721.mint(this.contract.address); // tokenId 2
+    const forwarderRegistryAddress = await getForwarderRegistryAddress();
+    this.erc20 = await deployContract('ERC20Mock', [this.contract.address], ['1000'], '', '', '1', '', forwarderRegistryAddress);
+    this.erc721 = await deployContract('ERC721Mock', '', '', '', forwarderRegistryAddress);
+    await this.erc721.grantRole(await this.erc721.MINTER_ROLE(), deployer.address);
+    await this.erc721.mint(this.contract.address, 0);
+    await this.erc721.mint(this.contract.address, 1);
+    await this.erc721.mint(this.contract.address, 2);
   };
 
   beforeEach(async function () {
@@ -119,7 +116,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       beforeEach(async function () {
         this.recipients = [deployer.address, other.address, other.address];
         this.contracts = [this.erc721.address, this.erc721.address, this.erc721.address];
-        this.tokens = ['0', '1', '2'];
+        this.tokens = [0, 1, 2];
         this.receipt = await this.contract.recoverERC721s(this.recipients, this.contracts, this.tokens);
       });
 

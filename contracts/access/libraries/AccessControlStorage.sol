@@ -11,7 +11,7 @@ library AccessControlStorage {
         mapping(bytes32 => mapping(address => bool)) roles;
     }
 
-    bytes32 public constant ACCESSCONTROL_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
 
     event RoleGranted(bytes32 role, address account, address operator);
     event RoleRevoked(bytes32 role, address account, address operator);
@@ -94,7 +94,7 @@ library AccessControlStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ACCESSCONTROL_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

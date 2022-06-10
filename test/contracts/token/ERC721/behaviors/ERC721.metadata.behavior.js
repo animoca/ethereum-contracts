@@ -111,7 +111,7 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
         });
 
         it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
-          await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.InconsistentArrays);
+          await expect(this.token.batchSetTokenURI([nft1, nft2], ['uri1'])).to.be.revertedWith(revertMessages.MetadataInconsistentArrays);
         });
 
         it('sets the URIs for the tokens', async function () {

@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.14;
+pragma solidity ^0.8.8;
 
-import {IERC721Mintable} from "./interfaces/IERC721Mintable.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC721Storage} from "./libraries/ERC721Storage.sol";
 import {ERC721MintableOnceBase} from "./ERC721MintableOnceBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, custom extension: MintableOnce (immutable version)
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation
 abstract contract ERC721MintableOnce is ERC721MintableOnceBase, AccessControl {
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
-
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
     constructor() {
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
+        ERC721Storage.initERC721Mintable();
     }
 }

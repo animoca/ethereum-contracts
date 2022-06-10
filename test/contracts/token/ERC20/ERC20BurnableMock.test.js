@@ -44,7 +44,7 @@ const config = {
       {
         name: 'ERC20PermitFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20PermitStorage', adminProtected: true, phaseProtected: true},
+        init: {method: 'initERC20PermitStorage', adminProtected: true},
         metaTxSupport: true,
       },
       {

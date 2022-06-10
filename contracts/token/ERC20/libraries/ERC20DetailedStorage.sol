@@ -15,43 +15,43 @@ library ERC20DetailedStorage {
         uint8 tokenDecimals;
     }
 
-    bytes32 public constant ERC20DETAILED_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.storage")) - 1);
-    bytes32 public constant ERC20DETAILED_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20Detailed.phase")) - 1);
 
-    /// @notice Initializes the storage with the token details.
+    /// @notice Initializes the storage with the token details (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    /// @param name_ The token name.
-    /// @param symbol_ The token symbol.
-    /// @param decimals_ The token decimals.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    /// @param tokenDecimals The token decimals.
     function constructorInit(
         Layout storage s,
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals
     ) internal {
-        s.tokenName = name_;
-        s.tokenSymbol = symbol_;
-        s.tokenDecimals = decimals_;
+        s.tokenName = tokenName;
+        s.tokenSymbol = tokenSymbol;
+        s.tokenDecimals = tokenDecimals;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Detailed).interfaceId, true);
     }
 
-    /// @notice Initializes the storage with the token details.
-    /// @notice Sets the ERC20Detailed storage version to `1`.
+    /// @notice Initializes the storage with the token details (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the ERC20Detailed storage is already initialized to version `1` or above.
-    /// @param name_ The token name.
-    /// @param symbol_ The token symbol.
-    /// @param decimals_ The token decimals.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @param tokenName The token name.
+    /// @param tokenSymbol The token symbol.
+    /// @param tokenDecimals The token decimals.
     function proxyInit(
         Layout storage s,
-        string memory name_,
-        string memory symbol_,
-        uint8 decimals_
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint8 tokenDecimals
     ) internal {
-        ProxyInitialization.setPhase(ERC20DETAILED_VERSION_SLOT, 1);
-        s.constructorInit(name_, symbol_, decimals_);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
+        s.constructorInit(tokenName, tokenSymbol, tokenDecimals);
     }
 
     function name(Layout storage s) internal view returns (string memory) {
@@ -67,7 +67,7 @@ library ERC20DetailedStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = ERC20DETAILED_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }

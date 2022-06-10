@@ -2,6 +2,7 @@
 pragma solidity 0.8.14;
 
 import {IERC20Receiver} from "./../../../token/ERC20/interfaces/IERC20Receiver.sol";
+import {ERC20Storage} from "./../../../token/ERC20/libraries/ERC20Storage.sol";
 import {ERC20Receiver} from "./../../../token/ERC20/ERC20Receiver.sol";
 
 /// @title ERC20 Receiver Mock.
@@ -28,7 +29,7 @@ contract ERC20ReceiverMock is ERC20Receiver {
         require(msg.sender == _tokenAddress, "ERC20Receiver: wrong token");
         if (_accept) {
             emit ERC20Received(sender, from, value, data);
-            return _ERC20_RECEIVED;
+            return ERC20Storage.ERC20_RECEIVED;
         } else {
             return 0x0;
         }

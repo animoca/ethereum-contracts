@@ -2,9 +2,8 @@
 pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
-import {IERC20BatchTransfers} from "./interfaces/IERC20BatchTransfers.sol";
 import {ProxyAdminStorage} from "./../../proxy/libraries/ProxyAdminStorage.sol";
-import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
+import {ERC20Storage} from "./libraries/ERC20Storage.sol";
 import {ERC20BatchTransfersBase} from "./ERC20BatchTransfersBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
@@ -14,7 +13,6 @@ import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryCont
 /// @dev Note: This facet depends on {ProxyAdminFacet} and {InterfaceDetectionFacet}.
 contract ERC20BatchTransfersFacet is ERC20BatchTransfersBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
-    using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
@@ -22,7 +20,7 @@ contract ERC20BatchTransfersFacet is ERC20BatchTransfersBase, ForwarderRegistryC
     /// @dev Reverts if the sender is not the proxy admin.
     function initERC20BatchTransfersStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20BatchTransfers).interfaceId, true);
+        ERC20Storage.initERC20BatchTransfers();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

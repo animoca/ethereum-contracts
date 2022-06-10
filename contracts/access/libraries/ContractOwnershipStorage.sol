@@ -13,12 +13,12 @@ library ContractOwnershipStorage {
         address contractOwner;
     }
 
-    bytes32 public constant CONTRACTOWNERSHIP_STORAGE_POSITION = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.storage")) - 1);
-    bytes32 public constant CONTRACTOWNERSHIP_VERSION_SLOT = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.version")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.phase")) - 1);
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    /// @notice Initializes the storage with an initial contract owner.
+    /// @notice Initializes the storage with an initial contract owner (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
@@ -31,15 +31,15 @@ library ContractOwnershipStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC173).interfaceId, true);
     }
 
-    /// @notice Initializes the storage with an initial contract owner.
-    /// @notice Sets the ownership storage version to `1`.
+    /// @notice Initializes the storage with an initial contract owner (proxied version).
+    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the ownership storage is already initialized to version `1` or above.
+    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
     /// @param initialOwner The initial contract owner.
     function proxyInit(Layout storage s, address initialOwner) internal {
-        ProxyInitialization.setPhase(CONTRACTOWNERSHIP_VERSION_SLOT, 1);
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(initialOwner);
     }
 
@@ -74,7 +74,7 @@ library ContractOwnershipStorage {
     }
 
     function layout() internal pure returns (Layout storage s) {
-        bytes32 position = CONTRACTOWNERSHIP_STORAGE_POSITION;
+        bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
             s.slot := position
         }
