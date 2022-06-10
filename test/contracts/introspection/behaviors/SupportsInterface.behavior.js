@@ -1,3 +1,6 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
+
 function makeInterfaceId(interfaceName) {
   const artifact = artifacts.readArtifactSync(interfaceName);
   const interface = new ethers.utils.Interface(artifact.abi);

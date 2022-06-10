@@ -1,4 +1,7 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {loadFixture} = require('../../../helpers/fixtures');
+const {deployContract} = require('../../../helpers/contract');
 
 describe('ERC20Wrapper', function () {
   let deployer;
@@ -8,9 +11,7 @@ describe('ERC20Wrapper', function () {
   });
 
   const fixture = async function () {
-    const ERC20Wrapper = await ethers.getContractFactory('ERC20WrapperMock');
-    this.contract = await ERC20Wrapper.deploy();
-    await this.contract.deployed();
+    this.contract = await deployContract('ERC20WrapperMock');
   };
 
   beforeEach(async function () {

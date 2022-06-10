@@ -1,7 +1,10 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {ZeroAddress, EmptyByte} = require('../../../src/constants');
+const {getForwarderRegistryAddress} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('../../helpers/diamond');
-const {getForwarderRegistryAddress} = require('../../helpers/run');
+const {deployContract} = require('../../helpers/contract');
 const {shouldSupportInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const EmptyInit = [ZeroAddress, EmptyByte];
@@ -51,9 +54,7 @@ describe('Diamond', function () {
     );
     this.contract = deployments.diamond;
     this.facets = deployments.facets;
-    const Facet = await ethers.getContractFactory('FacetMock');
-    this.facet = await Facet.deploy();
-    await this.facet.deployed();
+    this.facet = await deployContract('FacetMock');
   };
 
   beforeEach(async function () {
@@ -384,9 +385,7 @@ describe('Diamond', function () {
         context('when successful (full facet replacement)', function () {
           beforeEach(async function () {
             await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
-            const Facet = await ethers.getContractFactory('FacetMock');
-            this.newFacet = await Facet.deploy();
-            await this.newFacet.deployed();
+            this.newFacet = await deployContract('FacetMock');
             this.cuts = [[this.newFacet.address, FacetCutAction.Replace, getSelectors(this.newFacet)]];
             this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
           });
@@ -442,9 +441,7 @@ describe('Diamond', function () {
         context('when successful (partial facet replacement)', function () {
           beforeEach(async function () {
             await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
-            const Facet = await ethers.getContractFactory('FacetMock');
-            this.newFacet = await Facet.deploy();
-            await this.newFacet.deployed();
+            this.newFacet = await deployContract('FacetMock');
             this.replacedSelectors = getSelectors(this.newFacet, (el) => el.name !== 'doSomething');
             this.cuts = [[this.newFacet.address, FacetCutAction.Replace, this.replacedSelectors]];
             this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
@@ -586,9 +583,7 @@ describe('Diamond', function () {
 
 describe('Facet', function () {
   it('calls all the empty functions (for code coverage)', async function () {
-    const Facet = await ethers.getContractFactory('FacetMock');
-    const facet = await Facet.deploy();
-    await facet.deployed();
+    const facet = await deployContract('FacetMock');
 
     await facet.a();
     await facet.b();

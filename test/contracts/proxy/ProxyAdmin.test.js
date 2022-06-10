@@ -1,4 +1,5 @@
 const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {ZeroAddress, ZeroBytes32} = require('../../../src/constants');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');

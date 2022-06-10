@@ -1,3 +1,5 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {makeInterfaceId, shouldSupportInterfaces} = require('./behaviors/SupportsInterface.behavior');

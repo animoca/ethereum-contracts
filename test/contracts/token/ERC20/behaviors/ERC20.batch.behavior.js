@@ -1,3 +1,5 @@
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 

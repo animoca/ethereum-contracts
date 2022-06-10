@@ -1,8 +1,10 @@
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployForwarderRegistry} = require('../../../../helpers/metatx');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-
+const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
+const {loadFixture} = require('../../../../helpers/fixtures');
+const {deployContract} = require('../../../../helpers/contract');
+const {getForwarderRegistryAddress} = require('../../../../helpers/run');
+const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Safe(implementation) {
   const {features, revertMessages, deploy} = implementation;
@@ -24,17 +26,10 @@ function behavesLikeERC20Safe(implementation) {
       this.contract = (await deploy([owner.address], [initialSupply], deployer)).connect(owner);
       await this.contract.approve(spender.address, initialAllowance);
       await this.contract.approve(maxSpender.address, MaxUInt256);
-      const forwarderRegistry = await deployForwarderRegistry();
-      const ERC20 = await ethers.getContractFactory('ERC20Mock');
-      this.nonReceiver = await ERC20.deploy([], [], '', '', '1', '', forwarderRegistry.address);
-      await this.nonReceiver.deployed();
-      const ERC20Receiver = await ethers.getContractFactory('ERC20ReceiverMock');
-      this.receiver = await ERC20Receiver.deploy(true, this.contract.address);
-      await this.receiver.deployed();
-      this.refusingReceiver = await ERC20Receiver.deploy(false, this.contract.address);
-      await this.refusingReceiver.deployed();
-      this.wrongTokenReceiver = await ERC20Receiver.deploy(false, ZeroAddress);
-      await this.wrongTokenReceiver.deployed();
+      this.nonReceiver = await deployContract('ERC20Mock', [], [], '', '', '1', '', await getForwarderRegistryAddress());
+      this.receiver = await deployContract('ERC20ReceiverMock', true, this.contract.address);
+      this.refusingReceiver = await deployContract('ERC20ReceiverMock', false, this.contract.address);
+      this.wrongTokenReceiver = await deployContract('ERC20ReceiverMock', false, ZeroAddress);
     };
 
     beforeEach(async function () {
