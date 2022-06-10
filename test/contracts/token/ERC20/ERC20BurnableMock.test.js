@@ -94,11 +94,10 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
     tokenURI,
     revertMessages: {
       // ERC20
-      ApproveToZero: 'ERC20: zero address spender',
+      ApproveToZero: 'ERC20: approval to address(0)',
       TransferExceedsBalance: 'ERC20: insufficient balance',
-      TransferToZero: 'ERC20: to zero address',
+      TransferToZero: 'ERC20: transfer to address(0)',
       TransferExceedsAllowance: 'ERC20: insufficient allowance',
-      TransferFromZero: 'ERC20: insufficient balance',
       InconsistentArrays: 'ERC20: inconsistent arrays',
       SupplyOverflow: 'ERC20: supply overflow',
 
@@ -108,18 +107,17 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
 
       // ERC20BatchTransfers
       BatchTransferValuesOverflow: 'ERC20: values overflow',
-      BatchTransferFromZero: 'ERC20: insufficient balance',
 
       // ERC20SafeTransfers
-      TransferRefused: 'ERC20: transfer refused',
+      SafeTransferRejected: 'ERC20: safe transfer rejected',
 
       // ERC2612
-      PermitFromZero: 'ERC20: zero address owner',
+      PermitFromZero: 'ERC20: permit from address(0)',
       PermitExpired: 'ERC20: expired permit',
       PermitInvalid: 'ERC20: invalid permit',
 
       // ERC20Mintable
-      MintToZero: 'ERC20: mint to zero',
+      MintToZero: 'ERC20: mint to address(0)',
       BatchMintValuesOverflow: 'ERC20: values overflow',
 
       // ERC20Burnable

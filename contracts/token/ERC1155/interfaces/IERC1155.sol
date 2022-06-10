@@ -17,7 +17,7 @@ interface IERC1155 {
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if the sender is not `from` and has not been approved by `from`.
     /// @dev Reverts if `from` has an insufficient balance.
-    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails or is refused.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
     /// @dev Emits a {TransferSingle} event.
     /// @param from Current token owner.
     /// @param to Address of the new token owner.
@@ -37,7 +37,7 @@ interface IERC1155 {
     /// @dev Reverts if `ids` and `values` have different lengths.
     /// @dev Reverts if the sender is not `from` and has not been approved by `from`.
     /// @dev Reverts if `from` has an insufficient balance for any of `ids`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155BatchReceived} fails or is refused.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155BatchReceived} fails, reverts or is rejected.
     /// @dev Emits a {TransferBatch} event.
     /// @param from Current tokens owner.
     /// @param to Address of the new tokens owner.

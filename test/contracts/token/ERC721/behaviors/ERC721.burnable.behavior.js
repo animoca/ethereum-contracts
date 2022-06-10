@@ -68,6 +68,32 @@ function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages
       await loadFixture(fixture, this);
     });
 
+    const shouldBeMintableAgain = function (ids) {
+      ids = Array.isArray(ids) ? ids : [ids];
+      it('should be mintable again, using mint', async function () {
+        if (mint_ERC721 === undefined) {
+          return;
+        }
+        for (const id of ids) {
+          await mint_ERC721(this.token, owner.address, id, deployer);
+        }
+      });
+      it('[should be mintable again, using batchMint', async function () {
+        if (batchMint_ERC721 === undefined) {
+          return;
+        }
+        await batchMint_ERC721(this.token, owner.address, ids, deployer);
+      });
+      it('should be mintable again, using safeMint', async function () {
+        if (safeMint_ERC721 === undefined) {
+          return;
+        }
+        for (const id of ids) {
+          await safeMint_ERC721(this.token, owner.address, id, 0x0, deployer);
+        }
+      });
+    };
+
     const shouldNotBeMintableAgain = function (ids) {
       ids = Array.isArray(ids) ? ids : [ids];
       it('[ERC721MintableOnce] should not be mintable again, using mint', async function () {
@@ -126,8 +152,12 @@ function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages
         });
         burnWasSuccessful(ids, owner);
 
-        if (features.ERC721MintableOnce && ids.length > 0) {
-          shouldNotBeMintableAgain(ids);
+        if (ids.length > 0) {
+          if (features.ERC721MintableOnce) {
+            shouldNotBeMintableAgain(ids);
+          } else {
+            shouldBeMintableAgain(ids);
+          }
         }
       });
 

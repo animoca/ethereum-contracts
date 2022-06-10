@@ -98,14 +98,14 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',
       SelfApproval: 'ERC721: self-approval',
-      SelfApprovalForAll: 'ERC721: self-approval',
-      ZeroAddress: 'ERC721: zero address',
-      TransferToZero: 'ERC721: transfer to zero',
-      MintToZero: 'ERC721: mint to zero',
-      TransferRejected: 'ERC721: transfer refused',
-      NonExistingNFT: 'ERC721: non-existing NFT',
-      NonOwnedNFT: 'ERC721: non-owned NFT',
-      ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
+      SelfApprovalForAll: 'ERC721: self-approval for all',
+      BalanceOfAddressZero: 'ERC721: balance of address(0)',
+      TransferToAddressZero: 'ERC721: transfer to address(0)',
+      MintToAddressZero: 'ERC721: mint to address(0)',
+      SafeTransferRejected: 'ERC721: safe transfer rejected',
+      NonExistingNFT: 'ERC721: non-existing token',
+      NonOwnedNFT: 'ERC721: non-owned token',
+      ExistingNFT: 'ERC721: existing token',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",

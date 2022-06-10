@@ -87,11 +87,11 @@ function behavesLikeERC721Mintable({name, deploy, revertMessages, methods}) {
         const data = '0x42';
         const signer = deployer;
         it('reverts if minted to the zero address', async function () {
-          await expect(mintFunction.call(this, {address: ZeroAddress}, nft1, data)).to.be.revertedWith(revertMessages.MintToZero);
+          await expect(mintFunction.call(this, {address: ZeroAddress}, nft1, data)).to.be.revertedWith(revertMessages.MintToAddressZero);
         });
         it('reverts if the token already exists', async function () {
           await mintFunction.call(this, owner, unknownNFT, data);
-          await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingOrBurntNFT);
+          await expect(mintFunction.call(this, owner, unknownNFT, data)).to.be.revertedWith(revertMessages.ExistingNFT);
         });
         it('reverts if sent by non-minter', async function () {
           await expect(mintFunction.call(this, owner, nft1, data, owner)).to.be.revertedWith(revertMessages.NotMinter);
@@ -102,7 +102,7 @@ function behavesLikeERC721Mintable({name, deploy, revertMessages, methods}) {
             await expect(mintFunction.call(this, this.token, nft1, data)).to.be.reverted;
           });
           it('reverts when sent to an ERC721Receiver which refuses the transfer', async function () {
-            await expect(mintFunction.call(this, this.refusingReceiver721, nft1, data)).to.be.revertedWith(revertMessages.TransferRejected);
+            await expect(mintFunction.call(this, this.refusingReceiver721, nft1, data)).to.be.revertedWith(revertMessages.SafeTransferRejected);
           });
           it('reverts when sent to an ERC721Receiver which accepts another token', async function () {
             await expect(mintFunction.call(this, this.wrongTokenReceiver721, nft1, data)).to.be.reverted;

@@ -97,7 +97,7 @@ library ERC20Storage {
         address spender,
         uint256 value
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         s.allowances[owner][spender] = value;
         emit Approval(owner, spender, value);
     }
@@ -108,7 +108,7 @@ library ERC20Storage {
         address spender,
         uint256 subtractedValue
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
 
         if (allowance_ != type(uint256).max && subtractedValue != 0) {
@@ -129,7 +129,7 @@ library ERC20Storage {
         address spender,
         uint256 addedValue
     ) internal {
-        require(spender != address(0), "ERC20: zero address spender");
+        require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
         if (addedValue != 0) {
             unchecked {
@@ -148,7 +148,7 @@ library ERC20Storage {
         address to,
         uint256 value
     ) internal {
-        require(to != address(0), "ERC20: to zero address");
+        require(to != address(0), "ERC20: transfer to address(0)");
 
         if (value != 0) {
             uint256 balance = s.balances[from];
@@ -198,7 +198,7 @@ library ERC20Storage {
         unchecked {
             for (uint256 i; i != length; ++i) {
                 address to = recipients[i];
-                require(to != address(0), "ERC20: to zero address");
+                require(to != address(0), "ERC20: transfer to address(0)");
 
                 uint256 value = values[i];
                 if (value != 0) {
@@ -242,7 +242,7 @@ library ERC20Storage {
         unchecked {
             for (uint256 i; i != length; ++i) {
                 address to = recipients[i];
-                require(to != address(0), "ERC20: to zero address");
+                require(to != address(0), "ERC20: transfer to address(0)");
 
                 uint256 value = values[i];
 
@@ -307,7 +307,7 @@ library ERC20Storage {
         address to,
         uint256 value
     ) internal {
-        require(to != address(0), "ERC20: mint to zero");
+        require(to != address(0), "ERC20: mint to address(0)");
         if (value != 0) {
             uint256 supply = s.supply;
             unchecked {
@@ -334,7 +334,7 @@ library ERC20Storage {
         unchecked {
             for (uint256 i; i != length; ++i) {
                 address to = recipients[i];
-                require(to != address(0), "ERC20: mint to zero");
+                require(to != address(0), "ERC20: mint to address(0)");
 
                 uint256 value = values[i];
                 if (value != 0) {
@@ -446,6 +446,13 @@ library ERC20Storage {
         }
     }
 
+    /// @notice Calls {IERC20Receiver-onERC20Received} on a target contract.
+    /// @dev Reverts if the call to the target fails, reverts or is rejected.
+    /// @param sender sender of the message.
+    /// @param from Previous token owner.
+    /// @param to New token owner.
+    /// @param value The value transferred.
+    /// @param data Optional data to send along with the receiver contract call.
     function _callOnERC20Received(
         address sender,
         address from,
@@ -453,6 +460,6 @@ library ERC20Storage {
         uint256 value,
         bytes memory data
     ) private {
-        require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == ERC20_RECEIVED, "ERC20: transfer refused");
+        require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == ERC20_RECEIVED, "ERC20: safe transfer rejected");
     }
 }

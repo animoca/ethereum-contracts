@@ -24,7 +24,7 @@ interface IERC721Mintable {
     /// @notice Safely mints a token.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `tokenId` already exists.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails or is refused.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits an {IERC721-Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.

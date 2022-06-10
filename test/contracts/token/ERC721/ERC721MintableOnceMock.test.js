@@ -53,16 +53,12 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
   const implementation = {
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',
-      SelfApproval: 'ERC721: self-approval',
-      SelfApprovalForAll: 'ERC721: self-approval',
-      ZeroAddress: 'ERC721: zero address',
-      TransferToZero: 'ERC721: transfer to zero',
-      MintToZero: 'ERC721: mint to zero',
-      TransferRejected: 'ERC721: transfer refused',
-      NonExistingNFT: 'ERC721: non-existing NFT',
-      NonOwnedNFT: 'ERC721: non-owned NFT',
-      ExistingOrBurntNFT: 'ERC721: existing/burnt NFT',
-      BurntNFT: 'ERC721: burnt NFT',
+      MintToAddressZero: 'ERC721: mint to address(0)',
+      SafeTransferRejected: 'ERC721: safe transfer rejected',
+      NonExistingNFT: 'ERC721: non-existing token',
+      NonOwnedNFT: 'ERC721: non-owned token',
+      ExistingNFT: 'ERC721: existing token',
+      BurntNFT: 'ERC721: burnt token',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",

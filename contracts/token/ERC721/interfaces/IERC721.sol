@@ -45,7 +45,7 @@ interface IERC721 {
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
     /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} reverts or is refused.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
@@ -61,7 +61,7 @@ interface IERC721 {
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
     /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} reverts or is refused.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
@@ -75,6 +75,7 @@ interface IERC721 {
     ) external;
 
     /// @notice Gets the balance of an address.
+    /// @dev Reverts if `owner` is the zero address.
     /// @param owner The address to query the balance of.
     /// @return balance The amount owned by the owner.
     function balanceOf(address owner) external view returns (uint256 balance);

@@ -8,7 +8,7 @@ interface IERC20SafeTransfers {
     /// @notice Transfers an amount of tokens to a recipient from the sender. If the recipient is a contract, calls `onERC20Received` on it.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if the sender does not have at least `value` of balance.
-    /// @dev Reverts if `to` is a contract and the call to `onERC20Received` reverts or is refused.
+    /// @dev Reverts if `to` is a contract and the call to `onERC20Received` fails, reverts or is rejected.
     /// @dev Emits an {IERC20-Transfer} event.
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
@@ -24,7 +24,7 @@ interface IERC20SafeTransfers {
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` does not have at least `value` of balance.
     /// @dev Reverts if the sender is not `from` and does not have at least `value` of allowance by `from`.
-    /// @dev Reverts if `to` is a contract and the call to `onERC20Received(address,address,uint256,bytes)` reverts or is refused.
+    /// @dev Reverts if `to` is a contract and the call to `onERC20Received(address,address,uint256,bytes)` fails, reverts or is rejected.
     /// @dev Emits an {IERC20-Transfer} event.
     /// @param from The account which owns the tokens to transfer.
     /// @param to The account to transfer the tokens to.

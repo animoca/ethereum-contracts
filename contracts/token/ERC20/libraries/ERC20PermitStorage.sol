@@ -38,7 +38,7 @@ library ERC20PermitStorage {
         bytes32 r,
         bytes32 s
     ) internal {
-        require(owner != address(0), "ERC20: zero address owner");
+        require(owner != address(0), "ERC20: permit from address(0)");
         require(block.timestamp <= deadline, "ERC20: expired permit");
         unchecked {
             bytes32 hashStruct = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, st.accountNonces[owner]++, deadline));

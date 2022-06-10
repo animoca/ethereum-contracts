@@ -53,7 +53,7 @@ function behavesLikeERC20Safe(implementation) {
         });
 
         it('reverts when sent to a refusing receiver contract', async function () {
-          await expect(this.contract.safeTransfer(this.refusingReceiver.address, One, data)).to.be.revertedWith(revertMessages.TransferRefused);
+          await expect(this.contract.safeTransfer(this.refusingReceiver.address, One, data)).to.be.revertedWith(revertMessages.SafeTransferRejected);
         });
 
         it('reverts when sent to a receiver contract receiving another token', async function () {
@@ -164,7 +164,7 @@ function behavesLikeERC20Safe(implementation) {
 
         it('reverts when sent to a refusing receiver contract', async function () {
           await expect(this.contract.connect(spender).safeTransferFrom(owner.address, this.refusingReceiver.address, One, data)).to.be.revertedWith(
-            revertMessages.TransferRefused
+            revertMessages.SafeTransferRejected
           );
         });
 

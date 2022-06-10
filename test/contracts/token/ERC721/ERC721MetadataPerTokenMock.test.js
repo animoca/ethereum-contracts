@@ -52,8 +52,8 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     name,
     symbol,
     revertMessages: {
-      NonExistingNFT: 'ERC721: non-existing NFT',
-      NonOwnedNFT: 'ERC721: non-owned NFT',
+      NonExistingNFT: 'ERC721: non-existing token',
+      NonOwnedNFT: 'ERC721: non-owned token',
       InconsistentArrays: 'ERC721: inconsistent arrays',
       MetadataInconsistentArrays: 'Metadata: inconsistent arrays',
       // Admin

@@ -57,7 +57,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
       context('when querying the zero address', function () {
         it('throws', async function () {
-          await expect(this.token.balanceOf(ZeroAddress)).to.be.revertedWith(revertMessages.ZeroAddress);
+          await expect(this.token.balanceOf(ZeroAddress)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
         });
       });
     });
@@ -148,7 +148,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       const shouldRevertOnPreconditions = function (transferFunction, data, safe) {
         describe('Pre-conditions', function () {
           it('reverts if transferred to the zero address', async function () {
-            await expect(transferFunction.call(this, owner, {address: ZeroAddress}, nft1, data)).to.be.revertedWith(revertMessages.TransferToZero);
+            await expect(transferFunction.call(this, owner, {address: ZeroAddress}, nft1, data)).to.be.revertedWith(
+              revertMessages.TransferToAddressZero
+            );
           });
 
           it('reverts if the token does not exist', async function () {
@@ -174,7 +176,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
             });
             it('reverts when sent to an ERC721Receiver which refuses the transfer', async function () {
               await expect(transferFunction.call(this, owner, this.refusingReceiver721, nft1, data)).to.be.revertedWith(
-                revertMessages.TransferRejected
+                revertMessages.SafeTransferRejected
               );
             });
             it('reverts when sent to an ERC721Receiver which accepts another token', async function () {
