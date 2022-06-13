@@ -215,3 +215,5 @@ yarn run-all
 ```
 
 See `package.json` for additional commands.
+
+Note: this repository uses git lfs: the module should be installed before pushing changes.
