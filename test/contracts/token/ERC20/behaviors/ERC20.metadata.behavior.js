@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Metadata(implementation) {
   const {tokenURI, deploy, features, revertMessages} = implementation;
@@ -40,7 +40,7 @@ function behavesLikeERC20Metadata(implementation) {
     });
 
     if (features.ERC165) {
-      shouldSupportInterfaces(['IERC20Metadata']);
+      supporstInterfaces(['IERC20Metadata']);
     }
   });
 }

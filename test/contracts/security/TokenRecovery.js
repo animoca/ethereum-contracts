@@ -5,7 +5,7 @@ const {loadFixture} = require('../../helpers/fixtures');
 const {deployContract} = require('../../helpers/contract');
 
 const config = {
-  immutable: {name: 'TokenRecoveryMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'TokenRecoveryMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -15,7 +15,7 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
-      {name: 'TokenRecoveryFacetMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
+      {name: 'TokenRecoveryFacetMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
     ],
   },
   defaultArguments: {

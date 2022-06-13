@@ -2,7 +2,7 @@ const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
-const {makeInterfaceId, shouldSupportInterfaces} = require('./behaviors/SupportsInterface.behavior');
+const {makeInterfaceId, supporstInterfaces} = require('./behaviors/SupportsInterface.behavior');
 
 const config = {
   immutable: {name: 'InterfaceDetectionMock'},
@@ -31,7 +31,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
       expect(await this.contract.supportsInterface('0xffffffff')).to.be.false;
     });
 
-    shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
+    supporstInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
   });
 
   describe('setSupportedInterface(bytes4,bool)', function () {
@@ -45,7 +45,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
           await this.contract.setSupportedInterface(makeInterfaceId('IERC173'), true);
         });
 
-        shouldSupportInterfaces(['IERC173']);
+        supporstInterfaces(['IERC173']);
       });
     });
 

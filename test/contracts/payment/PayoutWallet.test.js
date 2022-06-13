@@ -5,7 +5,7 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'PayoutWalletMock', ctorArguments: ['payoutWallet', 'forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'PayoutWalletMock', ctorArguments: ['payoutWallet', 'forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -19,7 +19,7 @@ const config = {
         name: 'PayoutWalletFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initPayoutWalletStorage', arguments: ['payoutWallet'], adminProtected: true, phaseProtected: true},
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },

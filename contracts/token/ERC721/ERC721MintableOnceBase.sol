@@ -40,4 +40,11 @@ abstract contract ERC721MintableOnceBase is Context, IERC721Mintable {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().safeMintOnce(_msgSender(), to, tokenId, data);
     }
+
+    /// @notice Gets whether a token was burnt.
+    /// @param tokenId The token identifier.
+    /// @return tokenWasBurnt Whether the token was burnt.
+    function wasBurnt(uint256 tokenId) external view virtual returns (bool tokenWasBurnt) {
+        return ERC721Storage.layout().wasBurnt(tokenId);
+    }
 }

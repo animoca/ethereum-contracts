@@ -4,6 +4,7 @@ pragma solidity ^0.8.8;
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
 import {IERC721Mintable} from "./../interfaces/IERC721Mintable.sol";
+import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {IERC721Burnable} from "./../interfaces/IERC721Burnable.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -25,10 +26,14 @@ library ERC721Storage {
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.token.ERC721.ERC721.storage")) - 1);
 
     bytes4 internal constant ERC721_RECEIVED = IERC721Receiver.onERC721Received.selector;
-    // Single token approval set owner's magic value
-    uint256 internal constant APPROVAL_BIT_TOKEN_OWNER_ = 1 << 160;
-    // Burnt token owner's magic value
-    uint256 internal constant BURNT_NFT_OWNER = 0xdead000000000000000000000000000000000000000000000000000000000000;
+
+    // Single token approval flag
+    // This bit is set in the owner's value to indicate that there is an approval set for this token
+    uint256 internal constant TOKEN_APPROVAL_OWNER_FLAG = 1 << 160;
+
+    // Burnt token magic value
+    // This magic number is used as the owner's value to indicate that the token has been burnt
+    uint256 internal constant BURNT_TOKEN_OWNER_VALUE = 0xdead000000000000000000000000000000000000000000000000000000000000;
 
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
@@ -49,6 +54,11 @@ library ERC721Storage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Mintable).interfaceId, true);
     }
 
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Deliverable.
+    function initERC721Deliverable() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Deliverable).interfaceId, true);
+    }
+
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Burnable.
     function initERC721Burnable() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Burnable).interfaceId, true);
@@ -61,17 +71,17 @@ library ERC721Storage {
         uint256 tokenId
     ) internal {
         uint256 owner = s.owners[tokenId];
-        require(owner != 0, "ERC721: non-existing token");
-        address ownerAddress = address(uint160(owner));
+        require(_tokenExists(owner), "ERC721: non-existing token");
+        address ownerAddress = _tokenOwner(owner);
         require(to != ownerAddress, "ERC721: self-approval");
         require(_isOperatable(s, ownerAddress, sender), "ERC721: non-approved sender");
         if (to == address(0)) {
-            if (owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) {
+            if (_tokenHasApproval(owner)) {
                 // remove the approval bit if it is present
                 s.owners[tokenId] = uint256(uint160(ownerAddress));
             }
         } else {
-            uint256 ownerWithApprovalBit = owner | APPROVAL_BIT_TOKEN_OWNER_;
+            uint256 ownerWithApprovalBit = owner | TOKEN_APPROVAL_OWNER_FLAG;
             if (owner != ownerWithApprovalBit) {
                 // add the approval bit if it is not present
                 s.owners[tokenId] = ownerWithApprovalBit;
@@ -102,10 +112,11 @@ library ERC721Storage {
         require(to != address(0), "ERC721: transfer to address(0)");
 
         uint256 owner = s.owners[tokenId];
-        require(from == address(uint160(owner)), "ERC721: non-owned token");
+        require(_tokenExists(owner), "ERC721: non-existing token");
+        require(_tokenOwner(owner) == from, "ERC721: non-owned token");
 
         if (!_isOperatable(s, from, sender)) {
-            require((owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+            require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
         }
 
         s.owners[tokenId] = uint256(uint160(to));
@@ -163,9 +174,10 @@ library ERC721Storage {
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
-                require(from == address(uint160(owner)), "ERC721: non-owned token");
+                require(_tokenExists(owner), "ERC721: non-existing token");
+                require(_tokenOwner(owner) == from, "ERC721: non-owned token");
                 if (!operatable) {
-                    require((owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+                    require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
                 }
                 s.owners[tokenId] = uint256(uint160(to));
                 emit Transfer(from, to, tokenId);
@@ -180,13 +192,14 @@ library ERC721Storage {
         }
     }
 
+    /// @dev Note: either `mint` or `mintOnce` should be used in a given contract, but not both
     function mint(
         Layout storage s,
         address to,
         uint256 tokenId
     ) internal {
         require(to != address(0), "ERC721: mint to address(0)");
-        require(uint160(s.owners[tokenId]) == 0, "ERC721: existing token");
+        require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
 
         s.owners[tokenId] = uint256(uint160(to));
 
@@ -198,6 +211,7 @@ library ERC721Storage {
         emit Transfer(address(0), to, tokenId);
     }
 
+    /// @dev Note: either `safeMint` or `safeMintOnce` should be used in a given contract, but not both
     function safeMint(
         Layout storage s,
         address sender,
@@ -211,6 +225,7 @@ library ERC721Storage {
         }
     }
 
+    /// @dev Note: either `batchMint` or `batchMintOnce` should be used in a given contract, but not both
     function batchMint(
         Layout storage s,
         address to,
@@ -222,7 +237,7 @@ library ERC721Storage {
             uint256 length = tokenIds.length;
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
-                require(uint160(s.owners[tokenId]) == 0, "ERC721: existing token");
+                require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
 
                 s.owners[tokenId] = uint256(uint160(to));
                 emit Transfer(address(0), to, tokenId);
@@ -232,6 +247,31 @@ library ERC721Storage {
         }
     }
 
+    /// @dev Note: either `deliver` or `deliverOnce` should be used in a given contract, but not both
+    function deliver(
+        Layout storage s,
+        address[] memory recipients,
+        uint256[] memory tokenIds
+    ) internal {
+        unchecked {
+            uint256 length = recipients.length;
+            require(length == tokenIds.length, "ERC721: inconsistent arrays");
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC721: mint to address(0)");
+
+                uint256 tokenId = tokenIds[i];
+                require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
+
+                s.owners[tokenId] = uint256(uint160(to));
+                ++s.balances[to];
+
+                emit Transfer(address(0), to, tokenId);
+            }
+        }
+    }
+
+    /// @dev Note: either `mint` or `mintOnce` should be used in a given contract, but not both
     function mintOnce(
         Layout storage s,
         address to,
@@ -240,8 +280,8 @@ library ERC721Storage {
         require(to != address(0), "ERC721: mint to address(0)");
 
         uint256 owner = s.owners[tokenId];
-        require(uint160(owner) == 0, "ERC721: existing token");
-        require(owner != BURNT_NFT_OWNER, "ERC721: burnt token");
+        require(!_tokenExists(owner), "ERC721: existing token");
+        require(!_tokenWasBurnt(owner), "ERC721: burnt token");
 
         s.owners[tokenId] = uint256(uint160(to));
 
@@ -253,6 +293,7 @@ library ERC721Storage {
         emit Transfer(address(0), to, tokenId);
     }
 
+    /// @dev Note: either `safeMint` or `safeMintOnce` should be used in a given contract, but not both
     function safeMintOnce(
         Layout storage s,
         address sender,
@@ -266,6 +307,7 @@ library ERC721Storage {
         }
     }
 
+    /// @dev Note: either `batchMint` or `batchMintOnce` should be used in a given contract, but not both
     function batchMintOnce(
         Layout storage s,
         address to,
@@ -278,8 +320,8 @@ library ERC721Storage {
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
-                require(uint160(owner) == 0, "ERC721: existing token");
-                require(owner != BURNT_NFT_OWNER, "ERC721: burnt token");
+                require(!_tokenExists(owner), "ERC721: existing token");
+                require(!_tokenWasBurnt(owner), "ERC721: burnt token");
 
                 s.owners[tokenId] = uint256(uint160(to));
 
@@ -290,6 +332,32 @@ library ERC721Storage {
         }
     }
 
+    /// @dev Note: either `deliver` or `deliverOnce` should be used in a given contract, but not both
+    function deliverOnce(
+        Layout storage s,
+        address[] memory recipients,
+        uint256[] memory tokenIds
+    ) internal {
+        unchecked {
+            uint256 length = recipients.length;
+            require(length == tokenIds.length, "ERC721: inconsistent arrays");
+            for (uint256 i; i != length; ++i) {
+                address to = recipients[i];
+                require(to != address(0), "ERC721: mint to address(0)");
+
+                uint256 tokenId = tokenIds[i];
+                uint256 owner = s.owners[tokenId];
+                require(!_tokenExists(owner), "ERC721: existing token");
+                require(!_tokenWasBurnt(owner), "ERC721: burnt token");
+
+                s.owners[tokenId] = uint256(uint160(to));
+                ++s.balances[to];
+
+                emit Transfer(address(0), to, tokenId);
+            }
+        }
+    }
+
     function burnFrom(
         Layout storage s,
         address sender,
@@ -297,16 +365,16 @@ library ERC721Storage {
         uint256 tokenId
     ) internal {
         uint256 owner = s.owners[tokenId];
-        require(from == address(uint160(owner)), "ERC721: non-owned token");
+        require(from == _tokenOwner(owner), "ERC721: non-owned token");
 
         if (!_isOperatable(s, from, sender)) {
-            require((owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+            require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
         }
 
-        s.owners[tokenId] = BURNT_NFT_OWNER;
+        s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
 
         unchecked {
-            // cannot underflow as balance is verified through NFT ownership
+            // cannot underflow as balance is verified through TOKEN ownership
             --s.balances[from];
         }
         emit Transfer(from, address(0), tokenId);
@@ -326,11 +394,11 @@ library ERC721Storage {
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
-                require(from == address(uint160(owner)), "ERC721: non-owned token");
+                require(from == _tokenOwner(owner), "ERC721: non-owned token");
                 if (!operatable) {
-                    require((owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+                    require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
                 }
-                s.owners[tokenId] = BURNT_NFT_OWNER;
+                s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
                 emit Transfer(from, address(0), tokenId);
             }
 
@@ -346,9 +414,9 @@ library ERC721Storage {
     }
 
     function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address) {
-        address owner = address(uint160(s.owners[tokenId]));
-        require(owner != address(0), "ERC721: non-existing token");
-        return owner;
+        uint256 owner = s.owners[tokenId];
+        require(_tokenExists(owner), "ERC721: non-existing token");
+        return _tokenOwner(owner);
     }
 
     function isApprovedForAll(
@@ -361,12 +429,16 @@ library ERC721Storage {
 
     function getApproved(Layout storage s, uint256 tokenId) internal view returns (address) {
         uint256 owner = s.owners[tokenId];
-        require(address(uint160(owner)) != address(0), "ERC721: non-existing token");
-        if (owner & APPROVAL_BIT_TOKEN_OWNER_ != 0) {
+        require(_tokenExists(owner), "ERC721: non-existing token");
+        if (_tokenHasApproval(owner)) {
             return s.approvals[tokenId];
         } else {
             return address(0);
         }
+    }
+
+    function wasBurnt(Layout storage s, uint256 tokenId) internal view returns (bool) {
+        return _tokenWasBurnt(s.owners[tokenId]);
     }
 
     function layout() internal pure returns (Layout storage s) {
@@ -403,5 +475,21 @@ library ERC721Storage {
         address sender
     ) private view returns (bool operatable) {
         return (from == sender) || s.operators[from][sender];
+    }
+
+    function _tokenOwner(uint256 owner) private pure returns (address tokenOwner) {
+        return address(uint160(owner));
+    }
+
+    function _tokenExists(uint256 owner) private pure returns (bool tokenExists) {
+        return uint160(owner) != 0;
+    }
+
+    function _tokenWasBurnt(uint256 owner) private pure returns (bool tokenWasBurnt) {
+        return owner == BURNT_TOKEN_OWNER_VALUE;
+    }
+
+    function _tokenHasApproval(uint256 owner) private pure returns (bool tokenSasApproval) {
+        return owner & TOKEN_APPROVAL_OWNER_FLAG != 0;
     }
 }

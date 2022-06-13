@@ -4,7 +4,7 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'AccessControlMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'AccessControlMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -13,7 +13,7 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
-      {name: 'AccessControlFacetMock', ctorArguments: ['forwarderRegistry'], metaTxSupport: true},
+      {name: 'AccessControlFacetMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
     ],
   },
   defaultArguments: {

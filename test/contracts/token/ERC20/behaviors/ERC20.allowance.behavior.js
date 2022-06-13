@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 const {Zero, One, Two, Three, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
@@ -38,7 +38,7 @@ function behavesLikeERC20Allowance(implementation) {
         });
       });
 
-      const shouldIncreaseAllowance = function (preApprovedAmount, amount) {
+      const increasesAllowance = function (preApprovedAmount, amount) {
         const expectedAllowance = preApprovedAmount.add(amount);
 
         beforeEach(async function () {
@@ -60,21 +60,21 @@ function behavesLikeERC20Allowance(implementation) {
 
       context('when increasing by a zero amount', function () {
         context('when there was no pre-approved allowance', function () {
-          shouldIncreaseAllowance(Zero, Zero);
+          increasesAllowance(Zero, Zero);
         });
 
         context('when there was a pre-approved allowance', function () {
-          shouldIncreaseAllowance(initialSupply, Zero);
+          increasesAllowance(initialSupply, Zero);
         });
       });
 
       context('when increasing by a non-zero amount', function () {
         context('when there was no pre-approved allowance', function () {
-          shouldIncreaseAllowance(Zero, One);
+          increasesAllowance(Zero, One);
         });
 
         context('when there was a pre-approved allowance', function () {
-          shouldIncreaseAllowance(initialSupply, One);
+          increasesAllowance(initialSupply, One);
         });
       });
     });
@@ -90,7 +90,7 @@ function behavesLikeERC20Allowance(implementation) {
         });
       });
 
-      const shouldDecreaseAllowance = function (preApprovedAmount, amount) {
+      const decreasesAllowance = function (preApprovedAmount, amount) {
         const expectedAllowance = preApprovedAmount.sub(amount);
 
         beforeEach(async function () {
@@ -112,21 +112,21 @@ function behavesLikeERC20Allowance(implementation) {
 
       context('when decreasing by a zero amount', function () {
         context('when the pre-approved allowance equals the allowance decrease', function () {
-          shouldDecreaseAllowance(Zero, Zero);
+          decreasesAllowance(Zero, Zero);
         });
 
         context('when the pre-approved allowance is greater than the allowance decrease', function () {
-          shouldDecreaseAllowance(One, Zero);
+          decreasesAllowance(One, Zero);
         });
       });
 
       context('when decreasing by a non-zero amount', function () {
         context('when the pre-approved allowance equals the allowance decrease', function () {
-          shouldDecreaseAllowance(Two, Two);
+          decreasesAllowance(Two, Two);
         });
 
         context('when the pre-approved allowance is greater than the allowance decrease', function () {
-          shouldDecreaseAllowance(Three, Two);
+          decreasesAllowance(Three, Two);
         });
       });
 
@@ -146,7 +146,7 @@ function behavesLikeERC20Allowance(implementation) {
     });
 
     if (features.ERC165) {
-      shouldSupportInterfaces(['IERC20Allowance']);
+      supporstInterfaces(['IERC20Allowance']);
     }
   });
 }

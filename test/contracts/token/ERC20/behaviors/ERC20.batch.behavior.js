@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 const {Zero, One, Two, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
@@ -93,7 +93,7 @@ function behavesLikeERC20Batch(implementation) {
         });
       };
 
-      const shouldTransferTokens = function (recipientIndexes, values) {
+      const transfersTokens = function (recipientIndexes, values) {
         beforeEach(async function () {
           this.recipientBalances = {};
           for (const toIndex of recipientIndexes) {
@@ -108,30 +108,30 @@ function behavesLikeERC20Batch(implementation) {
       };
 
       context('when transferring an empty list', function () {
-        shouldTransferTokens([], []);
+        transfersTokens([], []);
       });
 
       context('when transferring zero values', function () {
-        shouldTransferTokens([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [Zero, One, Zero]);
+        transfersTokens([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [Zero, One, Zero]);
       });
 
       context('when transferring the full balance in one transfer', function () {
-        shouldTransferTokens([AccountIndex.recipient1], [initialSupply]);
+        transfersTokens([AccountIndex.recipient1], [initialSupply]);
       });
 
       context('when transferring the full balance in several transfers', function () {
-        shouldTransferTokens([AccountIndex.recipient1, AccountIndex.recipient2], [initialSupply.sub(One), One]);
+        transfersTokens([AccountIndex.recipient1, AccountIndex.recipient2], [initialSupply.sub(One), One]);
       });
 
       context('when transferring to the same owner', function () {
-        shouldTransferTokens(
+        transfersTokens(
           [AccountIndex.recipient1, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.recipient2],
           [Zero, One, Zero, Two, One]
         );
       });
 
       context('when transferring to the same owner where each value is under the balance but cumulates to more than balance', function () {
-        shouldTransferTokens(
+        transfersTokens(
           [AccountIndex.owner, AccountIndex.owner, AccountIndex.owner, AccountIndex.owner, AccountIndex.owner],
           [initialSupply, initialSupply, initialSupply.sub(One), Zero, One]
         );
@@ -249,7 +249,7 @@ function behavesLikeERC20Batch(implementation) {
         }
       };
 
-      const shouldTransferTokens = function (recipientIndexes, values, senderIndex, withEIP717 = false) {
+      const transfersTokens = function (recipientIndexes, values, senderIndex, withEIP717 = false) {
         beforeEach(async function () {
           this.allowance = await this.contract.allowance(owner.address, accounts[senderIndex].address);
           this.recipientBalances = {};
@@ -265,35 +265,35 @@ function behavesLikeERC20Batch(implementation) {
         transferWasSuccessful(AccountIndex.owner, recipientIndexes, values, senderIndex, withEIP717);
       };
 
-      const shouldTransferTokensBySender = function (recipientIndexes, values) {
+      const transfersBySender = function (recipientIndexes, values) {
         context('when transfer started by the owner', function () {
-          shouldTransferTokens(recipientIndexes, values, AccountIndex.owner);
+          transfersTokens(recipientIndexes, values, AccountIndex.owner);
         });
 
         context('when transfer started by an approved sender', function () {
-          shouldTransferTokens(recipientIndexes, values, AccountIndex.spender);
+          transfersTokens(recipientIndexes, values, AccountIndex.spender);
         });
 
         context('when transfer started by a sender with max approval', function () {
-          shouldTransferTokens(recipientIndexes, values, AccountIndex.maxSpender, features.EIP717);
+          transfersTokens(recipientIndexes, values, AccountIndex.maxSpender, features.EIP717);
         });
       };
 
       context('when transferring an empty list', function () {
-        shouldTransferTokensBySender([], []);
+        transfersBySender([], []);
       });
 
       context('when transferring zero values', function () {
-        shouldTransferTokensBySender([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [Zero, One, Zero]);
+        transfersBySender([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [Zero, One, Zero]);
       });
 
       context('when transferring the full allowance', function () {
-        shouldTransferTokensBySender([AccountIndex.recipient1], [initialAllowance]);
-        shouldTransferTokensBySender([AccountIndex.recipient1, AccountIndex.recipient2], [initialAllowance.sub(One), One]);
+        transfersBySender([AccountIndex.recipient1], [initialAllowance]);
+        transfersBySender([AccountIndex.recipient1, AccountIndex.recipient2], [initialAllowance.sub(One), One]);
       });
 
       context('when transferring to the same owner', function () {
-        shouldTransferTokensBySender(
+        transfersBySender(
           [AccountIndex.recipient1, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.recipient2],
           [Zero, One, Zero, Two, One]
         );
@@ -301,7 +301,7 @@ function behavesLikeERC20Batch(implementation) {
     });
 
     if (features.ERC165) {
-      shouldSupportInterfaces(['IERC20BatchTransfers']);
+      supporstInterfaces(['IERC20BatchTransfers']);
     }
   });
 }

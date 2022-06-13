@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, deploy, mint, revertMessages}) {
   describe('like an ERC721Metadata', function () {
@@ -9,7 +9,7 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
 
     const nft1 = 1;
     const nft2 = 2;
-    const nonExistingNFT = 3;
+    const nonExistingToken = 3;
 
     before(async function () {
       accounts = await ethers.getSigners();
@@ -39,8 +39,8 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
     });
 
     describe('tokenURI(uint256)', function () {
-      it('reverts if the NFT does not exist', async function () {
-        await expect(this.token.tokenURI(nonExistingNFT)).to.be.revertedWith(revertMessages.NonExistingNFT);
+      it('reverts if the token does not exist', async function () {
+        await expect(this.token.tokenURI(nonExistingToken)).to.be.revertedWith(revertMessages.NonExistingToken);
       });
     });
 
@@ -86,13 +86,13 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
         });
       });
     } else {
-      describe('[IndividualTokenURIs] tokenURI(uint256)', function () {
+      describe('[MetadataPerToken] tokenURI(uint256)', function () {
         it('returns an empty string if the token URI has not been set', async function () {
           expect(await this.token.tokenURI(nft1)).to.equal('');
         });
       });
 
-      describe('[IndividualTokenURIs] setTokenURI(uint256,string)', function () {
+      describe('[MetadataPerToken] setTokenURI(uint256,string)', function () {
         it('reverts if not called by the contract owner', async function () {
           await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotContractOwner);
         });
@@ -103,7 +103,7 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
         });
       });
 
-      describe('[IndividualTokenURIs] batchSetTokenURI(uint256[],string[])', function () {
+      describe('[MetadataPerToken] batchSetTokenURI(uint256[],string[])', function () {
         it('reverts if not called by the contract owner', async function () {
           await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(
             revertMessages.NotContractOwner
@@ -121,7 +121,7 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
         });
       });
     }
-    shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
+    supporstInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
   });
 }
 
