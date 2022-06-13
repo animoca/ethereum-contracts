@@ -8,7 +8,7 @@ const config = {
   immutable: {
     name: 'CheckpointsMock',
     ctorArguments: ['checkpointIds', 'timestamps', 'forwarderRegistry'],
-    metaTxSupport: true,
+    testMsgData: true,
   },
   diamond: {
     facets: [
@@ -23,7 +23,7 @@ const config = {
         name: 'CheckpointsFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, phaseProtected: true},
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },

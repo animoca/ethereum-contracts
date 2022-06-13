@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
-import {ERC721Mintable} from "./../../../token/ERC721/ERC721Mintable.sol";
+import {ERC721Deliverable} from "./../../../token/ERC721/ERC721Deliverable.sol";
 import {ERC721BatchTransfer} from "./../../../token/ERC721/ERC721BatchTransfer.sol";
 import {ERC721MetadataWithBaseURI} from "./../../../token/ERC721/ERC721MetadataWithBaseURI.sol";
 import {ERC721SimpleMock} from "./ERC721SimpleMock.sol";
@@ -10,7 +10,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
 /// @title ERC721Mock
-contract ERC721Mock is ERC721SimpleMock, ERC721BatchTransfer, ERC721MetadataWithBaseURI {
+contract ERC721Mock is ERC721SimpleMock, ERC721Deliverable, ERC721BatchTransfer, ERC721MetadataWithBaseURI {
     constructor(
         string memory tokenName,
         string memory tokenSymbol,

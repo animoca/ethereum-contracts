@@ -4,7 +4,7 @@ const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constan
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {deployContract} = require('../../../../helpers/contract');
 const {getForwarderRegistryAddress} = require('../../../../helpers/run');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Safe(implementation) {
   const {features, revertMessages, deploy} = implementation;
@@ -95,7 +95,7 @@ function behavesLikeERC20Safe(implementation) {
         }
       };
 
-      const shouldTransferTokenByRecipient = function (value) {
+      const transfersByRecipient = function (value) {
         context('when transferring to the sender', function () {
           beforeEach(async function () {
             this.receipt = await this.contract.safeTransfer(owner.address, value, data);
@@ -119,15 +119,15 @@ function behavesLikeERC20Safe(implementation) {
       };
 
       context('when transferring a zero value', function () {
-        shouldTransferTokenByRecipient(Zero);
+        transfersByRecipient(Zero);
       });
 
       context('when transferring a non-zero value', function () {
-        shouldTransferTokenByRecipient(One);
+        transfersByRecipient(One);
       });
 
       context('when transferring the full balance', function () {
-        shouldTransferTokenByRecipient(initialSupply);
+        transfersByRecipient(initialSupply);
       });
     });
 
@@ -214,7 +214,7 @@ function behavesLikeERC20Safe(implementation) {
           }
         };
 
-        const shouldTransferTokenByRecipient = function (fromIndex, value, senderIndex, withEIP717 = false) {
+        const transfersByRecipient = function (fromIndex, value, senderIndex, withEIP717 = false) {
           context('when transferring to different recipients', function () {
             beforeEach(async function () {
               this.allowance = await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address);
@@ -254,36 +254,36 @@ function behavesLikeERC20Safe(implementation) {
           });
         };
 
-        const shouldTransferTokenBySender = function (value) {
+        const transfersBySender = function (value) {
           context('when transfer started by the owner', function () {
-            shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.owner);
+            transfersByRecipient(AccountIndex.owner, value, AccountIndex.owner);
           });
 
           context('when transfer started by an approved sender', function () {
-            shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.spender);
+            transfersByRecipient(AccountIndex.owner, value, AccountIndex.spender);
           });
 
           context('when transfer started by a sender with max approval', function () {
-            shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.maxSpender, features.EIP717);
+            transfersByRecipient(AccountIndex.owner, value, AccountIndex.maxSpender, features.EIP717);
           });
         };
 
         context('when transferring a zero value', function () {
-          shouldTransferTokenBySender(Zero);
+          transfersBySender(Zero);
         });
 
         context('when transferring a non-zero value', function () {
-          shouldTransferTokenBySender(One);
+          transfersBySender(One);
         });
 
         context('when transferring the full allowance', function () {
-          shouldTransferTokenBySender(initialAllowance);
+          transfersBySender(initialAllowance);
         });
       });
     });
 
     if (features.ERC165) {
-      shouldSupportInterfaces(['IERC20SafeTransfers']);
+      supporstInterfaces(['IERC20SafeTransfers']);
     }
   });
 }

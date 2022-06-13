@@ -9,7 +9,7 @@ const config = {
   immutable: {
     name: 'ERC721BurnableMock',
     ctorArguments: ['name', 'symbol', 'baseMetadataURI', 'forwarderRegistry'],
-    metaTxSupport: true,
+    testMsgData: true,
   },
   diamond: {
     facets: [
@@ -30,7 +30,7 @@ const config = {
           arguments: [],
           adminProtected: true,
         },
-        metaTxSupport: true,
+        testMsgData: true,
       },
       {
         name: 'ERC721MetadataWithBaseURIFacetMock',
@@ -41,7 +41,7 @@ const config = {
           adminProtected: true,
           phaseProtected: true,
         },
-        metaTxSupport: true,
+        testMsgData: true,
       },
       {
         name: 'ERC721MintableFacetMock',
@@ -50,9 +50,18 @@ const config = {
           method: 'initERC721MintableStorage',
           arguments: [],
           adminProtected: true,
-          phaseProtected: false,
         },
-        metaTxSupport: true,
+        testMsgData: true,
+      },
+      {
+        name: 'ERC721DeliverableFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {
+          method: 'initERC721DeliverableStorage',
+          arguments: [],
+          adminProtected: true,
+        },
+        testMsgData: true,
       },
       {
         name: 'ERC721BurnableFacetMock',
@@ -61,9 +70,8 @@ const config = {
           method: 'initERC721BurnableStorage',
           arguments: [],
           adminProtected: true,
-          phaseProtected: false,
         },
-        metaTxSupport: true,
+        testMsgData: true,
       },
       {
         name: 'ERC721BatchTransferFacetMock',
@@ -72,9 +80,8 @@ const config = {
           method: 'initERC721BatchTransferStorage',
           arguments: [],
           adminProtected: true,
-          phaseProtected: false,
         },
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },
@@ -103,9 +110,10 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
       TransferToAddressZero: 'ERC721: transfer to address(0)',
       MintToAddressZero: 'ERC721: mint to address(0)',
       SafeTransferRejected: 'ERC721: safe transfer rejected',
-      NonExistingNFT: 'ERC721: non-existing token',
-      NonOwnedNFT: 'ERC721: non-owned token',
-      ExistingNFT: 'ERC721: existing token',
+      NonExistingToken: 'ERC721: non-existing token',
+      NonOwnedToken: 'ERC721: non-owned token',
+      ExistingToken: 'ERC721: existing token',
+      InconsistentArrays: 'ERC721: inconsistent arrays',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",
@@ -116,7 +124,9 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
     },
     interfaces: {
       ERC721: true,
+      ERC721BatchTransfer: true,
       ERC721Mintable: true,
+      ERC721Deliverable: true,
       ERC721Burnable: true,
       ERC721Metadata: true,
     },

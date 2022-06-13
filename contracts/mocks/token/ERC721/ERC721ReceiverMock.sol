@@ -7,10 +7,10 @@ import {ERC721Receiver} from "./../../../token/ERC721/ERC721Receiver.sol";
 
 /// @title ERC721 Receiver Mock
 contract ERC721ReceiverMock is ERC721Receiver {
-    event Received(address operator, address from, uint256 tokenId, bytes data, uint256 gas);
-
     bool internal immutable _accept721;
     address internal immutable _tokenAddress721;
+
+    event ERC721Received(address operator, address from, uint256 tokenId, bytes data);
 
     constructor(bool accept721, address tokenAddress) ERC721Receiver() {
         _accept721 = accept721;
@@ -29,7 +29,7 @@ contract ERC721ReceiverMock is ERC721Receiver {
     ) public virtual override returns (bytes4) {
         require(msg.sender == _tokenAddress721, "ERC721Receiver: wrong token");
         if (_accept721) {
-            emit Received(operator, from, tokenId, data, gasleft());
+            emit ERC721Received(operator, from, tokenId, data);
             return ERC721Storage.ERC721_RECEIVED;
         } else {
             return 0x0;

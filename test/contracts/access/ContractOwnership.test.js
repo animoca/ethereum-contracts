@@ -3,10 +3,10 @@ const {expect} = require('chai');
 const {ZeroAddress} = require('../../../src/constants');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
-  immutable: {name: 'ContractOwnershipMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'ContractOwnershipMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -16,7 +16,7 @@ const config = {
         name: 'ContractOwnershipFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner'], adminProtected: true, phaseProtected: true},
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },
@@ -135,6 +135,6 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
     });
 
-    shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC173']);
+    supporstInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC173']);
   });
 });

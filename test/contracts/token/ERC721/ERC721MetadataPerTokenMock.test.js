@@ -8,7 +8,7 @@ const config = {
   immutable: {
     name: 'ERC721MetadataPerTokenMock',
     ctorArguments: ['name', 'symbol', 'forwarderRegistry'],
-    metaTxSupport: true,
+    testMsgData: true,
   },
   diamond: {
     facets: [
@@ -32,7 +32,7 @@ const config = {
           adminProtected: true,
           phaseProtected: true,
         },
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },
@@ -52,8 +52,8 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     name,
     symbol,
     revertMessages: {
-      NonExistingNFT: 'ERC721: non-existing token',
-      NonOwnedNFT: 'ERC721: non-owned token',
+      NonExistingToken: 'ERC721: non-existing token',
+      NonOwnedToken: 'ERC721: non-owned token',
       InconsistentArrays: 'ERC721: inconsistent arrays',
       MetadataInconsistentArrays: 'Metadata: inconsistent arrays',
       // Admin

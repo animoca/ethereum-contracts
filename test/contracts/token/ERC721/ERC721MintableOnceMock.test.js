@@ -1,12 +1,13 @@
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
+const {behavesLikeERC721Deliverable} = require('./behaviors/ERC721.deliverable.behavior');
 
 const config = {
   immutable: {
     name: 'ERC721MintableOnceMock',
     ctorArguments: ['forwarderRegistry'],
-    metaTxSupport: true,
+    testMsgData: true,
   },
   diamond: {
     facets: [
@@ -36,9 +37,18 @@ const config = {
           method: 'initERC721MintableOnceStorage',
           arguments: [],
           adminProtected: true,
-          phaseProtected: false,
         },
-        metaTxSupport: true,
+        testMsgData: true,
+      },
+      {
+        name: 'ERC721DeliverableOnceFacetMock',
+        ctorArguments: ['forwarderRegistry'],
+        init: {
+          method: 'initERC721DeliverableOnceStorage',
+          arguments: [],
+          adminProtected: true,
+        },
+        testMsgData: true,
       },
     ],
   },
@@ -55,10 +65,11 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
       NonApproved: 'ERC721: non-approved sender',
       MintToAddressZero: 'ERC721: mint to address(0)',
       SafeTransferRejected: 'ERC721: safe transfer rejected',
-      NonExistingNFT: 'ERC721: non-existing token',
-      NonOwnedNFT: 'ERC721: non-owned token',
-      ExistingNFT: 'ERC721: existing token',
-      BurntNFT: 'ERC721: burnt token',
+      NonExistingToken: 'ERC721: non-existing token',
+      NonOwnedToken: 'ERC721: non-owned token',
+      ExistingToken: 'ERC721: existing token',
+      BurntToken: 'ERC721: burnt token',
+      InconsistentArrays: 'ERC721: inconsistent arrays',
 
       // Admin
       NotMinter: "AccessControl: missing 'minter' role",
@@ -69,6 +80,7 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
     },
     interfaces: {
       ERC721Mintable: true,
+      ERC721Deliverable: true,
       ERC721Burnable: true,
     },
     methods: {
@@ -99,5 +111,6 @@ runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
   };
 
   behavesLikeERC721Mintable(implementation);
+  behavesLikeERC721Deliverable(implementation);
   behavesLikeERC721Burnable(implementation); // tests that after burn, can't be minted again
 });

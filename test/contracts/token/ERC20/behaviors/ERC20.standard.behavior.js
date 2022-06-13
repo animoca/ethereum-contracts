@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC20Standard(implementation) {
@@ -75,7 +75,7 @@ function behavesLikeERC20Standard(implementation) {
         });
       };
 
-      const shouldApproveBySpender = function (amount) {
+      const approvesBySender = function (amount) {
         context('when approving another account', function () {
           beforeEach(async function () {
             this.receipt = await this.contract.approve(spender.address, amount);
@@ -91,21 +91,21 @@ function behavesLikeERC20Standard(implementation) {
       };
 
       context('when approving a zero amount', function () {
-        shouldApproveBySpender(Zero);
+        approvesBySender(Zero);
       });
       context('when approving a non-zero amount', function () {
         const amount = initialSupply;
 
         context("when approving less than the owner's balance", function () {
-          shouldApproveBySpender(amount.sub('1'));
+          approvesBySender(amount.sub('1'));
         });
 
         context("when approving exactly the owner's balance", function () {
-          shouldApproveBySpender(amount);
+          approvesBySender(amount);
         });
 
         context("when approving more than the owner's balance", function () {
-          shouldApproveBySpender(amount.add('1'));
+          approvesBySender(amount.add('1'));
         });
       });
     });
@@ -145,7 +145,7 @@ function behavesLikeERC20Standard(implementation) {
         });
       };
 
-      const shouldTransferTokenByRecipient = function (value) {
+      const transfersByRecipient = function (value) {
         context('when transferring to the sender', function () {
           beforeEach(async function () {
             this.receipt = await this.contract.transfer(owner.address, value);
@@ -162,15 +162,15 @@ function behavesLikeERC20Standard(implementation) {
       };
 
       context('when transferring a zero value', function () {
-        shouldTransferTokenByRecipient(Zero);
+        transfersByRecipient(Zero);
       });
 
       context('when transferring a non-zero value', function () {
-        shouldTransferTokenByRecipient(One);
+        transfersByRecipient(One);
       });
 
       context('when transferring the full balance', function () {
-        shouldTransferTokenByRecipient(initialSupply);
+        transfersByRecipient(initialSupply);
       });
     });
 
@@ -246,7 +246,7 @@ function behavesLikeERC20Standard(implementation) {
         }
       };
 
-      const shouldTransferTokenByRecipient = function (fromIndex, value, senderIndex, withEIP717 = false) {
+      const transfersByRecipient = function (fromIndex, value, senderIndex, withEIP717 = false) {
         context('when transferring to different recipients', function () {
           beforeEach(async function () {
             this.allowance = await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address);
@@ -272,35 +272,35 @@ function behavesLikeERC20Standard(implementation) {
         });
       };
 
-      const shouldTransferTokenBySender = function (value) {
+      const transfersBySender = function (value) {
         context('when transfer started by the owner', function () {
-          shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.owner);
+          transfersByRecipient(AccountIndex.owner, value, AccountIndex.owner);
         });
 
         context('when transfer started by an approved sender', function () {
-          shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.spender);
+          transfersByRecipient(AccountIndex.owner, value, AccountIndex.spender);
         });
 
         context('when transfer started by a sender with max approval', function () {
-          shouldTransferTokenByRecipient(AccountIndex.owner, value, AccountIndex.maxSpender, features.EIP717);
+          transfersByRecipient(AccountIndex.owner, value, AccountIndex.maxSpender, features.EIP717);
         });
       };
 
       context('when transferring a zero value', function () {
-        shouldTransferTokenBySender(Zero);
+        transfersBySender(Zero);
       });
 
       context('when transferring a non-zero value', function () {
-        shouldTransferTokenBySender(One);
+        transfersBySender(One);
       });
 
       context('when transferring the full allowance', function () {
-        shouldTransferTokenBySender(initialAllowance);
+        transfersBySender(initialAllowance);
       });
     });
 
     if (features.ERC165) {
-      shouldSupportInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC20']);
+      supporstInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC20']);
     }
   });
 }

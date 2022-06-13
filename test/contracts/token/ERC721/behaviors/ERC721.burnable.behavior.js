@@ -1,9 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {ZeroAddress} = require('../../../../../src/constants');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {shouldSupportInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages, interfaces, methods}) {
+function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, interfaces, methods}) {
   const {
     'mint(address,uint256)': mint_ERC721,
     'batchMint(address,uint256[])': batchMint_ERC721,
@@ -11,34 +12,6 @@ function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages
     'burnFrom(address,uint256)': burnFrom_ERC721,
     'batchBurnFrom(address,uint256[])': batchBurnFrom_ERC721,
   } = methods;
-
-  if (mint_ERC721 === undefined) {
-    console.log(
-      `ERC721Mintable: non-standard ERC721 method mint(address,uint256)` + ` is not supported by ${name}, associated tests will be skipped`
-    );
-  }
-  if (batchMint_ERC721 === undefined) {
-    console.log(
-      `ERC721Mintable: non-standard ERC721 method batchMint(address,uint256[])` +
-        `is not supported by ${contractName}, associated tests will be skipped`
-    );
-  }
-  if (safeMint_ERC721 === undefined) {
-    console.log(
-      `ERC721Mintable: non-standard ERC721 method safeMint(address,uint256,bytes)` + ` is not supported by ${name}, associated tests will be skipped`
-    );
-  }
-
-  if (burnFrom_ERC721 === undefined) {
-    console.log(
-      `ERC721Burnable: non-standard ERC721 method burnFrom(address,uint256)` + ` is not supported by ${name}, associated tests will be skipped`
-    );
-  }
-  if (batchBurnFrom_ERC721 === undefined) {
-    console.log(
-      `ERC721Burnable: non-standard ERC721 method batchBurnFrom(address,uint256[])` + `is not supported by ${name}, associated tests will be skipped`
-    );
-  }
 
   describe('like a Burnable ERC721', function () {
     let accounts, deployer, owner, other, approved, operator;
@@ -68,163 +41,203 @@ function behavesLikeERC721Burnable({name, deploy, mint, features, revertMessages
       await loadFixture(fixture, this);
     });
 
-    const shouldBeMintableAgain = function (ids) {
-      ids = Array.isArray(ids) ? ids : [ids];
-      it('should be mintable again, using mint', async function () {
-        if (mint_ERC721 === undefined) {
-          return;
-        }
-        for (const id of ids) {
-          await mint_ERC721(this.token, owner.address, id, deployer);
-        }
-      });
-      it('[should be mintable again, using batchMint', async function () {
-        if (batchMint_ERC721 === undefined) {
-          return;
-        }
-        await batchMint_ERC721(this.token, owner.address, ids, deployer);
-      });
-      it('should be mintable again, using safeMint', async function () {
-        if (safeMint_ERC721 === undefined) {
-          return;
-        }
-        for (const id of ids) {
-          await safeMint_ERC721(this.token, owner.address, id, 0x0, deployer);
-        }
+    const revertsOnPreconditions = function (burnFunction) {
+      describe('Pre-condition', function () {
+        it('reverts if the token does not exist', async function () {
+          this.sender = owner;
+          this.from = owner.address;
+          await expect(burnFunction.call(this, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedToken);
+        });
+
+        it('reverts if `from` is not the token owner', async function () {
+          this.sender = other;
+          this.from = other.address;
+          await expect(burnFunction.call(this, nft1)).to.be.revertedWith(revertMessages.NonOwnedToken);
+        });
+
+        it('reverts if the sender is not authorized for the token', async function () {
+          this.sender = other;
+          this.from = owner.address;
+          await expect(burnFunction.call(this, nft1)).to.be.revertedWith(revertMessages.NonApproved);
+        });
       });
     };
 
-    const shouldNotBeMintableAgain = function (ids) {
+    const canBeMintedAgain = function (ids) {
       ids = Array.isArray(ids) ? ids : [ids];
-      it('[ERC721MintableOnce] should not be mintable again, using mint', async function () {
-        if (mint_ERC721 === undefined) {
-          return;
-        }
-        for (const id of ids) {
-          await expect(mint_ERC721(this.token, owner.address, id, deployer)).to.be.revertedWith(revertMessages.BurntNFT);
-        }
-      });
-      it('[ERC721MintableOnce] should not be mintable again, using batchMint', async function () {
-        if (batchMint_ERC721 === undefined) {
-          return;
-        }
-        await expect(batchMint_ERC721(this.token, owner.address, ids, deployer)).to.be.revertedWith(revertMessages.BurntNFT);
-      });
-      it('[ERC721MintableOnce] should not be mintable again, using safeMint', async function () {
-        if (safeMint_ERC721 === undefined) {
-          return;
-        }
-        for (const id of ids) {
-          await expect(safeMint_ERC721(this.token, owner.address, id, 0x0, deployer)).to.be.revertedWith(revertMessages.BurntNFT);
-        }
-      });
+
+      if (mint_ERC721 !== undefined) {
+        it('can be minted again, using mint(address,uint256)', async function () {
+          for (const id of ids) {
+            await mint_ERC721(this.token, owner.address, id, deployer);
+          }
+        });
+      }
+
+      if (batchMint_ERC721 !== undefined) {
+        it('can be minted again, using batchMint(address,uint256[])', async function () {
+          await batchMint_ERC721(this.token, owner.address, ids, deployer);
+        });
+      }
+
+      if (safeMint_ERC721 !== undefined) {
+        it('can be minted again, using safeMint(address,uint256,bytes)', async function () {
+          for (const id of ids) {
+            await safeMint_ERC721(this.token, owner.address, id, 0x0, deployer);
+          }
+        });
+      }
+
+      if (interfaces.ERC721Deliverable) {
+        it('can be minted again, using deliver(address[],uint256[])', async function () {
+          await this.token.deliver(
+            ids.map(() => owner.address),
+            ids
+          );
+        });
+      }
     };
 
-    const burnWasSuccessful = function (tokenIds, signer = deployer) {
+    const cannotBeMintedAgain = function (ids) {
+      ids = Array.isArray(ids) ? ids : [ids];
+
+      it('[ERC721MintableOnce] wasBurnt(uint256) returns true', async function () {
+        for (const id of ids) {
+          expect(await this.token.wasBurnt(id)).to.be.true;
+        }
+      });
+
+      if (mint_ERC721 !== undefined) {
+        it('[ERC721MintableOnce] cannot be mintable again, using mint', async function () {
+          for (const id of ids) {
+            await expect(mint_ERC721(this.token, owner.address, id, deployer)).to.be.revertedWith(revertMessages.BurntToken);
+          }
+        });
+      }
+
+      if (batchMint_ERC721 !== undefined) {
+        it('[ERC721MintableOnce] cannot be mintable again, using batchMint', async function () {
+          await expect(batchMint_ERC721(this.token, owner.address, ids, deployer)).to.be.revertedWith(revertMessages.BurntToken);
+        });
+      }
+
+      if (safeMint_ERC721 !== undefined) {
+        it('[ERC721MintableOnce] cannot be mintable again, using safeMint', async function () {
+          for (const id of ids) {
+            await expect(safeMint_ERC721(this.token, owner.address, id, 0x0, deployer)).to.be.revertedWith(revertMessages.BurntToken);
+          }
+        });
+      }
+
+      if (interfaces.ERC721Deliverable) {
+        it('[ERC721MintableOnce] cannot be minted again, using deliver(address[],uint256[])', async function () {
+          await expect(
+            this.token.deliver(
+              ids.map(() => owner.address),
+              ids
+            )
+          ).to.be.revertedWith(revertMessages.BurntToken);
+        });
+      }
+    };
+
+    const burnWasSuccessful = function (tokenIds) {
       const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-      it('transfers the ownership of the token(s)', async function () {
+
+      it('clears the ownership of the token(s)', async function () {
         for (const id of ids) {
-          await expect(this.token.ownerOf(id)).to.be.revertedWith(revertMessages.NonExistingNFT);
+          await expect(this.token.ownerOf(id)).to.be.revertedWith(revertMessages.NonExistingToken);
         }
       });
 
       it('clears the approval for the token(s)', async function () {
         for (const id of ids) {
-          await expect(this.token.getApproved(id)).to.be.revertedWith(revertMessages.NonExistingNFT);
-        }
-      });
-
-      it('emit Transfer event(s)', async function () {
-        for (const id of ids) {
-          await expect(this.receipt).to.emit(this.token, 'Transfer');
+          await expect(this.token.getApproved(id)).to.be.revertedWith(revertMessages.NonExistingToken);
         }
       });
 
       it('decreases the sender balance', async function () {
         expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance - ids.length);
       });
+
+      it('emits Transfer event(s)', async function () {
+        for (const id of ids) {
+          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, ZeroAddress, id);
+        }
+      });
+
+      if (ids.length > 0) {
+        if (features.ERC721MintableOnce) {
+          cannotBeMintedAgain(ids);
+        } else {
+          canBeMintedAgain(ids);
+        }
+      }
     };
 
-    const shouldBurnTokenBySender = function (burnFunction, ids) {
+    const burnsBySender = function (burnFunction, ids) {
       context('when called by the owner', function () {
         beforeEach(async function () {
-          this.receipt = await burnFunction.call(this, owner, ids, owner);
+          this.sender = owner;
+          this.from = owner.address;
+          this.receipt = await burnFunction.call(this, ids);
         });
         burnWasSuccessful(ids, owner);
-
-        if (ids.length > 0) {
-          if (features.ERC721MintableOnce) {
-            shouldNotBeMintableAgain(ids);
-          } else {
-            shouldBeMintableAgain(ids);
-          }
-        }
       });
 
       context('when called by a wallet with single token approval', function () {
         beforeEach(async function () {
-          this.receipt = await burnFunction.call(this, owner, ids, approved);
+          this.sender = approved;
+          this.from = owner.address;
+          this.receipt = await burnFunction.call(this, ids);
         });
         burnWasSuccessful(ids, approved);
       });
 
       context('when called by an operator', function () {
         beforeEach(async function () {
-          this.receipt = await burnFunction.call(this, owner, ids, operator);
+          this.sender = operator;
+          this.from = owner.address;
+          this.receipt = await burnFunction.call(this, ids);
         });
         burnWasSuccessful(ids, operator);
       });
     };
 
-    const shouldRevertOnPreconditions = function (burnFunction) {
-      describe('Pre-condition', function () {
-        it('reverts if the token does not exist', async function () {
-          await expect(burnFunction.call(this, owner, unknownNFT)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+    if (burnFrom_ERC721 !== undefined) {
+      describe('burnFrom(address,uint256)', function () {
+        const burnFn = async function (tokenId) {
+          return burnFrom_ERC721(this.token, this.from, tokenId, this.sender);
+        };
+        revertsOnPreconditions(burnFn);
+        burnsBySender(burnFn, nft1);
+      });
+    }
+
+    if (batchBurnFrom_ERC721 !== undefined) {
+      describe('batchBurnFrom(address,uint256[])', function () {
+        const burnFn = async function (tokenIds) {
+          const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+          return batchBurnFrom_ERC721(this.token, this.from, ids, this.sender);
+        };
+        revertsOnPreconditions(burnFn);
+
+        context('with an empty list of tokens', function () {
+          burnsBySender(burnFn, []);
         });
 
-        it('reverts if `from` is not the token owner', async function () {
-          await expect(burnFunction.call(this, other, nft1, other)).to.be.revertedWith(revertMessages.NonOwnedNFT);
+        context('with a single token', function () {
+          burnsBySender(burnFn, [nft1]);
         });
 
-        it('reverts if the sender is not authorized for the token', async function () {
-          await expect(burnFunction.call(this, owner, nft1, other)).to.be.revertedWith(revertMessages.NonApproved);
+        context('with a list of tokens from the same collection', function () {
+          burnsBySender(burnFn, [nft1, nft2]);
         });
       });
-    };
+    }
 
-    describe('burnFrom(address,uint256)', function () {
-      if (burnFrom_ERC721 === undefined) {
-        return;
-      }
-      const burnFn = async function (from, tokenId, signer = deployer) {
-        return burnFrom_ERC721(this.token, from.address, tokenId, signer);
-      };
-      shouldRevertOnPreconditions(burnFn);
-      shouldBurnTokenBySender(burnFn, nft1);
-    });
-
-    describe('batchBurnFrom(address, uint256[])', function () {
-      if (batchBurnFrom_ERC721 === undefined) {
-        return;
-      }
-
-      const burnFn = async function (from, tokenIds, signer = deployer) {
-        const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-        return batchBurnFrom_ERC721(this.token, from.address, ids, signer);
-      };
-      shouldRevertOnPreconditions(burnFn);
-      context('with an empty list of tokens', function () {
-        shouldBurnTokenBySender(burnFn, []);
-      });
-      context('with a single token', function () {
-        shouldBurnTokenBySender(burnFn, [nft1]);
-      });
-      context('with a list of tokens from the same collection', function () {
-        shouldBurnTokenBySender(burnFn, [nft1, nft2]);
-      });
-    });
     if (interfaces.ERC721Burnable) {
-      shouldSupportInterfaces(['contracts/token/ERC721/interfaces/IERC721Burnable.sol:IERC721Burnable']);
+      supporstInterfaces(['IERC721Burnable']);
     }
   });
 }

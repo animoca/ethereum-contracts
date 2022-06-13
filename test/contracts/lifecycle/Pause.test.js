@@ -4,7 +4,7 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'PauseMock', ctorArguments: ['paused', 'forwarderRegistry'], metaTxSupport: true},
+  immutable: {name: 'PauseMock', ctorArguments: ['paused', 'forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -18,7 +18,7 @@ const config = {
         name: 'PauseFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initPauseStorage', arguments: ['paused'], adminProtected: true, phaseProtected: true},
-        metaTxSupport: true,
+        testMsgData: true,
       },
     ],
   },

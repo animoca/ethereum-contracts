@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0
+
+### New features
+
+- Added `wasBurnt(uint256)` function to ERC721MintableOnce.
+- Added `ERC721Deliverable`.
+
+### Bugfixes
+
+- Fixed ERC721Storage `mint`, `batchMint` and `safeMint` which did not allow re-minting after burning.
+- Fixed ERC721 transfer and burning tests which were not correctly testing transactions initiated by different recipients.
+
+### Improvements
+
+- Improved ERC721 implementation.
+- Improved ERC721 tests.
+
 ## 0.0.5
 
 ### Breaking changes
