@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
-import {ERC721DeliverableBase} from "./ERC721DeliverableBase.sol";
+import {ERC721DeliverableBase} from "./base/ERC721DeliverableBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 

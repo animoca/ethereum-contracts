@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC20Storage} from "./libraries/ERC20Storage.sol";
-import {ERC20MintableBase} from "./ERC20MintableBase.sol";
+import {ERC20MintableBase} from "./base/ERC20MintableBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Mintable (immutable version).

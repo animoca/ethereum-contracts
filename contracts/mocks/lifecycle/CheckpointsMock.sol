@@ -6,9 +6,10 @@ import {CheckpointsStorage} from "./../../lifecycle/libraries/CheckpointsStorage
 import {Checkpoints} from "./../../lifecycle/Checkpoints.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
-contract CheckpointsMock is Checkpoints, ForwarderRegistryContextBase {
+contract CheckpointsMock is Checkpoints, ForwarderRegistryContext {
     using CheckpointsStorage for CheckpointsStorage.Layout;
 
     bytes32 public constant START_CHECKPOINTID = "START";
@@ -17,7 +18,7 @@ contract CheckpointsMock is Checkpoints, ForwarderRegistryContextBase {
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps,
         IForwarderRegistry forwarderRegistry
-    ) Checkpoints(checkpointIds, timestamps) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+    ) Checkpoints(checkpointIds, timestamps) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function enforceCheckpointReached(bytes32 checkpointId) external view {
         CheckpointsStorage.layout().enforceCheckpointReached(checkpointId);

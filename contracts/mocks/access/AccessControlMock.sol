@@ -6,14 +6,15 @@ import {AccessControlStorage} from "./../../access/libraries/AccessControlStorag
 import {AccessControl} from "./../../access/AccessControl.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
-contract AccessControlMock is AccessControl, ForwarderRegistryContextBase {
+contract AccessControlMock is AccessControl, ForwarderRegistryContext {
     using AccessControlStorage for AccessControlStorage.Layout;
 
     bytes32 public constant TEST_ROLE = "tester";
 
-    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function enforceHasRole(bytes32 role, address account) external view {
         AccessControlStorage.layout().enforceHasRole(role, account);

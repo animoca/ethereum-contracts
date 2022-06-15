@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
+import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
+import {IERC2771} from "./../metatx/interfaces/IERC2771.sol";
 import {IERC1271} from "./../cryptography/interfaces/IERC1271.sol";
 import {IERC1654} from "./../cryptography/interfaces/IERC1654.sol";
-import {IERC2771} from "./../metatx/interfaces/IERC2771.sol";
-import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC2771Data} from "./libraries/ERC2771Data.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -12,7 +12,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 /// @title Universal Meta-Transactions Forwarder Registry.
 /// @notice Users can allow specific forwarders to forward meta-transactions on their behalf.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
-contract ForwarderRegistry is IERC2771, IForwarderRegistry {
+contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     using Address for address;
     using ECDSA for bytes32;
 

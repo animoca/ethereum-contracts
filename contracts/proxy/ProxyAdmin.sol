@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ProxyAdminStorage} from "./libraries/ProxyAdminStorage.sol";
-import {ProxyAdminBase} from "./ProxyAdminBase.sol";
+import {ProxyAdminBase} from "./base/ProxyAdminBase.sol";
 
 /// @title ERC1967 Standard Proxy Storage Slots, Admin Address (immutable version).
 /// @dev See https://eips.ethereum.org/EIPS/eip-1967

@@ -2,6 +2,12 @@
 
 ## 0.1.0
 
+### Breaking changes
+
+- Made `ERC20` and `ERC721` contracts abstract.
+- Restructured `contracts` folder with subfolders `base` and `facets`.
+- Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
+
 ### New features
 
 - Added `wasBurnt(uint256)` function to ERC721MintableOnce.
@@ -11,6 +17,7 @@
 
 - Fixed ERC721Storage `mint`, `batchMint` and `safeMint` which did not allow re-minting after burning.
 - Fixed ERC721 transfer and burning tests which were not correctly testing transactions initiated by different recipients.
+- Immutable mock implementations now correctly inherit from `ForwarderRegistryContext` instead of `ForwarderRegistryContextBase`.
 
 ### Improvements
 

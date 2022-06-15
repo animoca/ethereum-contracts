@@ -2,8 +2,8 @@
 pragma solidity ^0.8.8;
 
 import {ContractOwnershipStorage} from "./libraries/ContractOwnershipStorage.sol";
+import {ContractOwnershipBase} from "./base/ContractOwnershipBase.sol";
 import {InterfaceDetection} from "./../introspection/InterfaceDetection.sol";
-import {ContractOwnershipBase} from "./ContractOwnershipBase.sol";
 
 /// @title ERC173 Contract Ownership Standard (immutable version).
 /// @dev See https://eips.ethereum.org/EIPS/eip-173

@@ -9,7 +9,6 @@ import {ERC20Permit} from "./../../../token/ERC20/ERC20Permit.sol";
 import {ERC20SafeTransfers} from "./../../../token/ERC20/ERC20SafeTransfers.sol";
 import {ERC20BatchTransfers} from "./../../../token/ERC20/ERC20BatchTransfers.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
 contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit, ERC20SafeTransfers, ERC20BatchTransfers {
     constructor(
@@ -22,12 +21,12 @@ contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit
         IForwarderRegistry forwarderRegistry
     ) ERC20SimpleMock(holders, allocations, forwarderRegistry) ERC20Detailed(tokenName, tokenSymbol, tokenDecimals) ERC20Metadata(uri) {}
 
-    /// @inheritdoc ForwarderRegistryContextBase
+    /// @inheritdoc ERC20SimpleMock
     function _msgSender() internal view virtual override(Context, ERC20SimpleMock) returns (address) {
         return ERC20SimpleMock._msgSender();
     }
 
-    /// @inheritdoc ForwarderRegistryContextBase
+    /// @inheritdoc ERC20SimpleMock
     function _msgData() internal view virtual override(Context, ERC20SimpleMock) returns (bytes calldata) {
         return ERC20SimpleMock._msgData();
     }

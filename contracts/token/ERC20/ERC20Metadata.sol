@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC20MetadataStorage} from "./libraries/ERC20MetadataStorage.sol";
-import {ERC20MetadataBase} from "./ERC20MetadataBase.sol";
+import {ERC20MetadataBase} from "./base/ERC20MetadataBase.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Metadata (immutable version).

@@ -2,8 +2,8 @@
 pragma solidity ^0.8.8;
 
 import {ERC721ContractMetadataStorage} from "./libraries/ERC721ContractMetadataStorage.sol";
+import {ERC721MetadataWithBaseURIBase} from "./base/ERC721MetadataWithBaseURIBase.sol";
 import {TokenMetadataWithBaseURIStorage} from "./../metadata/libraries/TokenMetadataWithBaseURIStorage.sol";
-import {ERC721MetadataWithBaseURIBase} from "./ERC721MetadataWithBaseURIBase.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Metadata (immutable version).

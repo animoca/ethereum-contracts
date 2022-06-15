@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {AccessControlBase} from "./AccessControlBase.sol";
+import {AccessControlBase} from "./base/AccessControlBase.sol";
 import {ContractOwnership} from "./ContractOwnership.sol";
 
 /// @title Access control via roles management (immutable version).

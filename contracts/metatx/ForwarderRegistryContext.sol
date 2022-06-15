@@ -3,7 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
 import {IERC2771} from "./interfaces/IERC2771.sol";
-import {ForwarderRegistryContextBase} from "./ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./base/ForwarderRegistryContextBase.sol";
 
 /// @title Meta-Transactions Forwarder Registry Context (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.

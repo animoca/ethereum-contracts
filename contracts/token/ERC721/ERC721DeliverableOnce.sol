@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
-import {ERC721DeliverableOnceBase} from "./ERC721DeliverableOnceBase.sol";
+import {ERC721DeliverableOnceBase} from "./base/ERC721DeliverableOnceBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Deliverable (immutable version)

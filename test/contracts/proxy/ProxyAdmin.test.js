@@ -5,7 +5,7 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 const {loadFixture} = require('../../helpers/fixtures');
 
 const config = {
-  immutable: {name: 'ProxyAdminMock', ctorArguments: ['initialAdmin']},
+  immutable: {name: 'ProxyAdminMock', ctorArguments: ['initialAdmin', 'forwarderRegistry'], testMsgData: true},
   diamond: {
     facets: [
       {

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
-import {ERC721MintableBase} from "./ERC721MintableBase.sol";
+import {ERC721MintableBase} from "./base/ERC721MintableBase.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Mintable (immutable version).

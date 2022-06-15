@@ -3,7 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IERC20Permit} from "./interfaces/IERC20Permit.sol";
 import {ERC20PermitStorage} from "./libraries/ERC20PermitStorage.sol";
-import {ERC20PermitBase} from "./ERC20PermitBase.sol";
+import {ERC20PermitBase} from "./base/ERC20PermitBase.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Permit (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.

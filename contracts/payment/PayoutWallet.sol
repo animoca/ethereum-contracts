@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {PayoutWalletStorage} from "./libraries/PayoutWalletStorage.sol";
-import {PayoutWalletBase} from "./PayoutWalletBase.sol";
+import {PayoutWalletBase} from "./base/PayoutWalletBase.sol";
 import {ContractOwnership} from "../access/ContractOwnership.sol";
 
 /// @title Payout wallet (immutable version).

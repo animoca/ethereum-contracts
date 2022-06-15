@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {CheckpointsStorage} from "./libraries/CheckpointsStorage.sol";
-import {CheckpointsBase} from "./CheckpointsBase.sol";
+import {CheckpointsBase} from "./base/CheckpointsBase.sol";
 import {ContractOwnership} from "./../access/ContractOwnership.sol";
 
 /// @title Timestamp-based checkpoints management (immutable version).

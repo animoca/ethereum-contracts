@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC721Storage} from "./libraries/ERC721Storage.sol";
-import {ERC721BatchTransferBase} from "./ERC721BatchTransferBase.sol";
+import {ERC721BatchTransferBase} from "./base/ERC721BatchTransferBase.sol";
 
 /// @title ERC721 Non-Fungible Token Standard: optional extension: BatchTransfer (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.

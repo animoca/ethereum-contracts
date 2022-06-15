@@ -2,7 +2,7 @@
 pragma solidity 0.8.14;
 pragma experimental ABIEncoderV2;
 
-import {IDiamondCutBase} from "./interfaces/IDiamondCutBase.sol";
+import {IDiamondCutCommon} from "./interfaces/IDiamondCutCommon.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 
 /// @title ERC2535 Diamond Standard, Diamond.
@@ -14,7 +14,7 @@ contract Diamond {
     /// @dev Emits a {DiamondCut} event.
     /// @param cuts The list of facet addresses, actions and function selectors to apply to the diamond.
     /// @param initializations The list of addresses and encoded function calls to execute with delegatecall.
-    constructor(IDiamondCutBase.FacetCut[] memory cuts, IDiamondCutBase.Initialization[] memory initializations) payable {
+    constructor(IDiamondCutCommon.FacetCut[] memory cuts, IDiamondCutCommon.Initialization[] memory initializations) payable {
         DiamondStorage.layout().diamondCut(cuts, initializations);
     }
 

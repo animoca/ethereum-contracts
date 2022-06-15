@@ -2,11 +2,11 @@
 pragma solidity ^0.8.8;
 
 import {ERC20Storage} from "./libraries/ERC20Storage.sol";
-import {ERC20Base} from "./ERC20Base.sol";
+import {ERC20Base} from "./base/ERC20Base.sol";
 
 /// @title ERC20 Fungible Token Standard (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
-contract ERC20 is ERC20Base {
+abstract contract ERC20 is ERC20Base {
     using ERC20Storage for ERC20Storage.Layout;
 
     /// @notice Initializes the storage with a list of initial allocations.

@@ -111,9 +111,7 @@ function runBehaviorTests(name, config, behaviorFn) {
               it('__msgData()', async function () {
                 const ctorArguments = facet.ctorArguments !== undefined ? facet.ctorArguments.map((arg) => this.defaultArguments[arg]) : [];
                 const contract = await deployContract(facet.name, ...ctorArguments);
-                try {
-                  await contract.__msgData();
-                } catch (e) {}
+                await contract.__msgData();
               });
             }
           });

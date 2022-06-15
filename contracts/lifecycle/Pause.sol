@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {PauseStorage} from "./libraries/PauseStorage.sol";
-import {PauseBase} from "./PauseBase.sol";
+import {PauseBase} from "./base/PauseBase.sol";
 import {ContractOwnership} from "../access/ContractOwnership.sol";
 
 /// @title Pausing mechanism (immutable version).

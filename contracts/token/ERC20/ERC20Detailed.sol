@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {ERC20DetailedStorage} from "./libraries/ERC20DetailedStorage.sol";
-import {ERC20DetailedBase} from "./ERC20DetailedBase.sol";
+import {ERC20DetailedBase} from "./base/ERC20DetailedBase.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Detailed (immutable version).
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.

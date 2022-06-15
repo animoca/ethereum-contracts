@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 pragma experimental ABIEncoderV2;
 
-import {IDiamondCutBase} from "./../interfaces/IDiamondCutBase.sol";
+import {IDiamondCutCommon} from "./../interfaces/IDiamondCutCommon.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./../interfaces/IDiamondCutBatchInit.sol";
 import {IDiamondLoupe} from "./../interfaces/IDiamondLoupe.sol";
@@ -29,7 +29,7 @@ library DiamondStorage {
     bytes32 internal constant CLEAR_ADDRESS_MASK = bytes32(uint256(0xffffffffffffffffffffffff));
     bytes32 internal constant CLEAR_SELECTOR_MASK = bytes32(uint256(0xffffffff << 224));
 
-    event DiamondCut(IDiamondCutBase.FacetCut[] cuts, address target, bytes data);
+    event DiamondCut(IDiamondCutCommon.FacetCut[] cuts, address target, bytes data);
 
     /// @notice Marks the following ERC165 interface(s) as supported: DiamondCut, DiamondCutBatchInit.
     function initDiamondCut() internal {
@@ -45,7 +45,7 @@ library DiamondStorage {
 
     function diamondCut(
         Layout storage s,
-        IDiamondCutBase.FacetCut[] memory cuts,
+        IDiamondCutCommon.FacetCut[] memory cuts,
         address target,
         bytes memory data
     ) internal {
@@ -56,8 +56,8 @@ library DiamondStorage {
 
     function diamondCut(
         Layout storage s,
-        IDiamondCutBase.FacetCut[] memory cuts,
-        IDiamondCutBase.Initialization[] memory initializations
+        IDiamondCutCommon.FacetCut[] memory cuts,
+        IDiamondCutCommon.Initialization[] memory initializations
     ) internal {
         unchecked {
             s.cutFacets(cuts);
@@ -69,7 +69,7 @@ library DiamondStorage {
         }
     }
 
-    function cutFacets(Layout storage s, IDiamondCutBase.FacetCut[] memory facetCuts) internal {
+    function cutFacets(Layout storage s, IDiamondCutCommon.FacetCut[] memory facetCuts) internal {
         unchecked {
             uint256 originalSelectorCount = s.selectorCount;
             uint256 selectorCount = originalSelectorCount;
@@ -82,14 +82,14 @@ library DiamondStorage {
             }
 
             for (uint256 i; i != facetCuts.length; ++i) {
-                IDiamondCutBase.FacetCut memory facetCut = facetCuts[i];
-                IDiamondCutBase.FacetCutAction action = facetCut.action;
+                IDiamondCutCommon.FacetCut memory facetCut = facetCuts[i];
+                IDiamondCutCommon.FacetCutAction action = facetCut.action;
 
                 require(facetCut.selectors.length > 0, "Diamond: no function selectors");
 
-                if (action == IDiamondCutBase.FacetCutAction.ADD) {
+                if (action == IDiamondCutCommon.FacetCutAction.ADD) {
                     (selectorCount, selectorSlot) = s.addFacetSelectors(selectorCount, selectorSlot, facetCut);
-                } else if (action == IDiamondCutBase.FacetCutAction.REPLACE) {
+                } else if (action == IDiamondCutCommon.FacetCutAction.REPLACE) {
                     s.replaceFacetSelectors(facetCut);
                 } else {
                     (selectorCount, selectorSlot) = s.removeFacetSelectors(selectorCount, selectorSlot, facetCut);
@@ -111,7 +111,7 @@ library DiamondStorage {
         Layout storage s,
         uint256 selectorCount,
         bytes32 selectorSlot,
-        IDiamondCutBase.FacetCut memory facetCut
+        IDiamondCutCommon.FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
         unchecked {
             require(facetCut.facet == address(this) || facetCut.facet.isContract(), "Diamond: facet has no code");
@@ -146,7 +146,7 @@ library DiamondStorage {
         Layout storage s,
         uint256 selectorCount,
         bytes32 selectorSlot,
-        IDiamondCutBase.FacetCut memory facetCut
+        IDiamondCutCommon.FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
         unchecked {
             require(facetCut.facet == address(0), "Diamond: non-zero address facet");
@@ -218,7 +218,7 @@ library DiamondStorage {
         }
     }
 
-    function replaceFacetSelectors(Layout storage s, IDiamondCutBase.FacetCut memory facetCut) internal {
+    function replaceFacetSelectors(Layout storage s, IDiamondCutCommon.FacetCut memory facetCut) internal {
         unchecked {
             require(facetCut.facet.isContract(), "Diamond: facet has no code");
 

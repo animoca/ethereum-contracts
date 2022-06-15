@@ -5,13 +5,14 @@ import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.s
 import {PayoutWallet} from "./../../payment/PayoutWallet.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
-contract PayoutWalletMock is PayoutWallet, ForwarderRegistryContextBase {
+contract PayoutWalletMock is PayoutWallet, ForwarderRegistryContext {
     constructor(address payable initialPayoutWallet, IForwarderRegistry forwarderRegistry)
         PayoutWallet(initialPayoutWallet)
         ContractOwnership(msg.sender)
-        ForwarderRegistryContextBase(forwarderRegistry)
+        ForwarderRegistryContext(forwarderRegistry)
     {}
 
     function __msgData() external view returns (bytes calldata) {

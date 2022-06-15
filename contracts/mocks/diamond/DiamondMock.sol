@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.14;
 
-import {IDiamondCutBase} from "./../../diamond/interfaces/IDiamondCutBase.sol";
+import {IDiamondCutCommon} from "./../../diamond/interfaces/IDiamondCutCommon.sol";
 import {DiamondStorage} from "./../../diamond/libraries/DiamondStorage.sol";
 import {Diamond} from "./../../diamond/Diamond.sol";
 
@@ -10,15 +10,15 @@ contract DiamondMock is Diamond {
 
     event ImmutableFunctionCalled();
 
-    constructor(IDiamondCutBase.FacetCut[] memory cuts, IDiamondCutBase.Initialization[] memory initializations)
+    constructor(IDiamondCutCommon.FacetCut[] memory cuts, IDiamondCutCommon.Initialization[] memory initializations)
         payable
         Diamond(cuts, initializations)
     {
         bytes4[] memory selectors = new bytes4[](1);
         selectors[0] = DiamondMock.immutableFunction.selector;
-        IDiamondCutBase.FacetCut[] memory cut = new IDiamondCutBase.FacetCut[](1);
+        IDiamondCutCommon.FacetCut[] memory cut = new IDiamondCutCommon.FacetCut[](1);
         cut[0].facet = address(this);
-        cut[0].action = IDiamondCutBase.FacetCutAction.ADD;
+        cut[0].action = IDiamondCutCommon.FacetCutAction.ADD;
         cut[0].selectors = selectors;
 
         DiamondStorage.layout().diamondCut(cut, address(0), "");

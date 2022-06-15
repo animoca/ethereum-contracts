@@ -8,11 +8,12 @@ import {ERC721DeliverableOnce} from "./../../../token/ERC721/ERC721DeliverableOn
 import {ERC721Burnable} from "./../../../token/ERC721/ERC721Burnable.sol";
 import {ContractOwnership} from "./../../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../../metatx/ForwarderRegistryContext.sol";
 
 /// @title ERC721MintableOnceFacetMock
-contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721DeliverableOnce, ERC721Burnable, ForwarderRegistryContextBase {
-    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) ContractOwnership(msg.sender) {}
+contract ERC721MintableOnceMock is ERC721, ERC721MintableOnce, ERC721DeliverableOnce, ERC721Burnable, ForwarderRegistryContext {
+    constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContext(forwarderRegistry) ContractOwnership(msg.sender) {}
 
     /// @dev mock coverage function
     function __msgData() external view returns (bytes calldata) {

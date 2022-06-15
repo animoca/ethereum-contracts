@@ -5,7 +5,6 @@ import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistr
 import {ERC20Mock} from "./ERC20Mock.sol";
 import {ERC20Burnable} from "./../../../token/ERC20/ERC20Burnable.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
 
 contract ERC20BurnableMock is ERC20Mock, ERC20Burnable {
     constructor(
@@ -18,12 +17,12 @@ contract ERC20BurnableMock is ERC20Mock, ERC20Burnable {
         IForwarderRegistry forwarderRegistry
     ) ERC20Mock(holders, allocations, tokenName, tokenSymbol, tokenDecimals, uri, forwarderRegistry) {}
 
-    /// @inheritdoc ForwarderRegistryContextBase
+    /// @inheritdoc ERC20Mock
     function _msgSender() internal view virtual override(Context, ERC20Mock) returns (address) {
         return ERC20Mock._msgSender();
     }
 
-    /// @inheritdoc ForwarderRegistryContextBase
+    /// @inheritdoc ERC20Mock
     function _msgData() internal view virtual override(Context, ERC20Mock) returns (bytes calldata) {
         return ERC20Mock._msgData();
     }

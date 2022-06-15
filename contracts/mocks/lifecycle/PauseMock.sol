@@ -6,15 +6,16 @@ import {PauseStorage} from "./../../lifecycle/libraries/PauseStorage.sol";
 import {Pause} from "./../../lifecycle/Pause.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
-contract PauseMock is Pause, ForwarderRegistryContextBase {
+contract PauseMock is Pause, ForwarderRegistryContext {
     using PauseStorage for PauseStorage.Layout;
 
     constructor(bool isPaused, IForwarderRegistry forwarderRegistry)
         Pause(isPaused)
         ContractOwnership(msg.sender)
-        ForwarderRegistryContextBase(forwarderRegistry)
+        ForwarderRegistryContext(forwarderRegistry)
     {}
 
     function enforceIsPaused() external view {

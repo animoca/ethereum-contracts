@@ -6,10 +6,11 @@ import {ERC721} from "./../../../token/ERC721/ERC721.sol";
 import {ERC721Mintable} from "./../../../token/ERC721/ERC721Mintable.sol";
 import {ContractOwnership} from "./../../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../../metatx/ForwarderRegistryContext.sol";
 
-contract ERC721SimpleMock is ERC721, ERC721Mintable, ForwarderRegistryContextBase {
-    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContextBase(forwarderRegistry) {}
+contract ERC721SimpleMock is ERC721, ERC721Mintable, ForwarderRegistryContext {
+    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function __msgData() external view returns (bytes calldata) {
         return _msgData();

@@ -5,14 +5,15 @@ import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.s
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ForwarderRegistryContextBase} from "./../../metatx/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistryContextBase.sol";
+import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
-contract ContractOwnershipMock is ContractOwnership, ForwarderRegistryContextBase {
+contract ContractOwnershipMock is ContractOwnership, ForwarderRegistryContext {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     constructor(address initialOwner, IForwarderRegistry forwarderRegistry)
         ContractOwnership(initialOwner)
-        ForwarderRegistryContextBase(forwarderRegistry)
+        ForwarderRegistryContext(forwarderRegistry)
     {}
 
     function enforceIsContractOwner(address account) external view {
