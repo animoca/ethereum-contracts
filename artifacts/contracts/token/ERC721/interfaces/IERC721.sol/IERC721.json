@@ -95,7 +95,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "owner",
+          "name": "tokenOwner",
           "type": "address"
         }
       ],

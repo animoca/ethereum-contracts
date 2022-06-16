@@ -5,7 +5,7 @@ pragma solidity ^0.8.8;
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
 interface IERC721Deliverable {
-    /// @notice Unsafely mints tokens to recipients.
+    /// @notice Unsafely mints tokens to multiple recipients.
     /// @dev Reverts if `recipients` and `tokenIds` have different lengths.
     /// @dev Reverts if one of `recipients` is the zero address.
     /// @dev Reverts if one of `tokenIds` already exists.

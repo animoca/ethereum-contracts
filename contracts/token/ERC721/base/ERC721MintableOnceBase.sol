@@ -25,13 +25,6 @@ abstract contract ERC721MintableOnceBase is Context, IERC721Mintable {
 
     /// @inheritdoc IERC721Mintable
     /// @dev Reverts if `tokenId` has been previously burnt.
-    function batchMint(address to, uint256[] calldata tokenIds) external virtual override {
-        AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
-        ERC721Storage.layout().batchMintOnce(to, tokenIds);
-    }
-
-    /// @inheritdoc IERC721Mintable
-    /// @dev Reverts if `tokenId` has been previously burnt.
     function safeMint(
         address to,
         uint256 tokenId,
@@ -39,6 +32,13 @@ abstract contract ERC721MintableOnceBase is Context, IERC721Mintable {
     ) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().safeMintOnce(_msgSender(), to, tokenId, data);
+    }
+
+    /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if one of `tokenIds` has been previously burnt.
+    function batchMint(address to, uint256[] calldata tokenIds) external virtual override {
+        AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
+        ERC721Storage.layout().batchMintOnce(to, tokenIds);
     }
 
     /// @notice Gets whether a token was burnt.

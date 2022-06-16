@@ -38,17 +38,17 @@ abstract contract ERC721MetadataWithBaseURIBase is Context, IERC721Metadata {
     }
 
     /// @inheritdoc IERC721Metadata
-    function name() external view override returns (string memory) {
+    function name() external view override returns (string memory tokenName) {
         return ERC721ContractMetadataStorage.layout().name();
     }
 
     /// @inheritdoc IERC721Metadata
-    function symbol() external view override returns (string memory) {
+    function symbol() external view override returns (string memory tokenSymbol) {
         return ERC721ContractMetadataStorage.layout().symbol();
     }
 
     /// @inheritdoc IERC721Metadata
-    function tokenURI(uint256 tokenId) external view override returns (string memory) {
+    function tokenURI(uint256 tokenId) external view override returns (string memory uri) {
         ERC721Storage.layout().ownerOf(tokenId); // reverts if the token does not exist
         return TokenMetadataWithBaseURIStorage.layout().tokenMetadataURI(tokenId);
     }

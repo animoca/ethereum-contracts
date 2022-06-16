@@ -48,11 +48,15 @@ library ERC721ContractMetadataStorage {
         s.constructorInit(tokenName, tokenSymbol);
     }
 
-    function name(Layout storage s) internal view returns (string memory) {
+    /// @notice Gets the name of the token. E.g. "My Token".
+    /// @return tokenName The name of the token.
+    function name(Layout storage s) internal view returns (string memory tokenName) {
         return s.tokenName;
     }
 
-    function symbol(Layout storage s) internal view returns (string memory) {
+    /// @notice Gets the symbol of the token. E.g. "TOK".
+    /// @return tokenSymbol The symbol of the token.
+    function symbol(Layout storage s) internal view returns (string memory tokenSymbol) {
         return s.tokenSymbol;
     }
 

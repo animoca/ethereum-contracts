@@ -22,7 +22,7 @@ abstract contract ERC721MetadataPerTokenBase is Context, IERC721Metadata {
     /// @dev Reverts if the sender is not the contract owner.
     /// @param tokenId The token identifier.
     /// @param uri The token metadata URI.
-    function setTokenURI(uint256 tokenId, string memory uri) external {
+    function setTokenURI(uint256 tokenId, string calldata uri) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         TokenMetadataPerTokenStorage.layout().setTokenURI(tokenId, uri);
     }
@@ -37,17 +37,17 @@ abstract contract ERC721MetadataPerTokenBase is Context, IERC721Metadata {
     }
 
     /// @inheritdoc IERC721Metadata
-    function name() external view override returns (string memory) {
+    function name() external view override returns (string memory tokenName) {
         return ERC721ContractMetadataStorage.layout().name();
     }
 
     /// @inheritdoc IERC721Metadata
-    function symbol() external view override returns (string memory) {
+    function symbol() external view override returns (string memory tokenSymbol) {
         return ERC721ContractMetadataStorage.layout().symbol();
     }
 
     /// @inheritdoc IERC721Metadata
-    function tokenURI(uint256 tokenId) external view override returns (string memory) {
+    function tokenURI(uint256 tokenId) external view override returns (string memory uri) {
         ERC721Storage.layout().ownerOf(tokenId); // reverts if the token does not exist
         return TokenMetadataPerTokenStorage.layout().tokenMetadataURI(tokenId);
     }

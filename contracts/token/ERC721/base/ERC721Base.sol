@@ -45,28 +45,28 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory _data
+        bytes calldata data
     ) external virtual override {
-        ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId, _data);
+        ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId, data);
     }
 
     /// @inheritdoc IERC721
-    function balanceOf(address owner) external view override returns (uint256) {
+    function balanceOf(address owner) external view override returns (uint256 balance) {
         return ERC721Storage.layout().balanceOf(owner);
     }
 
     /// @inheritdoc IERC721
-    function ownerOf(uint256 tokenId) external view override returns (address) {
+    function ownerOf(uint256 tokenId) external view override returns (address tokenOwner) {
         return ERC721Storage.layout().ownerOf(tokenId);
     }
 
     /// @inheritdoc IERC721
-    function getApproved(uint256 tokenId) external view override returns (address operator) {
+    function getApproved(uint256 tokenId) external view override returns (address approved) {
         return ERC721Storage.layout().getApproved(tokenId);
     }
 
     /// @inheritdoc IERC721
-    function isApprovedForAll(address owner, address operator) external view override returns (bool) {
+    function isApprovedForAll(address owner, address operator) external view override returns (bool approvedForAll) {
         return ERC721Storage.layout().isApprovedForAll(owner, operator);
     }
 }

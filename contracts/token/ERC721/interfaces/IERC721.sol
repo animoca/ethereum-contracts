@@ -6,25 +6,25 @@ pragma solidity ^0.8.8;
 /// @dev This interface only contains the standard functions. See IERC721Events for the events.
 /// @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd.
 interface IERC721 {
-    /// @notice Sets or unsets an approval to transfer a single token identifier on behalf of its owner.
+    /// @notice Sets or unsets an approval to transfer a single token on behalf of its owner.
     /// @dev Note: There can only be one approved address per token at a given time.
     /// @dev Note: A token approval gets reset when this token is transferred, including a self-transfer.
-    /// @dev Reverts if the token identifier does not exist.
-    /// @dev Reverts if the sender is approving itself.
-    /// @dev Reverts if the sender is not the token owner or has not been approved by the token owner.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @dev Reverts if `to` is the token owner.
+    /// @dev Reverts if the sender is not the token owner and has not been approved by the token owner.
     /// @dev Emits an {Approval} event.
     /// @param to The address to approve, or the zero address to remove any existing approval.
     /// @param tokenId The token identifier to give approval for.
     function approve(address to, uint256 tokenId) external;
 
-    /// @notice Sets or unsets an approval to transfer all tokens on behalf of its current owner.
-    /// @dev Reverts if the sender is approving itself.
+    /// @notice Sets or unsets an approval to transfer all tokens on behalf of their owner.
+    /// @dev Reverts if the sender is the same as `operator`.
     /// @dev Emits an {ApprovalForAll} event.
     /// @param operator The address to approve for all tokens.
     /// @param approved True to set an approval for all tokens, false to unset it.
     function setApprovalForAll(address operator, bool approved) external;
 
-    /// @notice Unsafely transfers the ownership of a token identifier to a recipient.
+    /// @notice Unsafely transfers the ownership of a token to a recipient.
     /// @dev Note: Usage of this method is discouraged, use `safeTransferFrom` whenever possible.
     /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
@@ -40,7 +40,7 @@ interface IERC721 {
         uint256 tokenId
     ) external;
 
-    /// @notice Safely transfers the ownership of a token identifier to a recipient.
+    /// @notice Safely transfers the ownership of a token to a recipient.
     /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
@@ -56,7 +56,7 @@ interface IERC721 {
         uint256 tokenId
     ) external;
 
-    /// @notice Safely transfers the ownership of a token identifier to a recipient.
+    /// @notice Safely transfers the ownership of a token to a recipient.
     /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
@@ -80,13 +80,13 @@ interface IERC721 {
     /// @return balance The amount owned by the owner.
     function balanceOf(address owner) external view returns (uint256 balance);
 
-    /// @notice Gets the owner of a token identifier.
+    /// @notice Gets the owner of a token.
     /// @dev Reverts if `tokenId` does not exist.
     /// @param tokenId The token identifier to query the owner of.
-    /// @return owner The owner of the token identifier.
-    function ownerOf(uint256 tokenId) external view returns (address owner);
+    /// @return tokenOwner The owner of the token identifier.
+    function ownerOf(uint256 tokenId) external view returns (address tokenOwner);
 
-    /// @notice Gets the approved address for a token identifier.
+    /// @notice Gets the approved address for a token.
     /// @dev Reverts if `tokenId` does not exist.
     /// @param tokenId The token identifier to query the approval of.
     /// @return approved The approved address for the token identifier, or the zero address if no approval is set.

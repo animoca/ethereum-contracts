@@ -26,7 +26,7 @@ contract ERC721MetadataPerTokenFacet is ERC721MetadataPerTokenBase, ForwarderReg
     /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
-    function initERC721MetadataStorage(string memory tokenName, string memory tokenSymbol) external {
+    function initERC721MetadataStorage(string calldata tokenName, string calldata tokenSymbol) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
     }

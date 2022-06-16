@@ -64,6 +64,15 @@ library ERC721Storage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Burnable).interfaceId, true);
     }
 
+    /// @notice Sets or unsets an approval to transfer a single token on behalf of its owner.
+    /// @dev Note: This function implements {ERC721-approve(address,uint256)}.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @dev Reverts if `to` is the token owner.
+    /// @dev Reverts if `sender` is not the token owner and has not been approved by the token owner.
+    /// @dev Emits an {Approval} event.
+    /// @param sender The message sender.
+    /// @param to The address to approve, or the zero address to remove any existing approval.
+    /// @param tokenId The token identifier to give approval for.
     function approve(
         Layout storage s,
         address sender,
@@ -91,6 +100,13 @@ library ERC721Storage {
         emit Approval(ownerAddress, to, tokenId);
     }
 
+    /// @notice Sets or unsets an approval to transfer all tokens on behalf of their owner.
+    /// @dev Note: This function implements {ERC721-setApprovalForAll(address,bool)}.
+    /// @dev Reverts if `sender` is the same as `operator`.
+    /// @dev Emits an {ApprovalForAll} event.
+    /// @param sender The message sender.
+    /// @param operator The address to approve for all tokens.
+    /// @param approved True to set an approval for all tokens, false to unset it.
     function setApprovalForAll(
         Layout storage s,
         address sender,
@@ -102,6 +118,17 @@ library ERC721Storage {
         emit ApprovalForAll(sender, operator, approved);
     }
 
+    /// @notice Unsafely transfers the ownership of a token to a recipient by a sender.
+    /// @dev Note: This function implements {ERC721-transferFrom(address,address,uint256)}.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Emits a {Transfer} event.
+    /// @param sender The message sender.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer.
+    /// @param tokenId The identifier of the token to transfer.
     function transferFrom(
         Layout storage s,
         address sender,
@@ -132,6 +159,18 @@ library ERC721Storage {
         emit Transfer(from, to, tokenId);
     }
 
+    /// @notice Safely transfers the ownership of a token to a recipient by a sender.
+    /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256)}.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event.
+    /// @param sender The message sender.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer.
+    /// @param tokenId The identifier of the token to transfer.
     function safeTransferFrom(
         Layout storage s,
         address sender,
@@ -145,6 +184,19 @@ library ERC721Storage {
         }
     }
 
+    /// @notice Safely transfers the ownership of a token to a recipient by a sender.
+    /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256,bytes)}.
+    /// @dev Resets the token approval for `tokenId`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `from` is not the owner of `tokenId`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event.
+    /// @param sender The message sender.
+    /// @param from The current token owner.
+    /// @param to The recipient of the token transfer.
+    /// @param tokenId The identifier of the token to transfer.
+    /// @param data Optional data to send along to a receiver contract.
     function safeTransferFrom(
         Layout storage s,
         address sender,
@@ -159,6 +211,17 @@ library ERC721Storage {
         }
     }
 
+    /// @notice Unsafely transfers a batch of tokens to a recipient by a sender.
+    /// @dev Note: This function implements {ERC721BatchTransfer-batchTransferFrom(address,address,uint256[])}.
+    /// @dev Resets the token approval for each of `tokenIds`.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if one of `tokenIds` is not owned by `from`.
+    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for each of `tokenIds`.
+    /// @dev Emits a {Transfer} event for each of `tokenIds`.
+    /// @param sender The message sender.
+    /// @param from Current tokens owner.
+    /// @param to Address of the new token owner.
+    /// @param tokenIds Identifiers of the tokens to transfer.
     function batchTransferFrom(
         Layout storage s,
         address sender,
@@ -192,7 +255,14 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `mint` or `mintOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints a token.
+    /// @dev Note: This function implements {ERC721Mintable-mint(address,uint256)}.
+    /// @dev Note: Either `mint` or `mintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `tokenId` already exists.
+    /// @dev Emits a {Transfer} event from the zero address.
+    /// @param to Address of the new token owner.
+    /// @param tokenId Identifier of the token to mint.
     function mint(
         Layout storage s,
         address to,
@@ -211,7 +281,16 @@ library ERC721Storage {
         emit Transfer(address(0), to, tokenId);
     }
 
-    /// @dev Note: either `safeMint` or `safeMintOnce` should be used in a given contract, but not both
+    /// @notice Safely mints a token.
+    /// @dev Note: This function implements {ERC721Mintable-safeMint(address,uint256,bytes)}.
+    /// @dev Note: Either `safeMint` or `safeMintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `tokenId` already exists.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event from the zero address.
+    /// @param to Address of the new token owner.
+    /// @param tokenId Identifier of the token to mint.
+    /// @param data Optional data to pass along to the receiver call.
     function safeMint(
         Layout storage s,
         address sender,
@@ -225,7 +304,14 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `batchMint` or `batchMintOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints a batch of tokens.
+    /// @dev Note: This function implements {ERC721Mintable-batchMint(address,uint256[])}.
+    /// @dev Note: Either `batchMint` or `batchMintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
+    /// @param to Address of the new tokens owner.
+    /// @param tokenIds Identifiers of the tokens to mint.
     function batchMint(
         Layout storage s,
         address to,
@@ -247,7 +333,15 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `deliver` or `deliverOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints tokens to multiple recipients.
+    /// @dev Note: This function implements {ERC721Deliverable-deliver(address[],uint256[])}.
+    /// @dev Note: Either `deliver` or `deliverOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `recipients` and `tokenIds` have different lengths.
+    /// @dev Reverts if one of `recipients` is the zero address.
+    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
+    /// @param recipients Addresses of the new tokens owners.
+    /// @param tokenIds Identifiers of the tokens to mint.
     function deliver(
         Layout storage s,
         address[] memory recipients,
@@ -271,7 +365,15 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `mint` or `mintOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints a token once.
+    /// @dev Note: This function implements {ERC721Mintable-mint(address,uint256)}.
+    /// @dev Note: Either `mint` or `mintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `tokenId` already exists.
+    /// @dev Reverts if `tokenId` has been previously burnt.
+    /// @dev Emits a {Transfer} event from the zero address.
+    /// @param to Address of the new token owner.
+    /// @param tokenId Identifier of the token to mint.
     function mintOnce(
         Layout storage s,
         address to,
@@ -293,7 +395,17 @@ library ERC721Storage {
         emit Transfer(address(0), to, tokenId);
     }
 
-    /// @dev Note: either `safeMint` or `safeMintOnce` should be used in a given contract, but not both
+    /// @notice Safely mints a token once.
+    /// @dev Note: This function implements {ERC721Mintable-safeMint(address,uint256,bytes)}.
+    /// @dev Note: Either `safeMint` or `safeMintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `tokenId` already exists.
+    /// @dev Reverts if `tokenId` has been previously burnt.
+    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Emits a {Transfer} event from the zero address.
+    /// @param to Address of the new token owner.
+    /// @param tokenId Identifier of the token to mint.
+    /// @param data Optional data to pass along to the receiver call.
     function safeMintOnce(
         Layout storage s,
         address sender,
@@ -307,7 +419,15 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `batchMint` or `batchMintOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints a batch of tokens once.
+    /// @dev Note: This function implements {ERC721Mintable-batchMint(address,uint256[])}.
+    /// @dev Note: Either `batchMint` or `batchMintOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Reverts if one of `tokenIds` has been previously burnt.
+    /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
+    /// @param to Address of the new tokens owner.
+    /// @param tokenIds Identifiers of the tokens to mint.
     function batchMintOnce(
         Layout storage s,
         address to,
@@ -332,7 +452,16 @@ library ERC721Storage {
         }
     }
 
-    /// @dev Note: either `deliver` or `deliverOnce` should be used in a given contract, but not both
+    /// @notice Unsafely mints tokens to multiple recipients once.
+    /// @dev Note: This function implements {ERC721Deliverable-deliver(address[],uint256[])}.
+    /// @dev Note: Either `deliver` or `deliverOnce` should be used in a given contract, but not both.
+    /// @dev Reverts if `recipients` and `tokenIds` have different lengths.
+    /// @dev Reverts if one of `recipients` is the zero address.
+    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Reverts if one of `tokenIds` has been previously burnt.
+    /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
+    /// @param recipients Addresses of the new tokens owners.
+    /// @param tokenIds Identifiers of the tokens to mint.
     function deliverOnce(
         Layout storage s,
         address[] memory recipients,
@@ -358,6 +487,14 @@ library ERC721Storage {
         }
     }
 
+    /// @notice Burns a token by a sender.
+    /// @dev Note: This function implements {ERC721Burnable-burnFrom(address,uint256)}.
+    /// @dev Reverts if `tokenId` is not owned by `from`.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Emits a {Transfer} event with `to` set to the zero address.
+    /// @param sender The message sender.
+    /// @param from The current token owner.
+    /// @param tokenId The identifier of the token to burn.
     function burnFrom(
         Layout storage s,
         address sender,
@@ -380,6 +517,14 @@ library ERC721Storage {
         emit Transfer(from, address(0), tokenId);
     }
 
+    /// @notice Burns a batch of tokens by a sender.
+    /// @dev Note: This function implements {ERC721Burnable-batchBurnFrom(address,uint256[])}.
+    /// @dev Reverts if one of `tokenIds` is not owned by `from`.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for each of `tokenIds`.
+    /// @dev Emits a {Transfer} event with `to` set to the zero address for each of `tokenIds`.
+    /// @param sender The message sender.
+    /// @param from The current tokens owner.
+    /// @param tokenIds The identifiers of the tokens to burn.
     function batchBurnFrom(
         Layout storage s,
         address sender,
@@ -408,26 +553,33 @@ library ERC721Storage {
         }
     }
 
-    function balanceOf(Layout storage s, address owner) internal view returns (uint256) {
+    /// @notice Gets the balance of an address.
+    /// @dev Note: This function implements {ERC721-balanceOf(address)}.
+    /// @dev Reverts if `owner` is the zero address.
+    /// @param owner The address to query the balance of.
+    /// @return balance The amount owned by the owner.
+    function balanceOf(Layout storage s, address owner) internal view returns (uint256 balance) {
         require(owner != address(0), "ERC721: balance of address(0)");
         return s.balances[owner];
     }
 
-    function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address) {
+    /// @notice Gets the owner of a token.
+    /// @dev Note: This function implements {ERC721-ownerOf(uint256)}.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @param tokenId The token identifier to query the owner of.
+    /// @return tokenOwner The owner of the token.
+    function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address tokenOwner) {
         uint256 owner = s.owners[tokenId];
         require(_tokenExists(owner), "ERC721: non-existing token");
         return _tokenOwner(owner);
     }
 
-    function isApprovedForAll(
-        Layout storage s,
-        address owner,
-        address operator
-    ) internal view returns (bool) {
-        return s.operators[owner][operator];
-    }
-
-    function getApproved(Layout storage s, uint256 tokenId) internal view returns (address) {
+    /// @notice Gets the approved address for a token.
+    /// @dev Note: This function implements {ERC721-getApproved(uint256)}.
+    /// @dev Reverts if `tokenId` does not exist.
+    /// @param tokenId The token identifier to query the approval of.
+    /// @return approved The approved address for the token identifier, or the zero address if no approval is set.
+    function getApproved(Layout storage s, uint256 tokenId) internal view returns (address approved) {
         uint256 owner = s.owners[tokenId];
         require(_tokenExists(owner), "ERC721: non-existing token");
         if (_tokenHasApproval(owner)) {
@@ -437,7 +589,23 @@ library ERC721Storage {
         }
     }
 
-    function wasBurnt(Layout storage s, uint256 tokenId) internal view returns (bool) {
+    /// @notice Gets whether an operator is approved for all tokens by an owner.
+    /// @dev Note: This function implements {ERC721-isApprovedForAll(address,address)}.
+    /// @param owner The address which gives the approval for all tokens.
+    /// @param operator The address which receives the approval for all tokens.
+    /// @return approvedForAll Whether the operator is approved for all tokens by the owner.
+    function isApprovedForAll(
+        Layout storage s,
+        address owner,
+        address operator
+    ) internal view returns (bool approvedForAll) {
+        return s.operators[owner][operator];
+    }
+
+    /// @notice Gets whether a token was burnt.
+    /// @param tokenId The token identifier.
+    /// @return tokenWasBurnt Whether the token was burnt.
+    function wasBurnt(Layout storage s, uint256 tokenId) internal view returns (bool tokenWasBurnt) {
         return _tokenWasBurnt(s.owners[tokenId]);
     }
 

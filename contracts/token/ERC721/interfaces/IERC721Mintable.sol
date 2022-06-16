@@ -13,14 +13,6 @@ interface IERC721Mintable {
     /// @param tokenId Identifier of the token to mint.
     function mint(address to, uint256 tokenId) external;
 
-    /// @notice Unsafely mints a batch of tokens.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if one of `tokenIds` already exists.
-    /// @dev Emits an {IERC721-Transfer} event from the zero address for each of `tokenIds`.
-    /// @param to Address of the new tokens owner.
-    /// @param tokenIds Identifiers of the tokens to mint.
-    function batchMint(address to, uint256[] calldata tokenIds) external;
-
     /// @notice Safely mints a token.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `tokenId` already exists.
@@ -34,4 +26,12 @@ interface IERC721Mintable {
         uint256 tokenId,
         bytes calldata data
     ) external;
+
+    /// @notice Unsafely mints a batch of tokens.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Emits an {IERC721-Transfer} event from the zero address for each of `tokenIds`.
+    /// @param to Address of the new tokens owner.
+    /// @param tokenIds Identifiers of the tokens to mint.
+    function batchMint(address to, uint256[] calldata tokenIds) external;
 }

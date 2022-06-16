@@ -108,7 +108,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "balance",
           "type": "uint256"
         }
       ],
@@ -127,7 +127,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "operator",
+          "name": "approved",
           "type": "address"
         }
       ],
@@ -151,7 +151,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "approvedForAll",
           "type": "bool"
         }
       ],
@@ -170,7 +170,7 @@
       "outputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "tokenOwner",
           "type": "address"
         }
       ],
@@ -219,7 +219,7 @@
         },
         {
           "internalType": "bytes",
-          "name": "_data",
+          "name": "data",
           "type": "bytes"
         }
       ],

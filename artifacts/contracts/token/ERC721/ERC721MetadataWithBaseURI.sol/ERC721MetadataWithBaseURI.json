@@ -54,7 +54,7 @@
       "outputs": [
         {
           "internalType": "string",
-          "name": "",
+          "name": "tokenName",
           "type": "string"
         }
       ],
@@ -112,7 +112,7 @@
       "outputs": [
         {
           "internalType": "string",
-          "name": "",
+          "name": "tokenSymbol",
           "type": "string"
         }
       ],
@@ -131,7 +131,7 @@
       "outputs": [
         {
           "internalType": "string",
-          "name": "",
+          "name": "uri",
           "type": "string"
         }
       ],

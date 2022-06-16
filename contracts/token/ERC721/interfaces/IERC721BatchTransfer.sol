@@ -5,7 +5,7 @@ pragma solidity ^0.8.8;
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev Note: The ERC-165 identifier for this interface is 0xf3993d11.
 interface IERC721BatchTransfer {
-    /// @notice Unsafely transfers a batch of tokens.
+    /// @notice Unsafely transfers a batch of tokens to a recipient.
     /// @dev Resets the token approval for each of `tokenIds`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if one of `tokenIds` is not owned by `from`.
