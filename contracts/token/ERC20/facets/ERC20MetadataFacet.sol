@@ -23,7 +23,7 @@ contract ERC20MetadataFacet is ERC20MetadataBase, ForwarderRegistryContextBase {
     /// @dev Reverts if the sender is not the proxy admin.
     /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @param uri The token URI.
-    function initERC20MetadataStorage(string memory uri) external {
+    function initERC20MetadataStorage(string calldata uri) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20MetadataStorage.layout().proxyInit(uri);
     }

@@ -36,11 +36,15 @@ library ERC20MetadataStorage {
         s.constructorInit(uri);
     }
 
+    /// @notice Sets the token URI.
+    /// @param uri The token URI.
     function setTokenURI(Layout storage s, string memory uri) internal {
         s.uri = uri;
     }
 
-    function tokenURI(Layout storage s) internal view returns (string memory) {
+    /// @notice Gets the token metadata URI.
+    /// @return uri The token metadata URI.
+    function tokenURI(Layout storage s) internal view returns (string memory uri) {
         return s.uri;
     }
 

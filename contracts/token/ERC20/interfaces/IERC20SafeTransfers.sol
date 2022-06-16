@@ -26,6 +26,7 @@ interface IERC20SafeTransfers {
     /// @dev Reverts if the sender is not `from` and does not have at least `value` of allowance by `from`.
     /// @dev Reverts if `to` is a contract and the call to `onERC20Received(address,address,uint256,bytes)` fails, reverts or is rejected.
     /// @dev Emits an {IERC20-Transfer} event.
+    /// @dev Optionally emits an {IERC20-Approval} event if the sender is not `from` (non-standard).
     /// @param from The account which owns the tokens to transfer.
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.

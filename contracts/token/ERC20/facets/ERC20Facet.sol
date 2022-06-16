@@ -28,7 +28,7 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
     /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
     /// @param holders The list of accounts to mint the tokens to.
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function initERC20Storage(address[] memory holders, uint256[] memory allocations) external {
+    function initERC20Storage(address[] calldata holders, uint256[] calldata allocations) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20Storage.layout().proxyInit(holders, allocations);
     }

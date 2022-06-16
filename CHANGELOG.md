@@ -18,11 +18,13 @@
 - Fixed ERC721Storage `mint`, `batchMint` and `safeMint` which did not allow re-minting after burning.
 - Fixed ERC721 transfer and burning tests which were not correctly testing transactions initiated by different recipients.
 - Immutable mock implementations now correctly inherit from `ForwarderRegistryContext` instead of `ForwarderRegistryContextBase`.
+- Fixed `memory`/`calldata` usage in ERC20 implementation
 
 ### Improvements
 
 - Improved ERC721 implementation.
 - Improved ERC721 tests.
+- Improved ERC20 comments coverage.
 
 ## 0.0.5
 

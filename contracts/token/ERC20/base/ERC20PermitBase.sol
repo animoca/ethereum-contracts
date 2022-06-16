@@ -25,8 +25,8 @@ abstract contract ERC20PermitBase is Context, IERC20Permit {
     }
 
     /// @inheritdoc IERC20Permit
-    function nonces(address account) external view override returns (uint256) {
-        return ERC20PermitStorage.layout().nonces(account);
+    function nonces(address owner) external view override returns (uint256) {
+        return ERC20PermitStorage.layout().nonces(owner);
     }
 
     /// @inheritdoc IERC20Permit

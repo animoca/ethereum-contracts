@@ -54,15 +54,24 @@ library ERC20DetailedStorage {
         s.constructorInit(tokenName, tokenSymbol, tokenDecimals);
     }
 
-    function name(Layout storage s) internal view returns (string memory) {
+    /// @notice Gets the name of the token. E.g. "My Token".
+    /// @return tokenName The name of the token.
+    function name(Layout storage s) internal view returns (string memory tokenName) {
         return s.tokenName;
     }
 
-    function symbol(Layout storage s) internal view returns (string memory) {
+    /// @notice Gets the symbol of the token. E.g. "TOK".
+    /// @return tokenSymbol The symbol of the token.
+    function symbol(Layout storage s) internal view returns (string memory tokenSymbol) {
         return s.tokenSymbol;
     }
 
-    function decimals(Layout storage s) internal view returns (uint8) {
+    /// @notice Gets the number of decimals used to display the balances.
+    /// @notice For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5,05` (`505 / 10 ** 2`).
+    /// @notice Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei.
+    /// @dev Note: This information is only used for display purposes: it does  not impact the arithmetic of the contract.
+    /// @return nbDecimals The number of decimals used to display the balances.
+    function decimals(Layout storage s) internal view returns (uint8 nbDecimals) {
         return s.tokenDecimals;
     }
 

@@ -24,7 +24,7 @@ abstract contract ERC20MintableBase is Context, IERC20Mintable {
 
     /// @inheritdoc IERC20Mintable
     /// @dev Reverts if the sender does not have the minter role.
-    function batchMint(address[] memory recipients, uint256[] memory values) external virtual override {
+    function batchMint(address[] calldata recipients, uint256[] calldata values) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC20Storage.layout().batchMint(recipients, values);
     }

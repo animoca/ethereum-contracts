@@ -70,7 +70,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "value",
           "type": "uint256"
         }
       ],
@@ -94,7 +94,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
           "type": "bool"
         }
       ],
@@ -105,7 +105,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "account",
+          "name": "owner",
           "type": "address"
         }
       ],
@@ -113,7 +113,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "balance",
           "type": "uint256"
         }
       ],
@@ -137,7 +137,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
           "type": "bool"
         }
       ],
@@ -161,7 +161,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
           "type": "bool"
         }
       ],
@@ -174,7 +174,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "supply",
           "type": "uint256"
         }
       ],
@@ -198,7 +198,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
           "type": "bool"
         }
       ],
@@ -227,7 +227,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "result",
           "type": "bool"
         }
       ],

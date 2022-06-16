@@ -17,6 +17,17 @@ interface IERC20 {
     /// @param value The allowance amount being granted.
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
+    /// @notice Sets the allowance to an account from the sender.
+    /// @notice Warning: Beware that changing an allowance with this method brings the risk that someone may use both the old and
+    ///  the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce
+    ///  the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+    /// @dev Reverts if `spender` is the zero address.
+    /// @dev Emits an {Approval} event.
+    /// @param spender The account being granted the allowance by the message caller.
+    /// @param value The allowance amount to grant.
+    /// @return result Whether the operation succeeded.
+    function approve(address spender, uint256 value) external returns (bool result);
+
     /// @notice Transfers an amount of tokens to a recipient from the sender.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if the sender does not have at least `value` of balance.
@@ -41,17 +52,6 @@ interface IERC20 {
         address to,
         uint256 value
     ) external returns (bool result);
-
-    /// @notice Sets the allowance to an account from the sender.
-    /// @notice Warning: Beware that changing an allowance with this method brings the risk that someone may use both the old and
-    ///  the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce
-    ///  the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    /// @dev Reverts if `spender` is the zero address.
-    /// @dev Emits an {Approval} event.
-    /// @param spender The account being granted the allowance by the message caller.
-    /// @param value The allowance amount to grant.
-    /// @return result Whether the operation succeeded.
-    function approve(address spender, uint256 value) external returns (bool result);
 
     /// @notice Gets the total token supply.
     /// @return supply The total token supply.

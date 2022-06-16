@@ -11,16 +11,16 @@ Solidity contracts development library which uses [HardHat](https://hardhat.org/
 
 The contracts are designed to be usable in any setup, behind a proxy or not. To achieve this, every storage is managed via [diamond storage pattern](https://dev.to/mudgen/how-diamond-storage-works-90e).
 
-The solidity files are named using the following convention:
+The solidity files are structured as follow:
 
 - `libraries/XYZStorage.sol`: Library managing the diamond storage and the core contract logic.  
   Does not deal with access control and sender-related logic (such as for meta-transactions).
-- `XYZBase.sol`: Base abstract proxiable contract. Should be inherited by a proxied contract implementation.  
+- `base/XYZBase.sol`: Base abstract proxiable contract. Should be inherited by a proxied contract implementation.  
   Deals with access control and sender-related logic. Does not deal with initialization sequence.
+- `facets/XYZFacet.sol`: Deployable diamond facet. Should be deployed and used via a diamond proxy.  
+  Deals with access control and sender-related logic. Provides the initialization sequence via an initialization function.
 - `XYZ.sol`: Abstract immutable contract. Should be inherited by an immutable contract implementation.  
-  Provides the initialization sequence via its `constructor`.
-- `XYZFacet.sol`: Deployable diamond facet. Should be deployed and used via a diamond proxy.  
-  Provides the initialization sequence via an initialization function.
+  Deals with access control and sender-related logic. Provides the initialization sequence via its `constructor`.
 
 To use a contract, simply import it in your code, for example:
 

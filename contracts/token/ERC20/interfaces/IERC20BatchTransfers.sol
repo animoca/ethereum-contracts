@@ -21,7 +21,7 @@ interface IERC20BatchTransfers {
     /// @dev Reverts if `from` does not have at least `sum(values)` of balance.
     /// @dev Reverts if the sender is not `from` and does not have at least `sum(values)` of allowance by `from`.
     /// @dev Emits an {IERC20-Transfer} event for each transfer.
-    /// @dev Optionally emits an {Approval} event if the sender is not `from` (non-standard).
+    /// @dev Optionally emits an {IERC20-Approval} event if the sender is not `from` (non-standard).
     /// @param from The account which owns the tokens to be transferred.
     /// @param recipients The list of accounts to transfer the tokens to.
     /// @param values The list of amounts of tokens to transfer to each of `recipients`.

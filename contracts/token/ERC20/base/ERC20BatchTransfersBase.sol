@@ -11,7 +11,7 @@ abstract contract ERC20BatchTransfersBase is Context, IERC20BatchTransfers {
     using ERC20Storage for ERC20Storage.Layout;
 
     /// @inheritdoc IERC20BatchTransfers
-    function batchTransfer(address[] memory recipients, uint256[] memory values) external virtual override returns (bool) {
+    function batchTransfer(address[] calldata recipients, uint256[] calldata values) external virtual override returns (bool) {
         ERC20Storage.layout().batchTransfer(_msgSender(), recipients, values);
         return true;
     }
@@ -19,8 +19,8 @@ abstract contract ERC20BatchTransfersBase is Context, IERC20BatchTransfers {
     /// @inheritdoc IERC20BatchTransfers
     function batchTransferFrom(
         address from,
-        address[] memory recipients,
-        uint256[] memory values
+        address[] calldata recipients,
+        uint256[] calldata values
     ) external virtual override returns (bool) {
         ERC20Storage.layout().batchTransferFrom(_msgSender(), from, recipients, values);
         return true;

@@ -12,13 +12,13 @@ abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
     using ERC20Storage for ERC20Storage.Layout;
 
     /// @inheritdoc IERC20
-    function approve(address spender, uint256 value) external virtual override returns (bool) {
+    function approve(address spender, uint256 value) external virtual override returns (bool result) {
         ERC20Storage.layout().approve(_msgSender(), spender, value);
         return true;
     }
 
     /// @inheritdoc IERC20
-    function transfer(address to, uint256 value) external virtual override returns (bool) {
+    function transfer(address to, uint256 value) external virtual override returns (bool result) {
         ERC20Storage.layout().transfer(_msgSender(), to, value);
         return true;
     }
@@ -28,35 +28,35 @@ abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
         address from,
         address to,
         uint256 value
-    ) external virtual override returns (bool) {
+    ) external virtual override returns (bool result) {
         ERC20Storage.layout().transferFrom(_msgSender(), from, to, value);
         return true;
     }
 
     /// @inheritdoc IERC20Allowance
-    function increaseAllowance(address spender, uint256 addedValue) external virtual override returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) external virtual override returns (bool result) {
         ERC20Storage.layout().increaseAllowance(_msgSender(), spender, addedValue);
         return true;
     }
 
     /// @inheritdoc IERC20Allowance
-    function decreaseAllowance(address spender, uint256 subtractedValue) external virtual override returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) external virtual override returns (bool result) {
         ERC20Storage.layout().decreaseAllowance(_msgSender(), spender, subtractedValue);
         return true;
     }
 
     /// @inheritdoc IERC20
-    function totalSupply() external view override returns (uint256) {
+    function totalSupply() external view override returns (uint256 supply) {
         return ERC20Storage.layout().totalSupply();
     }
 
     /// @inheritdoc IERC20
-    function balanceOf(address account) external view override returns (uint256) {
-        return ERC20Storage.layout().balanceOf(account);
+    function balanceOf(address owner) external view override returns (uint256 balance) {
+        return ERC20Storage.layout().balanceOf(owner);
     }
 
     /// @inheritdoc IERC20
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender) public view virtual override returns (uint256 value) {
         return ERC20Storage.layout().allowance(owner, spender);
     }
 }

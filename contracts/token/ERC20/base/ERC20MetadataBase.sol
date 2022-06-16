@@ -16,7 +16,7 @@ abstract contract ERC20MetadataBase is Context, IERC20Metadata {
     /// @notice Sets the token URI.
     /// @dev Reverts if the sender is not the contract owner.
     /// @param uri The token URI.
-    function setTokenURI(string memory uri) external {
+    function setTokenURI(string calldata uri) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         ERC20MetadataStorage.layout().setTokenURI(uri);
     }

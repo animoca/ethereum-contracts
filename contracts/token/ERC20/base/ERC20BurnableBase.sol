@@ -23,7 +23,7 @@ abstract contract ERC20BurnableBase is Context, IERC20Burnable {
     }
 
     /// @inheritdoc IERC20Burnable
-    function batchBurnFrom(address[] memory owners, uint256[] memory values) external virtual override returns (bool) {
+    function batchBurnFrom(address[] calldata owners, uint256[] calldata values) external virtual override returns (bool) {
         ERC20Storage.layout().batchBurnFrom(_msgSender(), owners, values);
         return true;
     }
