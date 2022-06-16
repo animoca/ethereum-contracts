@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.14;
+pragma solidity 0.8.15;
 
 import {IDiamondCutCommon} from "./../../diamond/interfaces/IDiamondCutCommon.sol";
 import {DiamondStorage} from "./../../diamond/libraries/DiamondStorage.sol";

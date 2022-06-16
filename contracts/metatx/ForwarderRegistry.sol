@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.14;
+pragma solidity 0.8.15;
 
 import {IForwarderRegistry} from "./../metatx/interfaces/IForwarderRegistry.sol";
 import {IERC2771} from "./../metatx/interfaces/IERC2771.sol";

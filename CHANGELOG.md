@@ -4,6 +4,7 @@
 
 ### Breaking changes
 
+- Upgraded to `solc@0.8.15`.
 - Made `ERC20` and `ERC721` contracts abstract.
 - Restructured `contracts` folder with subfolders `base` and `facets`.
 - Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
