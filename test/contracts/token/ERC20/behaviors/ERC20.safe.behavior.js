@@ -4,7 +4,7 @@ const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constan
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {deployContract} = require('../../../../helpers/contract');
 const {getForwarderRegistryAddress} = require('../../../../helpers/run');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Safe(implementation) {
   const {features, revertMessages, deploy} = implementation;
@@ -283,7 +283,7 @@ function behavesLikeERC20Safe(implementation) {
     });
 
     if (features.ERC165) {
-      supporstInterfaces(['IERC20SafeTransfers']);
+      supportsInterfaces(['IERC20SafeTransfers']);
     }
   });
 }

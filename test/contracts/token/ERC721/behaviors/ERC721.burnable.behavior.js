@@ -2,7 +2,7 @@ const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {ZeroAddress} = require('../../../../../src/constants');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, interfaces, methods}) {
   const {
@@ -237,7 +237,7 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
     }
 
     if (interfaces.ERC721Burnable) {
-      supporstInterfaces(['IERC721Burnable']);
+      supportsInterfaces(['IERC721Burnable']);
     }
   });
 }

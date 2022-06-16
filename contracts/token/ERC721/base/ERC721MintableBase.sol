@@ -19,7 +19,6 @@ abstract contract ERC721MintableBase is Context, IERC721Mintable {
     /// @inheritdoc IERC721Mintable
     function mint(address to, uint256 tokenId) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
-        //todo change signature of mint()
         ERC721Storage.layout().mint(to, tokenId);
     }
 

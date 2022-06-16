@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 const {Zero, One, Two, Three, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
@@ -146,7 +146,7 @@ function behavesLikeERC20Allowance(implementation) {
     });
 
     if (features.ERC165) {
-      supporstInterfaces(['IERC20Allowance']);
+      supportsInterfaces(['IERC20Allowance']);
     }
   });
 }

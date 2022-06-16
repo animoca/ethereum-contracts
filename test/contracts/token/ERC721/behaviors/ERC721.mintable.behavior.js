@@ -4,7 +4,7 @@ const {loadFixture} = require('../../../../helpers/fixtures');
 const {deployContract} = require('../../../../helpers/contract');
 const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, features, methods}) {
   const {
@@ -183,7 +183,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
     }
 
     if (interfaces.ERC721Mintable) {
-      supporstInterfaces(['IERC721Mintable']);
+      supportsInterfaces(['IERC721Mintable']);
     }
   });
 }

@@ -5,7 +5,7 @@ const {getForwarderRegistryAddress} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('../../helpers/diamond');
 const {deployContract} = require('../../helpers/contract');
-const {supporstInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const EmptyInit = [ZeroAddress, EmptyByte];
 
@@ -578,7 +578,7 @@ describe('Diamond', function () {
     }, batchInit);
   });
 
-  supporstInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
+  supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
 });
 
 describe('Facet', function () {

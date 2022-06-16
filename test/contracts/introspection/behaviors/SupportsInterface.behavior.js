@@ -16,7 +16,7 @@ function makeInterfaceId(interfaceName) {
   return `0x${interfaceId.toString('hex')}`;
 }
 
-function supporstInterfaces(interfaces, maxGas = 30000) {
+function supportsInterfaces(interfaces, maxGas = 30000) {
   describe('ERC165 supportsInterface(bytes4)', function () {
     beforeEach(function () {
       this.contract = this.contract || this.mock || this.token;
@@ -40,5 +40,5 @@ function supporstInterfaces(interfaces, maxGas = 30000) {
 
 module.exports = {
   makeInterfaceId,
-  supporstInterfaces,
+  supportsInterfaces,
 };

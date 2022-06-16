@@ -3,7 +3,7 @@ pragma solidity ^0.8.8;
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Deliverable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
-/// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
+/// @dev Note: The ERC-165 identifier for this interface is 0x9da5e832.
 interface IERC721Deliverable {
     /// @notice Unsafely mints tokens to multiple recipients.
     /// @dev Reverts if `recipients` and `tokenIds` have different lengths.

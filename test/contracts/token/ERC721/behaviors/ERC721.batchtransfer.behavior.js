@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const {ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessages, methods}) {
@@ -159,7 +159,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
     }
 
     if (interfaces.ERC721BatchTransfer) {
-      supporstInterfaces(['IERC721BatchTransfer']);
+      supportsInterfaces(['IERC721BatchTransfer']);
     }
   });
 }

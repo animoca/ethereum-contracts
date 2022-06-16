@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, deploy, mint, revertMessages}) {
   describe('like an ERC721Metadata', function () {
@@ -121,7 +121,7 @@ function behavesLikeERC721Metadata({name, symbol, baseMetadataURI, features, dep
         });
       });
     }
-    supporstInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
+    supportsInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
   });
 }
 

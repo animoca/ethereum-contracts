@@ -3,7 +3,7 @@ const {expect} = require('chai');
 const {ZeroAddress} = require('../../../src/constants');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
-const {supporstInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
   immutable: {name: 'ContractOwnershipMock', ctorArguments: ['initialOwner', 'forwarderRegistry'], testMsgData: true},
@@ -135,6 +135,6 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
     });
 
-    supporstInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC173']);
+    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC173']);
   });
 });

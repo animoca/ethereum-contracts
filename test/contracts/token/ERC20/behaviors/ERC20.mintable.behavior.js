@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 const {Zero, One, Two, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
@@ -168,7 +168,7 @@ function behavesLikeERC20Mintable(implementation) {
     }
 
     if (features.ERC165 && interfaces.ERC20Mintable) {
-      supporstInterfaces(['IERC20Mintable']);
+      supportsInterfaces(['IERC20Mintable']);
     }
   });
 }

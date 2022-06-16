@@ -2,7 +2,7 @@ const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {ZeroAddress} = require('../../../../../src/constants');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces, features, methods}) {
   describe('like a Deliverable ERC721', function () {
@@ -88,7 +88,7 @@ function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces,
       });
     });
 
-    supporstInterfaces(['IERC721Deliverable']);
+    supportsInterfaces(['IERC721Deliverable']);
   });
 }
 

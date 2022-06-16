@@ -2,7 +2,7 @@ const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {loadFixture} = require('../../../../helpers/fixtures');
 const {deployContract} = require('../../../../helpers/contract');
-const {supporstInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 
@@ -367,7 +367,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       });
     });
 
-    supporstInterfaces(['contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
+    supportsInterfaces(['contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
   });
 }
 
