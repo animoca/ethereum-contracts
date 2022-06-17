@@ -618,7 +618,7 @@ library ERC721Storage {
 
     /// @notice Calls {IERC721Receiver-onERC721Received} on a target contract.
     /// @dev Reverts if the call to the target fails, reverts or is rejected.
-    /// @param sender sender of the message.
+    /// @param sender The message sender.
     /// @param from Previous token owner.
     /// @param to New token owner.
     /// @param tokenId Identifier of the token transferred.

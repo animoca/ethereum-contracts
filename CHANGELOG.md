@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### New features
+
+- Added support for ERC1155.
+
 ## 0.1.0
 
 ### Breaking changes

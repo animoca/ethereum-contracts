@@ -9,19 +9,19 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_owner",
+          "name": "owner",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_operator",
+          "name": "operator",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "bool",
-          "name": "_approved",
+          "name": "approved",
           "type": "bool"
         }
       ],
@@ -34,31 +34,31 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_operator",
+          "name": "operator",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_from",
+          "name": "from",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_to",
+          "name": "to",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256[]",
-          "name": "_ids",
+          "name": "ids",
           "type": "uint256[]"
         },
         {
           "indexed": false,
           "internalType": "uint256[]",
-          "name": "_values",
+          "name": "values",
           "type": "uint256[]"
         }
       ],
@@ -71,31 +71,31 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_operator",
+          "name": "operator",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_from",
+          "name": "from",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "_to",
+          "name": "to",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_id",
+          "name": "id",
           "type": "uint256"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_value",
+          "name": "value",
           "type": "uint256"
         }
       ],
@@ -108,13 +108,13 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "_value",
+          "name": "value",
           "type": "string"
         },
         {
           "indexed": true,
           "internalType": "uint256",
-          "name": "_id",
+          "name": "id",
           "type": "uint256"
         }
       ],
