@@ -12,6 +12,6 @@ interface IERC1155MetadataURI {
     /// @dev The uri function MUST return the same value as the latest event for an _id if it was emitted.
     /// @dev The uri function MUST NOT be used to check for the existence of a token as it is possible for
     ///  an implementation to return a valid string even if the token does not exist.
-    /// @return tokenURI The URI associated to the token.
-    function uri(uint256 id) external view returns (string memory tokenURI);
+    /// @return metadataURI The URI associated to the token.
+    function uri(uint256 id) external view returns (string memory metadataURI);
 }

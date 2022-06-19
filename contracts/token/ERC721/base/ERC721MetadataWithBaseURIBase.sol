@@ -11,6 +11,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC721 Non-Fungible Token Standard (proxiable version), optional extension: Metadata (proxiable version).
 /// @notice ERC721Metadata implementation where tokenURIs are the concatenation of a base metadata URI and the token identifier (decimal).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 abstract contract ERC721MetadataWithBaseURIBase is Context, IERC721Metadata {
     using ERC721Storage for ERC721Storage.Layout;

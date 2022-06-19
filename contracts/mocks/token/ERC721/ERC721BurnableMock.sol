@@ -9,11 +9,11 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC721BurnableMock
 contract ERC721BurnableMock is ERC721Mock, ERC721Burnable {
     constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory tokenURI_,
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseMetadataURI,
         IForwarderRegistry forwarderRegistry
-    ) ERC721Mock(name_, symbol_, tokenURI_, forwarderRegistry) {}
+    ) ERC721Mock(tokenName, tokenSymbol, baseMetadataURI, forwarderRegistry) {}
 
     /// @inheritdoc ERC721Mock
     function _msgSender() internal view virtual override(Context, ERC721Mock) returns (address) {

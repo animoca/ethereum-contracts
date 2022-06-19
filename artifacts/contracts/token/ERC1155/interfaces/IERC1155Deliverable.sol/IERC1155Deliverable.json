@@ -19,6 +19,11 @@
           "internalType": "uint256[]",
           "name": "values",
           "type": "uint256[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
       ],
       "name": "safeDeliver",

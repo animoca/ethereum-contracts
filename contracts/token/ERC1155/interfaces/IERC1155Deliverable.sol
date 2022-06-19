@@ -6,7 +6,7 @@ pragma solidity ^0.8.8;
 /// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
 interface IERC1155Deliverable {
     /// @notice Safely mints tokens to multiple recipients.
-    /// @dev Reverts if `recipients`, `tokenIds` and values have different lengths.
+    /// @dev Reverts if `recipients`, `ids` and `values` have different lengths.
     /// @dev Reverts if one of `recipients` is the zero address.
     /// @dev Reverts if one of `recipients` balance overflows.
     /// @dev Reverts if one of `recipients` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
@@ -14,5 +14,11 @@ interface IERC1155Deliverable {
     /// @param recipients Addresses of the new tokens owners.
     /// @param ids Identifiers of the tokens to mint.
     /// @param values Amounts of tokens to mint.
-    function safeDeliver(address[] calldata recipients, uint256[] calldata ids, uint256[] calldata values) external;
+    /// @param data Optional data to send along to a receiver contract.
+    function safeDeliver(
+        address[] calldata recipients,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external;
 }

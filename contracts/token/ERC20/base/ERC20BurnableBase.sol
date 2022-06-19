@@ -7,6 +7,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Burnable (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC20 (Fungible Token Standard).
 abstract contract ERC20BurnableBase is Context, IERC20Burnable {
     using ERC20Storage for ERC20Storage.Layout;
 

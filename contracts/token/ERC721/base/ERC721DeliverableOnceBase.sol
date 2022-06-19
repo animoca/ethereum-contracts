@@ -9,6 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Deliverable (proxiable version)
 /// @notice ERC721Deliverable implementation where burnt tokens cannot be minted again.
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
 /// @dev Note: This contract requires AccessControl.
 abstract contract ERC721DeliverableOnceBase is Context, IERC721Deliverable {
     using ERC721Storage for ERC721Storage.Layout;

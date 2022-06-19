@@ -2,6 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {IERC1155} from "./../interfaces/IERC1155.sol";
+import {IERC1155MetadataURI} from "./../interfaces/IERC1155MetadataURI.sol";
 import {IERC1155Mintable} from "./../interfaces/IERC1155Mintable.sol";
 import {IERC1155Deliverable} from "./../interfaces/IERC1155Deliverable.sol";
 import {IERC1155Burnable} from "./../interfaces/IERC1155Burnable.sol";
@@ -35,6 +36,11 @@ library ERC1155Storage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC1155).interfaceId, true);
     }
 
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC1155MetadataURI.
+    function initERC1155MetadataURI() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC1155MetadataURI).interfaceId, true);
+    }
+
     /// @notice Marks the following ERC165 interface(s) as supported: ERC1155Mintable.
     function initERC1155Mintable() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC1155Mintable).interfaceId, true);
@@ -50,12 +56,18 @@ library ERC1155Storage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC1155Burnable).interfaceId, true);
     }
 
-    function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
-        require(operator != sender, "ERC1155: self-approval");
-        s.operators[sender][operator] = approved;
-        emit ApprovalForAll(sender, operator, approved);
-    }
-
+    /// @notice Safely transfers some token by a sender.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from`.
+    /// @dev Reverts if `from` has an insufficient balance of `id`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
+    /// @dev Emits a {TransferSingle} event.
+    /// @param sender The message sender.
+    /// @param from Current token owner.
+    /// @param to Address of the new token owner.
+    /// @param id Identifier of the token to transfer.
+    /// @param value Amount of token to transfer.
+    /// @param data Optional data to send along to a receiver contract.
     function safeTransferFrom(
         Layout storage s,
         address sender,
@@ -63,9 +75,8 @@ library ERC1155Storage {
         address to,
         uint256 id,
         uint256 value,
-        bytes calldata data
+        bytes memory data
     ) internal {
-
         require(to != address(0), "ERC1155: transfer to zero");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
@@ -78,14 +89,27 @@ library ERC1155Storage {
         }
     }
 
+    /// @notice Safely transfers a batch of tokens by a sender.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `ids` and `values` have different lengths.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from`.
+    /// @dev Reverts if `from` has an insufficient balance for any of `ids`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155BatchReceived} fails, reverts or is rejected.
+    /// @dev Emits a {TransferBatch} event.
+    /// @param sender The message sender.
+    /// @param from Current tokens owner.
+    /// @param to Address of the new tokens owner.
+    /// @param ids Identifiers of the tokens to transfer.
+    /// @param values Amounts of tokens to transfer.
+    /// @param data Optional data to send along to a receiver contract.
     function safeBatchTransferFrom(
         Layout storage s,
         address sender,
         address from,
         address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
+        uint256[] memory ids,
+        uint256[] memory values,
+        bytes memory data
     ) internal {
         require(to != address(0), "ERC1155: transfer to zero");
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
@@ -103,13 +127,23 @@ library ERC1155Storage {
         }
     }
 
+    /// @notice Safely mints some token by a sender.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `to`'s balance of `id` overflows.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
+    /// @dev Emits a {TransferSingle} event.
+    /// @param sender The message sender.
+    /// @param to Address of the new token owner.
+    /// @param id Identifier of the token to mint.
+    /// @param value Amount of token to mint.
+    /// @param data Optional data to send along to a receiver contract.
     function safeMint(
         Layout storage s,
         address sender,
         address to,
         uint256 id,
         uint256 value,
-        bytes calldata data
+        bytes memory data
     ) internal {
         require(to != address(0), "ERC1155: mint to zero");
 
@@ -122,13 +156,24 @@ library ERC1155Storage {
         }
     }
 
+    /// @notice Safely mints a batch of tokens by a sender.
+    /// @dev Reverts if `ids` and `values` have different lengths.
+    /// @dev Reverts if `to` is the zero address.
+    /// @dev Reverts if `to`'s balance overflows for one of `ids`.
+    /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155batchReceived} fails, reverts or is rejected.
+    /// @dev Emits a {TransferBatch} event.
+    /// @param sender The message sender.
+    /// @param to Address of the new tokens owner.
+    /// @param ids Identifiers of the tokens to mint.
+    /// @param values Amounts of tokens to mint.
+    /// @param data Optional data to send along to a receiver contract.
     function safeBatchMint(
         Layout storage s,
         address sender,
         address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
+        uint256[] memory ids,
+        uint256[] memory values,
+        bytes memory data
     ) internal {
         require(to != address(0), "ERC1155: mint to zero");
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
@@ -144,6 +189,40 @@ library ERC1155Storage {
         }
     }
 
+    /// @notice Safely mints tokens to multiple recipients by a sender.
+    /// @dev Reverts if `recipients`, `ids` and `values` have different lengths.
+    /// @dev Reverts if one of `recipients` is the zero address.
+    /// @dev Reverts if one of `recipients` balance overflows.
+    /// @dev Reverts if one of `recipients` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
+    /// @dev Emits a {TransferSingle} event from the zero address for each transfer.
+    /// @param sender The message sender.
+    /// @param recipients Addresses of the new tokens owners.
+    /// @param ids Identifiers of the tokens to mint.
+    /// @param values Amounts of tokens to mint.
+    /// @param data Optional data to send along to a receiver contract.
+    function safeDeliver(
+        Layout storage s,
+        address sender,
+        address[] memory recipients,
+        uint256[] memory ids,
+        uint256[] memory values,
+        bytes memory data
+    ) internal {
+        uint256 length = recipients.length;
+        require(length == ids.length && length == values.length, "ERC1155: inconsistent arrays");
+        for (uint256 i; i != length; ++i) {
+            s.safeMint(sender, recipients[i], ids[i], values[i], data);
+        }
+    }
+
+    /// @notice Burns some token by a sender.
+    /// @dev Reverts `sender` is not `from` and has not been approved by `from`.
+    /// @dev Reverts if `from` has an insufficient balance of `id`.
+    /// @dev Emits a {TransferSingle} event.
+    /// @param sender The message sender.
+    /// @param from Address of the current token owner.
+    /// @param id Identifier of the token to burn.
+    /// @param value Amount of token to burn.
     function burnFrom(
         Layout storage s,
         address sender,
@@ -156,12 +235,21 @@ library ERC1155Storage {
         emit TransferSingle(sender, from, address(0), id, value);
     }
 
+    /// @notice Burns multiple tokens by a sender.
+    /// @dev Reverts if `ids` and `values` have different lengths.
+    /// @dev Reverts if `sender` is not `from` and has not been approved by `from`.
+    /// @dev Reverts if `from` has an insufficient balance for any of `ids`.
+    /// @dev Emits an {IERC1155-TransferBatch} event.
+    /// @param sender The message sender.
+    /// @param from Address of the current tokens owner.
+    /// @param ids Identifiers of the tokens to burn.
+    /// @param values Amounts of tokens to burn.
     function batchBurnFrom(
         Layout storage s,
         address sender,
         address from,
-        uint256[] calldata ids,
-        uint256[] calldata values
+        uint256[] memory ids,
+        uint256[] memory values
     ) internal {
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
@@ -173,12 +261,57 @@ library ERC1155Storage {
         emit TransferBatch(sender, from, address(0), ids, values);
     }
 
-    function balanceOf(Layout storage s, address owner, uint256 id) internal view returns (uint256 balance) {
+    /// @notice Enables or disables an operator's approval by a sender.
+    /// @dev Emits an {ApprovalForAll} event.
+    /// @param sender The message sender.
+    /// @param operator Address of the operator.
+    /// @param approved True to approve the operator, false to revoke its approval.
+    function setApprovalForAll(
+        Layout storage s,
+        address sender,
+        address operator,
+        bool approved
+    ) internal {
+        require(operator != sender, "ERC1155: self-approval");
+        s.operators[sender][operator] = approved;
+        emit ApprovalForAll(sender, operator, approved);
+    }
+
+    /// @notice Retrieves the approval status of an operator for a given owner.
+    /// @param owner Address of the authorisation giver.
+    /// @param operator Address of the operator.
+    /// @return approved True if the operator is approved, false if not.
+    function isApprovedForAll(
+        Layout storage s,
+        address owner,
+        address operator
+    ) internal view returns (bool approved) {
+        return s.operators[owner][operator];
+    }
+
+    /// @notice Retrieves the balance of `id` owned by account `owner`.
+    /// @param owner The account to retrieve the balance of.
+    /// @param id The identifier to retrieve the balance of.
+    /// @return balance The balance of `id` owned by account `owner`.
+    function balanceOf(
+        Layout storage s,
+        address owner,
+        uint256 id
+    ) internal view returns (uint256 balance) {
         require(owner != address(0), "ERC1155: zero address");
         return s.balances[id][owner];
     }
 
-    function balanceOfBatch(Layout storage s, address[] calldata owners, uint256[] calldata ids) internal view returns (uint256[] memory balances) {
+    /// @notice Retrieves the balances of `ids` owned by accounts `owners`.
+    /// @dev Reverts if `owners` and `ids` have different lengths.
+    /// @param owners The addresses of the token holders
+    /// @param ids The identifiers to retrieve the balance of.
+    /// @return balances The balances of `ids` owned by accounts `owners`.
+    function balanceOfBatch(
+        Layout storage s,
+        address[] memory owners,
+        uint256[] memory ids
+    ) internal view returns (uint256[] memory balances) {
         require(owners.length == ids.length, "ERC1155: inconsistent arrays");
 
         balances = new uint256[](owners.length);
@@ -188,10 +321,6 @@ library ERC1155Storage {
         }
     }
 
-    function isApprovedForAll(Layout storage s, address tokenOwner, address operator) internal view returns (bool) {
-        return s.operators[tokenOwner][operator];
-    }
-
     function layout() internal pure returns (Layout storage s) {
         bytes32 position = LAYOUT_STORAGE_SLOT;
         assembly {
@@ -199,14 +328,16 @@ library ERC1155Storage {
         }
     }
 
-    /**
-     * Returns whether `sender` is authorised to make a transfer on behalf of `from`.
-     * @param from The address to check operatibility upon.
-     * @param sender The sender address.
-     * @return operatable True if sender is `from` or an operator for `from`, false otherwise.
-     */
-    function _isOperatable(Layout storage s, address from, address sender) private view returns (bool operatable) {
-        return (from == sender) || s.operators[from][sender];
+    /// @notice Returns whether an account is authorised to make a transfer on behalf of an owner.
+    /// @param owner The token owner.
+    /// @param account The account to check the operatability of.
+    /// @return operatable True if `account` is `owner` or is an operator for `owner`, false otherwise.
+    function _isOperatable(
+        Layout storage s,
+        address owner,
+        address account
+    ) private view returns (bool operatable) {
+        return (owner == account) || s.operators[owner][account];
     }
 
     function _transferToken(

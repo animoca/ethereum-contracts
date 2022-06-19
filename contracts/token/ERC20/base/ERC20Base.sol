@@ -8,6 +8,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC165 (Interface Detection Standard).
 abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
     using ERC20Storage for ERC20Storage.Layout;
 
