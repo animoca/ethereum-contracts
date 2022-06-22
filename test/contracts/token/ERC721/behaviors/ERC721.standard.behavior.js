@@ -7,7 +7,7 @@ const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 
 function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}) {
-  describe('like an ERC721 Standard', function () {
+  describe('like an ERC721', function () {
     let accounts, deployer, owner, approved, operator, other;
 
     before(async function () {
@@ -326,7 +326,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       });
     });
 
-    describe('setApprovalForAll(address, bool)', function () {
+    describe('setApprovalForAll(address,bool)', function () {
       it('reverts in case of self-approval', async function () {
         await expect(this.token.connect(owner).setApprovalForAll(owner.address, true)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
         await expect(this.token.connect(owner).setApprovalForAll(owner.address, false)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
@@ -367,7 +367,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       });
     });
 
-    supportsInterfaces(['contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
+    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
   });
 }
 

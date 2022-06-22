@@ -13,7 +13,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
     'safeMint(address,uint256,bytes)': safeMint_ERC721,
   } = methods;
 
-  describe('like a Mintable ERC721', function () {
+  describe('like an ERC721 Mintable', function () {
     let accounts, deployer, owner;
 
     before(async function () {

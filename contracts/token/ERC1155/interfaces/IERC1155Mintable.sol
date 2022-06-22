@@ -4,7 +4,7 @@ pragma solidity ^0.8.8;
 
 /// @title ERC1155 Multi Token Standard, optional extension: Mintable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-1155
-/// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
+/// @dev Note: The ERC-165 identifier for this interface is 0x5190c92c.
 interface IERC1155Mintable {
     /// @notice Safely mints some token.
     /// @dev Reverts if `to` is the zero address.

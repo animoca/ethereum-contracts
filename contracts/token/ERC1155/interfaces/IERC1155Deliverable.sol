@@ -3,7 +3,7 @@ pragma solidity ^0.8.8;
 
 /// @title ERC1155 Multi Token Standard, optional extension: Deliverable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-1155
-/// @dev Note: The ERC-165 identifier for this interface is 0xtodo.
+/// @dev Note: The ERC-165 identifier for this interface is 0xe8ab9ccc.
 interface IERC1155Deliverable {
     /// @notice Safely mints tokens to multiple recipients.
     /// @dev Reverts if `recipients`, `ids` and `values` have different lengths.

@@ -35,7 +35,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MintableOnceStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -45,7 +44,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721DeliverableOnceStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -59,7 +57,7 @@ const config = {
   },
 };
 
-runBehaviorTests('Mintable Once ERC721', config, function (deployFn) {
+runBehaviorTests('ERC721MintableOnce', config, function (deployFn) {
   const implementation = {
     revertMessages: {
       NonApproved: 'ERC721: non-approved sender',

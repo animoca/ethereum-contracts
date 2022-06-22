@@ -6,14 +6,16 @@ const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsI
 
 function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, interfaces, methods}) {
   const {
+    'burnFrom(address,uint256)': burnFrom,
+    'batchBurnFrom(address,uint256[])': batchBurnFrom,
     'mint(address,uint256)': mint_ERC721,
-    'batchMint(address,uint256[])': batchMint_ERC721,
     'safeMint(address,uint256,bytes)': safeMint_ERC721,
-    'burnFrom(address,uint256)': burnFrom_ERC721,
-    'batchBurnFrom(address,uint256[])': batchBurnFrom_ERC721,
+    'batchMint(address,uint256[])': batchMint_ERC721,
+    'safeMint(address,uint256,uint256,bytes)': safeMint_ERC1155,
+    'safeBatchMint(address,uint256[],uint256[],bytes)': safeBatchMint_ERC1155,
   } = methods;
 
-  describe('like a Burnable ERC721', function () {
+  describe('like an ERC721 Burnable', function () {
     let accounts, deployer, owner, other, approved, operator;
     let nft1 = 1;
     let nft2 = 2;
@@ -96,6 +98,37 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
           );
         });
       }
+
+      if (safeMint_ERC1155 !== undefined) {
+        it('can be minted again, using safeMint(address,uint256,uint256,bytes)', async function () {
+          for (const id of ids) {
+            await safeMint_ERC1155(this.token, owner.address, id, 1, '0x42');
+          }
+        });
+      }
+
+      if (safeBatchMint_ERC1155 !== undefined) {
+        it('can be minted again, using safeBatchMint(address,uint256[],uint256[],bytes)', async function () {
+          await safeBatchMint_ERC1155(
+            this.token,
+            owner.address,
+            ids.map(([id]) => id),
+            ids.map(() => 1),
+            '0x42'
+          );
+        });
+      }
+
+      if (interfaces.ERC1155Deliverable) {
+        it('can be minted again, using safeDeliver(address[],uint256[],uint256[],bytes)', async function () {
+          await this.token.safeDeliver(
+            ids.map(() => owner.address),
+            ids,
+            ids.map(() => 1),
+            '0x42'
+          );
+        });
+      }
     };
 
     const cannotBeMintedAgain = function (ids) {
@@ -108,7 +141,7 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
       });
 
       if (mint_ERC721 !== undefined) {
-        it('[ERC721MintableOnce] cannot be mintable again, using mint', async function () {
+        it('[ERC721MintableOnce] cannot be mintable again, using mint(address,uint256)', async function () {
           for (const id of ids) {
             await expect(mint_ERC721(this.token, owner.address, id, deployer)).to.be.revertedWith(revertMessages.BurntToken);
           }
@@ -116,13 +149,13 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
       }
 
       if (batchMint_ERC721 !== undefined) {
-        it('[ERC721MintableOnce] cannot be mintable again, using batchMint', async function () {
+        it('[ERC721MintableOnce] cannot be mintable again, using batchMint(address,uint256[])', async function () {
           await expect(batchMint_ERC721(this.token, owner.address, ids, deployer)).to.be.revertedWith(revertMessages.BurntToken);
         });
       }
 
       if (safeMint_ERC721 !== undefined) {
-        it('[ERC721MintableOnce] cannot be mintable again, using safeMint', async function () {
+        it('[ERC721MintableOnce] cannot be mintable again, using safeMint(address,uint256[],bytes)', async function () {
           for (const id of ids) {
             await expect(safeMint_ERC721(this.token, owner.address, id, 0x0, deployer)).to.be.revertedWith(revertMessages.BurntToken);
           }
@@ -135,6 +168,41 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
             this.token.deliver(
               ids.map(() => owner.address),
               ids
+            )
+          ).to.be.revertedWith(revertMessages.BurntToken);
+        });
+      }
+
+      if (safeMint_ERC1155 !== undefined) {
+        it('[ERC721MintableOnce] cannot be minted again, using safeMint(address,uint256,uint256,bytes)', async function () {
+          for (const id of ids) {
+            await expect(safeMint_ERC1155(this.token, owner.address, id, 1, '0x42')).to.be.revertedWith(revertMessages.BurntToken);
+          }
+        });
+      }
+
+      if (safeBatchMint_ERC1155 !== undefined) {
+        it('[ERC721MintableOnce] cannot be minted again, using safeBatchMint(address,uint256[],uint256[],bytes)', async function () {
+          await expect(
+            safeBatchMint_ERC1155(
+              this.token,
+              owner.address,
+              ids.map(([id]) => id),
+              ids.map(() => 1),
+              '0x42'
+            )
+          ).to.be.revertedWith(revertMessages.BurntToken);
+        });
+      }
+
+      if (interfaces.ERC1155Deliverable) {
+        it('[ERC721MintableOnce] cannot be minted again, using safeDeliver(address[],uint256[],uint256[],bytes)', async function () {
+          await expect(
+            this.token.safeDeliver(
+              ids.map(() => owner.address),
+              ids,
+              ids.map(() => 1),
+              '0x42'
             )
           ).to.be.revertedWith(revertMessages.BurntToken);
         });
@@ -204,21 +272,21 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
       });
     };
 
-    if (burnFrom_ERC721 !== undefined) {
+    if (burnFrom !== undefined) {
       describe('burnFrom(address,uint256)', function () {
         const burnFn = async function (tokenId) {
-          return burnFrom_ERC721(this.token, this.from, tokenId, this.sender);
+          return burnFrom(this.token, this.from, tokenId, this.sender);
         };
         revertsOnPreconditions(burnFn);
         burnsBySender(burnFn, nft1);
       });
     }
 
-    if (batchBurnFrom_ERC721 !== undefined) {
+    if (batchBurnFrom !== undefined) {
       describe('batchBurnFrom(address,uint256[])', function () {
         const burnFn = async function (tokenIds) {
           const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-          return batchBurnFrom_ERC721(this.token, this.from, ids, this.sender);
+          return batchBurnFrom(this.token, this.from, ids, this.sender);
         };
         revertsOnPreconditions(burnFn);
 

@@ -77,7 +77,7 @@ library ERC1155Storage {
         uint256 value,
         bytes memory data
     ) internal {
-        require(to != address(0), "ERC1155: transfer to zero");
+        require(to != address(0), "ERC1155: transfer to address(0)");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
         _transferToken(s, from, to, id, value);
@@ -111,13 +111,15 @@ library ERC1155Storage {
         uint256[] memory values,
         bytes memory data
     ) internal {
-        require(to != address(0), "ERC1155: transfer to zero");
+        require(to != address(0), "ERC1155: transfer to address(0)");
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
 
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
-        for (uint256 i; i != ids.length; ++i) {
-            _transferToken(s, from, to, ids[i], values[i]);
+        unchecked {
+            for (uint256 i; i != ids.length; ++i) {
+                _transferToken(s, from, to, ids[i], values[i]);
+            }
         }
 
         emit TransferBatch(sender, from, to, ids, values);
@@ -145,7 +147,7 @@ library ERC1155Storage {
         uint256 value,
         bytes memory data
     ) internal {
-        require(to != address(0), "ERC1155: mint to zero");
+        require(to != address(0), "ERC1155: mint to address(0)");
 
         _mintToken(s, to, id, value);
 
@@ -175,11 +177,13 @@ library ERC1155Storage {
         uint256[] memory values,
         bytes memory data
     ) internal {
-        require(to != address(0), "ERC1155: mint to zero");
+        require(to != address(0), "ERC1155: mint to address(0)");
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
 
-        for (uint256 i; i != ids.length; ++i) {
-            _mintToken(s, to, ids[i], values[i]);
+        unchecked {
+            for (uint256 i; i != ids.length; ++i) {
+                _mintToken(s, to, ids[i], values[i]);
+            }
         }
 
         emit TransferBatch(sender, address(0), to, ids, values);
@@ -210,8 +214,10 @@ library ERC1155Storage {
     ) internal {
         uint256 length = recipients.length;
         require(length == ids.length && length == values.length, "ERC1155: inconsistent arrays");
-        for (uint256 i; i != length; ++i) {
-            s.safeMint(sender, recipients[i], ids[i], values[i], data);
+        unchecked {
+            for (uint256 i; i != length; ++i) {
+                s.safeMint(sender, recipients[i], ids[i], values[i], data);
+            }
         }
     }
 
@@ -254,8 +260,10 @@ library ERC1155Storage {
         require(ids.length == values.length, "ERC1155: inconsistent arrays");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
-        for (uint256 i; i != ids.length; ++i) {
-            _burnToken(s, from, ids[i], values[i]);
+        unchecked {
+            for (uint256 i; i != ids.length; ++i) {
+                _burnToken(s, from, ids[i], values[i]);
+            }
         }
 
         emit TransferBatch(sender, from, address(0), ids, values);
@@ -272,7 +280,7 @@ library ERC1155Storage {
         address operator,
         bool approved
     ) internal {
-        require(operator != sender, "ERC1155: self-approval");
+        require(operator != sender, "ERC1155: self-approval for all");
         s.operators[sender][operator] = approved;
         emit ApprovalForAll(sender, operator, approved);
     }
@@ -298,7 +306,7 @@ library ERC1155Storage {
         address owner,
         uint256 id
     ) internal view returns (uint256 balance) {
-        require(owner != address(0), "ERC1155: zero address");
+        require(owner != address(0), "ERC1155: balance of address(0)");
         return s.balances[id][owner];
     }
 
@@ -316,8 +324,10 @@ library ERC1155Storage {
 
         balances = new uint256[](owners.length);
 
-        for (uint256 i = 0; i != owners.length; ++i) {
-            balances[i] = s.balanceOf(owners[i], ids[i]);
+        unchecked {
+            for (uint256 i = 0; i != owners.length; ++i) {
+                balances[i] = s.balanceOf(owners[i], ids[i]);
+            }
         }
     }
 
@@ -347,17 +357,20 @@ library ERC1155Storage {
         uint256 id,
         uint256 value
     ) private {
-        require(value != 0, "ERC1155: zero value");
-        uint256 fromBalance = s.balances[id][from];
-        uint256 newFromBalance = fromBalance - value;
-        require(newFromBalance < fromBalance, "ERC1155: not enough balance");
-        if (from != to) {
-            uint256 toBalance = s.balances[id][to];
-            uint256 newToBalance = toBalance + value;
-            require(newToBalance > toBalance, "ERC1155: balance overflow");
+        if (value != 0) {
+            unchecked {
+                uint256 fromBalance = s.balances[id][from];
+                uint256 newFromBalance = fromBalance - value;
+                require(newFromBalance < fromBalance, "ERC1155: insufficient balance");
+                if (from != to) {
+                    uint256 toBalance = s.balances[id][to];
+                    uint256 newToBalance = toBalance + value;
+                    require(newToBalance > toBalance, "ERC1155: balance overflow");
 
-            s.balances[id][from] = newFromBalance;
-            s.balances[id][to] += newToBalance;
+                    s.balances[id][from] = newFromBalance;
+                    s.balances[id][to] += newToBalance;
+                }
+            }
         }
     }
 
@@ -367,11 +380,14 @@ library ERC1155Storage {
         uint256 id,
         uint256 value
     ) private {
-        require(value != 0, "ERC1155: zero value");
-        uint256 balance = s.balances[id][to];
-        uint256 newBalance = balance + value;
-        require(newBalance > balance, "ERC1155: balance overflow");
-        s.balances[id][to] = newBalance;
+        if (value != 0) {
+            unchecked {
+                uint256 balance = s.balances[id][to];
+                uint256 newBalance = balance + value;
+                require(newBalance > balance, "ERC1155: balance overflow");
+                s.balances[id][to] = newBalance;
+            }
+        }
     }
 
     function _burnToken(
@@ -380,11 +396,14 @@ library ERC1155Storage {
         uint256 id,
         uint256 value
     ) private {
-        require(value != 0, "ERC1155: zero value");
-        uint256 balance = s.balances[id][from];
-        uint256 newBalance = balance - value;
-        require(newBalance < balance, "ERC1155: not enough balance");
-        s.balances[id][from] = newBalance;
+        if (value != 0) {
+            unchecked {
+                uint256 balance = s.balances[id][from];
+                uint256 newBalance = balance - value;
+                require(newBalance < balance, "ERC1155: insufficient balance");
+                s.balances[id][from] = newBalance;
+            }
+        }
     }
 
     /// @notice Calls {IERC1155TokenReceiver-onERC1155Received} on a target contract.

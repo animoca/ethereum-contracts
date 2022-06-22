@@ -45,21 +45,21 @@ const config = {
   },
 };
 
-runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
+runBehaviorTests('ERC721MetadataPerToken', config, function (deployFn) {
   const implementation = {
-    contractName: name,
-    nfMaskLength: 32,
     name,
     symbol,
     revertMessages: {
       NonExistingToken: 'ERC721: non-existing token',
-      NonOwnedToken: 'ERC721: non-owned token',
-      InconsistentArrays: 'ERC721: inconsistent arrays',
+      // NonOwnedToken: 'ERC721: non-owned token',
+      // InconsistentArrays: 'ERC721: inconsistent arrays',
       MetadataInconsistentArrays: 'Metadata: inconsistent arrays',
       // Admin
       NotContractOwner: 'Ownership: not the owner',
     },
-    features: {},
+    features: {
+      MetadataPerToken: true,
+    },
     interfaces: {
       ERC721Metadata: true,
     },
@@ -71,6 +71,9 @@ runBehaviorTests('TokenMetadata ERC721', config, function (deployFn) {
     },
     mint: async function (contract, to, id, _value) {
       return contract.mint(to, id);
+    },
+    tokenMetadata: async function (contract, id) {
+      return contract.tokenURI(id);
     },
   };
 

@@ -1,11 +1,5 @@
 # Changelog
 
-## 0.1.1
-
-### New features
-
-- Added support for ERC1155.
-
 ## 0.1.0
 
 ### Breaking changes
@@ -14,9 +8,11 @@
 - Made `ERC20` and `ERC721` contracts abstract.
 - Restructured `contracts` folder with subfolders `base` and `facets`.
 - Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
+- Changed ACL from contract owner to minter for `TokenMetadataPerToken` admin functions in ERC721.
 
 ### New features
 
+- Added support for ERC1155.
 - Added `wasBurnt(uint256)` function to ERC721MintableOnce.
 - Added `ERC721Deliverable`.
 

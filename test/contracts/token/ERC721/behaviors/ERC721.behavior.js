@@ -14,6 +14,7 @@ function behavesLikeERC721(implementation) {
   if (implementation.interfaces.ERC721Deliverable) {
     behavesLikeERC721Deliverable(implementation);
   }
+
   if (implementation.interfaces.ERC721Metadata) {
     behavesLikeERC721Metadata(implementation);
   }

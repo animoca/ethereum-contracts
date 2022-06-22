@@ -27,7 +27,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721Storage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -48,7 +47,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MintableStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -58,7 +56,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721DeliverableStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -68,7 +65,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721BurnableStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -78,7 +74,6 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721BatchTransferStorage',
-          arguments: [],
           adminProtected: true,
         },
         testMsgData: true,
@@ -95,10 +90,8 @@ const config = {
   },
 };
 
-runBehaviorTests('Burnable ERC721', config, function (deployFn) {
+runBehaviorTests('ERC721Burnable', config, function (deployFn) {
   const implementation = {
-    contractName: name,
-    nfMaskLength: 32,
     name,
     symbol,
     baseMetadataURI,
@@ -157,6 +150,9 @@ runBehaviorTests('Burnable ERC721', config, function (deployFn) {
     },
     mint: async function (contract, to, id, _value) {
       return contract.mint(to, id);
+    },
+    tokenMetadata: async function (contract, id) {
+      return contract.tokenURI(id);
     },
   };
 
