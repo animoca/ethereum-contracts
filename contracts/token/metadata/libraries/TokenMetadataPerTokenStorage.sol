@@ -29,9 +29,10 @@ library TokenMetadataPerTokenStorage {
         uint256[] calldata ids,
         string[] calldata uris
     ) internal {
-        require(ids.length == uris.length, "Metadata: inconsistent arrays");
+        uint256 length = ids.length;
+        require(length == uris.length, "Metadata: inconsistent arrays");
         unchecked {
-            for (uint256 i; i != ids.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 s.uris[ids[i]] = uris[i];
             }
         }

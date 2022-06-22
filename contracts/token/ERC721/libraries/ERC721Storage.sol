@@ -319,8 +319,8 @@ library ERC721Storage {
     ) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
@@ -347,9 +347,9 @@ library ERC721Storage {
         address[] memory recipients,
         uint256[] memory tokenIds
     ) internal {
+        uint256 length = recipients.length;
+        require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
-            uint256 length = recipients.length;
-            require(length == tokenIds.length, "ERC721: inconsistent arrays");
             for (uint256 i; i != length; ++i) {
                 s.mint(recipients[i], tokenIds[i]);
             }
@@ -426,8 +426,8 @@ library ERC721Storage {
     ) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
@@ -458,9 +458,9 @@ library ERC721Storage {
         address[] memory recipients,
         uint256[] memory tokenIds
     ) internal {
+        uint256 length = recipients.length;
+        require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
-            uint256 length = recipients.length;
-            require(length == tokenIds.length, "ERC721: inconsistent arrays");
             for (uint256 i; i != length; ++i) {
                 address to = recipients[i];
                 require(to != address(0), "ERC721: mint to address(0)");
@@ -524,9 +524,8 @@ library ERC721Storage {
     ) internal {
         bool operatable = _isOperatable(s, from, sender);
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
-
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];

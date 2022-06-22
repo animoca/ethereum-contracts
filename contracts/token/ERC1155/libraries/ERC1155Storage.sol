@@ -112,12 +112,13 @@ library ERC1155Storage {
         bytes memory data
     ) internal {
         require(to != address(0), "ERC1155: transfer to address(0)");
-        require(ids.length == values.length, "ERC1155: inconsistent arrays");
+        uint256 length = ids.length;
+        require(length == values.length, "ERC1155: inconsistent arrays");
 
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
         unchecked {
-            for (uint256 i; i != ids.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 _transferToken(s, from, to, ids[i], values[i]);
             }
         }
@@ -178,10 +179,11 @@ library ERC1155Storage {
         bytes memory data
     ) internal {
         require(to != address(0), "ERC1155: mint to address(0)");
-        require(ids.length == values.length, "ERC1155: inconsistent arrays");
+        uint256 length = ids.length;
+        require(length == values.length, "ERC1155: inconsistent arrays");
 
         unchecked {
-            for (uint256 i; i != ids.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 _mintToken(s, to, ids[i], values[i]);
             }
         }
@@ -257,11 +259,12 @@ library ERC1155Storage {
         uint256[] memory ids,
         uint256[] memory values
     ) internal {
-        require(ids.length == values.length, "ERC1155: inconsistent arrays");
+        uint256 length = ids.length;
+        require(length == values.length, "ERC1155: inconsistent arrays");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
         unchecked {
-            for (uint256 i; i != ids.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 _burnToken(s, from, ids[i], values[i]);
             }
         }
@@ -320,12 +323,13 @@ library ERC1155Storage {
         address[] memory owners,
         uint256[] memory ids
     ) internal view returns (uint256[] memory balances) {
-        require(owners.length == ids.length, "ERC1155: inconsistent arrays");
+        uint256 length = owners.length;
+        require(length == ids.length, "ERC1155: inconsistent arrays");
 
         balances = new uint256[](owners.length);
 
         unchecked {
-            for (uint256 i = 0; i != owners.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 balances[i] = s.balanceOf(owners[i], ids[i]);
             }
         }

@@ -29,9 +29,10 @@ library CheckpointsStorage {
         bytes32[] memory checkpointIds,
         uint256[] memory timestamps
     ) internal {
-        require(checkpointIds.length == timestamps.length, "Checkpoints: wrong array length");
+        uint256 length = checkpointIds.length;
+        require(length == timestamps.length, "Checkpoints: wrong array length");
         unchecked {
-            for (uint256 i; i != checkpointIds.length; ++i) {
+            for (uint256 i; i != length; ++i) {
                 uint256 timestamp = timestamps[i];
                 if (timestamp != 0) {
                     bytes32 checkpointId = checkpointIds[i];

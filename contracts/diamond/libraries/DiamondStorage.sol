@@ -62,8 +62,8 @@ library DiamondStorage {
         unchecked {
             s.cutFacets(cuts);
             emit DiamondCut(cuts, address(0), "");
-            uint256 nbInitializations = initializations.length;
-            for (uint256 i; i != nbInitializations; ++i) {
+            uint256 length = initializations.length;
+            for (uint256 i; i != length; ++i) {
                 initializationCall(initializations[i].target, initializations[i].data);
             }
         }
@@ -81,11 +81,12 @@ library DiamondStorage {
                 selectorSlot = s.selectorSlots[selectorCount >> 3];
             }
 
-            for (uint256 i; i != facetCuts.length; ++i) {
+            uint256 length = facetCuts.length;
+            for (uint256 i; i != length; ++i) {
                 IDiamondCutCommon.FacetCut memory facetCut = facetCuts[i];
                 IDiamondCutCommon.FacetCutAction action = facetCut.action;
 
-                require(facetCut.selectors.length > 0, "Diamond: no function selectors");
+                require(facetCut.selectors.length != 0, "Diamond: no function selectors");
 
                 if (action == IDiamondCutCommon.FacetCutAction.ADD) {
                     (selectorCount, selectorSlot) = s.addFacetSelectors(selectorCount, selectorSlot, facetCut);
@@ -116,7 +117,8 @@ library DiamondStorage {
         unchecked {
             require(facetCut.facet == address(this) || facetCut.facet.isContract(), "Diamond: facet has no code");
 
-            for (uint256 i; i != facetCut.selectors.length; ++i) {
+            uint256 length = facetCut.selectors.length;
+            for (uint256 i; i != length; ++i) {
                 bytes4 selector = facetCut.selectors[i];
                 bytes32 oldFacet = s.diamondFacets[selector];
 
@@ -222,7 +224,8 @@ library DiamondStorage {
         unchecked {
             require(facetCut.facet.isContract(), "Diamond: facet has no code");
 
-            for (uint256 i; i != facetCut.selectors.length; ++i) {
+            uint256 length = facetCut.selectors.length;
+            for (uint256 i; i != length; ++i) {
                 bytes4 selector = facetCut.selectors[i];
                 bytes32 oldFacet = s.diamondFacets[selector];
                 address oldFacetAddress = address(bytes20(oldFacet));
