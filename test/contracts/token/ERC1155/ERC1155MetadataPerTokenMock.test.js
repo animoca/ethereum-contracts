@@ -58,23 +58,10 @@ const config = {
 runBehaviorTests('ERC1155MetadataPerToken', config, function (deployFn) {
   const implementation = {
     revertMessages: {
-      // NonApproved: 'ERC1155: non-approved sender',
-      // SelfApprovalForAll: 'ERC1155: self-approval for all',
-      // BalanceOfAddressZero: 'ERC1155: balance of address(0)',
-      // TransferToAddressZero: 'ERC1155: transfer to address(0)',
-      // InsufficientBalance: 'ERC1155: insufficient balance',
-      // BalanceOverflow: 'ERC1155: balance overflow',
-      // MintToAddressZero: 'ERC1155: mint to address(0)',
-      // TransferRejected: 'ERC1155: transfer rejected',
-      // NonExistingToken: 'ERC1155: non-existing token',
-      // NonOwnedToken: 'ERC1155: non-owned token',
-      // ExistingToken: 'ERC1155: existing token',
-      // InconsistentArrays: 'ERC1155: inconsistent arrays',
       MetadataInconsistentArrays: 'Metadata: inconsistent arrays',
 
       // Admin
-      // NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      NotMinter: "AccessControl: missing 'minter' role",
     },
     features: {
       MetadataPerToken: true,

@@ -51,11 +51,10 @@ runBehaviorTests('ERC721MetadataPerToken', config, function (deployFn) {
     symbol,
     revertMessages: {
       NonExistingToken: 'ERC721: non-existing token',
-      // NonOwnedToken: 'ERC721: non-owned token',
-      // InconsistentArrays: 'ERC721: inconsistent arrays',
       MetadataInconsistentArrays: 'Metadata: inconsistent arrays',
+
       // Admin
-      NotContractOwner: 'Ownership: not the owner',
+      NotMinter: "AccessControl: missing 'minter' role",
     },
     features: {
       MetadataPerToken: true,

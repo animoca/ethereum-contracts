@@ -18,12 +18,14 @@ abstract contract ERC721MintableBase is Context, IERC721Mintable {
     bytes32 public constant MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function mint(address to, uint256 tokenId) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().mint(to, tokenId);
     }
 
     /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function safeMint(
         address to,
         uint256 tokenId,
@@ -34,6 +36,7 @@ abstract contract ERC721MintableBase is Context, IERC721Mintable {
     }
 
     /// @inheritdoc IERC721Mintable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function batchMint(address to, uint256[] calldata tokenIds) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().batchMint(to, tokenIds);

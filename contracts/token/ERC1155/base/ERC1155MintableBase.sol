@@ -17,6 +17,7 @@ abstract contract ERC1155MintableBase is Context, IERC1155Mintable {
     bytes32 public constant MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC1155Mintable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function safeMint(
         address to,
         uint256 id,
@@ -29,6 +30,7 @@ abstract contract ERC1155MintableBase is Context, IERC1155Mintable {
     }
 
     /// @inheritdoc IERC1155Mintable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function safeBatchMint(
         address to,
         uint256[] calldata ids,

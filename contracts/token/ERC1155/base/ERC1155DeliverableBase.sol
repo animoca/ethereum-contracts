@@ -18,6 +18,7 @@ abstract contract ERC1155DeliverableBase is Context, IERC1155Deliverable {
     bytes32 private constant _MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC1155Deliverable
+    /// @dev Reverts if the sender does not have the 'minter' role.
     function safeDeliver(
         address[] calldata recipients,
         uint256[] calldata ids,

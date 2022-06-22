@@ -31,8 +31,8 @@ function behavesLikeTokenMetadataPerToken({deploy, mint, tokenMetadata, revertMe
     });
 
     describe('[MetadataPerToken] setTokenURI(uint256,string)', function () {
-      it('reverts if not called by the contract owner', async function () {
-        await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotContractOwner);
+      it('reverts if not called by a minter', async function () {
+        await expect(this.token.connect(other).setTokenURI(nft1, 'uri')).to.be.revertedWith(revertMessages.NotMinter);
       });
 
       it('sets the URI for the token', async function () {
@@ -42,8 +42,8 @@ function behavesLikeTokenMetadataPerToken({deploy, mint, tokenMetadata, revertMe
     });
 
     describe('[MetadataPerToken] batchSetTokenURI(uint256[],string[])', function () {
-      it('reverts if not called by the contract owner', async function () {
-        await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(revertMessages.NotContractOwner);
+      it('reverts if not called by a minter', async function () {
+        await expect(this.token.connect(other).batchSetTokenURI([nft1, nft2], ['uri1', 'uri2'])).to.be.revertedWith(revertMessages.NotMinter);
       });
 
       it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
