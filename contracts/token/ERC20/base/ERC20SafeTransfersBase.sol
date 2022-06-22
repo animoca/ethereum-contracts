@@ -7,6 +7,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC20 Fungible Token Standard, optional extension: Safe Transfers (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC20 (Fungible Token Standard).
 abstract contract ERC20SafeTransfersBase is Context, IERC20SafeTransfers {
     using ERC20Storage for ERC20Storage.Layout;
 

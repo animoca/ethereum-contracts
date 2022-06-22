@@ -319,8 +319,8 @@ library ERC721Storage {
     ) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
@@ -347,20 +347,11 @@ library ERC721Storage {
         address[] memory recipients,
         uint256[] memory tokenIds
     ) internal {
+        uint256 length = recipients.length;
+        require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
-            uint256 length = recipients.length;
-            require(length == tokenIds.length, "ERC721: inconsistent arrays");
             for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                require(to != address(0), "ERC721: mint to address(0)");
-
-                uint256 tokenId = tokenIds[i];
-                require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
-
-                s.owners[tokenId] = uint256(uint160(to));
-                ++s.balances[to];
-
-                emit Transfer(address(0), to, tokenId);
+                s.mint(recipients[i], tokenIds[i]);
             }
         }
     }
@@ -435,8 +426,8 @@ library ERC721Storage {
     ) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
@@ -467,9 +458,9 @@ library ERC721Storage {
         address[] memory recipients,
         uint256[] memory tokenIds
     ) internal {
+        uint256 length = recipients.length;
+        require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
-            uint256 length = recipients.length;
-            require(length == tokenIds.length, "ERC721: inconsistent arrays");
             for (uint256 i; i != length; ++i) {
                 address to = recipients[i];
                 require(to != address(0), "ERC721: mint to address(0)");
@@ -533,9 +524,8 @@ library ERC721Storage {
     ) internal {
         bool operatable = _isOperatable(s, from, sender);
 
+        uint256 length = tokenIds.length;
         unchecked {
-            uint256 length = tokenIds.length;
-
             for (uint256 i; i != length; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint256 owner = s.owners[tokenId];
@@ -618,7 +608,7 @@ library ERC721Storage {
 
     /// @notice Calls {IERC721Receiver-onERC721Received} on a target contract.
     /// @dev Reverts if the call to the target fails, reverts or is rejected.
-    /// @param sender sender of the message.
+    /// @param sender The message sender.
     /// @param from Previous token owner.
     /// @param to New token owner.
     /// @param tokenId Identifier of the token transferred.
@@ -633,16 +623,16 @@ library ERC721Storage {
         require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == ERC721_RECEIVED, "ERC721: safe transfer rejected");
     }
 
-    /// @notice Returns whether `sender` is authorised to make a transfer on behalf of `from`.
-    /// @param from The token owner.
-    /// @param sender The sender to check the operatability of.
-    /// @return operatable True if sender is `from` or an operator for `from`, false otherwise.
+    /// @notice Returns whether an account is authorised to make a transfer on behalf of an owner.
+    /// @param owner The token owner.
+    /// @param account The account to check the operatability of.
+    /// @return operatable True if `account` is `owner` or is an operator for `owner`, false otherwise.
     function _isOperatable(
         Layout storage s,
-        address from,
-        address sender
+        address owner,
+        address account
     ) private view returns (bool operatable) {
-        return (from == sender) || s.operators[from][sender];
+        return (owner == account) || s.operators[owner][account];
     }
 
     function _tokenOwner(uint256 owner) private pure returns (address tokenOwner) {

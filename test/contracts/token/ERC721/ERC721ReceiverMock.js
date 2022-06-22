@@ -7,5 +7,8 @@ describe('ERC721ReceiverMock', function () {
     this.contract = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
   });
 
-  supportsInterfaces(['contracts/token/ERC721/interfaces/IERC721Receiver.sol:IERC721Receiver']);
+  supportsInterfaces([
+    'contracts/introspection/interfaces/IERC165.sol:IERC165',
+    'contracts/token/ERC721/interfaces/IERC721Receiver.sol:IERC721Receiver',
+  ]);
 });

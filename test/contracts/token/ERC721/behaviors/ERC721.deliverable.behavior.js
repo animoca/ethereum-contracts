@@ -5,7 +5,7 @@ const {ZeroAddress} = require('../../../../../src/constants');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces, features, methods}) {
-  describe('like a Deliverable ERC721', function () {
+  describe('like an ERC721 Deliverable', function () {
     let accounts, deployer, owner;
 
     before(async function () {

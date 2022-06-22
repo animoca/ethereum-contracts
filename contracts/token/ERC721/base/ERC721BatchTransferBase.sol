@@ -7,6 +7,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
+/// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
 abstract contract ERC721BatchTransferBase is Context, IERC721BatchTransfer {
     using ERC721Storage for ERC721Storage.Layout;
 
