@@ -13,6 +13,7 @@
 ### New features
 
 - Added support for ERC1155.
+- Added `MultiStaticCall`.
 - Added `wasBurnt(uint256)` function to ERC721MintableOnce.
 - Added `ERC721Deliverable`.
 

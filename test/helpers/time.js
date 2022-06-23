@@ -1,6 +1,8 @@
 // This file was ported to hardhat/ethers from @openzeppelin/test-helpers
 // see https://github.com/OpenZeppelin/openzeppelin-test-helpers/blob/421241828c1ab456878566f8a743d8486f17c6a5/src/time.js
 
+const {ethers} = require('hardhat');
+
 // Advances the block to the target block number
 async function advanceBlockTo(target) {
   if (!ethers.BigNumber.isBigNumber(target)) {
@@ -11,7 +13,7 @@ async function advanceBlockTo(target) {
   if (target.lt(currentBlock)) throw Error(`Target block #(${target}) is lower than current block #(${currentBlock})`);
 
   while ((await latestBlock()).lt(target)) {
-    await network.provider.send('evm_mine', []);
+    await ethers.provider.send('evm_mine', []);
   }
 }
 
@@ -34,8 +36,8 @@ async function increase(duration) {
 
   if (duration.isNegative()) throw Error(`Cannot increase time by a negative amount (${duration})`);
 
-  await network.provider.send('evm_increaseTime', [duration.toNumber()]);
-  await network.provider.send('evm_mine', []);
+  await ethers.provider.send('evm_increaseTime', [duration.toNumber()]);
+  await ethers.provider.send('evm_mine', []);
 }
 
 // Increases the timestamp to a target. Might not be accurate
