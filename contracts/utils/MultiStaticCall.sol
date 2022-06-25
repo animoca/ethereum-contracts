@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-/// @title MultiStaticCall - Aggregate results from multiple function static calls
+/// @title MultiStaticCall - Aggregate results from multiple static calls
 /// @dev Derived from https://github.com/makerdao/multicall (MIT licence)
 contract MultiStaticCall {
     struct Call {
@@ -14,6 +14,11 @@ contract MultiStaticCall {
         bytes returnData;
     }
 
+    /// @notice Aggregates the results of multiple static calls.
+    /// @dev Reverts if `requireSuccess` is true and one of the static calls fails.
+    /// @param requireSuccess Whether a failed static call should trigger a revert.
+    /// @param calls The list of target contracts and encoded function calls for each static call.
+    /// @return returnData The list of success flags and raw return data for each static call.
     function tryAggregate(bool requireSuccess, Call[] calldata calls) public view returns (Result[] memory returnData) {
         uint256 length = calls.length;
         returnData = new Result[](length);
@@ -30,51 +35,15 @@ contract MultiStaticCall {
         }
     }
 
-    function tryBlockAndAggregate(bool requireSuccess, Call[] calldata calls)
-        public
-        view
-        returns (
-            uint256 blockNumber,
-            bytes32 blockHash,
-            Result[] memory returnData
-        )
-    {
+    /// @notice Aggregates the results of multiple static calls, together with the associated block number.
+    /// @dev Warning: Do not use this function as part of a transaction: `blockNumber` would not be meaningful due to transactions ordering.
+    /// @dev Reverts if `requireSuccess` is true and one of the static calls fails.
+    /// @param requireSuccess Whether a failed static call should trigger a revert.
+    /// @param calls The list of target contracts and encoded function calls for each static call.
+    /// @return blockNumber The latest mined block number indicating at which point the return data is valid.
+    /// @return returnData The list of success flags and raw return data for each static call.
+    function tryBlockAndAggregate(bool requireSuccess, Call[] calldata calls) public view returns (uint256 blockNumber, Result[] memory returnData) {
         blockNumber = block.number;
-        blockHash = blockhash(block.number);
         returnData = tryAggregate(requireSuccess, calls);
-    }
-
-    function getBlockHash(uint256 blockNumber) public view returns (bytes32 blockHash) {
-        blockHash = blockhash(blockNumber);
-    }
-
-    function getBlockNumber() public view returns (uint256 blockNumber) {
-        blockNumber = block.number;
-    }
-
-    function getCurrentBlockCoinbase() public view returns (address coinbase) {
-        coinbase = block.coinbase;
-    }
-
-    function getCurrentBlockDifficulty() public view returns (uint256 difficulty) {
-        difficulty = block.difficulty;
-    }
-
-    function getCurrentBlockGasLimit() public view returns (uint256 gaslimit) {
-        gaslimit = block.gaslimit;
-    }
-
-    function getCurrentBlockTimestamp() public view returns (uint256 timestamp) {
-        timestamp = block.timestamp;
-    }
-
-    function getEthBalance(address addr) public view returns (uint256 balance) {
-        balance = addr.balance;
-    }
-
-    function getLastBlockHash() public view returns (bytes32 blockHash) {
-        unchecked {
-            blockHash = blockhash(block.number - 1);
-        }
     }
 }
