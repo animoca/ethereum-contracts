@@ -7,5 +7,5 @@ describe('ERC20ReceiverMock', function () {
     this.contract = await deployContract('ERC20ReceiverMock', true, ZeroAddress);
   });
 
-  supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC20Receiver']);
+  supportsInterfaces(['IERC165', 'IERC20Receiver']);
 });

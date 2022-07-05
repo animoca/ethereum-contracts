@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import {IERC20} from "./../../token/ERC20/interfaces/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC721} from "./../../token/ERC721/interfaces/IERC721.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
-import {ERC20Wrapper} from "./../../token/ERC20/libraries/ERC20Wrapper.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
@@ -13,7 +13,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
 contract TokenRecoveryBase is Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
-    using ERC20Wrapper for IERC20;
+    using SafeERC20 for IERC20;
     using Address for address payable;
 
     /// @notice Extract ETH tokens which were accidentally sent to the contract to a list of accounts.
@@ -48,7 +48,7 @@ contract TokenRecoveryBase is Context {
     /// @param amounts the list of token amounts to transfer.
     function recoverERC20s(
         address[] calldata accounts,
-        address[] calldata tokens,
+        IERC20[] calldata tokens,
         uint256[] calldata amounts
     ) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
@@ -56,7 +56,7 @@ contract TokenRecoveryBase is Context {
         require(length == tokens.length && length == amounts.length, "Recovery: inconsistent arrays");
         unchecked {
             for (uint256 i; i != length; ++i) {
-                IERC20(tokens[i]).wrappedTransfer(accounts[i], amounts[i]);
+                tokens[i].safeTransfer(accounts[i], amounts[i]);
             }
         }
     }
@@ -72,7 +72,7 @@ contract TokenRecoveryBase is Context {
     /// @param tokenIds the list of token ids to transfer.
     function recoverERC721s(
         address[] calldata accounts,
-        address[] calldata contracts,
+        IERC721[] calldata contracts,
         uint256[] calldata tokenIds
     ) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
@@ -80,7 +80,7 @@ contract TokenRecoveryBase is Context {
         require(length == contracts.length && length == tokenIds.length, "Recovery: inconsistent arrays");
         unchecked {
             for (uint256 i; i != length; ++i) {
-                IERC721(contracts[i]).transferFrom(address(this), accounts[i], tokenIds[i]);
+                contracts[i].transferFrom(address(this), accounts[i], tokenIds[i]);
             }
         }
     }

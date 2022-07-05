@@ -30,7 +30,7 @@ function behavesLikeERC1155MetadataURI(implementation) {
       });
     });
 
-    supportsInterfaces(['contracts/token/ERC1155/interfaces/IERC1155MetadataURI.sol:IERC1155MetadataURI']);
+    supportsInterfaces(['IERC1155MetadataURI']);
   });
 
   if (implementation.features.BaseMetadataURI) {

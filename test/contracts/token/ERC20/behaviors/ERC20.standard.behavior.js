@@ -300,7 +300,7 @@ function behavesLikeERC20Standard(implementation) {
     });
 
     if (features.ERC165) {
-      supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC20']);
+      supportsInterfaces(['IERC165', 'contracts/token/ERC20/interfaces/IERC20.sol:IERC20']);
     }
   });
 }
