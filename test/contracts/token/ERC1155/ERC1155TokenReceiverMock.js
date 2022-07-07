@@ -7,8 +7,5 @@ describe('ERC1155TokenReceiverMock', function () {
     this.contract = await deployContract('ERC1155TokenReceiverMock', true, ZeroAddress);
   });
 
-  supportsInterfaces([
-    'contracts/introspection/interfaces/IERC165.sol:IERC165',
-    'contracts/token/ERC1155/interfaces/IERC1155TokenReceiver.sol:IERC1155TokenReceiver',
-  ]);
+  supportsInterfaces(['IERC165', 'IERC1155TokenReceiver']);
 });

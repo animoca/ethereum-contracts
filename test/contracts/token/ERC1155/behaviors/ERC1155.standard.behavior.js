@@ -461,7 +461,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
       });
     });
 
-    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'contracts/token/ERC1155/interfaces/IERC1155.sol:IERC1155']);
+    supportsInterfaces(['IERC165', 'IERC1155']);
   });
 }
 

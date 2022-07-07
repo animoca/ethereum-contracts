@@ -5,7 +5,9 @@
 ### Breaking changes
 
 - Upgraded to `solc@0.8.15`.
+- Upgraded to `@openzeppelin/contracts@4.7.0`.
 - Made `ERC20` and `ERC721` contracts abstract.
+- Removed `ERC20Wrapper` in favor of openzeppelin's `SafeERC20`.
 - Restructured `contracts` folder with subfolders `base` and `facets`.
 - Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
 - Changed ACL from contract owner to minter for `TokenMetadataPerToken` admin functions in ERC721.

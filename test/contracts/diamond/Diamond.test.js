@@ -578,7 +578,7 @@ describe('Diamond', function () {
     }, batchInit);
   });
 
-  supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
+  supportsInterfaces(['IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
 });
 
 describe('Facet', function () {

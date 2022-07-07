@@ -367,7 +367,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       });
     });
 
-    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'contracts/token/ERC721/interfaces/IERC721.sol:IERC721']);
+    supportsInterfaces(['IERC165', 'IERC721']);
   });
 }
 

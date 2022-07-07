@@ -31,7 +31,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
       expect(await this.contract.supportsInterface('0xffffffff')).to.be.false;
     });
 
-    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165']);
+    supportsInterfaces(['IERC165']);
   });
 
   describe('setSupportedInterface(bytes4,bool)', function () {

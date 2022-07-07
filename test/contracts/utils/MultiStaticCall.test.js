@@ -1,9 +1,17 @@
 const {ethers} = require('hardhat');
-const {expect, assert} = require('chai');
+const {expect} = require('chai');
 const {provider} = ethers;
 const {loadFixture} = require('../../helpers/fixtures');
 const {deployContract} = require('../../helpers/contract');
-const {tryAggregate, tryBlockAndAggregate} = require('../../helpers/multicall');
+
+function decodeAggregateReturnData(returnData, returnTypes) {
+  return returnData.map((res, i) => {
+    return {
+      success: res.success,
+      returnData: ethers.utils.defaultAbiCoder.decode([returnTypes[i]], res.returnData)[0],
+    };
+  });
+}
 
 describe('MultiStaticCall', function () {
   let other;
@@ -36,17 +44,15 @@ describe('MultiStaticCall', function () {
       });
 
       it('returns the data from the calls', async function () {
-        const result = await tryAggregate(
-          this.contract,
-          true,
-          [
+        const result = decodeAggregateReturnData(
+          await this.contract.callStatic.tryAggregate(true, [
             this.getBlockNumber,
             this.getCurrentBlockCoinbase,
             this.getCurrentBlockDifficulty,
             this.getCurrentBlockGasLimit,
             this.getCurrentBlockTimestamp,
             this.getEthBalance,
-          ],
+          ]),
           ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256']
         );
 
@@ -68,10 +74,8 @@ describe('MultiStaticCall', function () {
 
     context('requireSuccess = false', function () {
       it('returns the data from the calls, including failures', async function () {
-        const result = await tryAggregate(
-          this.contract,
-          false,
-          [
+        const result = decodeAggregateReturnData(
+          await this.contract.callStatic.tryAggregate(false, [
             this.getBlockNumber,
             this.getCurrentBlockCoinbase,
             this.getCurrentBlockDifficulty,
@@ -79,7 +83,7 @@ describe('MultiStaticCall', function () {
             this.getCurrentBlockTimestamp,
             this.getEthBalance,
             this.revertingCall,
-          ],
+          ]),
           ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256', '']
         );
 
@@ -109,19 +113,18 @@ describe('MultiStaticCall', function () {
       });
 
       it('returns the data from the calls', async function () {
-        const result = await tryBlockAndAggregate(
-          this.contract,
-          true,
-          [
-            this.getBlockNumber,
-            this.getCurrentBlockCoinbase,
-            this.getCurrentBlockDifficulty,
-            this.getCurrentBlockGasLimit,
-            this.getCurrentBlockTimestamp,
-            this.getEthBalance,
-          ],
-          ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256']
-        );
+        const aggregated = await this.contract.callStatic.tryBlockAndAggregate(true, [
+          this.getBlockNumber,
+          this.getCurrentBlockCoinbase,
+          this.getCurrentBlockDifficulty,
+          this.getCurrentBlockGasLimit,
+          this.getCurrentBlockTimestamp,
+          this.getEthBalance,
+        ]);
+        const result = {
+          blockNumber: aggregated.blockNumber,
+          returnData: decodeAggregateReturnData(aggregated.returnData, ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256']),
+        };
 
         expect(result.blockNumber).to.equal(this.block.number);
         expect(result.returnData[0].success).to.be.true;
@@ -141,20 +144,19 @@ describe('MultiStaticCall', function () {
 
     context('requireSuccess = false', function () {
       it('returns the data from the calls, including failures', async function () {
-        const result = await tryBlockAndAggregate(
-          this.contract,
-          false,
-          [
-            this.getBlockNumber,
-            this.getCurrentBlockCoinbase,
-            this.getCurrentBlockDifficulty,
-            this.getCurrentBlockGasLimit,
-            this.getCurrentBlockTimestamp,
-            this.getEthBalance,
-            this.revertingCall,
-          ],
-          ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256', '']
-        );
+        const aggregated = await this.contract.callStatic.tryBlockAndAggregate(false, [
+          this.getBlockNumber,
+          this.getCurrentBlockCoinbase,
+          this.getCurrentBlockDifficulty,
+          this.getCurrentBlockGasLimit,
+          this.getCurrentBlockTimestamp,
+          this.getEthBalance,
+          this.revertingCall,
+        ]);
+        const result = {
+          blockNumber: aggregated.blockNumber,
+          returnData: decodeAggregateReturnData(aggregated.returnData, ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256', '']),
+        };
 
         expect(result.blockNumber).to.equal(this.block.number);
         expect(result.returnData[0].success).to.be.true;

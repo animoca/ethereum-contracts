@@ -1,4 +1,4 @@
-const {ethers} = require('hardhat');
+const {artifacts, ethers} = require('hardhat');
 const {expect} = require('chai');
 
 function makeInterfaceId(interfaceName) {

@@ -42,7 +42,7 @@ function behavesLikeERC721Metadata(implementation) {
       });
     });
 
-    supportsInterfaces(['contracts/token/ERC721/interfaces/IERC721Metadata.sol:IERC721Metadata']);
+    supportsInterfaces(['IERC721Metadata']);
   });
 
   if (features.BaseMetadataURI) {

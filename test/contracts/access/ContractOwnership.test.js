@@ -135,6 +135,6 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
     });
 
-    supportsInterfaces(['contracts/introspection/interfaces/IERC165.sol:IERC165', 'IERC173']);
+    supportsInterfaces(['IERC165', 'IERC173']);
   });
 });
