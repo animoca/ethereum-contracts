@@ -1,5 +1,6 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {setBalance} = require('@nomicfoundation/hardhat-network-helpers');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 const {deployContract} = require('../../helpers/contract');
@@ -34,7 +35,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
   const fixture = async function () {
     this.contract = await deployFn();
-    await deployer.sendTransaction({to: this.contract.address, value: ethers.BigNumber.from('1000')});
+    await setBalance(this.contract.address, ethers.BigNumber.from('1000'));
     const forwarderRegistryAddress = await getForwarderRegistryAddress();
     this.erc20 = await deployContract('ERC20Mock', [this.contract.address], ['1000'], '', '', '1', '', forwarderRegistryAddress);
     this.erc721 = await deployContract('ERC721Mock', '', '', '', forwarderRegistryAddress);

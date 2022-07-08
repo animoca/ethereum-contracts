@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {time} = require('@nomicfoundation/hardhat-network-helpers');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
-const {latest} = require('../../helpers/time');
 
 const config = {
   immutable: {
@@ -50,11 +50,11 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
   const fixtureTimeSetInPast = async function () {
-    this.startTime = await latest();
+    this.startTime = await time.latest();
     this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
   const fixtureTimeSetInFuture = async function () {
-    this.startTime = (await latest()).add('1000');
+    this.startTime = ethers.BigNumber.from(await time.latest()).add('1000');
     this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
   };
 

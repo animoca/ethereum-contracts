@@ -1,6 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {ZeroAddress, ZeroBytes32} = require('../../../src/constants');
+const {getStorageAt} = require('@nomicfoundation/hardhat-network-helpers');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
 const {loadFixture} = require('../../helpers/fixtures');
 
@@ -48,9 +49,9 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
       });
 
       it('updates the admin (direct storage access)', async function () {
-        expect(
-          await ethers.provider.getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')
-        ).to.equal('0x000000000000000000000000' + deployer.address.slice(2).toLowerCase());
+        expect(await getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')).to.equal(
+          '0x000000000000000000000000' + deployer.address.slice(2).toLowerCase()
+        );
       });
 
       it('emits an AdminChanged event', async function () {
@@ -77,9 +78,9 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
             expect(await this.contract.proxyAdmin()).to.equal(ZeroAddress);
           });
           it('unsets the admin (direct storage access)', async function () {
-            expect(
-              await ethers.provider.getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')
-            ).to.equal(ZeroBytes32);
+            expect(await getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')).to.equal(
+              ZeroBytes32
+            );
           });
           it('emits an AdminChanged event', async function () {
             await expect(this.receipt).to.emit(this.contract, 'AdminChanged').withArgs(deployer.address, ZeroAddress);
@@ -96,9 +97,9 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
           });
 
           it('updates the admin (direct storage access)', async function () {
-            expect(
-              await ethers.provider.getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')
-            ).to.equal('0x000000000000000000000000' + other.address.slice(2).toLowerCase());
+            expect(await getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')).to.equal(
+              '0x000000000000000000000000' + other.address.slice(2).toLowerCase()
+            );
           });
 
           it('emits an AdminChanged event', async function () {

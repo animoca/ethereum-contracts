@@ -1,4 +1,5 @@
 const {ethers} = require('hardhat');
+const {expect} = require('chai');
 const {ZeroAddress} = require('../../src/constants');
 const {deployContract} = require('./contract');
 const {deployDiamond, facetInit, mergeABIs} = require('./diamond');
