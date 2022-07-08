@@ -25,12 +25,12 @@ describe('MultiStaticCall', function () {
     this.block = await provider.getBlock('latest');
 
     this.getEthBalance = [this.contract.address, this.contract.interface.encodeFunctionData('getEthBalance', [other.address])];
-    this.getBlockNumber = [this.contract.address, this.contract.interface.encodeFunctionData('getBlockNumber', [])];
-    this.getCurrentBlockCoinbase = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockCoinbase', [])];
-    this.getCurrentBlockDifficulty = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockDifficulty', [])];
-    this.getCurrentBlockGasLimit = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit', [])];
-    this.getCurrentBlockTimestamp = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp', [])];
-    this.revertingCall = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCall', [])];
+    this.getBlockNumber = [this.contract.address, this.contract.interface.encodeFunctionData('getBlockNumber')];
+    this.getCurrentBlockCoinbase = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockCoinbase')];
+    this.getCurrentBlockDifficulty = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockDifficulty')];
+    this.getCurrentBlockGasLimit = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit')];
+    this.getCurrentBlockTimestamp = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp')];
+    this.revertingCall = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCall')];
   };
 
   beforeEach(async function () {

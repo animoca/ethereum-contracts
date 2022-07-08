@@ -6,7 +6,7 @@ const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsI
 const {Zero, One, Two, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC20Mintable(implementation) {
-  const {contractName, features, interfaces, revertMessages, methods, deploy} = implementation;
+  const {features, interfaces, revertMessages, methods, deploy} = implementation;
   const {'mint(address,uint256)': mint, 'batchMint(address[],uint256[])': batchMint} = methods;
 
   describe('like an ERC20 Mintable', function () {

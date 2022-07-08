@@ -154,21 +154,21 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     const transfersBySender = function (transferFunction, tokenId, data, receiverType, selfTransfer) {
       context('when called by the owner', function () {
-        this.beforeEach(async function () {
+        beforeEach(async function () {
           this.sender = owner;
           this.receipt = await transferFunction.call(this, tokenId, data);
         });
         transferWasSuccessful(tokenId, data, receiverType, selfTransfer);
       });
       context('when called by a wallet with single token approval', function () {
-        this.beforeEach(async function () {
+        beforeEach(async function () {
           this.sender = approved;
           this.receipt = await transferFunction.call(this, tokenId, data);
         });
         transferWasSuccessful(tokenId, data, receiverType, selfTransfer);
       });
       context('when called by an operator', function () {
-        this.beforeEach(async function () {
+        beforeEach(async function () {
           this.sender = operator;
           this.receipt = await transferFunction.call(this, tokenId, data);
         });
