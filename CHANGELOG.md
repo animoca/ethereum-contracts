@@ -11,6 +11,8 @@
 - Restructured `contracts` folder with subfolders `base` and `facets`.
 - Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
 - Changed ACL from contract owner to minter for `TokenMetadataPerToken` admin functions in ERC721.
+- Removed `time.js` test hepers in favor of new `@nomicfoundation/hardhat-network-helpers`.
+- Removed plugin `waffle-tests`, now using `@nomicfoundation/hardhat-chai-matchers`.
 
 ### New features
 
@@ -18,6 +20,7 @@
 - Added `MultiStaticCall`.
 - Added `wasBurnt(uint256)` function to ERC721MintableOnce.
 - Added `ERC721Deliverable`.
+- Added `Seals`-related contracts.
 
 ### Bugfixes
 

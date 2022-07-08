@@ -510,19 +510,19 @@ describe('Diamond', function () {
 
       it('reverts when the init function reverts (without an error message)', async function () {
         await expect(
-          cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithoutMessage', [])])
+          cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithoutMessage')])
         ).to.be.revertedWith('Diamond: init call reverted');
       });
 
       it('reverts when the init function reverts (with an error message)', async function () {
         await expect(
-          cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithMessage', [])])
+          cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithMessage')])
         ).to.be.revertedWith('Facet: reverted');
       });
 
       context('when successful (with a facet function)', function () {
         beforeEach(async function () {
-          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('doSomething', [])];
+          this.inits = [this.facet.address, this.facet.interface.encodeFunctionData('doSomething')];
           this.receipt = await cutFn(this.contract, this.cuts, this.inits);
         });
 
@@ -537,7 +537,7 @@ describe('Diamond', function () {
 
       context('when successful (with an immutable function)', function () {
         beforeEach(async function () {
-          this.inits = [this.contract.address, this.contract.interface.encodeFunctionData('immutableFunction', [])];
+          this.inits = [this.contract.address, this.contract.interface.encodeFunctionData('immutableFunction')];
           this.receipt = await cutFn(this.contract, [], this.inits);
         });
 

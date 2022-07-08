@@ -26,7 +26,7 @@ function behavesLikeERC1155MetadataURI(implementation) {
 
     describe('uri(uint256)', function () {
       it('does not revert if the token does not exist', async function () {
-        await expect(this.token.uri(1)).not.to.be.reverted;
+        await this.token.uri(1);
       });
     });
 

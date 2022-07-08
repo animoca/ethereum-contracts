@@ -23,7 +23,6 @@ library ProxyAdminStorage {
     /// @dev Emits an {AdminChanged} event.
     /// @param initialAdmin The initial payout wallet.
     function constructorInit(Layout storage s, address initialAdmin) internal {
-        // assert(PROXYADMIN_STORAGE_SLOT == bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1));
         require(initialAdmin != address(0), "ProxyAdmin: no initial admin");
         s.admin = initialAdmin;
         emit AdminChanged(address(0), initialAdmin);
