@@ -12,6 +12,11 @@ library SealsStorage {
 
     event Sealed(uint256 sealId, address sealer);
 
+    /// @notice Registers a unique seal identifier.
+    /// @dev Reverts if the sealId has already been used.
+    /// @dev Emits a {Sealed} event.
+    /// @param sealer The sealer address
+    /// @param sealId The seal identifier.
     function seal(
         Layout storage s,
         address sealer,
@@ -22,6 +27,9 @@ library SealsStorage {
         emit Sealed(sealId, sealer);
     }
 
+    /// @notice Retrieves whether a seal has been used already.
+    /// @param sealId the seal identifier.
+    /// @return wasSealed Whether a seal has been used already.
     function isSealed(Layout storage s, uint256 sealId) internal view returns (bool) {
         return s.seals[sealId];
     }

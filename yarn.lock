@@ -546,10 +546,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nomicfoundation/hardhat-chai-matchers@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-chai-matchers/-/hardhat-chai-matchers-1.0.0.tgz#ca0a2a274f1319eab6cd4af725573b5887832db8"
-  integrity sha512-jcJYA/kO1e0AMjC2X2ZekePJR8lUxyViMcnoF1q9ACElGDIxj4zSPxt1yfyUezcDkpmrrMAwgyNQOK3GJPOxow==
+"@nomicfoundation/hardhat-chai-matchers@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-chai-matchers/-/hardhat-chai-matchers-1.0.1.tgz#ee5bce2480918ef17cb724a2156a03dd62a8c058"
+  integrity sha512-7gl02+kyXu5gVsCQfC84IQ6zQJNsi/5T4FDjREKjD589mq+Y8o2knoShlwRoRqfnvgk18OTYgZCL3vqrajLviQ==
   dependencies:
     "@ethersproject/abi" "^5.1.2"
     "@types/chai-as-promised" "^7.1.3"
@@ -5336,10 +5336,10 @@ solidity-coverage@^0.7.21:
     shelljs "^0.8.3"
     web3-utils "^1.3.0"
 
-solidity-docgen@^0.6.0-beta.19:
-  version "0.6.0-beta.19"
-  resolved "https://registry.yarnpkg.com/solidity-docgen/-/solidity-docgen-0.6.0-beta.19.tgz#6b5f0c6fae4f61913511ff3db31b8ef488db03fa"
-  integrity sha512-EEaDg3pm3yJmE+0ML8i5Ezej/nfVncwuDijFogiPTIc44kA23eLbLD8jZ0tMeGlmjyV8eOOQqukAA35tE6rORQ==
+solidity-docgen@^0.6.0-beta.20:
+  version "0.6.0-beta.20"
+  resolved "https://registry.yarnpkg.com/solidity-docgen/-/solidity-docgen-0.6.0-beta.20.tgz#22c254238702b1e1d6ed02a7eaba3461dc082ea4"
+  integrity sha512-v4ROkjATL4Yu9fQJicqfZQkeo2DHO0eVx3W7eALoS7HITD0nkeV9aLYX5mwZDAzWysdYydrJROa+J1LxwT3uQg==
   dependencies:
     handlebars "^4.7.7"
     solidity-ast "^0.4.31"

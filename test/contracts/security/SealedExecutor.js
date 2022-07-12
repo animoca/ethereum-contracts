@@ -5,28 +5,13 @@ const {loadFixture} = require('../../helpers/fixtures');
 const {deployContract} = require('../../helpers/contract');
 
 const config = {
-  immutable: {name: 'SealedCallExecutorMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
-  diamond: {
-    facets: [
-      {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
-      {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
-      {
-        name: 'ContractOwnershipFacet',
-        ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
-      },
-      {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
-      {name: 'SealedCallFacetMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
-    ],
-  },
+  immutable: {name: 'SealedExecutorMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},
   defaultArguments: {
     forwarderRegistry: getForwarderRegistryAddress,
-    initialAdmin: getDeployerAddress,
-    initialOwner: getDeployerAddress,
   },
 };
 
-runBehaviorTests('SealedCall', config, function (deployFn) {
+runBehaviorTests('SealedExecutor', config, function (deployFn) {
   let deployer, sealer;
 
   before(async function () {

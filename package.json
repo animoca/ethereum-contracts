@@ -1,6 +1,6 @@
 {
   "name": "@animoca/ethereum-contracts",
-  "version": "0.1.0-rc.12",
+  "version": "0.1.0-rc.13",
   "description": "Base dependency for solidity smart-contracts projects",
   "keywords": [
     "animoca",
@@ -46,7 +46,7 @@
     "prepack": "run-s clean:artifacts:hard compile clean"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.1",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.1.0",
     "@openzeppelin/contracts": "=4.7.0",
@@ -72,6 +72,6 @@
     "solhint": "^3.3.7",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.21",
-    "solidity-docgen": "^0.6.0-beta.19"
+    "solidity-docgen": "^0.6.0-beta.20"
   }
 }
