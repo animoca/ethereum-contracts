@@ -23,19 +23,6 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "SEALER_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -47,7 +34,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "wasSealed",
           "type": "bool"
         }
       ],
