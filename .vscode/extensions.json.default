@@ -4,7 +4,7 @@
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
     "hbenl.vscode-mocha-test-adapter",
-    "juanblanco.solidity",
+    "nomicfoundation.hardhat-solidity",
     "ms-vscode-remote.vscode-remote-extensionpack"
   ],
   "unwantedRecommendations": []
