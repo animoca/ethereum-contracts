@@ -3,8 +3,14 @@ const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = requ
 
 const config = {
   immutable: {
-    name: 'ERC1155MetadataPerTokenMock',
+    name: 'ERC1155MetadataURIPerTokenMock',
     ctorArguments: ['forwarderRegistry'],
+    testMsgData: true,
+  },
+  proxied: {
+    name: 'ERC1155MetadataURIPerTokenProxiedMock',
+    ctorArguments: ['forwarderRegistry'],
+    init: {method: 'init'},
     testMsgData: true,
   },
   diamond: {
@@ -18,32 +24,12 @@ const config = {
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
-      {
-        name: 'ERC1155FacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155Storage',
-          adminProtected: true,
-        },
-        testMsgData: true,
-      },
+      {name: 'ERC1155FacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC1155Storage'}},
+      {name: 'ERC1155MintableFacetMock', ctorArguments: ['forwarderRegistry'], init: {method: 'initERC1155MintableStorage'}},
       {
         name: 'ERC1155MetadataURIPerTokenFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155MetadataURIStorage',
-          adminProtected: true,
-        },
-        testMsgData: true,
-      },
-      {
-        name: 'ERC1155MintableFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155MintableStorage',
-          arguments: [],
-          adminProtected: true,
-        },
+        init: {method: 'initERC1155MetadataURIStorage', adminProtected: true},
         testMsgData: true,
       },
     ],

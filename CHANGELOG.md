@@ -21,6 +21,7 @@
 - Added `wasBurnt(uint256)` function to ERC721MintableOnce.
 - Added `ERC721Deliverable`.
 - Added `Seals`-related contracts.
+- Added support for testing proxied contracts (behind an `OptimizedTransparentUpgradeableProxy`).
 
 ### Bugfixes
 
