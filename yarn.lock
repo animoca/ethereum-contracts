@@ -546,10 +546,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nomicfoundation/hardhat-chai-matchers@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-chai-matchers/-/hardhat-chai-matchers-1.0.1.tgz#ee5bce2480918ef17cb724a2156a03dd62a8c058"
-  integrity sha512-7gl02+kyXu5gVsCQfC84IQ6zQJNsi/5T4FDjREKjD589mq+Y8o2knoShlwRoRqfnvgk18OTYgZCL3vqrajLviQ==
+"@nomicfoundation/hardhat-chai-matchers@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-chai-matchers/-/hardhat-chai-matchers-1.0.2.tgz#38720afbef25df20f0d11faf33cb63cdefb43059"
+  integrity sha512-ZPcruE17yv8M/d9GYGz7l/iYEycwlA3t7rq1cfUEWPj7kIxJ5tSJEzPi2SqHj8LZdcsiU5FF/y/9W8ZFk0FHfw==
   dependencies:
     "@ethersproject/abi" "^5.1.2"
     "@types/chai-as-promised" "^7.1.3"
@@ -558,10 +558,10 @@
     deep-eql "^4.0.1"
     ordinal "^1.0.3"
 
-"@nomicfoundation/hardhat-network-helpers@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-network-helpers/-/hardhat-network-helpers-1.0.2.tgz#f0e7216aeae118b8220b34c7fd199465a3f9dbd4"
-  integrity sha512-e+0kpXtNgRfCn3iq7pHmFwv+Ay8MkE7yP/UQdp7njRHo+LVWE3gJJ+qXB3z3isOLZ639tnxvG/8xjjYm0fvdRA==
+"@nomicfoundation/hardhat-network-helpers@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-network-helpers/-/hardhat-network-helpers-1.0.3.tgz#3303cf7c8f52e1ef33ff4fc98d85af020d64f083"
+  integrity sha512-sBeUCzgrcdS8x7Nnr4t6wNpC7GIMMR3gQs8lVaxff5VWVKf7SjdkJ2rvSJsS2ckD8/8KGxeDTLb7XCOqVAjFjA==
   dependencies:
     ethereumjs-util "^7.1.4"
 
@@ -3106,10 +3106,10 @@ hardhat-deploy@^0.11.11:
     qs "^6.9.4"
     zksync-web3 "^0.7.8"
 
-hardhat@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.10.0.tgz#23a640293d52ce79388660b2872624b2c6f94e5d"
-  integrity sha512-9VUorKvWNyW96qFXkwkpDUSeWND3gOZpm0oJ8l63JQJvWhxyxTJ92BcOrNylOKy9hzNNGdMfM2QWNP80fGOjpA==
+hardhat@^2.10.1:
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.10.1.tgz#37fdc0c96d6a5d16b322269db2ad8f9f115c4046"
+  integrity sha512-0FN9TyCtn7Lt25SB2ei2G7nA2rZjP+RN6MvFOm+zYwherxLZNo6RbD8nDz88eCbhRapevmXqOiL2nM8INKsjmA==
   dependencies:
     "@ethereumjs/block" "^3.6.2"
     "@ethereumjs/blockchain" "^5.5.2"
@@ -5336,10 +5336,10 @@ solidity-coverage@^0.7.21:
     shelljs "^0.8.3"
     web3-utils "^1.3.0"
 
-solidity-docgen@^0.6.0-beta.20:
-  version "0.6.0-beta.20"
-  resolved "https://registry.yarnpkg.com/solidity-docgen/-/solidity-docgen-0.6.0-beta.20.tgz#22c254238702b1e1d6ed02a7eaba3461dc082ea4"
-  integrity sha512-v4ROkjATL4Yu9fQJicqfZQkeo2DHO0eVx3W7eALoS7HITD0nkeV9aLYX5mwZDAzWysdYydrJROa+J1LxwT3uQg==
+solidity-docgen@^0.6.0-beta.21:
+  version "0.6.0-beta.21"
+  resolved "https://registry.yarnpkg.com/solidity-docgen/-/solidity-docgen-0.6.0-beta.21.tgz#bbeaaccaacd58aba4d662d28eeac94525dd90072"
+  integrity sha512-eVDS105GnxQWO+vF8ndeMt97hm1hVPYgLDg3stJCGslsa+KgKZK8mbqKH6/RYybDQ6i1pmFRp8D965gLB8melw==
   dependencies:
     handlebars "^4.7.7"
     solidity-ast "^0.4.31"

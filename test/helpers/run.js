@@ -81,11 +81,7 @@ function runBehaviorTests(name, config, behaviorFn) {
       initCall = contract.interface.encodeFunctionData(config.proxied.init.method, initArguments);
     }
 
-    const proxyAdminContract = await deployContractFromPath(
-      'ProxyAdmin',
-      'node_modules/hardhat-deploy/extendedArtifacts',
-      defaultArguments.initialAdmin
-    );
+    const proxyAdminContract = await deployContractFromPath('ProxyAdmin', 'node_modules/hardhat-deploy/extendedArtifacts', arguments_.initialAdmin);
     const TransparentUpgradeableProxy = await ethers.getContractFactory(abi, proxyArtifact.bytecode);
     const proxy = await TransparentUpgradeableProxy.deploy(contract.address, proxyAdminContract.address, initCall);
     await proxy.deployed();
