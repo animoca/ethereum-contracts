@@ -1,2 +1,2 @@
-const {mergeConfigFolder} = require('../src/config');
-module.exports = mergeConfigFolder(__dirname);
+const {loadConfigFolder} = require('../src/config');
+module.exports = loadConfigFolder(__dirname);

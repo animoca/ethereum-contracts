@@ -1,5 +1,6 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {getArtifactFromFolders} = require('hardhat-deploy/dist/src/utils');
 const {ZeroAddress} = require('../../src/constants');
 const {deployContract, deployContractFromPath} = require('./contract');
 const {deployDiamond, facetInit, mergeABIs} = require('./diamond');
@@ -63,7 +64,7 @@ function runBehaviorTests(name, config, behaviorFn) {
     const abiExtensions = config.abiExtensions !== undefined ? config.abiExtensions : [];
 
     const artifact = await deployments.getArtifact(config.proxied.name);
-    const proxyArtifact = await deployments.getArtifact('OptimizedTransparentUpgradeableProxy');
+    const proxyArtifact = await getArtifactFromFolders('OptimizedTransparentUpgradeableProxy', ['node_modules/hardhat-deploy/extendedArtifacts']);
     const abi = [...proxyArtifact.abi];
     const extensionABIs = [];
     for (const extension of abiExtensions) {

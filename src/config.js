@@ -16,7 +16,7 @@ function mergeConfigs(...configs) {
   return result;
 }
 
-function mergeConfigFolder(folder) {
+function loadConfigFolder(folder) {
   const files = glob.sync(`${folder}/*.config.js`);
   const configs = files.map((cfg) => require(cfg));
   return mergeConfigs(...configs);
@@ -24,5 +24,5 @@ function mergeConfigFolder(folder) {
 
 module.exports = {
   mergeConfigs,
-  mergeConfigFolder,
+  loadConfigFolder,
 };
