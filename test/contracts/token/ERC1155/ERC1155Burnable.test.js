@@ -9,6 +9,12 @@ const config = {
     ctorArguments: ['baseMetadataURI', 'forwarderRegistry'],
     testMsgData: true,
   },
+  proxied: {
+    name: 'ERC1155BurnableProxiedMock',
+    ctorArguments: ['forwarderRegistry'],
+    init: {method: 'init(string)', arguments: ['baseMetadataURI']},
+    testMsgData: true,
+  },
   diamond: {
     facets: [
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
@@ -23,10 +29,7 @@ const config = {
       {
         name: 'ERC1155FacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155Storage',
-          adminProtected: true,
-        },
+        init: {method: 'initERC1155Storage', adminProtected: true},
         testMsgData: true,
       },
       {
@@ -43,28 +46,19 @@ const config = {
       {
         name: 'ERC1155MintableFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155MintableStorage',
-          adminProtected: true,
-        },
+        init: {method: 'initERC1155MintableStorage', adminProtected: true},
         testMsgData: true,
       },
       {
         name: 'ERC1155DeliverableFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155DeliverableStorage',
-          adminProtected: true,
-        },
+        init: {method: 'initERC1155DeliverableStorage', adminProtected: true},
         testMsgData: true,
       },
       {
         name: 'ERC1155BurnableFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initERC1155BurnableStorage',
-          adminProtected: true,
-        },
+        init: {method: 'initERC1155BurnableStorage', adminProtected: true},
         testMsgData: true,
       },
     ],

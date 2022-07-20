@@ -1,7 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {getArtifactFromFolders} = require('hardhat-deploy/dist/src/utils');
 const {ZeroAddress} = require('../../src/constants');
-const {deployContract} = require('./contract');
+const {deployContract, deployContractFromPath} = require('./contract');
 const {deployDiamond, facetInit, mergeABIs} = require('./diamond');
 const {deployForwarderRegistry} = require('./metatx');
 
@@ -34,6 +35,7 @@ function runBehaviorTests(name, config, behaviorFn) {
     const arguments_ = {...defaultArguments, ...args};
     const ctorArguments = config.immutable.ctorArguments !== undefined ? config.immutable.ctorArguments.map((arg) => arguments_[arg]) : [];
     const abiExtensions = config.abiExtensions !== undefined ? config.abiExtensions : [];
+
     const artifact = await deployments.getArtifact(config.immutable.name);
     const abi = [...artifact.abi];
     const extensionABIs = [];
@@ -55,6 +57,38 @@ function runBehaviorTests(name, config, behaviorFn) {
     return deployments.diamond;
   }
 
+  async function deployAsProxiedContract(args = {}) {
+    const defaultArguments = await buildDefaultArguments(config.defaultArguments);
+    const arguments_ = {...defaultArguments, ...args};
+    const ctorArguments = config.proxied.ctorArguments !== undefined ? config.proxied.ctorArguments.map((arg) => arguments_[arg]) : [];
+    const abiExtensions = config.abiExtensions !== undefined ? config.abiExtensions : [];
+
+    const artifact = await deployments.getArtifact(config.proxied.name);
+    const proxyArtifact = await getArtifactFromFolders('OptimizedTransparentUpgradeableProxy', ['node_modules/hardhat-deploy/extendedArtifacts']);
+    const abi = [...proxyArtifact.abi];
+    const extensionABIs = [];
+    for (const extension of abiExtensions) {
+      const extensionArtifact = await deployments.getArtifact(extension);
+      extensionABIs.push(extensionArtifact.abi);
+    }
+
+    mergeABIs(abi, [artifact.abi, ...extensionABIs], (el) => el.type !== 'constructor');
+
+    const contract = await deployContract(config.proxied.name, ...ctorArguments);
+
+    let initCall = '0x';
+    if (config.proxied.init !== undefined) {
+      const initArguments = config.proxied.init.arguments !== undefined ? config.proxied.init.arguments.map((arg) => arguments_[arg]) : [];
+      initCall = contract.interface.encodeFunctionData(config.proxied.init.method, initArguments);
+    }
+
+    const proxyAdminContract = await deployContractFromPath('ProxyAdmin', 'node_modules/hardhat-deploy/extendedArtifacts', arguments_.initialAdmin);
+    const TransparentUpgradeableProxy = await ethers.getContractFactory(abi, proxyArtifact.bytecode);
+    const proxy = await TransparentUpgradeableProxy.deploy(contract.address, proxyAdminContract.address, initCall);
+    await proxy.deployed();
+    return proxy;
+  }
+
   describe(`${name}`, function () {
     before(async function () {
       this.defaultArguments = await buildDefaultArguments(config.defaultArguments);
@@ -66,12 +100,23 @@ function runBehaviorTests(name, config, behaviorFn) {
             const ctorArguments =
               config.immutable.ctorArguments !== undefined ? config.immutable.ctorArguments.map((arg) => this.defaultArguments[arg]) : [];
             const contract = await deployContract(config.immutable.name, ...ctorArguments);
-            try {
-              await contract.__msgData();
-            } catch (e) {}
+            await contract.__msgData();
           });
         }
         behaviorFn(deployAsImmutableContract);
+      });
+    }
+    if (config.proxied !== undefined) {
+      describe(`${name} (as proxied contract)`, function () {
+        if (config.proxied.testMsgData) {
+          it('__msgData()', async function () {
+            const ctorArguments =
+              config.proxied.ctorArguments !== undefined ? config.proxied.ctorArguments.map((arg) => this.defaultArguments[arg]) : [];
+            const contract = await deployContract(config.proxied.name, ...ctorArguments);
+            await contract.__msgData();
+          });
+        }
+        behaviorFn(deployAsProxiedContract);
       });
     }
     if (config.diamond !== undefined) {

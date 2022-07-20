@@ -7,7 +7,7 @@ import {ERC1155SimpleMock} from "./ERC1155SimpleMock.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC1155TokenMetadataMock
-contract ERC1155MetadataPerTokenMock is ERC1155SimpleMock, ERC1155MetadataURIPerToken {
+contract ERC1155MetadataURIPerTokenMock is ERC1155SimpleMock, ERC1155MetadataURIPerToken {
     constructor(IForwarderRegistry forwarderRegistry) ERC1155SimpleMock(forwarderRegistry) {}
 
     /// @inheritdoc ERC1155SimpleMock
