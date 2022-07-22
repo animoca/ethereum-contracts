@@ -10,5 +10,4 @@ coverage*
 flattened/
 
 deployments/
-exports/
 generated/

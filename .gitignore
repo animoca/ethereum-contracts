@@ -29,9 +29,6 @@ gas-report*
 deployments/hardhat*
 deployments/localhost*
 
-exports/localhost*
-exports/hardhat*
-
 generated/localhost*
 generated/hardhat*
 
