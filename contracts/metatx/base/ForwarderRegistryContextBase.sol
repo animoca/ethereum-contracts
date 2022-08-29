@@ -2,7 +2,7 @@
 pragma solidity ^0.8.8;
 
 import {IForwarderRegistry} from "./../interfaces/IForwarderRegistry.sol";
-import {ERC2771Data} from "./../libraries/ERC2771Data.sol";
+import {ERC2771Calldata} from "./../libraries/ERC2771Calldata.sol";
 
 /// @title Meta-Transactions Forwarder Registry Context (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
@@ -16,37 +16,33 @@ abstract contract ForwarderRegistryContextBase {
 
     /// @notice Returns the message sender depending on the ForwarderRegistry-based meta-transaction context.
     function _msgSender() internal view virtual returns (address) {
-        address msgSender = msg.sender;
-
-        // Optimised path in case of an EOA-initiated direct transaction to the contract
+        // Optimised path in case of an EOA-initiated direct tx to the contract or a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
-        if (msgSender == tx.origin) {
-            return msgSender;
+        if (msg.sender == tx.origin || msg.data.length < 20) {
+            return msg.sender;
         }
 
-        address sender = ERC2771Data.msgSender();
+        address sender = ERC2771Calldata.msgSender();
 
         // Return the EIP-2771 calldata-appended sender address if the message was forwarded by the ForwarderRegistry or an approved forwarder
-        if (msgSender == address(_forwarderRegistry) || _forwarderRegistry.isForwarderFor(sender, msgSender)) {
+        if (msg.sender == address(_forwarderRegistry) || _forwarderRegistry.isApprovedForwarder(sender, msg.sender)) {
             return sender;
         }
 
-        return msgSender;
+        return msg.sender;
     }
 
     /// @notice Returns the message data depending on the ForwarderRegistry-based meta-transaction context.
     function _msgData() internal view virtual returns (bytes calldata) {
-        address msgSender = msg.sender;
-
-        // Optimised path in case of an EOA-initiated direct transaction to the contract
+        // Optimised path in case of 1/ an EOA-initiated direct tx to the contract 2/ a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
-        if (msgSender == tx.origin) {
+        if (msg.sender == tx.origin || msg.data.length < 20) {
             return msg.data;
         }
 
         // Return the EIP-2771 calldata (minus the appended sender) if the message was forwarded by the ForwarderRegistry or an approved forwarder
-        if (msgSender == address(_forwarderRegistry) || _forwarderRegistry.isForwarderFor(ERC2771Data.msgSender(), msgSender)) {
-            return ERC2771Data.msgData();
+        if (msg.sender == address(_forwarderRegistry) || _forwarderRegistry.isApprovedForwarder(ERC2771Calldata.msgSender(), msg.sender)) {
+            return ERC2771Calldata.msgData();
         }
 
         return msg.data;

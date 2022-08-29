@@ -46,13 +46,12 @@ As a user, There are two ways to approve/revoke a meta-transaction forwarder:
 - Forwarded way: the wallet signs an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message for the forwarder, then the forwarder calls `approveForwarder(bool approved, bytes signature, SignatureType signatureType)`.
 - Approve and Forward way: see below.
 
-Forwarding a meta-transaction can be done in a few different ways:
+Forwarding an EIP-2771 meta-transaction can be done in a few different ways:
 
 - Direct forwarding: after the forwarder has been approved, it can directly call the target contract.
 - `ForwarderRegistry` forwarding: The `ForwarderRegistry` can also be used to forward the meta-transactions:
   1. after a forwarder has been approved, it can call `forward(address target, bytes data)` on the `ForwarderRegistry`.
-  2. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `checkApprovalAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will forward the meta-transaction to the target contract without registering the forwarder approval.
-  3. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `approveAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will approve the forwarder and then forward the meta-transaction to the target contract. This method is a shortcut enabling meta-transactions usage from the first user transaction.
+  2. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `approveAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will approve the forwarder and then forward the meta-transaction to the target contract. This method is a shortcut enabling meta-transactions usage from the first user transaction.
 
 ## HardHat plugins and configurations
 

@@ -4,8 +4,8 @@ const {ZeroAddress} = require('../../../src/constants');
 const {loadFixture} = require('../../helpers/fixtures');
 const {deployContract} = require('../../helpers/contract');
 
-const ApproveForwarderType = {
-  ApproveForwarder: [
+const ForwarderApprovalType = {
+  ForwarderApproval: [
     {name: 'forwarder', type: 'address'},
     {name: 'approved', type: 'bool'},
     {name: 'nonce', type: 'uint256'},
@@ -24,7 +24,6 @@ describe('Meta Transactions', function () {
     this.forwarder = await deployContract('ForwarderMock');
     this.receiver = await deployContract('ForwarderRegistryReceiverMock', this.contract.address);
     this.erc1271 = await deployContract('ERC1271Mock', deployer.address);
-    this.erc1654 = await deployContract('ERC1654Mock', deployer.address);
 
     this.domain = {
       name: 'ForwarderRegistry',
@@ -53,81 +52,91 @@ describe('Meta Transactions', function () {
       });
     });
 
-    describe('approveForwarder(address,bool)', function () {
+    describe('removeForwarderApproval(address,bool)', function () {
+      // describe('when successful', function () {
       beforeEach(async function () {
-        this.receipt = await this.contract.functions['approveForwarder(address,bool)'](this.forwarder.address, true);
+        this.receipt = await this.contract.removeForwarderApproval(this.forwarder.address);
       });
 
       it('sets the forwarder approval', async function () {
-        expect(await this.contract.isForwarderFor(deployer.address, this.forwarder.address)).to.be.true;
+        expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.address)).to.be.false;
       });
 
       it('updates the forwarder approval nonce', async function () {
         expect(await this.contract.getNonce(deployer.address, this.forwarder.address)).to.equal(1);
       });
 
-      it('emits a ForwarderApproved event', async function () {
-        await expect(this.receipt).to.emit(this.contract, 'ForwarderApproved').withArgs(deployer.address, this.forwarder.address, true, 0);
+      it('emits a ForwarderApproval event', async function () {
+        await expect(this.receipt).to.emit(this.contract, 'ForwarderApproval').withArgs(deployer.address, this.forwarder.address, false, 0);
       });
 
-      it('allows direct forwarding to a receiver contract', async function () {
-        const {data: relayerData} = await this.receiver.populateTransaction.test(42);
-        await this.forwarder.forward(deployer.address, this.receiver.address, relayerData);
-        expect(await this.receiver.getData(deployer.address)).to.equal(42);
-      });
+      // it('allows direct forwarding to a receiver contract', async function () {
+      //   const {data: relayerData} = await this.receiver.populateTransaction.test(42);
+      //   await this.forwarder.forward(deployer.address, this.receiver.address, relayerData);
+      //   expect(await this.receiver.getData(deployer.address)).to.equal(42);
+      // });
+      // });
     });
 
-    function describeApproveForwarder(signatureType) {
+    function describeSetForwarderApproval(isEIP712Signature) {
       beforeEach(async function () {
-        switch (signatureType) {
-          case 0:
-            this.signer = deployer.address;
-            this.errorMsg = 'SIGNATURE_WRONG_SIGNER';
-            break;
-          case 1:
-            this.signer = this.erc1654.address;
-            this.errorMsg = 'SIGNATURE_1654_INVALID';
-            break;
-          case 2:
-            this.signer = this.erc1271.address;
-            this.errorMsg = 'SIGNATURE_1271_INVALID';
-            break;
+        if (isEIP712Signature) {
+          this.signer = this.erc1271.address;
+          this.errorMsg = 'InvalidEIP1271Signature';
+        } else {
+          this.signer = deployer.address;
+          this.errorMsg = 'WrongSigner';
         }
       });
 
       it('reverts with an invalid signature', async function () {
-        const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
+        const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
           forwarder: this.forwarder.address,
           approved: false, // should be true
           nonce: 0,
         });
 
-        const {data: relayerData} = await this.contract.populateTransaction['approveForwarder(bool,bytes,uint8)'](true, signature, signatureType);
-        await expect(this.forwarder.forward(this.signer, this.contract.address, relayerData)).to.be.revertedWith(this.errorMsg);
+        const {data: relayerData} = await this.contract.populateTransaction.setForwarderApproval(
+          this.signer,
+          this.forwarder.address,
+          true,
+          signature,
+          isEIP712Signature
+        );
+        await expect(this.forwarder.forward(this.signer, this.contract.address, relayerData)).to.be.revertedWithCustomError(
+          this.contract,
+          this.errorMsg
+        );
       });
 
       context('when successful', function () {
         beforeEach(async function () {
-          const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
+          const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
             forwarder: this.forwarder.address,
             approved: true,
             nonce: 0,
           });
 
-          const {data: relayerData} = await this.contract.populateTransaction['approveForwarder(bool,bytes,uint8)'](true, signature, signatureType);
-          this.receipt = this.forwarder.forward(this.signer, this.contract.address, relayerData);
+          const {data: relayerData} = await this.contract.populateTransaction.setForwarderApproval(
+            this.signer,
+            this.forwarder.address,
+            true,
+            signature,
+            isEIP712Signature
+          );
+          this.receipt = await this.forwarder.forward(this.signer, this.contract.address, relayerData);
         });
 
         it('sets the forwarder approval', async function () {
-          expect(await this.contract.isForwarderFor(this.signer, this.forwarder.address)).to.be.true;
+          expect(await this.contract.isApprovedForwarder(this.signer, this.forwarder.address)).to.be.true;
         });
 
         it('updates the forwarder approval nonce', async function () {
           expect(await this.contract.getNonce(this.signer, this.forwarder.address)).to.equal(1);
         });
 
-        it('emits a ForwarderApproved event', async function () {
-          await expect(this.receipt).to.emit(this.contract, 'ForwarderApproved').withArgs(this.signer, this.forwarder.address, true, 0);
+        it('emits a ForwarderApproval event', async function () {
+          await expect(this.receipt).to.emit(this.contract, 'ForwarderApproval').withArgs(this.signer, this.forwarder.address, true, 0);
         });
 
         it('allows direct forwarding to a receiver contract', async function () {
@@ -138,70 +147,67 @@ describe('Meta Transactions', function () {
       });
     }
 
-    describe('approveForwarder(bool,bytes,SignatureType) DIRECT', function () {
-      describeApproveForwarder(0);
+    describe('setForwarderApproval(address,address,bool,bytes,bool) DIRECT', function () {
+      describeSetForwarderApproval(false);
     });
-    describe('approveForwarder(bool,bytes,SignatureType) ERC1654', function () {
-      describeApproveForwarder(1);
-    });
-    describe('approveForwarder(bool,bytes,SignatureType) ERC1271', function () {
-      describeApproveForwarder(2);
+    describe('setForwarderApproval(address,address,bool,bytes,bool) ERC1271', function () {
+      describeSetForwarderApproval(true);
     });
 
-    describe('checkApprovalAndForward(bytes,SignatureType,address,bytes)', function () {
+    // describe('checkApprovalAndForward(bytes,SignatureType,address,bytes)', function () {
+    //   it('reverts with an invalid signature', async function () {
+    //     const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+    //       forwarder: other.address,
+    //       approved: false, // should be true
+    //       nonce: 0,
+    //     });
+
+    //     const {to, data} = await this.receiver.populateTransaction.test(42);
+    //     const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
+    //     await expect(
+    //       other.sendTransaction({
+    //         to: this.contract.address,
+    //         data: relayerData + deployer.address.slice(2),
+    //       })
+    //     ).to.be.revertedWithCustomError(this.contract, 'WrongSigner');
+    //   });
+
+    //   context('when successful', function () {
+    //     beforeEach(async function () {
+    //       const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+    //         forwarder: other.address,
+    //         approved: true,
+    //         nonce: 0,
+    //       });
+    //       const {to, data} = await this.receiver.populateTransaction.test(42);
+    //       const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
+    //       this.receipt = await other.sendTransaction({
+    //         to: this.contract.address,
+    //         data: relayerData + deployer.address.slice(2),
+    //       });
+    //     });
+
+    //     it('does not set the forwarder approval', async function () {
+    //       expect(await this.contract.isForwarderFor(deployer.address, other.address)).to.be.false;
+    //     });
+
+    //     it('does not update the forwarder approval nonce', async function () {
+    //       expect(await this.contract.getNonce(deployer.address, other.address)).to.equal(0);
+    //     });
+
+    //     it('calls the target function', async function () {
+    //       expect(await this.receiver.getData(deployer.address)).to.equal(42);
+    //     });
+
+    //     it('does not emit a ForwarderApproved event', async function () {
+    //       await expect(this.receipt).not.to.emit(this.contract, 'ForwarderApproved');
+    //     });
+    //   });
+    // });
+
+    describe('approveAndForward(bytes,bool,address,bytes)', function () {
       it('reverts with an invalid signature', async function () {
-        const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
-          forwarder: other.address,
-          approved: false, // should be true
-          nonce: 0,
-        });
-
-        const {to, data} = await this.receiver.populateTransaction.test(42);
-        const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
-        await expect(
-          other.sendTransaction({
-            to: this.contract.address,
-            data: relayerData + deployer.address.slice(2),
-          })
-        ).to.be.revertedWith('SIGNATURE_WRONG_SIGNER');
-      });
-
-      context('when successful', function () {
-        beforeEach(async function () {
-          const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
-            forwarder: other.address,
-            approved: true,
-            nonce: 0,
-          });
-          const {to, data} = await this.receiver.populateTransaction.test(42);
-          const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
-          this.receipt = await other.sendTransaction({
-            to: this.contract.address,
-            data: relayerData + deployer.address.slice(2),
-          });
-        });
-
-        it('does not set the forwarder approval', async function () {
-          expect(await this.contract.isForwarderFor(deployer.address, other.address)).to.be.false;
-        });
-
-        it('does not update the forwarder approval nonce', async function () {
-          expect(await this.contract.getNonce(deployer.address, other.address)).to.equal(0);
-        });
-
-        it('calls the target function', async function () {
-          expect(await this.receiver.getData(deployer.address)).to.equal(42);
-        });
-
-        it('does not emit a ForwarderApproved event', async function () {
-          await expect(this.receipt).not.to.emit(this.contract, 'ForwarderApproved');
-        });
-      });
-    });
-
-    describe('approveAndForward(bytes,SignatureType,address,bytes)', function () {
-      it('reverts with an invalid signature', async function () {
-        const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
+        const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
           forwarder: this.forwarder.address,
           approved: false, // should be true
           nonce: 0,
@@ -209,12 +215,15 @@ describe('Meta Transactions', function () {
 
         const {to, data} = await this.receiver.populateTransaction.test(42);
         const {data: relayerData} = await this.contract.populateTransaction.approveAndForward(signature, 0, to, data);
-        await expect(this.forwarder.forward(deployer.address, this.contract.address, relayerData)).to.be.revertedWith('SIGNATURE_WRONG_SIGNER');
+        await expect(this.forwarder.forward(deployer.address, this.contract.address, relayerData)).to.be.revertedWithCustomError(
+          this.contract,
+          'WrongSigner'
+        );
       });
 
       context('when successful', function () {
         beforeEach(async function () {
-          const signature = await deployer._signTypedData(this.domain, ApproveForwarderType, {
+          const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
             forwarder: this.forwarder.address,
             approved: true,
             nonce: 0,
@@ -225,7 +234,7 @@ describe('Meta Transactions', function () {
         });
 
         it('sets the forwarder approval', async function () {
-          expect(await this.contract.isForwarderFor(deployer.address, this.forwarder.address)).to.be.true;
+          expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.address)).to.be.true;
         });
 
         it('updates the forwarder approval nonce', async function () {
@@ -236,8 +245,8 @@ describe('Meta Transactions', function () {
           expect(await this.receiver.getData(deployer.address)).to.equal(42);
         });
 
-        it('emits a ForwarderApproved event', async function () {
-          await expect(this.receipt).to.emit(this.contract, 'ForwarderApproved').withArgs(deployer.address, this.forwarder.address, true, 0);
+        it('emits a ForwarderApproval event', async function () {
+          await expect(this.receipt).to.emit(this.contract, 'ForwarderApproval').withArgs(deployer.address, this.forwarder.address, true, 0);
         });
 
         it('allows direct forwarding to a receiver contract', async function () {
@@ -257,12 +266,29 @@ describe('Meta Transactions', function () {
             to: this.contract.address,
             data: relayerData + deployer.address.slice(2),
           })
-        ).to.be.revertedWith('NOT_AUTHORIZED_FORWARDER');
+        )
+          .to.be.revertedWithCustomError(this.contract, 'ForwarderNotApproved')
+          .withArgs(deployer.address, other.address);
       });
 
       context('when successful', function () {
         beforeEach(async function () {
-          await this.contract.functions['approveForwarder(address,bool)'](other.address, true);
+          const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+            forwarder: other.address,
+            approved: true,
+            nonce: 0,
+          });
+
+          const {data: approvalData} = await this.contract.populateTransaction.setForwarderApproval(
+            deployer.address,
+            other.address,
+            true,
+            signature,
+            false
+          );
+          await this.forwarder.forward(ZeroAddress, this.contract.address, approvalData);
+
+          // await this.contract.functions['approveForwarder(address,bool)'](other.address, true);
           const {to, data} = await this.receiver.populateTransaction.test(42);
           const {data: relayerData} = await this.contract.populateTransaction.forward(to, data);
           this.receipt = await other.sendTransaction({
