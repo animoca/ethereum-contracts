@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+pragma solidity 0.8.16;
 
-import {IERC1654} from "./../../cryptography/interfaces/IERC1654.sol";
+import {IERC1271} from "./../../cryptography/interfaces/IERC1271.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ERC1654Mock is IERC1654 {
+contract ERC1271Mock is IERC1271 {
     using ECDSA for bytes32;
 
     address internal immutable _owner;

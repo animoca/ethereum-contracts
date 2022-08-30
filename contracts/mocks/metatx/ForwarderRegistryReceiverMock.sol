@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+pragma solidity 0.8.16;
 
 import {IForwarderRegistry} from "../../metatx/interfaces/IForwarderRegistry.sol";
 import {ForwarderRegistryContext} from "../../metatx/ForwarderRegistryContext.sol";
+
+import "hardhat/console.sol";
 
 contract ForwarderRegistryReceiverMock is ForwarderRegistryContext {
     mapping(address => uint256) internal _d;

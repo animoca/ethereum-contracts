@@ -7,7 +7,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "signer",
+          "name": "sender",
           "type": "address"
         },
         {
@@ -16,11 +16,11 @@
           "type": "address"
         }
       ],
-      "name": "isForwarderFor",
+      "name": "isApprovedForwarder",
       "outputs": [
         {
           "internalType": "bool",
-          "name": "isForwarder",
+          "name": "isApproved",
           "type": "bool"
         }
       ],

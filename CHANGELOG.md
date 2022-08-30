@@ -11,6 +11,8 @@
 - Restructured `contracts` folder with subfolders `base` and `facets`.
 - Renamed `IDiamondCutBase` to `IDiamondCutCommon`.
 - Changed ACL from contract owner to minter for `TokenMetadataPerToken` admin functions in ERC721.
+- Reworked `ForwarderRegistry`'s interfaces.
+- Removed `ERC1654`-related contracts and features as EIP-1271 became final.
 - Removed `time.js` test hepers in favor of new `@nomicfoundation/hardhat-network-helpers`.
 - Removed plugin `waffle-tests`, now using `@nomicfoundation/hardhat-chai-matchers`.
 

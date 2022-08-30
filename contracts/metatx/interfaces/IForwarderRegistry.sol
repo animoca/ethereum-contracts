@@ -4,9 +4,9 @@ pragma solidity ^0.8.8;
 /// @title Universal Meta-Transactions Forwarder Registry.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 interface IForwarderRegistry {
-    /// @notice Checks whether an account is as a meta-transaction forwarder for a signer account.
-    /// @param forwarder The signer account.
+    /// @notice Checks whether an account is as an approved meta-transaction forwarder for a sender account.
+    /// @param sender The sender account.
     /// @param forwarder The forwarder account.
-    /// @return isForwarder True if `forwarder` is a meta-transaction forwarder for `signer`, false otherwise.
-    function isForwarderFor(address signer, address forwarder) external view returns (bool isForwarder);
+    /// @return isApproved True if `forwarder` is an approved meta-transaction forwarder for `sender`, false otherwise.
+    function isApprovedForwarder(address sender, address forwarder) external view returns (bool isApproved);
 }
