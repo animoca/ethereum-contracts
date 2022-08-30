@@ -18,7 +18,7 @@ abstract contract ForwarderRegistryContextBase {
     function _msgSender() internal view virtual returns (address) {
         // Optimised path in case of an EOA-initiated direct tx to the contract or a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
-        if (msg.sender == tx.origin || msg.data.length < 20) {
+        if (msg.sender == tx.origin || msg.data.length < 24) {
             return msg.sender;
         }
 
@@ -34,9 +34,9 @@ abstract contract ForwarderRegistryContextBase {
 
     /// @notice Returns the message data depending on the ForwarderRegistry-based meta-transaction context.
     function _msgData() internal view virtual returns (bytes calldata) {
-        // Optimised path in case of 1/ an EOA-initiated direct tx to the contract 2/ a call from a contract not complying with EIP-2771
+        // Optimised path in case of an EOA-initiated direct tx to the contract or a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
-        if (msg.sender == tx.origin || msg.data.length < 20) {
+        if (msg.sender == tx.origin || msg.data.length < 24) {
             return msg.data;
         }
 

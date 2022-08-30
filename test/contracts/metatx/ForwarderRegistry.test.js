@@ -53,7 +53,6 @@ describe('Meta Transactions', function () {
     });
 
     describe('removeForwarderApproval(address,bool)', function () {
-      // describe('when successful', function () {
       beforeEach(async function () {
         this.receipt = await this.contract.removeForwarderApproval(this.forwarder.address);
       });
@@ -69,13 +68,6 @@ describe('Meta Transactions', function () {
       it('emits a ForwarderApproval event', async function () {
         await expect(this.receipt).to.emit(this.contract, 'ForwarderApproval').withArgs(deployer.address, this.forwarder.address, false, 0);
       });
-
-      // it('allows direct forwarding to a receiver contract', async function () {
-      //   const {data: relayerData} = await this.receiver.populateTransaction.test(42);
-      //   await this.forwarder.forward(deployer.address, this.receiver.address, relayerData);
-      //   expect(await this.receiver.getData(deployer.address)).to.equal(42);
-      // });
-      // });
     });
 
     function describeSetForwarderApproval(isEIP712Signature) {
@@ -153,57 +145,6 @@ describe('Meta Transactions', function () {
     describe('setForwarderApproval(address,address,bool,bytes,bool) ERC1271', function () {
       describeSetForwarderApproval(true);
     });
-
-    // describe('checkApprovalAndForward(bytes,SignatureType,address,bytes)', function () {
-    //   it('reverts with an invalid signature', async function () {
-    //     const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
-    //       forwarder: other.address,
-    //       approved: false, // should be true
-    //       nonce: 0,
-    //     });
-
-    //     const {to, data} = await this.receiver.populateTransaction.test(42);
-    //     const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
-    //     await expect(
-    //       other.sendTransaction({
-    //         to: this.contract.address,
-    //         data: relayerData + deployer.address.slice(2),
-    //       })
-    //     ).to.be.revertedWithCustomError(this.contract, 'WrongSigner');
-    //   });
-
-    //   context('when successful', function () {
-    //     beforeEach(async function () {
-    //       const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
-    //         forwarder: other.address,
-    //         approved: true,
-    //         nonce: 0,
-    //       });
-    //       const {to, data} = await this.receiver.populateTransaction.test(42);
-    //       const {data: relayerData} = await this.contract.populateTransaction.checkApprovalAndForward(signature, 0, to, data);
-    //       this.receipt = await other.sendTransaction({
-    //         to: this.contract.address,
-    //         data: relayerData + deployer.address.slice(2),
-    //       });
-    //     });
-
-    //     it('does not set the forwarder approval', async function () {
-    //       expect(await this.contract.isForwarderFor(deployer.address, other.address)).to.be.false;
-    //     });
-
-    //     it('does not update the forwarder approval nonce', async function () {
-    //       expect(await this.contract.getNonce(deployer.address, other.address)).to.equal(0);
-    //     });
-
-    //     it('calls the target function', async function () {
-    //       expect(await this.receiver.getData(deployer.address)).to.equal(42);
-    //     });
-
-    //     it('does not emit a ForwarderApproved event', async function () {
-    //       await expect(this.receipt).not.to.emit(this.contract, 'ForwarderApproved');
-    //     });
-    //   });
-    // });
 
     describe('approveAndForward(bytes,bool,address,bytes)', function () {
       it('reverts with an invalid signature', async function () {
@@ -288,7 +229,6 @@ describe('Meta Transactions', function () {
           );
           await this.forwarder.forward(ZeroAddress, this.contract.address, approvalData);
 
-          // await this.contract.functions['approveForwarder(address,bool)'](other.address, true);
           const {to, data} = await this.receiver.populateTransaction.test(42);
           const {data: relayerData} = await this.contract.populateTransaction.forward(to, data);
           this.receipt = await other.sendTransaction({
