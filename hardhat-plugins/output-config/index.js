@@ -10,5 +10,8 @@ extendEnvironment((hre) => {
       delete network.accounts;
     }
   }
-  fse.writeFileSync('hardhat.config.last.json', JSON.stringify(config, null, 2));
+  fse.writeFileSync(
+    'hardhat.config.last.json',
+    JSON.stringify(config, (_, value) => (typeof value === 'bigint' ? value.toString() : value), 2)
+  );
 });

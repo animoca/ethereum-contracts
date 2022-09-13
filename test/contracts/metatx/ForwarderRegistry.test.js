@@ -12,6 +12,9 @@ const ForwarderApprovalType = {
   ],
 };
 
+// TODO: missing test for EIP-712 in case of network fork.
+// pending https://github.com/NomicFoundation/hardhat/issues/3074
+
 describe('Meta Transactions', function () {
   let deployer, other;
 
@@ -171,7 +174,7 @@ describe('Meta Transactions', function () {
           });
           const {to, data} = await this.receiver.populateTransaction.test(42);
           const {data: relayerData} = await this.contract.populateTransaction.approveAndForward(signature, 0, to, data);
-          this.receipt = this.forwarder.forward(deployer.address, this.contract.address, relayerData);
+          this.receipt = await this.forwarder.forward(deployer.address, this.contract.address, relayerData);
         });
 
         it('sets the forwarder approval', async function () {
@@ -249,6 +252,30 @@ describe('Meta Transactions', function () {
       it('_msgSender() == msg.sender if msg.sender == tx.origin', async function () {
         await this.receiver.test(42);
         expect(await this.receiver.getData(deployer.address)).to.equal(42);
+      });
+
+      it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.data.length < 24', async function () {
+        // Approve forwarder
+        const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+          forwarder: this.forwarder.address,
+          approved: true,
+          nonce: 0,
+        });
+
+        const {data: relayerData} = await this.contract.populateTransaction.setForwarderApproval(
+          deployer.address,
+          this.forwarder.address,
+          true,
+          signature,
+          false
+        );
+        this.receipt = await this.forwarder.forward(deployer.address, this.contract.address, relayerData);
+
+        // Forward non-EIP-2771 payload
+        const {to, data} = await this.receiver.populateTransaction.smallDataTest();
+        await this.forwarder.non2771Forward(to, data);
+        expect(await this.receiver.getData(deployer.address)).to.equal(0);
+        expect(await this.receiver.getData(this.forwarder.address)).to.equal(1);
       });
 
       it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.sender is not an approved forwarder', async function () {
