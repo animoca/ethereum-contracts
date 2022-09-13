@@ -4,7 +4,7 @@
 
 ### Breaking changes
 
-- Upgraded to `solc@0.8.15`.
+- Upgraded to `solc@0.8.17`.
 - Upgraded to `@openzeppelin/contracts@4.7.0`.
 - Made `ERC20` and `ERC721` contracts abstract.
 - Removed `ERC20Wrapper` in favor of openzeppelin's `SafeERC20`.
