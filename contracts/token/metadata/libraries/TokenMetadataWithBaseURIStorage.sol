@@ -29,7 +29,7 @@ library TokenMetadataWithBaseURIStorage {
     /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @dev Emits a {BaseMetadataURISet} event.
     /// @param uri The base metadata URI.
-    function proxyInit(Layout storage s, string memory uri) internal {
+    function proxyInit(Layout storage s, string calldata uri) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(uri);
     }

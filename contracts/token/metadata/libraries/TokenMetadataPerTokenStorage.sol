@@ -16,7 +16,7 @@ library TokenMetadataPerTokenStorage {
     function setTokenURI(
         Layout storage s,
         uint256 id,
-        string memory uri
+        string calldata uri
     ) internal {
         s.uris[id] = uri;
     }

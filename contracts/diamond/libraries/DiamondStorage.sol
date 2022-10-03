@@ -115,7 +115,10 @@ library DiamondStorage {
         IDiamondCutCommon.FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
         unchecked {
-            require(facetCut.facet == address(this) || facetCut.facet.isContract(), "Diamond: facet has no code");
+            if (facetCut.facet != address(this)) {
+                // allows immutable functions to be added from a constructor
+                require(facetCut.facet.isContract(), "Diamond: facet has no code"); // reverts if executed from a constructor
+            }
 
             uint256 length = facetCut.selectors.length;
             for (uint256 i; i != length; ++i) {

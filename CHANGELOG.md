@@ -27,6 +27,8 @@
 
 ### Bugfixes
 
+- Fixed a bug in ERC1155 transfers which caused a wrong balance for a transfer recipient.
+- Fixed a bug in ForwarderRegistry which caused possible approval replay attacks on ERC1271 wallets.
 - Fixed ERC721Storage `mint`, `batchMint` and `safeMint` which did not allow re-minting after burning.
 - Fixed ERC721 transfer and burning tests which were not correctly testing transactions initiated by different recipients.
 - Immutable mock implementations now correctly inherit from `ForwarderRegistryContext` instead of `ForwarderRegistryContextBase`.
@@ -34,6 +36,7 @@
 
 ### Improvements
 
+- Improved calldata usage in some token libraries functions.
 - Improved ERC721 implementation.
 - Improved ERC721 tests.
 - Improved ERC20 and ERC721 comments coverage.

@@ -46,8 +46,8 @@ library ERC20DetailedStorage {
     /// @param tokenDecimals The token decimals.
     function proxyInit(
         Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol,
+        string calldata tokenName,
+        string calldata tokenSymbol,
         uint8 tokenDecimals
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
