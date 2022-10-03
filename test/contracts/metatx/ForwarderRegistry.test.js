@@ -6,6 +6,7 @@ const {deployContract} = require('../../helpers/contract');
 
 const ForwarderApprovalType = {
   ForwarderApproval: [
+    {name: 'sender', type: 'address'},
     {name: 'forwarder', type: 'address'},
     {name: 'approved', type: 'bool'},
     {name: 'nonce', type: 'uint256'},
@@ -86,6 +87,7 @@ describe('Meta Transactions', function () {
 
       it('reverts with an invalid signature', async function () {
         const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+          sender: this.signer,
           forwarder: this.forwarder.address,
           approved: false, // should be true
           nonce: 0,
@@ -107,6 +109,7 @@ describe('Meta Transactions', function () {
       context('when successful', function () {
         beforeEach(async function () {
           const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+            sender: this.signer,
             forwarder: this.forwarder.address,
             approved: true,
             nonce: 0,
@@ -152,6 +155,7 @@ describe('Meta Transactions', function () {
     describe('approveAndForward(bytes,bool,address,bytes)', function () {
       it('reverts with an invalid signature', async function () {
         const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+          sender: deployer.address,
           forwarder: this.forwarder.address,
           approved: false, // should be true
           nonce: 0,
@@ -168,6 +172,7 @@ describe('Meta Transactions', function () {
       context('when successful', function () {
         beforeEach(async function () {
           const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+            sender: deployer.address,
             forwarder: this.forwarder.address,
             approved: true,
             nonce: 0,
@@ -218,6 +223,7 @@ describe('Meta Transactions', function () {
       context('when successful', function () {
         beforeEach(async function () {
           const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+            sender: deployer.address,
             forwarder: other.address,
             approved: true,
             nonce: 0,
@@ -257,6 +263,7 @@ describe('Meta Transactions', function () {
       it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.data.length < 24', async function () {
         // Approve forwarder
         const signature = await deployer._signTypedData(this.domain, ForwarderApprovalType, {
+          sender: deployer.address,
           forwarder: this.forwarder.address,
           approved: true,
           nonce: 0,

@@ -27,7 +27,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
 
     bytes4 private constant EIP1271_MAGICVALUE = 0x1626ba7e;
     bytes32 private constant EIP712_DOMAIN_NAME = keccak256("ForwarderRegistry");
-    bytes32 private constant APPROVAL_TYPEHASH = keccak256("ForwarderApproval(address forwarder,bool approved,uint256 nonce)");
+    bytes32 private constant APPROVAL_TYPEHASH = keccak256("ForwarderApproval(address sender,address forwarder,bool approved,uint256 nonce)");
 
     mapping(address => mapping(address => Forwarder)) private _forwarders;
 
@@ -149,7 +149,11 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         bytes calldata signature,
         bool isEIP1271Signature
     ) private view {
-        bytes memory data = abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), keccak256(abi.encode(APPROVAL_TYPEHASH, forwarder, approved, nonce)));
+        bytes memory data = abi.encodePacked(
+            "\x19\x01",
+            DOMAIN_SEPARATOR(),
+            keccak256(abi.encode(APPROVAL_TYPEHASH, sender, forwarder, approved, nonce))
+        );
         if (isEIP1271Signature) {
             if (IERC1271(sender).isValidSignature(keccak256(data), signature) != EIP1271_MAGICVALUE) revert InvalidEIP1271Signature();
         } else {

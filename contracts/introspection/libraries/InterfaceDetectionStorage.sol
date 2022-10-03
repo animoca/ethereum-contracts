@@ -2,7 +2,6 @@
 pragma solidity ^0.8.8;
 
 import {IERC165} from "./../interfaces/IERC165.sol";
-import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library InterfaceDetectionStorage {
     struct Layout {

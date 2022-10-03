@@ -57,6 +57,8 @@ library ERC1155Storage {
     }
 
     /// @notice Safely transfers some token by a sender.
+    /// @dev Note: This function implements {ERC1155-safeTransferFrom(address,address,uint256,uint256,bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `sender` is not `from` and has not been approved by `from`.
     /// @dev Reverts if `from` has an insufficient balance of `id`.
@@ -75,7 +77,7 @@ library ERC1155Storage {
         address to,
         uint256 id,
         uint256 value,
-        bytes memory data
+        bytes calldata data
     ) internal {
         require(to != address(0), "ERC1155: transfer to address(0)");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
@@ -90,6 +92,8 @@ library ERC1155Storage {
     }
 
     /// @notice Safely transfers a batch of tokens by a sender.
+    /// @dev Note: This function implements {ERC1155-safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `ids` and `values` have different lengths.
     /// @dev Reverts if `sender` is not `from` and has not been approved by `from`.
@@ -107,9 +111,9 @@ library ERC1155Storage {
         address sender,
         address from,
         address to,
-        uint256[] memory ids,
-        uint256[] memory values,
-        bytes memory data
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
     ) internal {
         require(to != address(0), "ERC1155: transfer to address(0)");
         uint256 length = ids.length;
@@ -131,6 +135,8 @@ library ERC1155Storage {
     }
 
     /// @notice Safely mints some token by a sender.
+    /// @dev Note: This function implements {ERC1155Mintable-safeMint(address,uint256,uint256,bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `to`'s balance of `id` overflows.
     /// @dev Reverts if `to` is a contract and the call to {IERC1155TokenReceiver-onERC1155Received} fails, reverts or is rejected.
@@ -160,6 +166,8 @@ library ERC1155Storage {
     }
 
     /// @notice Safely mints a batch of tokens by a sender.
+    /// @dev Note: This function implements {ERC1155Mintable-safeBatchMint(address,uint256[],uint256[],bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `ids` and `values` have different lengths.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `to`'s balance overflows for one of `ids`.
@@ -196,6 +204,8 @@ library ERC1155Storage {
     }
 
     /// @notice Safely mints tokens to multiple recipients by a sender.
+    /// @dev Note: This function implements {ERC1155Deliverable-safeDeliver(address[],uint256[],uint256[],bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `recipients`, `ids` and `values` have different lengths.
     /// @dev Reverts if one of `recipients` is the zero address.
     /// @dev Reverts if one of `recipients` balance overflows.
@@ -256,8 +266,8 @@ library ERC1155Storage {
         Layout storage s,
         address sender,
         address from,
-        uint256[] memory ids,
-        uint256[] memory values
+        uint256[] calldata ids,
+        uint256[] calldata values
     ) internal {
         uint256 length = ids.length;
         require(length == values.length, "ERC1155: inconsistent arrays");
@@ -372,7 +382,7 @@ library ERC1155Storage {
                     require(newToBalance > toBalance, "ERC1155: balance overflow");
 
                     s.balances[id][from] = newFromBalance;
-                    s.balances[id][to] += newToBalance;
+                    s.balances[id][to] = newToBalance;
                 }
             }
         }

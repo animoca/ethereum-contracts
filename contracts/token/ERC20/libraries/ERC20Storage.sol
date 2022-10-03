@@ -64,8 +64,8 @@ library ERC20Storage {
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
     function proxyInit(
         Layout storage s,
-        address[] memory holders,
-        uint256[] memory allocations
+        address[] calldata holders,
+        uint256[] calldata allocations
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(holders, allocations);
@@ -234,8 +234,8 @@ library ERC20Storage {
     function batchTransfer(
         Layout storage s,
         address from,
-        address[] memory recipients,
-        uint256[] memory values
+        address[] calldata recipients,
+        uint256[] calldata values
     ) internal {
         uint256 length = recipients.length;
         require(length == values.length, "ERC20: inconsistent arrays");
@@ -290,8 +290,8 @@ library ERC20Storage {
         Layout storage s,
         address sender,
         address from,
-        address[] memory recipients,
-        uint256[] memory values
+        address[] calldata recipients,
+        uint256[] calldata values
     ) internal {
         uint256 length = recipients.length;
         require(length == values.length, "ERC20: inconsistent arrays");
@@ -340,6 +340,7 @@ library ERC20Storage {
 
     /// @notice Transfers an amount of tokens from an account to a recipient. If the recipient is a contract, calls `onERC20Received` on it.
     /// @dev Note: This function implements {ERC20SafeTransfers-safeTransfer(address,uint256,bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` does not have at least `value` of balance.
     /// @dev Reverts if `to` is a contract and the call to `onERC20Received` fails, reverts or is rejected.
@@ -353,7 +354,7 @@ library ERC20Storage {
         address from,
         address to,
         uint256 value,
-        bytes memory data
+        bytes calldata data
     ) internal {
         s.transfer(from, to, value);
         if (to.isContract()) {
@@ -363,6 +364,7 @@ library ERC20Storage {
 
     /// @notice Transfers an amount of tokens to a recipient from a specified address. If the recipient is a contract, calls `onERC20Received` on it.
     /// @dev Note: This function implements {ERC20SafeTransfers-safeTransferFrom(address,address,uint256,bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` does not have at least `value` of balance.
     /// @dev Reverts if `sender` is not `from` and does not have at least `value` of allowance by `from`.
@@ -380,7 +382,7 @@ library ERC20Storage {
         address from,
         address to,
         uint256 value,
-        bytes memory data
+        bytes calldata data
     ) internal {
         s.transferFrom(sender, from, to, value);
         if (to.isContract()) {
@@ -518,8 +520,8 @@ library ERC20Storage {
     function batchBurnFrom(
         Layout storage s,
         address sender,
-        address[] memory owners,
-        uint256[] memory values
+        address[] calldata owners,
+        uint256[] calldata values
     ) internal {
         uint256 length = owners.length;
         require(length == values.length, "ERC20: inconsistent arrays");

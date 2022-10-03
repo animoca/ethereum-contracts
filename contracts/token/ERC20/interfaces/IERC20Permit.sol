@@ -18,7 +18,7 @@ interface IERC20Permit {
     /// @param deadline The deadline from which the permit signature is no longer valid.
     /// @param v Permit signature v parameter
     /// @param r Permit signature r parameter.
-    /// @param s Permis signature s parameter.
+    /// @param s Permit signature s parameter.
     function permit(
         address owner,
         address spender,

@@ -161,6 +161,7 @@ library ERC721Storage {
 
     /// @notice Safely transfers the ownership of a token to a recipient by a sender.
     /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
@@ -186,6 +187,7 @@ library ERC721Storage {
 
     /// @notice Safely transfers the ownership of a token to a recipient by a sender.
     /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256,bytes)}.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Resets the token approval for `tokenId`.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `from` is not the owner of `tokenId`.
@@ -203,7 +205,7 @@ library ERC721Storage {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory data
+        bytes calldata data
     ) internal {
         s.transferFrom(sender, from, to, tokenId);
         if (to.isContract()) {
@@ -227,7 +229,7 @@ library ERC721Storage {
         address sender,
         address from,
         address to,
-        uint256[] memory tokenIds
+        uint256[] calldata tokenIds
     ) internal {
         require(to != address(0), "ERC721: transfer to address(0)");
         bool operatable = _isOperatable(s, from, sender);
@@ -284,6 +286,7 @@ library ERC721Storage {
     /// @notice Safely mints a token.
     /// @dev Note: This function implements {ERC721Mintable-safeMint(address,uint256,bytes)}.
     /// @dev Note: Either `safeMint` or `safeMintOnce` should be used in a given contract, but not both.
+    /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if `tokenId` already exists.
     /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
@@ -520,7 +523,7 @@ library ERC721Storage {
         Layout storage s,
         address sender,
         address from,
-        uint256[] memory tokenIds
+        uint256[] calldata tokenIds
     ) internal {
         bool operatable = _isOperatable(s, from, sender);
 
@@ -647,7 +650,7 @@ library ERC721Storage {
         return owner == BURNT_TOKEN_OWNER_VALUE;
     }
 
-    function _tokenHasApproval(uint256 owner) private pure returns (bool tokenSasApproval) {
+    function _tokenHasApproval(uint256 owner) private pure returns (bool tokenHasApproval) {
         return owner & TOKEN_APPROVAL_OWNER_FLAG != 0;
     }
 }

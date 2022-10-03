@@ -153,7 +153,15 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
             });
           } else {
             it('decreases the from balance(s)', async function () {
+              const amounts = {};
               for (const [id, value] of tokens) {
+                if (amounts[id] !== undefined) {
+                  amounts[id] += value;
+                } else {
+                  amounts[id] = value;
+                }
+              }
+              for (const [id, amount] of Object.entries(amounts)) {
                 let balance;
                 if (!isFungible(id)) {
                   balance = '0';
@@ -166,15 +174,23 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
                   } else if (id == fungible3.id) {
                     initialBalance = fungible3.supply;
                   }
-                  balance = initialBalance - value;
+                  balance = initialBalance - amount;
                 }
                 expect(await this.token.balanceOf(owner.address, id)).to.equal(balance);
               }
             });
 
             it('increases the recipient balance(s)', async function () {
+              const amounts = {};
               for (const [id, value] of tokens) {
-                expect(await this.token.balanceOf(this.to, id)).to.equal(value);
+                if (amounts[id] !== undefined) {
+                  amounts[id] += value;
+                } else {
+                  amounts[id] = value;
+                }
+              }
+              for (const [id, amount] of Object.entries(amounts)) {
+                expect(await this.token.balanceOf(this.to, id)).to.equal(amount);
               }
             });
           }
@@ -444,7 +460,12 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
             transfersByRecipient(transferFn, [fungible1.id], [fungible1.supply], '0x42');
           });
           context('multiple tokens transfer', function () {
-            transfersByRecipient(transferFn, [fungible1.id, fungible2.id, fungible3.id], [fungible1.supply, 0, fungible3.supply], '0x42');
+            transfersByRecipient(
+              transferFn,
+              [fungible1.id, fungible2.id, fungible1.id, fungible3.id],
+              [fungible1.supply - 1, 0, 1, fungible3.supply],
+              '0x42'
+            );
           });
         });
         context('with Non-Fungible Tokens', function () {
@@ -456,7 +477,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           });
         });
         context('with Fungible and Non-Fungible Tokens', function () {
-          transfersByRecipient(transferFn, [fungible1.id, nft1, fungible2.id, nft2], [fungible1.supply, 1, 0, 1], '0x42');
+          transfersByRecipient(transferFn, [fungible1.id, nft1, fungible2.id, nft2, fungible1.id], [fungible1.supply - 1, 1, 0, 1, 1], '0x42');
         });
       });
     });
