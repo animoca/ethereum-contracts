@@ -53,8 +53,8 @@ library CheckpointsStorage {
     /// @param timestamps The checkpoint timestamps.
     function proxyInit(
         Layout storage s,
-        bytes32[] calldata checkpointIds,
-        uint256[] calldata timestamps
+        bytes32[] memory checkpointIds,
+        uint256[] memory timestamps
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(checkpointIds, timestamps);
