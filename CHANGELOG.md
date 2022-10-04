@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Improvements
+
+- Revert calldata usage in some token libraries functions.
+
 ## 0.1.0
 
 ### Breaking changes

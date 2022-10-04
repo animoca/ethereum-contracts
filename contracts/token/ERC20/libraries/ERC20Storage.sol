@@ -64,8 +64,8 @@ library ERC20Storage {
     /// @param allocations The list of amounts of tokens to mint to each of `holders`.
     function proxyInit(
         Layout storage s,
-        address[] calldata holders,
-        uint256[] calldata allocations
+        address[] memory holders,
+        uint256[] memory allocations
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(holders, allocations);

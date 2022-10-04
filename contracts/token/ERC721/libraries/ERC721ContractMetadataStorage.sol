@@ -41,8 +41,8 @@ library ERC721ContractMetadataStorage {
     /// @param tokenSymbol The token symbol.
     function proxyInit(
         Layout storage s,
-        string calldata tokenName,
-        string calldata tokenSymbol
+        string memory tokenName,
+        string memory tokenSymbol
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(tokenName, tokenSymbol);

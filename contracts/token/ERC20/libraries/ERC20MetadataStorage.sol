@@ -31,7 +31,7 @@ library ERC20MetadataStorage {
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @param uri The token URI.
-    function proxyInit(Layout storage s, string calldata uri) internal {
+    function proxyInit(Layout storage s, string memory uri) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.constructorInit(uri);
     }
