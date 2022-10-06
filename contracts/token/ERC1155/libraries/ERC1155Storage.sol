@@ -330,8 +330,8 @@ library ERC1155Storage {
     /// @return balances The balances of `ids` owned by accounts `owners`.
     function balanceOfBatch(
         Layout storage s,
-        address[] memory owners,
-        uint256[] memory ids
+        address[] calldata owners,
+        uint256[] calldata ids
     ) internal view returns (uint256[] memory balances) {
         uint256 length = owners.length;
         require(length == ids.length, "ERC1155: inconsistent arrays");

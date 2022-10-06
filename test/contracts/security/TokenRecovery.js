@@ -37,8 +37,10 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
     this.contract = await deployFn();
     await setBalance(this.contract.address, ethers.BigNumber.from('1000'));
     const forwarderRegistryAddress = await getForwarderRegistryAddress();
-    this.erc20 = await deployContract('ERC20Mock', [this.contract.address], ['1000'], '', '', '1', '', forwarderRegistryAddress);
-    this.erc721 = await deployContract('ERC721Mock', '', '', '', forwarderRegistryAddress);
+    this.erc20 = await deployContract('ERC20SimpleMock', forwarderRegistryAddress);
+    await this.erc20.grantRole(await this.erc20.MINTER_ROLE(), deployer.address);
+    await this.erc20.batchMint([this.contract.address], [1000]);
+    this.erc721 = await deployContract('ERC721SimpleMock', forwarderRegistryAddress);
     await this.erc721.grantRole(await this.erc721.MINTER_ROLE(), deployer.address);
     await this.erc721.mint(this.contract.address, 0);
     await this.erc721.mint(this.contract.address, 1);

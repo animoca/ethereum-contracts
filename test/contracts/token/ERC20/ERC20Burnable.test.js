@@ -9,7 +9,7 @@ const tokenURI = 'uri';
 const config = {
   immutable: {
     name: 'ERC20BurnableMock',
-    ctorArguments: ['initialHolders', 'initialBalances', 'name', 'symbol', 'decimals', 'tokenURI', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'decimals', 'forwarderRegistry'],
     testMsgData: true,
   },
   diamond: {
@@ -26,7 +26,7 @@ const config = {
       {
         name: 'ERC20FacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20Storage', arguments: ['initialHolders', 'initialBalances'], adminProtected: true, phaseProtected: true},
+        init: {method: 'initERC20Storage', adminProtected: true},
         testMsgData: true,
       },
       {
@@ -38,7 +38,7 @@ const config = {
       {
         name: 'ERC20MetadataFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initERC20MetadataStorage', arguments: ['tokenURI'], adminProtected: true, phaseProtected: true},
+        init: {method: 'initERC20MetadataStorage', adminProtected: true},
         testMsgData: true,
       },
       {
@@ -166,8 +166,9 @@ runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
       },
     },
     deploy: async function (initialHolders, initialBalances, deployer) {
-      const contract = await deployFn({initialHolders, initialBalances, name, symbol, decimals, tokenURI});
+      const contract = await deployFn({name, symbol, decimals});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
+      await contract.batchMint(initialHolders, initialBalances);
       return contract;
     },
   };

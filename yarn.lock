@@ -2994,10 +2994,10 @@ hardhat-deploy-ethers@^0.3.0-beta.13:
   resolved "https://registry.yarnpkg.com/hardhat-deploy-ethers/-/hardhat-deploy-ethers-0.3.0-beta.13.tgz#b96086ff768ddf69928984d5eb0a8d78cfca9366"
   integrity sha512-PdWVcKB9coqWV1L7JTpfXRCI91Cgwsm7KLmBcwZ8f0COSm1xtABHZTyz3fvF6p42cTnz1VM0QnfDvMFlIRkSNw==
 
-hardhat-deploy@^0.11.15:
-  version "0.11.15"
-  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.15.tgz#5b5f6f762caa3c4d30e6e2800379ea7817a861b5"
-  integrity sha512-7e/GfVLmSXlcVePVFbC/xZ8mD97ChR6gHeUbejWMvzXpZ6I5bjSPZuaH5AebRRlb/6LjeIrN1+bKnayY0Sw9aA==
+hardhat-deploy@^0.11.16:
+  version "0.11.16"
+  resolved "https://registry.yarnpkg.com/hardhat-deploy/-/hardhat-deploy-0.11.16.tgz#856f3ac6d749460aba40ae39a314058f33f16352"
+  integrity sha512-dEpbrp3wewfEkDVroOiOteDvKc2BOMQzbjljHJkk65mb8gQZ0c0GsZBoLXROWSRoNhPCFjEDAhKPqBds5pclqQ==
   dependencies:
     "@types/qs" "^6.9.7"
     axios "^0.21.1"

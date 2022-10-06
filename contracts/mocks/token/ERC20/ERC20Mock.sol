@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
+import {ERC20MetadataStorage} from "./../../../token/ERC20/libraries/ERC20MetadataStorage.sol";
 import {ERC20SimpleMock} from "./ERC20SimpleMock.sol";
 import {ERC20Detailed} from "./../../../token/ERC20/ERC20Detailed.sol";
 import {ERC20Metadata} from "./../../../token/ERC20/ERC20Metadata.sol";
@@ -12,14 +13,11 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 contract ERC20Mock is ERC20SimpleMock, ERC20Detailed, ERC20Metadata, ERC20Permit, ERC20SafeTransfers, ERC20BatchTransfers {
     constructor(
-        address[] memory holders,
-        uint256[] memory allocations,
         string memory tokenName,
         string memory tokenSymbol,
         uint8 tokenDecimals,
-        string memory uri,
         IForwarderRegistry forwarderRegistry
-    ) ERC20SimpleMock(holders, allocations, forwarderRegistry) ERC20Detailed(tokenName, tokenSymbol, tokenDecimals) ERC20Metadata(uri) {}
+    ) ERC20SimpleMock(forwarderRegistry) ERC20Detailed(tokenName, tokenSymbol, tokenDecimals) ERC20Metadata() {}
 
     /// @inheritdoc ERC20SimpleMock
     function _msgSender() internal view virtual override(Context, ERC20SimpleMock) returns (address) {

@@ -14,11 +14,7 @@ contract CheckpointsMock is Checkpoints, ForwarderRegistryContext {
 
     bytes32 public constant START_CHECKPOINTID = "START";
 
-    constructor(
-        bytes32[] memory checkpointIds,
-        uint256[] memory timestamps,
-        IForwarderRegistry forwarderRegistry
-    ) Checkpoints(checkpointIds, timestamps) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
+    constructor(IForwarderRegistry forwarderRegistry) Checkpoints() ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function enforceCheckpointReached(bytes32 checkpointId) external view {
         CheckpointsStorage.layout().enforceCheckpointReached(checkpointId);

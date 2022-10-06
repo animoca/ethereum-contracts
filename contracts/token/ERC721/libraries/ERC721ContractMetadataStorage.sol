@@ -41,11 +41,13 @@ library ERC721ContractMetadataStorage {
     /// @param tokenSymbol The token symbol.
     function proxyInit(
         Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol
+        string calldata tokenName,
+        string calldata tokenSymbol
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
-        s.constructorInit(tokenName, tokenSymbol);
+        s.tokenName = tokenName;
+        s.tokenSymbol = tokenSymbol;
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
     /// @notice Gets the name of the token. E.g. "My Token".

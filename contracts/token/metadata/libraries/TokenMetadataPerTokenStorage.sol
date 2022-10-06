@@ -16,7 +16,7 @@ library TokenMetadataPerTokenStorage {
     function setTokenURI(
         Layout storage s,
         uint256 id,
-        string memory uri
+        string calldata uri
     ) internal {
         s.uris[id] = uri;
     }
@@ -26,8 +26,8 @@ library TokenMetadataPerTokenStorage {
     /// @param uris The token metadata URIs.
     function batchSetTokenURI(
         Layout storage s,
-        uint256[] memory ids,
-        string[] memory uris
+        uint256[] calldata ids,
+        string[] calldata uris
     ) internal {
         uint256 length = ids.length;
         require(length == uris.length, "Metadata: inconsistent arrays");

@@ -10,10 +10,8 @@ import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 abstract contract ERC20Metadata is ERC20MetadataBase, ContractOwnership {
     using ERC20MetadataStorage for ERC20MetadataStorage.Layout;
 
-    /// @notice Initializes the storage with an initial token URI.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Metadata.
-    /// @param uri The token URI.
-    constructor(string memory uri) {
-        ERC20MetadataStorage.layout().constructorInit(uri);
+    constructor() {
+        ERC20MetadataStorage.init();
     }
 }

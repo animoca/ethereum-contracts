@@ -19,17 +19,11 @@ contract ERC1155MetadataURIWithBaseURIFacet is ERC1155MetadataURIWithBaseURIBase
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initializes the storage with a base metadata URI.
-    /// @notice Sets the proxy initialization phase for TokenMetadataWithBaseURIStorage to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC1155MetadataURI.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase for TokenMetadataWithBaseURIStorage is set to `1` or above.
-    /// @dev Emits a {BaseMetadataURISet} event.
-    /// @param baseURI The base metadata URI.
-    function initERC1155MetadataURIStorage(string calldata baseURI) external {
+    function initERC1155MetadataURIStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC1155Storage.initERC1155MetadataURI();
-        TokenMetadataWithBaseURIStorage.layout().proxyInit(baseURI);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

@@ -11,9 +11,8 @@ contract ERC721BurnableMock is ERC721Mock, ERC721Burnable {
     constructor(
         string memory tokenName,
         string memory tokenSymbol,
-        string memory baseMetadataURI,
         IForwarderRegistry forwarderRegistry
-    ) ERC721Mock(tokenName, tokenSymbol, baseMetadataURI, forwarderRegistry) {}
+    ) ERC721Mock(tokenName, tokenSymbol, forwarderRegistry) {}
 
     /// @inheritdoc ERC721Mock
     function _msgSender() internal view virtual override(Context, ERC721Mock) returns (address) {

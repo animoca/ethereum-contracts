@@ -8,7 +8,7 @@ const baseMetadataURI = 'uri';
 const config = {
   immutable: {
     name: 'ERC721BurnableMock',
-    ctorArguments: ['name', 'symbol', 'baseMetadataURI', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'forwarderRegistry'],
     testMsgData: true,
   },
   diamond: {
@@ -36,7 +36,7 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721MetadataStorage',
-          arguments: ['name', 'symbol', 'baseMetadataURI'],
+          arguments: ['name', 'symbol'],
           adminProtected: true,
           phaseProtected: true,
         },

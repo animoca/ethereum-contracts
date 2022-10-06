@@ -6,7 +6,7 @@ const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsI
 const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC20Burnable(implementation) {
-  const {contractName, features, interfaces, methods, revertMessages, deploy} = implementation;
+  const {features, interfaces, methods, revertMessages, deploy} = implementation;
   const {'burn(uint256)': burn, 'burnFrom(address,uint256)': burnFrom, 'batchBurnFrom(address[],uint256[])': batchBurnFrom} = methods;
 
   const initialSupply = ethers.BigNumber.from('100');

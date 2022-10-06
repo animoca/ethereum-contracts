@@ -8,14 +8,11 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 contract ERC20BurnableMock is ERC20Mock, ERC20Burnable {
     constructor(
-        address[] memory holders,
-        uint256[] memory allocations,
         string memory tokenName,
         string memory tokenSymbol,
         uint8 tokenDecimals,
-        string memory uri,
         IForwarderRegistry forwarderRegistry
-    ) ERC20Mock(holders, allocations, tokenName, tokenSymbol, tokenDecimals, uri, forwarderRegistry) {}
+    ) ERC20Mock(tokenName, tokenSymbol, tokenDecimals, forwarderRegistry) {}
 
     /// @inheritdoc ERC20Mock
     function _msgSender() internal view virtual override(Context, ERC20Mock) returns (address) {

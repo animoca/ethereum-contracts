@@ -26,7 +26,7 @@ function behavesLikeERC20Safe(implementation) {
       this.contract = (await deploy([owner.address], [initialSupply], deployer)).connect(owner);
       await this.contract.approve(spender.address, initialAllowance);
       await this.contract.approve(maxSpender.address, MaxUInt256);
-      this.nonReceiver = await deployContract('ERC20Mock', [], [], '', '', '1', '', await getForwarderRegistryAddress());
+      this.nonReceiver = await deployContract('ERC20Mock', '', '', '1', await getForwarderRegistryAddress());
       this.receiver = await deployContract('ERC20ReceiverMock', true, this.contract.address);
       this.refusingReceiver = await deployContract('ERC20ReceiverMock', false, this.contract.address);
       this.wrongTokenReceiver = await deployContract('ERC20ReceiverMock', false, ZeroAddress);

@@ -13,9 +13,8 @@ contract ERC721Mock is ERC721SimpleMock, ERC721Deliverable, ERC721BatchTransfer,
     constructor(
         string memory tokenName,
         string memory tokenSymbol,
-        string memory baseMetadataURI,
         IForwarderRegistry forwarderRegistry
-    ) ERC721MetadataWithBaseURI(tokenName, tokenSymbol, baseMetadataURI) ERC721SimpleMock(forwarderRegistry) {}
+    ) ERC721MetadataWithBaseURI(tokenName, tokenSymbol) ERC721SimpleMock(forwarderRegistry) {}
 
     /// @inheritdoc ERC721SimpleMock
     function _msgSender() internal view virtual override(Context, ERC721SimpleMock) returns (address) {
