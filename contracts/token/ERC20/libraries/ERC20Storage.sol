@@ -24,51 +24,17 @@ library ERC20Storage {
     }
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
-    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.phase")) - 1);
 
     bytes4 internal constant ERC20_RECEIVED = IERC20Receiver.onERC20Received.selector;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    /// @notice Initializes the storage with a list of initial allocations (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    /// @dev Reverts if `holders` and `allocations` have different lengths.
-    /// @dev Reverts if one of `holders` is the zero address.
-    /// @dev Reverts if the total supply overflows.
-    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
-    /// @param holders The list of accounts to mint the tokens to.
-    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function constructorInit(
-        Layout storage s,
-        address[] memory holders,
-        uint256[] memory allocations
-    ) internal {
-        s.batchMint(holders, allocations);
+    function init() internal {
         InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
         erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
         erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
-    }
-
-    /// @notice Initializes the storage with a list of initial allocations (proxied version).
-    /// @notice Sets the proxy initialization phase to `1`.
-    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Reverts if `holders` and `allocations` have different lengths.
-    /// @dev Reverts if one of `holders` is the zero address.
-    /// @dev Reverts if the total supply overflows.
-    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
-    /// @param holders The list of accounts to mint the tokens to.
-    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function proxyInit(
-        Layout storage s,
-        address[] memory holders,
-        uint256[] memory allocations
-    ) internal {
-        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
-        s.constructorInit(holders, allocations);
     }
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20BatchTransfers.

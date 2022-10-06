@@ -22,20 +22,13 @@ function behavesLikeERC20Metadata(implementation) {
       await loadFixture(fixture, this);
     });
 
-    describe('tokenURI()', function () {
-      it('returns the token URI', async function () {
-        expect(await this.token.tokenURI()).to.equal(tokenURI);
-      });
-    });
-
     describe('setTokenURI()', function () {
-      const newTokenURI = 'test';
       it('reverts if not called by the contract owner', async function () {
-        await expect(this.token.connect(other).setTokenURI(newTokenURI)).to.be.revertedWith(revertMessages.NotContractOwner);
+        await expect(this.token.connect(other).setTokenURI(tokenURI)).to.be.revertedWith(revertMessages.NotContractOwner);
       });
-      it('updates the token URI', async function () {
-        await this.token.setTokenURI(newTokenURI);
-        expect(await this.token.tokenURI()).to.equal(newTokenURI);
+      it('sets the token URI', async function () {
+        await this.token.setTokenURI(tokenURI);
+        expect(await this.token.tokenURI()).to.equal(tokenURI);
       });
     });
 

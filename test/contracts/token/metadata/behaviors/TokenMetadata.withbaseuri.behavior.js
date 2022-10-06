@@ -24,43 +24,25 @@ function behavesLikeTokenMetadataWithBaseURI({baseMetadataURI, deploy, mint, tok
       await loadFixture(fixture, this);
     });
 
-    describe('[BaseMetadataURI] contructor', function () {
-      it('emits a BaseMetadataURISet event', async function () {
-        await expect(this.token.deployTransaction.hash).to.emit(this.token, 'BaseMetadataURISet').withArgs(baseMetadataURI);
-      });
-
-      it('sets the base metadata URI', async function () {
-        expect(await this.token.baseMetadataURI()).to.equal(baseMetadataURI);
-      });
-    });
-
-    describe('[BaseMetadataURI] tokenMetadata', function () {
-      it('returns the concatenation of baseMetadataURI and tokenId', async function () {
-        expect(await tokenMetadata(this.token, nft1)).to.equal(baseMetadataURI + nft1.toString());
-      });
-    });
-
     describe('[BaseMetadataURI] setBaseMetadataURI(string)', function () {
-      const newBaseMetadataURI = 'new-uri';
-
       it('reverts if not called by the contract owner', async function () {
-        await expect(this.token.connect(other).setBaseMetadataURI(newBaseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
+        await expect(this.token.connect(other).setBaseMetadataURI(baseMetadataURI)).to.be.revertedWith(revertMessages.NotContractOwner);
       });
 
       context('when successful', function () {
         beforeEach(async function () {
-          this.receipt = await this.token.setBaseMetadataURI(newBaseMetadataURI);
+          this.receipt = await this.token.setBaseMetadataURI(baseMetadataURI);
         });
         it('updates the base metadata URI', async function () {
-          expect(await this.token.baseMetadataURI()).to.equal(newBaseMetadataURI);
+          expect(await this.token.baseMetadataURI()).to.equal(baseMetadataURI);
         });
 
         it('updates the value returned by tokenMetadata', async function () {
-          expect(await tokenMetadata(this.token, nft1)).to.equal(newBaseMetadataURI + nft1.toString());
+          expect(await tokenMetadata(this.token, nft1)).to.equal(baseMetadataURI + nft1.toString());
         });
 
         it('emits a BaseMetadataURISet event', async function () {
-          await expect(this.receipt).to.emit(this.token, 'BaseMetadataURISet').withArgs(newBaseMetadataURI);
+          await expect(this.receipt).to.emit(this.token, 'BaseMetadataURISet').withArgs(baseMetadataURI);
         });
       });
     });

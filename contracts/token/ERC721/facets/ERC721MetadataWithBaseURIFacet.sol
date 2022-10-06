@@ -19,25 +19,16 @@ contract ERC721MetadataWithBaseURIFacet is ERC721MetadataWithBaseURIBase, Forwar
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initializes the storage with a name, symbol and a base metadata URI.
+    /// @notice Initializes the storage with a name and a symbol.
     /// @notice Sets the proxy initialization phase for ERC721ContractMetadataStorage to `1`.
-    /// @notice Sets the proxy initialization phase for TokenMetadataWithBaseURIStorage to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
     /// @dev Reverts if the sender is not the proxy admin.
     /// @dev Reverts if the proxy initialization phase for ERC721ContractMetadataStorage is set to `1` or above.
-    /// @dev Reverts if the proxy initialization phase for TokenMetadataWithBaseURIStorage is set to `1` or above.
-    /// @dev Emits a {BaseMetadataURISet} event.
     /// @param tokenName The token name
     /// @param tokenSymbol The token symbol
-    /// @param baseURI The base metadata URI.
-    function initERC721MetadataStorage(
-        string calldata tokenName,
-        string calldata tokenSymbol,
-        string calldata baseURI
-    ) external {
+    function initERC721MetadataStorage(string calldata tokenName, string calldata tokenSymbol) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721ContractMetadataStorage.layout().proxyInit(tokenName, tokenSymbol);
-        TokenMetadataWithBaseURIStorage.layout().proxyInit(baseURI);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

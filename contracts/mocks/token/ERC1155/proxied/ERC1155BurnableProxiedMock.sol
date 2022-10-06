@@ -10,8 +10,8 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 contract ERC1155BurnableProxiedMock is ERC1155ProxiedMock, ERC1155BurnableBase {
     constructor(IForwarderRegistry forwarderRegistry) ERC1155ProxiedMock(forwarderRegistry) {}
 
-    function init(string calldata baseMetadataURI) public virtual override {
-        super.init(baseMetadataURI);
+    function init() public virtual override {
+        super.init();
         ERC1155Storage.initERC1155Burnable();
     }
 

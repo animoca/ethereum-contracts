@@ -17,15 +17,26 @@ abstract contract CheckpointsBase is Context {
     /// @param timestamp The timestamp associated to the checkpoint.
     event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 
-    /// @notice Sets the checkpoint.
+    /// @notice Sets the checkpoints.
     /// @dev Reverts if the caller is not the contract owner.
     /// @dev Reverts if the checkpoint is already set.
     /// @dev Emits a {CheckpointSet} event if the timestamp is set to a non-zero value.
-    /// @param checkpointId The checkpoint identifier.
-    /// @param timestamp The checkpoint's timestamp.
+    /// @param checkpointId The checkpoint identifiers.
+    /// @param timestamp The checkpoint timestamps.
     function setCheckpoint(bytes32 checkpointId, uint256 timestamp) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         CheckpointsStorage.layout().setCheckpoint(checkpointId, timestamp);
+    }
+
+    /// @notice Sets a batch of checkpoints.
+    /// @dev Reverts if the caller is not the contract owner.
+    /// @dev Reverts if one of the checkpoints is already set.
+    /// @dev Emits a {CheckpointSet} event for each timestamp set to a non-zero value.
+    /// @param checkpointIds The checkpoint identifier.
+    /// @param timestamps The checkpoint timestamp.
+    function batchSetCheckpoint(bytes32[] calldata checkpointIds, uint256[] calldata timestamps) external {
+        ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
+        CheckpointsStorage.layout().batchSetCheckpoint(checkpointIds, timestamps);
     }
 
     /// @notice Sets the checkpoint to the current block timestamp.

@@ -17,20 +17,11 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
-    /// @notice Initializes the storage with a list of initial allocations.
-    /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Reverts if `holders` and `allocations` have different lengths.
-    /// @dev Reverts if one of `holders` is the zero address.
-    /// @dev Reverts if the total supply overflows.
-    /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
-    /// @param holders The list of accounts to mint the tokens to.
-    /// @param allocations The list of amounts of tokens to mint to each of `holders`.
-    function initERC20Storage(address[] calldata holders, uint256[] calldata allocations) external {
+    function initERC20Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        ERC20Storage.layout().proxyInit(holders, allocations);
+        ERC20Storage.init();
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

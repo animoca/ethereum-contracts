@@ -46,12 +46,15 @@ library ERC20DetailedStorage {
     /// @param tokenDecimals The token decimals.
     function proxyInit(
         Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol,
+        string calldata tokenName,
+        string calldata tokenSymbol,
         uint8 tokenDecimals
     ) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
-        s.constructorInit(tokenName, tokenSymbol, tokenDecimals);
+        s.tokenName = tokenName;
+        s.tokenSymbol = tokenSymbol;
+        s.tokenDecimals = tokenDecimals;
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC20Detailed).interfaceId, true);
     }
 
     /// @notice Gets the name of the token. E.g. "My Token".

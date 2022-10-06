@@ -9,10 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC1155Mock
 contract ERC1155Mock is ERC1155SimpleMock, ERC1155Deliverable, ERC1155MetadataURIWithBaseURI {
-    constructor(string memory baseMetadataURI, IForwarderRegistry forwarderRegistry)
-        ERC1155MetadataURIWithBaseURI(baseMetadataURI)
-        ERC1155SimpleMock(forwarderRegistry)
-    {}
+    constructor(IForwarderRegistry forwarderRegistry) ERC1155MetadataURIWithBaseURI() ERC1155SimpleMock(forwarderRegistry) {}
 
     /// @inheritdoc ERC1155SimpleMock
     function _msgSender() internal view virtual override(Context, ERC1155SimpleMock) returns (address) {

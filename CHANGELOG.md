@@ -1,5 +1,16 @@
 # Changelog
 
+
+## 0.2.0
+
+### Breaking changes
+
+- Removed arguments from constructor/init for `ERC20`, `TokenMetadataWithBaseURI` and `Checkpoints`.
+
+### Improvements
+
+- Use calldata instead memory some libraries functions.
+
 ## 0.1.1
 
 ### Improvements

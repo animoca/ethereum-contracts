@@ -7,7 +7,7 @@ const {loadFixture} = require('../../helpers/fixtures');
 const config = {
   immutable: {
     name: 'CheckpointsMock',
-    ctorArguments: ['checkpointIds', 'timestamps', 'forwarderRegistry'],
+    ctorArguments: ['forwarderRegistry'],
     testMsgData: true,
   },
   diamond: {
@@ -22,7 +22,6 @@ const config = {
       {
         name: 'CheckpointsFacetMock',
         ctorArguments: ['forwarderRegistry'],
-        init: {method: 'initCheckpointsStorage', arguments: ['checkpointIds', 'timestamps'], adminProtected: true, phaseProtected: true},
         testMsgData: true,
       },
     ],
@@ -31,8 +30,6 @@ const config = {
     forwarderRegistry: getForwarderRegistryAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
-    checkpointIds: [],
-    timestamps: [],
   },
 };
 
@@ -47,44 +44,19 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
 
   const fixtureTimeUnset = async function () {
     this.startTime = '0';
-    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
+    this.contract = await deployFn();
+    await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
   const fixtureTimeSetInPast = async function () {
     this.startTime = await time.latest();
-    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
+    this.contract = await deployFn();
+    await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
   const fixtureTimeSetInFuture = async function () {
     this.startTime = ethers.BigNumber.from(await time.latest()).add('1000');
-    this.contract = await deployFn({checkpointIds: [this.checkpointId], timestamps: [this.startTime]});
+    this.contract = await deployFn();
+    await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
-
-  describe('constructor(bytes32[],uint256[])', function () {
-    it('reverts with inconsistent array lengths', async function () {
-      await expect(deployFn({checkpointIds: [], timestamps: ['0']})).to.be.revertedWith('Checkpoints: wrong array length');
-    });
-    context('with a zero start time', function () {
-      beforeEach(async function () {
-        await loadFixture(fixtureTimeUnset, this);
-      });
-      it('leaves the checkpoint unset', async function () {
-        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
-      });
-      it('does not emit a {CheckpointSet} event', async function () {
-        await expect(this.contract.deployTransaction.hash).not.to.emit(this.contract, 'CheckpointSet');
-      });
-    });
-    context('with a non-zero start time', function () {
-      beforeEach(async function () {
-        await loadFixture(fixtureTimeSetInPast, this);
-      });
-      it('sets the checkpoint', async function () {
-        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
-      });
-      it('emits a {CheckpointSet} event', async function () {
-        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'CheckpointSet').withArgs(this.checkpointId, this.startTime);
-      });
-    });
-  });
 
   describe('checkpoint reaching conditions', function () {
     context('checkpoint is unset (zero)', function () {
@@ -183,6 +155,59 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     context('when successful (non-zero timestamp value)', function () {
       beforeEach(async function () {
         this.receipt = await this.contract.setCheckpoint(this.checkpointId, this.startTime);
+      });
+
+      it('sets the checkpoint', async function () {
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
+      });
+
+      it('emits a {CheckpointSet} event', async function () {
+        await expect(this.receipt).to.emit(this.contract, 'CheckpointSet').withArgs(this.checkpointId, this.startTime);
+      });
+    });
+  });
+
+  context('batchSetCheckpoint(bytes32[],uint256[])', function () {
+    beforeEach(async function () {
+      await loadFixture(fixtureTimeUnset, this);
+      this.startTime = '1';
+    });
+
+    it('reverts with inconsistent array lengths', async function () {
+      await expect(this.contract.batchSetCheckpoint([], [0])).to.be.revertedWith('Checkpoints: wrong array length');
+    });
+
+    it('reverts if not called by the contract owner', async function () {
+      await expect(this.contract.connect(other).batchSetCheckpoint([this.checkpointId], [this.startTime])).to.be.revertedWith(
+        'Ownership: not the owner'
+      );
+    });
+
+    it('reverts if the checkpoint is already set', async function () {
+      await this.contract.setCheckpoint(this.checkpointId, this.startTime);
+      await expect(this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime])).to.be.revertedWith(
+        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already set`
+      );
+    });
+
+    context('when successful (zero timestamp value)', function () {
+      beforeEach(async function () {
+        this.startTime = '0';
+        this.receipt = await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
+      });
+
+      it('leaves the checkpoint unset', async function () {
+        expect(await this.contract.checkpoint(this.checkpointId)).to.equal(this.startTime);
+      });
+
+      it('does not emit a {CheckpointSet} event', async function () {
+        await expect(this.receipt).not.to.emit(this.contract, 'CheckpointSet');
+      });
+    });
+
+    context('when successful (non-zero timestamp value)', function () {
+      beforeEach(async function () {
+        this.receipt = await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
       });
 
       it('sets the checkpoint', async function () {

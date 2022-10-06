@@ -13,18 +13,11 @@ abstract contract ERC721MetadataWithBaseURI is ERC721MetadataWithBaseURIBase, Co
     using ERC721ContractMetadataStorage for ERC721ContractMetadataStorage.Layout;
     using TokenMetadataWithBaseURIStorage for TokenMetadataWithBaseURIStorage.Layout;
 
-    /// @notice Initializes the storage with a name, symbol and base metadata URI.
+    /// @notice Initializes the storage with a name and symbol.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
-    /// @dev Emits a {BaseMetadataURISet} event.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
-    /// @param baseURI The base metadata URI.
-    constructor(
-        string memory tokenName,
-        string memory tokenSymbol,
-        string memory baseURI
-    ) {
+    constructor(string memory tokenName, string memory tokenSymbol) {
         ERC721ContractMetadataStorage.layout().constructorInit(tokenName, tokenSymbol);
-        TokenMetadataWithBaseURIStorage.layout().constructorInit(baseURI);
     }
 }

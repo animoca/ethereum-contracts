@@ -3,22 +3,18 @@ pragma solidity 0.8.17;
 
 import {IForwarderRegistry} from "../../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC1155Storage} from "../../../../token/ERC1155/libraries/ERC1155Storage.sol";
-import {TokenMetadataWithBaseURIStorage} from "../../../../token/metadata/libraries/TokenMetadataWithBaseURIStorage.sol";
 import {ERC1155SimpleProxiedMock} from "./ERC1155SimpleProxiedMock.sol";
 import {ERC1155DeliverableBase} from "./../../../../token/ERC1155/base/ERC1155DeliverableBase.sol";
 import {ERC1155MetadataURIWithBaseURIBase} from "./../../../../token/ERC1155/base/ERC1155MetadataURIWithBaseURIBase.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 contract ERC1155ProxiedMock is ERC1155SimpleProxiedMock, ERC1155DeliverableBase, ERC1155MetadataURIWithBaseURIBase {
-    using TokenMetadataWithBaseURIStorage for TokenMetadataWithBaseURIStorage.Layout;
-
     constructor(IForwarderRegistry forwarderRegistry) ERC1155SimpleProxiedMock(forwarderRegistry) {}
 
-    function init(string calldata baseMetadataURI) public virtual {
+    function init() public virtual override {
         super.init();
         ERC1155Storage.initERC1155Deliverable();
         ERC1155Storage.initERC1155MetadataURI();
-        TokenMetadataWithBaseURIStorage.layout().proxyInit(baseMetadataURI);
     }
 
     /// @inheritdoc ERC1155SimpleProxiedMock

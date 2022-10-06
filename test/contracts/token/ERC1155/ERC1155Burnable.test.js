@@ -6,13 +6,13 @@ const baseMetadataURI = 'uri';
 const config = {
   immutable: {
     name: 'ERC1155BurnableMock',
-    ctorArguments: ['baseMetadataURI', 'forwarderRegistry'],
+    ctorArguments: ['forwarderRegistry'],
     testMsgData: true,
   },
   proxied: {
     name: 'ERC1155BurnableProxiedMock',
     ctorArguments: ['forwarderRegistry'],
-    init: {method: 'init(string)', arguments: ['baseMetadataURI']},
+    init: {method: 'init'},
     testMsgData: true,
   },
   diamond: {
@@ -37,9 +37,7 @@ const config = {
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC1155MetadataURIStorage',
-          arguments: ['baseMetadataURI'],
           adminProtected: true,
-          phaseProtected: true,
         },
         testMsgData: true,
       },

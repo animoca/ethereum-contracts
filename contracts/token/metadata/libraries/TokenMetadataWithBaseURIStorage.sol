@@ -13,31 +13,13 @@ library TokenMetadataWithBaseURIStorage {
     }
 
     bytes32 public constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.token.metadata.TokenMetadataWithBaseURI.storage")) - 1);
-    bytes32 public constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.token.metadata.TokenMetadataWithBaseURI.phase")) - 1);
 
     event BaseMetadataURISet(string baseMetadataURI);
-
-    /// @notice Initializes the storage with a base metadata URI.
-    /// @dev Emits a {BaseMetadataURISet} event.
-    /// @param uri The base metadata URI.
-    function constructorInit(Layout storage s, string memory uri) internal {
-        s.setBaseMetadataURI(uri);
-    }
-
-    /// @notice Initializes the storage with a base metadata URI.
-    /// @notice Sets the proxy initialization phase to `1`.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Emits a {BaseMetadataURISet} event.
-    /// @param uri The base metadata URI.
-    function proxyInit(Layout storage s, string memory uri) internal {
-        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
-        s.constructorInit(uri);
-    }
 
     /// @notice Sets the base metadata URI.
     /// @dev Emits a {BaseMetadataURISet} event.
     /// @param baseURI The base metadata URI.
-    function setBaseMetadataURI(Layout storage s, string memory baseURI) internal {
+    function setBaseMetadataURI(Layout storage s, string calldata baseURI) internal {
         s.baseURI = baseURI;
         emit BaseMetadataURISet(baseURI);
     }
