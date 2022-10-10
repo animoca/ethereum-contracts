@@ -43,8 +43,8 @@ library CheckpointsStorage {
     /// @param timestamps The checkpoint timestamps.
     function batchSetCheckpoint(
         Layout storage s,
-        bytes32[] memory checkpointIds,
-        uint256[] memory timestamps
+        bytes32[] calldata checkpointIds,
+        uint256[] calldata timestamps
     ) internal {
         uint256 length = checkpointIds.length;
         require(length == timestamps.length, "Checkpoints: wrong array length");
