@@ -7,8 +7,8 @@ Solidity contracts development library which uses [HardHat](https://hardhat.org/
 
 ## Audits
 
-| Date | Scope | Commit | Package version | Auditor | Report |
-| ---- | ----- | ------ | --------------- | ------- | ------ |
+| Date       | Scope        | Commit                                                                                                                                  | Package version                                                            | Auditor                             | Report                                                                                    |
+| ---------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------- |
 | 26/09/2022 | Full library | [05666c7112a5637b9ec13b6883cb626982062244](https://github.com/animoca/ethereum-contracts/tree/05666c7112a5637b9ec13b6883cb626982062244) | [0.2.0](https://www.npmjs.com/package/@animoca/ethereum-contracts/v/0.2.0) | [Solidified](https://solidified.io) | [link](/audit/Audit%20Report%20-%20Animoca%20Core%20Library%20%5B26.09.2022%5D-final.pdf) |
 
 ## Solidity contracts
@@ -58,6 +58,20 @@ Forwarding an EIP-2771 meta-transaction can be done in a few different ways:
 - `ForwarderRegistry` forwarding: The `ForwarderRegistry` can also be used to forward the meta-transactions:
   1. after a forwarder has been approved, it can call `forward(address target, bytes data)` on the `ForwarderRegistry`.
   2. without being approved, but with an EIP712 `ApproveForwarder(address forwarder,bool approved,uint256 nonce)` message signed by the user, a forwarder can call `approveAndForward(bytes signature, SignatureType signatureType, address target, bytes data)` on the `ForwarderRegistry`. This will approve the forwarder and then forward the meta-transaction to the target contract. This method is a shortcut enabling meta-transactions usage from the first user transaction.
+
+## Compilation artifacts
+
+The compilation artifacts, including the debug information, are available in the `artifacts` folder, both in the git repository and the release packages. These artifacts can be imported in dependents projects and used in tests or migration scripts with the following hardhat configuration:
+
+```javascript
+  external: {
+    contracts: [
+      {
+        artifacts: 'node_modules/@animoca/ethereum-contracts/artifacts',
+      },
+    ],
+  },
+```
 
 ## HardHat plugins and configurations
 
@@ -118,15 +132,11 @@ describe("MyContract", function () {
 
 Functions for managing deployment of diamonds and their facets are provided in `test/helpers/diamond.js`.
 
-### Time
-
-Functions for managing the EVM time are provided in `test/helpers/time.js`.
-
 ### Execution
 
-A test runner function allows to test some contract logic in immutable setup as well as in diamond setup. The contracts setup in handled via a configuration object, meanwhile the deployment logic is delegated to the tool.
+A test runner function allows to test some contract logic in immutable, proxied or diamond setup. The contracts setup in handled via a configuration object, while the deployment logic is delegated to the tool via a function (`deployFn` in the example below).
 
-Here is a simple usage example where the same testing logic will be applied to both the immutable version and the facet version of a contract:
+Here is a simple usage example where the same testing logic will be applied to the immutable, proxied and facet versions of a contract:
 
 ```javascript
 const { getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests } = require("../../helpers/run");
@@ -134,6 +144,11 @@ const { loadFixture } = require("../../helpers/fixtures");
 
 const config = {
   immutable: { name: "MyImmutableContract", ctorArguments: ["myArg", "forwarderRegistry"] },
+  proxied: {
+    name: "MyProxiedContract",
+    ctorArguments: ["forwarderRegistry"],
+    init: { method: "init", arguments: ["myArg"] },
+  },
   diamond: {
     facets: [
       { name: "ProxyAdminFacet", ctorArguments: ["forwarderRegistry"], init: { method: "initProxyAdminStorage", arguments: ["initialAdmin"] } },
