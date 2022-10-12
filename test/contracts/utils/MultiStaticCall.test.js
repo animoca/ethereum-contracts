@@ -27,7 +27,6 @@ describe('MultiStaticCall', function () {
     this.getEthBalance = [this.contract.address, this.contract.interface.encodeFunctionData('getEthBalance', [other.address])];
     this.getBlockNumber = [this.contract.address, this.contract.interface.encodeFunctionData('getBlockNumber')];
     this.getCurrentBlockCoinbase = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockCoinbase')];
-    this.getCurrentBlockDifficulty = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockDifficulty')];
     this.getCurrentBlockGasLimit = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit')];
     this.getCurrentBlockTimestamp = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp')];
     this.revertingCall = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCall')];
@@ -48,7 +47,6 @@ describe('MultiStaticCall', function () {
           await this.contract.callStatic.tryAggregate(true, [
             this.getBlockNumber,
             this.getCurrentBlockCoinbase,
-            this.getCurrentBlockDifficulty,
             this.getCurrentBlockGasLimit,
             this.getCurrentBlockTimestamp,
             this.getEthBalance,
@@ -61,14 +59,12 @@ describe('MultiStaticCall', function () {
         expect(result[2].success).to.be.true;
         expect(result[3].success).to.be.true;
         expect(result[4].success).to.be.true;
-        expect(result[5].success).to.be.true;
 
         expect(result[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result[1].returnData).to.equal(this.block.miner); // coinbase
-        expect(result[2].returnData).to.equal(this.block.difficulty); // difficulty
-        expect(result[3].returnData).to.equal(this.block.gasLimit); // gaslimit
-        expect(result[4].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result[5].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result[2].returnData).to.equal(this.block.gasLimit); // gaslimit
+        expect(result[3].returnData).to.equal(this.block.timestamp); // timestamp
+        expect(result[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
       });
     });
 
@@ -78,7 +74,6 @@ describe('MultiStaticCall', function () {
           await this.contract.callStatic.tryAggregate(false, [
             this.getBlockNumber,
             this.getCurrentBlockCoinbase,
-            this.getCurrentBlockDifficulty,
             this.getCurrentBlockGasLimit,
             this.getCurrentBlockTimestamp,
             this.getEthBalance,
@@ -92,14 +87,12 @@ describe('MultiStaticCall', function () {
         expect(result[2].success).to.be.true;
         expect(result[3].success).to.be.true;
         expect(result[4].success).to.be.true;
-        expect(result[5].success).to.be.true;
-        expect(result[6].success).to.be.false;
+        expect(result[5].success).to.be.false;
         expect(result[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result[1].returnData).to.equal(this.block.miner); // coinbase
-        expect(result[2].returnData).to.equal(this.block.difficulty); // difficulty
-        expect(result[3].returnData).to.equal(this.block.gasLimit); // gaslimit
-        expect(result[4].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result[5].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result[2].returnData).to.equal(this.block.gasLimit); // gaslimit
+        expect(result[3].returnData).to.equal(this.block.timestamp); // timestamp
+        expect(result[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
       });
     });
   });
@@ -116,7 +109,6 @@ describe('MultiStaticCall', function () {
         const aggregated = await this.contract.callStatic.tryBlockAndAggregate(true, [
           this.getBlockNumber,
           this.getCurrentBlockCoinbase,
-          this.getCurrentBlockDifficulty,
           this.getCurrentBlockGasLimit,
           this.getCurrentBlockTimestamp,
           this.getEthBalance,
@@ -132,13 +124,11 @@ describe('MultiStaticCall', function () {
         expect(result.returnData[2].success).to.be.true;
         expect(result.returnData[3].success).to.be.true;
         expect(result.returnData[4].success).to.be.true;
-        expect(result.returnData[5].success).to.be.true;
         expect(result.returnData[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result.returnData[1].returnData).to.equal(this.block.miner); // coinbase
-        expect(result.returnData[2].returnData).to.equal(this.block.difficulty); // difficulty
-        expect(result.returnData[3].returnData).to.equal(this.block.gasLimit); // gaslimit
-        expect(result.returnData[4].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result.returnData[5].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result.returnData[2].returnData).to.equal(this.block.gasLimit); // gaslimit
+        expect(result.returnData[3].returnData).to.equal(this.block.timestamp); // timestamp
+        expect(result.returnData[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
       });
     });
 
@@ -147,7 +137,6 @@ describe('MultiStaticCall', function () {
         const aggregated = await this.contract.callStatic.tryBlockAndAggregate(false, [
           this.getBlockNumber,
           this.getCurrentBlockCoinbase,
-          this.getCurrentBlockDifficulty,
           this.getCurrentBlockGasLimit,
           this.getCurrentBlockTimestamp,
           this.getEthBalance,
@@ -164,14 +153,12 @@ describe('MultiStaticCall', function () {
         expect(result.returnData[2].success).to.be.true;
         expect(result.returnData[3].success).to.be.true;
         expect(result.returnData[4].success).to.be.true;
-        expect(result.returnData[5].success).to.be.true;
-        expect(result.returnData[6].success).to.be.false;
+        expect(result.returnData[5].success).to.be.false;
         expect(result.returnData[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result.returnData[1].returnData).to.equal(this.block.miner); // coinbase
-        expect(result.returnData[2].returnData).to.equal(this.block.difficulty); // difficulty
-        expect(result.returnData[3].returnData).to.equal(this.block.gasLimit); // gaslimit
-        expect(result.returnData[4].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result.returnData[5].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result.returnData[2].returnData).to.equal(this.block.gasLimit); // gaslimit
+        expect(result.returnData[3].returnData).to.equal(this.block.timestamp); // timestamp
+        expect(result.returnData[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
       });
     });
   });

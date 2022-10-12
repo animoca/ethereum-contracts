@@ -5,6 +5,12 @@
 
 Solidity contracts development library which uses [HardHat](https://hardhat.org/) consisting of upgradeable contracts, Hardhat plugins and configurations, tooling and testing utilities.
 
+## Audits
+
+| Date | Scope | Commit | Package version | Auditor | Report |
+| ---- | ----- | ------ | --------------- | ------- | ------ |
+| 26/09/2022 | Full library | [05666c7112a5637b9ec13b6883cb626982062244](https://github.com/animoca/ethereum-contracts/tree/05666c7112a5637b9ec13b6883cb626982062244) | [0.2.0](https://www.npmjs.com/package/@animoca/ethereum-contracts/v/0.2.0) | [Solidified](https://solidified.io) | [link](/audit/Audit%20Report%20-%20Animoca%20Core%20Library%20%5B26.09.2022%5D-final.pdf) |
+
 ## Solidity contracts
 
 ### Design
