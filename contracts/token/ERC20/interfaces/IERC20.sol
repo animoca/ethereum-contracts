@@ -47,11 +47,7 @@ interface IERC20 {
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
     /// @return result Whether the operation succeeded.
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external returns (bool result);
+    function transferFrom(address from, address to, uint256 value) external returns (bool result);
 
     /// @notice Gets the total token supply.
     /// @return supply The total token supply.

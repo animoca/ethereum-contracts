@@ -26,11 +26,7 @@ abstract contract ERC721MintableBase is Context, IERC721Mintable {
 
     /// @inheritdoc IERC721Mintable
     /// @dev Reverts if the sender does not have the 'minter' role.
-    function safeMint(
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external virtual override {
+    function safeMint(address to, uint256 tokenId, bytes calldata data) external virtual override {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC721Storage.layout().safeMint(_msgSender(), to, tokenId, data);
     }

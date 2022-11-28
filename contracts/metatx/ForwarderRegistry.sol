@@ -67,13 +67,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @param approved Whether to approve or disapprove the forwarder.
     /// @param signature Signature by `sender` for approving forwarder.
     /// @param isEIP1271Signature True if `sender` is a contract that provides authorization via EIP-1271.
-    function setForwarderApproval(
-        address sender,
-        address forwarder,
-        bool approved,
-        bytes calldata signature,
-        bool isEIP1271Signature
-    ) public {
+    function setForwarderApproval(address sender, address forwarder, bool approved, bytes calldata signature, bool isEIP1271Signature) public {
         Forwarder storage forwarderData = _forwarders[sender][forwarder];
         uint256 nonce = forwarderData.nonce;
 
@@ -99,12 +93,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @param isEIP1271Signature True if `sender` is a contract that provides authorization via EIP-1271.
     /// @param target The destination of the call (that will receive the meta-transaction).
     /// @param data The content of the call (the `sender` address will be appended to it according to EIP-2771).
-    function approveAndForward(
-        bytes calldata signature,
-        bool isEIP1271Signature,
-        address target,
-        bytes calldata data
-    ) external payable {
+    function approveAndForward(bytes calldata signature, bool isEIP1271Signature, address target, bytes calldata data) external payable {
         address sender = ERC2771Calldata.msgSender();
         setForwarderApproval(sender, msg.sender, true, signature, isEIP1271Signature);
         target.functionCallWithValue(abi.encodePacked(data, sender), msg.value);
@@ -161,13 +150,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         }
     }
 
-    function _setForwarderApproval(
-        Forwarder storage forwarderData,
-        address sender,
-        address forwarder,
-        bool approved,
-        uint256 nonce
-    ) private {
+    function _setForwarderApproval(Forwarder storage forwarderData, address sender, address forwarder, bool approved, uint256 nonce) private {
         forwarderData.approved = approved;
         unchecked {
             forwarderData.nonce = uint248(nonce + 1);

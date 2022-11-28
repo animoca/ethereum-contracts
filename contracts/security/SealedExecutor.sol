@@ -33,11 +33,7 @@ contract SealedExecutor is SealsBase, AccessControl, ForwarderRegistryContextBas
     /// @param callData The encoded function call.
     /// @param sealId The seal identifier.
     /// @param returnData The data returned by the call.
-    function sealedCall(
-        address target,
-        bytes calldata callData,
-        uint256 sealId
-    ) external returns (bytes memory returnData) {
+    function sealedCall(address target, bytes calldata callData, uint256 sealId) external returns (bytes memory returnData) {
         address sealer = _msgSender();
         AccessControlStorage.layout().enforceHasRole(SEALER_ROLE, sealer);
         SealsStorage.layout().seal(sealer, sealId);

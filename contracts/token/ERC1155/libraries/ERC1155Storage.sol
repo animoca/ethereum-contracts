@@ -70,15 +70,7 @@ library ERC1155Storage {
     /// @param id Identifier of the token to transfer.
     /// @param value Amount of token to transfer.
     /// @param data Optional data to send along to a receiver contract.
-    function safeTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) internal {
+    function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 id, uint256 value, bytes calldata data) internal {
         require(to != address(0), "ERC1155: transfer to address(0)");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
 
@@ -146,14 +138,7 @@ library ERC1155Storage {
     /// @param id Identifier of the token to mint.
     /// @param value Amount of token to mint.
     /// @param data Optional data to send along to a receiver contract.
-    function safeMint(
-        Layout storage s,
-        address sender,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes memory data
-    ) internal {
+    function safeMint(Layout storage s, address sender, address to, uint256 id, uint256 value, bytes memory data) internal {
         require(to != address(0), "ERC1155: mint to address(0)");
 
         _mintToken(s, to, id, value);
@@ -178,14 +163,7 @@ library ERC1155Storage {
     /// @param ids Identifiers of the tokens to mint.
     /// @param values Amounts of tokens to mint.
     /// @param data Optional data to send along to a receiver contract.
-    function safeBatchMint(
-        Layout storage s,
-        address sender,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory values,
-        bytes memory data
-    ) internal {
+    function safeBatchMint(Layout storage s, address sender, address to, uint256[] memory ids, uint256[] memory values, bytes memory data) internal {
         require(to != address(0), "ERC1155: mint to address(0)");
         uint256 length = ids.length;
         require(length == values.length, "ERC1155: inconsistent arrays");
@@ -241,13 +219,7 @@ library ERC1155Storage {
     /// @param from Address of the current token owner.
     /// @param id Identifier of the token to burn.
     /// @param value Amount of token to burn.
-    function burnFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        uint256 id,
-        uint256 value
-    ) internal {
+    function burnFrom(Layout storage s, address sender, address from, uint256 id, uint256 value) internal {
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
         _burnToken(s, from, id, value);
         emit TransferSingle(sender, from, address(0), id, value);
@@ -262,13 +234,7 @@ library ERC1155Storage {
     /// @param from Address of the current tokens owner.
     /// @param ids Identifiers of the tokens to burn.
     /// @param values Amounts of tokens to burn.
-    function batchBurnFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        uint256[] calldata ids,
-        uint256[] calldata values
-    ) internal {
+    function batchBurnFrom(Layout storage s, address sender, address from, uint256[] calldata ids, uint256[] calldata values) internal {
         uint256 length = ids.length;
         require(length == values.length, "ERC1155: inconsistent arrays");
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
@@ -287,12 +253,7 @@ library ERC1155Storage {
     /// @param sender The message sender.
     /// @param operator Address of the operator.
     /// @param approved True to approve the operator, false to revoke its approval.
-    function setApprovalForAll(
-        Layout storage s,
-        address sender,
-        address operator,
-        bool approved
-    ) internal {
+    function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         require(operator != sender, "ERC1155: self-approval for all");
         s.operators[sender][operator] = approved;
         emit ApprovalForAll(sender, operator, approved);
@@ -302,11 +263,7 @@ library ERC1155Storage {
     /// @param owner Address of the authorisation giver.
     /// @param operator Address of the operator.
     /// @return approved True if the operator is approved, false if not.
-    function isApprovedForAll(
-        Layout storage s,
-        address owner,
-        address operator
-    ) internal view returns (bool approved) {
+    function isApprovedForAll(Layout storage s, address owner, address operator) internal view returns (bool approved) {
         return s.operators[owner][operator];
     }
 
@@ -314,11 +271,7 @@ library ERC1155Storage {
     /// @param owner The account to retrieve the balance of.
     /// @param id The identifier to retrieve the balance of.
     /// @return balance The balance of `id` owned by account `owner`.
-    function balanceOf(
-        Layout storage s,
-        address owner,
-        uint256 id
-    ) internal view returns (uint256 balance) {
+    function balanceOf(Layout storage s, address owner, uint256 id) internal view returns (uint256 balance) {
         require(owner != address(0), "ERC1155: balance of address(0)");
         return s.balances[id][owner];
     }
@@ -328,11 +281,7 @@ library ERC1155Storage {
     /// @param owners The addresses of the token holders
     /// @param ids The identifiers to retrieve the balance of.
     /// @return balances The balances of `ids` owned by accounts `owners`.
-    function balanceOfBatch(
-        Layout storage s,
-        address[] calldata owners,
-        uint256[] calldata ids
-    ) internal view returns (uint256[] memory balances) {
+    function balanceOfBatch(Layout storage s, address[] calldata owners, uint256[] calldata ids) internal view returns (uint256[] memory balances) {
         uint256 length = owners.length;
         require(length == ids.length, "ERC1155: inconsistent arrays");
 
@@ -356,21 +305,11 @@ library ERC1155Storage {
     /// @param owner The token owner.
     /// @param account The account to check the operatability of.
     /// @return operatable True if `account` is `owner` or is an operator for `owner`, false otherwise.
-    function _isOperatable(
-        Layout storage s,
-        address owner,
-        address account
-    ) private view returns (bool operatable) {
+    function _isOperatable(Layout storage s, address owner, address account) private view returns (bool operatable) {
         return (owner == account) || s.operators[owner][account];
     }
 
-    function _transferToken(
-        Layout storage s,
-        address from,
-        address to,
-        uint256 id,
-        uint256 value
-    ) private {
+    function _transferToken(Layout storage s, address from, address to, uint256 id, uint256 value) private {
         if (value != 0) {
             unchecked {
                 uint256 fromBalance = s.balances[id][from];
@@ -388,12 +327,7 @@ library ERC1155Storage {
         }
     }
 
-    function _mintToken(
-        Layout storage s,
-        address to,
-        uint256 id,
-        uint256 value
-    ) private {
+    function _mintToken(Layout storage s, address to, uint256 id, uint256 value) private {
         if (value != 0) {
             unchecked {
                 uint256 balance = s.balances[id][to];
@@ -404,12 +338,7 @@ library ERC1155Storage {
         }
     }
 
-    function _burnToken(
-        Layout storage s,
-        address from,
-        uint256 id,
-        uint256 value
-    ) private {
+    function _burnToken(Layout storage s, address from, uint256 id, uint256 value) private {
         if (value != 0) {
             unchecked {
                 uint256 balance = s.balances[id][from];
@@ -428,14 +357,7 @@ library ERC1155Storage {
     /// @param id Identifier of the token transferred.
     /// @param value Value transferred.
     /// @param data Optional data to send along with the receiver contract call.
-    function _callOnERC1155Received(
-        address sender,
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes memory data
-    ) private {
+    function _callOnERC1155Received(address sender, address from, address to, uint256 id, uint256 value, bytes memory data) private {
         require(IERC1155TokenReceiver(to).onERC1155Received(sender, from, id, value, data) == ERC1155_SINGLE_RECEIVED, "ERC1155: transfer rejected");
     }
 

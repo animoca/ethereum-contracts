@@ -16,13 +16,7 @@ interface IERC1155TokenReceiver {
     /// @param value The amount of tokens being transferred
     /// @param data Additional data with no specified format
     /// @return magicValue `0xf23a6e61` to accept the transfer, or any other value to reject it.
-    function onERC1155Received(
-        address operator,
-        address from,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bytes4 magicValue);
+    function onERC1155Received(address operator, address from, uint256 id, uint256 value, bytes calldata data) external returns (bytes4 magicValue);
 
     /// @notice Handles the receipt of multiple ERC1155 token types.
     /// @notice ERC1155 contracts MUST call this function on a recipient contract, at the end of a `safeBatchTransferFrom` after the balance updates.

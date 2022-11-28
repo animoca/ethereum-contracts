@@ -24,11 +24,7 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.
-    function initERC20DetailedStorage(
-        string calldata tokenName,
-        string calldata tokenSymbol,
-        uint8 tokenDecimals
-    ) external {
+    function initERC20DetailedStorage(string calldata tokenName, string calldata tokenSymbol, uint8 tokenDecimals) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20DetailedStorage.layout().proxyInit(tokenName, tokenSymbol, tokenDecimals);
     }

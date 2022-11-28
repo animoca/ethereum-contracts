@@ -26,9 +26,5 @@ interface IERC20BatchTransfers {
     /// @param recipients The list of accounts to transfer the tokens to.
     /// @param values The list of amounts of tokens to transfer to each of `recipients`.
     /// @return result Whether the operation succeeded.
-    function batchTransferFrom(
-        address from,
-        address[] calldata recipients,
-        uint256[] calldata values
-    ) external returns (bool result);
+    function batchTransferFrom(address from, address[] calldata recipients, uint256[] calldata values) external returns (bool result);
 }

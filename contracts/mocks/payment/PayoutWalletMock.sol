@@ -9,11 +9,10 @@ import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistr
 import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 
 contract PayoutWalletMock is PayoutWallet, ForwarderRegistryContext {
-    constructor(address payable initialPayoutWallet, IForwarderRegistry forwarderRegistry)
-        PayoutWallet(initialPayoutWallet)
-        ContractOwnership(msg.sender)
-        ForwarderRegistryContext(forwarderRegistry)
-    {}
+    constructor(
+        address payable initialPayoutWallet,
+        IForwarderRegistry forwarderRegistry
+    ) PayoutWallet(initialPayoutWallet) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function __msgData() external view returns (bytes calldata) {
         return _msgData();

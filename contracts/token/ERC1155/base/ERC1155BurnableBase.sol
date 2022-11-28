@@ -12,20 +12,12 @@ abstract contract ERC1155BurnableBase is Context, IERC1155Burnable {
     using ERC1155Storage for ERC1155Storage.Layout;
 
     /// @inheritdoc IERC1155Burnable
-    function burnFrom(
-        address from,
-        uint256 id,
-        uint256 value
-    ) external virtual override {
+    function burnFrom(address from, uint256 id, uint256 value) external virtual override {
         ERC1155Storage.layout().burnFrom(_msgSender(), from, id, value);
     }
 
     /// @inheritdoc IERC1155Burnable
-    function batchBurnFrom(
-        address from,
-        uint256[] calldata ids,
-        uint256[] calldata values
-    ) external virtual override {
+    function batchBurnFrom(address from, uint256[] calldata ids, uint256[] calldata values) external virtual override {
         ERC1155Storage.layout().batchBurnFrom(_msgSender(), from, ids, values);
     }
 }

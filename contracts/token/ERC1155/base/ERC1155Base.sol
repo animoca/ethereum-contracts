@@ -12,13 +12,7 @@ abstract contract ERC1155Base is Context, IERC1155 {
     using ERC1155Storage for ERC1155Storage.Layout;
 
     /// @inheritdoc IERC1155
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external virtual override {
+    function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes calldata data) external virtual override {
         ERC1155Storage.layout().safeTransferFrom(_msgSender(), from, to, id, value, data);
     }
 

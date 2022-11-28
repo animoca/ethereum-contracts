@@ -64,12 +64,7 @@ library ERC20Storage {
     /// @param owner The account to set the allowance from.
     /// @param spender The account being granted the allowance by `owner`.
     /// @param value The allowance amount to grant.
-    function approve(
-        Layout storage s,
-        address owner,
-        address spender,
-        uint256 value
-    ) internal {
+    function approve(Layout storage s, address owner, address spender, uint256 value) internal {
         require(spender != address(0), "ERC20: approval to address(0)");
         s.allowances[owner][spender] = value;
         emit Approval(owner, spender, value);
@@ -83,12 +78,7 @@ library ERC20Storage {
     /// @param owner The account increasing the allowance.
     /// @param spender The account whose allowance is being increased.
     /// @param value The allowance amount increase.
-    function increaseAllowance(
-        Layout storage s,
-        address owner,
-        address spender,
-        uint256 value
-    ) internal {
+    function increaseAllowance(Layout storage s, address owner, address spender, uint256 value) internal {
         require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
         if (value != 0) {
@@ -110,12 +100,7 @@ library ERC20Storage {
     /// @param owner The account decreasing the allowance.
     /// @param spender The account whose allowance is being decreased.
     /// @param value The allowance amount decrease.
-    function decreaseAllowance(
-        Layout storage s,
-        address owner,
-        address spender,
-        uint256 value
-    ) internal {
+    function decreaseAllowance(Layout storage s, address owner, address spender, uint256 value) internal {
         require(spender != address(0), "ERC20: approval to address(0)");
         uint256 allowance_ = s.allowances[owner][spender];
 
@@ -139,12 +124,7 @@ library ERC20Storage {
     /// @param from The account transferring the tokens.
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
-    function transfer(
-        Layout storage s,
-        address from,
-        address to,
-        uint256 value
-    ) internal {
+    function transfer(Layout storage s, address from, address to, uint256 value) internal {
         require(to != address(0), "ERC20: transfer to address(0)");
 
         if (value != 0) {
@@ -173,13 +153,7 @@ library ERC20Storage {
     /// @param from The account which owns the tokens to transfer.
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
-    function transferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 value
-    ) internal {
+    function transferFrom(Layout storage s, address sender, address from, address to, uint256 value) internal {
         if (from != sender) {
             s.decreaseAllowance(from, sender, value);
         }
@@ -197,12 +171,7 @@ library ERC20Storage {
     /// @param from The account transferring the tokens.
     /// @param recipients The list of accounts to transfer the tokens to.
     /// @param values The list of amounts of tokens to transfer to each of `recipients`.
-    function batchTransfer(
-        Layout storage s,
-        address from,
-        address[] calldata recipients,
-        uint256[] calldata values
-    ) internal {
+    function batchTransfer(Layout storage s, address from, address[] calldata recipients, uint256[] calldata values) internal {
         uint256 length = recipients.length;
         require(length == values.length, "ERC20: inconsistent arrays");
 
@@ -252,13 +221,7 @@ library ERC20Storage {
     /// @param from The account transferring the tokens.
     /// @param recipients The list of accounts to transfer the tokens to.
     /// @param values The list of amounts of tokens to transfer to each of `recipients`.
-    function batchTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address[] calldata recipients,
-        uint256[] calldata values
-    ) internal {
+    function batchTransferFrom(Layout storage s, address sender, address from, address[] calldata recipients, uint256[] calldata values) internal {
         uint256 length = recipients.length;
         require(length == values.length, "ERC20: inconsistent arrays");
 
@@ -315,13 +278,7 @@ library ERC20Storage {
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
-    function safeTransfer(
-        Layout storage s,
-        address from,
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) internal {
+    function safeTransfer(Layout storage s, address from, address to, uint256 value, bytes calldata data) internal {
         s.transfer(from, to, value);
         if (to.isContract()) {
             _callOnERC20Received(from, from, to, value, data);
@@ -342,14 +299,7 @@ library ERC20Storage {
     /// @param to The account to transfer the tokens to.
     /// @param value The amount of tokens to transfer.
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
-    function safeTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) internal {
+    function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 value, bytes calldata data) internal {
         s.transferFrom(sender, from, to, value);
         if (to.isContract()) {
             _callOnERC20Received(sender, from, to, value, data);
@@ -365,11 +315,7 @@ library ERC20Storage {
     /// @dev Emits a {Transfer} event with `from` set to the zero address.
     /// @param to The account to mint the tokens to.
     /// @param value The amount of tokens to mint.
-    function mint(
-        Layout storage s,
-        address to,
-        uint256 value
-    ) internal {
+    function mint(Layout storage s, address to, uint256 value) internal {
         require(to != address(0), "ERC20: mint to address(0)");
         if (value != 0) {
             uint256 supply = s.supply;
@@ -391,11 +337,7 @@ library ERC20Storage {
     /// @dev Emits a {Transfer} event for each transfer with `from` set to the zero address.
     /// @param recipients The list of accounts to mint the tokens to.
     /// @param values The list of amounts of tokens to mint to each of `recipients`.
-    function batchMint(
-        Layout storage s,
-        address[] memory recipients,
-        uint256[] memory values
-    ) internal {
+    function batchMint(Layout storage s, address[] memory recipients, uint256[] memory values) internal {
         uint256 length = recipients.length;
         require(length == values.length, "ERC20: inconsistent arrays");
 
@@ -434,11 +376,7 @@ library ERC20Storage {
     /// @dev Emits a {Transfer} event with `to` set to the zero address.
     /// @param from The account burning the tokens.
     /// @param value The amount of tokens to burn.
-    function burn(
-        Layout storage s,
-        address from,
-        uint256 value
-    ) internal {
+    function burn(Layout storage s, address from, uint256 value) internal {
         if (value != 0) {
             uint256 balance = s.balances[from];
             unchecked {
@@ -461,12 +399,7 @@ library ERC20Storage {
     /// @param sender The message sender.
     /// @param from The account to burn the tokens from.
     /// @param value The amount of tokens to burn.
-    function burnFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        uint256 value
-    ) internal {
+    function burnFrom(Layout storage s, address sender, address from, uint256 value) internal {
         if (from != sender) {
             s.decreaseAllowance(from, sender, value);
         }
@@ -483,12 +416,7 @@ library ERC20Storage {
     /// @param sender The message sender.
     /// @param owners The list of accounts to burn the tokens from.
     /// @param values The list of amounts of tokens to burn.
-    function batchBurnFrom(
-        Layout storage s,
-        address sender,
-        address[] calldata owners,
-        uint256[] calldata values
-    ) internal {
+    function batchBurnFrom(Layout storage s, address sender, address[] calldata owners, uint256[] calldata values) internal {
         uint256 length = owners.length;
         require(length == values.length, "ERC20: inconsistent arrays");
 
@@ -541,11 +469,7 @@ library ERC20Storage {
     /// @param owner The account that has granted an allowance to `spender`.
     /// @param spender The account that was granted an allowance by `owner`.
     /// @return value The amount which `spender` is allowed to spend on behalf of `owner`.
-    function allowance(
-        Layout storage s,
-        address owner,
-        address spender
-    ) internal view returns (uint256 value) {
+    function allowance(Layout storage s, address owner, address spender) internal view returns (uint256 value) {
         return s.allowances[owner][spender];
     }
 
@@ -563,13 +487,7 @@ library ERC20Storage {
     /// @param to New token owner.
     /// @param value The value transferred.
     /// @param data Optional data to send along with the receiver contract call.
-    function _callOnERC20Received(
-        address sender,
-        address from,
-        address to,
-        uint256 value,
-        bytes memory data
-    ) private {
+    function _callOnERC20Received(address sender, address from, address to, uint256 value, bytes memory data) private {
         require(IERC20Receiver(to).onERC20Received(sender, from, value, data) == ERC20_RECEIVED, "ERC20: safe transfer rejected");
     }
 }

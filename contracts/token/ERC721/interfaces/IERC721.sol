@@ -34,11 +34,7 @@ interface IERC721 {
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer. Self-transfers are possible.
     /// @param tokenId The identifier of the token to transfer.
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function transferFrom(address from, address to, uint256 tokenId) external;
 
     /// @notice Safely transfers the ownership of a token to a recipient.
     /// @dev Resets the token approval for `tokenId`.
@@ -50,11 +46,7 @@ interface IERC721 {
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
 
     /// @notice Safely transfers the ownership of a token to a recipient.
     /// @dev Resets the token approval for `tokenId`.
@@ -67,12 +59,7 @@ interface IERC721 {
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
     /// @param data Optional data to send along to a receiver contract.
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 
     /// @notice Gets the balance of an address.
     /// @dev Reverts if `owner` is the zero address.

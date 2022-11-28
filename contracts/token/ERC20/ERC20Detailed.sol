@@ -14,11 +14,7 @@ abstract contract ERC20Detailed is ERC20DetailedBase {
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.
-    constructor(
-        string memory tokenName,
-        string memory tokenSymbol,
-        uint8 tokenDecimals
-    ) {
+    constructor(string memory tokenName, string memory tokenSymbol, uint8 tokenDecimals) {
         ERC20DetailedStorage.layout().constructorInit(tokenName, tokenSymbol, tokenDecimals);
     }
 }

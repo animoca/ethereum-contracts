@@ -16,11 +16,7 @@ library InterfaceDetectionStorage {
     /// @dev Reverts if `interfaceId` is `0xffffffff`.
     /// @param interfaceId the interface identifier.
     /// @param supported True to set the interface, false to unset it.
-    function setSupportedInterface(
-        Layout storage s,
-        bytes4 interfaceId,
-        bool supported
-    ) internal {
+    function setSupportedInterface(Layout storage s, bytes4 interfaceId, bool supported) internal {
         require(interfaceId != ILLEGAL_INTERFACE_ID, "InterfaceDetection: wrong value");
         s.supportedInterfaces[interfaceId] = supported;
     }
