@@ -14,10 +14,5 @@ interface IERC721Receiver {
     /// @param tokenId The token identifier.
     /// @param data Optional additional data with no specified format.
     /// @return magicValue `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))` (`0x150b7a02`) to accept, any other value to refuse.
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4 magicValue);
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4 magicValue);
 }

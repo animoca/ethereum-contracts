@@ -10,10 +10,10 @@ contract DiamondMock is Diamond {
 
     event ImmutableFunctionCalled();
 
-    constructor(IDiamondCutCommon.FacetCut[] memory cuts, IDiamondCutCommon.Initialization[] memory initializations)
-        payable
-        Diamond(cuts, initializations)
-    {
+    constructor(
+        IDiamondCutCommon.FacetCut[] memory cuts,
+        IDiamondCutCommon.Initialization[] memory initializations
+    ) payable Diamond(cuts, initializations) {
         bytes4[] memory selectors = new bytes4[](1);
         selectors[0] = DiamondMock.immutableFunction.selector;
         IDiamondCutCommon.FacetCut[] memory cut = new IDiamondCutCommon.FacetCut[](1);

@@ -25,11 +25,7 @@ abstract contract ERC20Base is Context, IERC20, IERC20Allowance {
     }
 
     /// @inheritdoc IERC20
-    function transferFrom(
-        address from,
-        address to,
-        uint256 value
-    ) external virtual override returns (bool result) {
+    function transferFrom(address from, address to, uint256 value) external virtual override returns (bool result) {
         ERC20Storage.layout().transferFrom(_msgSender(), from, to, value);
         return true;
     }

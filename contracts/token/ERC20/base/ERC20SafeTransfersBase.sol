@@ -12,22 +12,13 @@ abstract contract ERC20SafeTransfersBase is Context, IERC20SafeTransfers {
     using ERC20Storage for ERC20Storage.Layout;
 
     /// @inheritdoc IERC20SafeTransfers
-    function safeTransfer(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external virtual override returns (bool) {
+    function safeTransfer(address to, uint256 value, bytes calldata data) external virtual override returns (bool) {
         ERC20Storage.layout().safeTransfer(_msgSender(), to, value, data);
         return true;
     }
 
     /// @inheritdoc IERC20SafeTransfers
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external virtual override returns (bool) {
+    function safeTransferFrom(address from, address to, uint256 value, bytes calldata data) external virtual override returns (bool) {
         ERC20Storage.layout().safeTransferFrom(_msgSender(), from, to, value, data);
         return true;
     }

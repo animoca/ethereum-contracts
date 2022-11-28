@@ -43,12 +43,7 @@ library DiamondStorage {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IDiamondLoupe).interfaceId, true);
     }
 
-    function diamondCut(
-        Layout storage s,
-        IDiamondCutCommon.FacetCut[] memory cuts,
-        address target,
-        bytes memory data
-    ) internal {
+    function diamondCut(Layout storage s, IDiamondCutCommon.FacetCut[] memory cuts, address target, bytes memory data) internal {
         cutFacets(s, cuts);
         emit DiamondCut(cuts, target, data);
         initializationCall(target, data);

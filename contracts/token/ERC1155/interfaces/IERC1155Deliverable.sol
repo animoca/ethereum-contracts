@@ -15,10 +15,5 @@ interface IERC1155Deliverable {
     /// @param ids Identifiers of the tokens to mint.
     /// @param values Amounts of tokens to mint.
     /// @param data Optional data to send along to a receiver contract.
-    function safeDeliver(
-        address[] calldata recipients,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external;
+    function safeDeliver(address[] calldata recipients, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external;
 }

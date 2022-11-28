@@ -24,12 +24,7 @@ library ERC20DetailedStorage {
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.
-    function constructorInit(
-        Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol,
-        uint8 tokenDecimals
-    ) internal {
+    function constructorInit(Layout storage s, string memory tokenName, string memory tokenSymbol, uint8 tokenDecimals) internal {
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;
         s.tokenDecimals = tokenDecimals;
@@ -44,12 +39,7 @@ library ERC20DetailedStorage {
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.
-    function proxyInit(
-        Layout storage s,
-        string calldata tokenName,
-        string calldata tokenSymbol,
-        uint8 tokenDecimals
-    ) internal {
+    function proxyInit(Layout storage s, string calldata tokenName, string calldata tokenSymbol, uint8 tokenDecimals) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;

@@ -21,12 +21,7 @@ contract ERC721ReceiverMock is ERC721Receiver {
 
     /// @inheritdoc IERC721Receiver
     /// @dev reverts if the sender is not the supported ERC721 contract.
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes memory data
-    ) public virtual override returns (bytes4) {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data) public virtual override returns (bytes4) {
         require(msg.sender == _tokenAddress721, "ERC721Receiver: wrong token");
         if (_accept721) {
             emit ERC721Received(operator, from, tokenId, data);

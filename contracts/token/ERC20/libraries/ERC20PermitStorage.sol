@@ -38,16 +38,7 @@ library ERC20PermitStorage {
     /// @param v Permit signature v parameter
     /// @param r Permit signature r parameter.
     /// @param s Permit signature s parameter.
-    function permit(
-        Layout storage st,
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) internal {
+    function permit(Layout storage st, address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) internal {
         require(owner != address(0), "ERC20: permit from address(0)");
         require(block.timestamp <= deadline, "ERC20: expired permit");
         unchecked {

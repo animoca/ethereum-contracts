@@ -47,11 +47,7 @@ library ContractOwnershipStorage {
     /// @dev Reverts if `sender` is not the contract owner.
     /// @dev Emits an {OwnershipTransferred} event if `newOwner` is different from the current contract owner.
     /// @param newOwner The address of the new contract owner. Using the zero address means renouncing ownership.
-    function transferOwnership(
-        Layout storage s,
-        address sender,
-        address newOwner
-    ) internal {
+    function transferOwnership(Layout storage s, address sender, address newOwner) internal {
         address previousOwner = s.contractOwner;
         require(sender == previousOwner, "Ownership: not the owner");
         if (previousOwner != newOwner) {

@@ -13,9 +13,5 @@ interface IDiamondCut is IDiamondCutCommon {
     /// @param cuts The list of facet addresses, actions and function selectors to apply to the diamond.
     /// @param target The address of the contract to execute `data` on.
     /// @param data The encoded function call to execute on `target`.
-    function diamondCut(
-        FacetCut[] calldata cuts,
-        address target,
-        bytes calldata data
-    ) external;
+    function diamondCut(FacetCut[] calldata cuts, address target, bytes calldata data) external;
 }

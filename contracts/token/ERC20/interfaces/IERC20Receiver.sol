@@ -13,10 +13,5 @@ interface IERC20Receiver {
     /// @param value The amount of tokens transferred.
     /// @param data Optional additional data with no specified format.
     /// @return magicValue `bytes4(keccak256("onERC20Received(address,address,uint256,bytes)"))` (`0x4fc35859`) to accept, any other value to refuse.
-    function onERC20Received(
-        address operator,
-        address from,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bytes4 magicValue);
+    function onERC20Received(address operator, address from, uint256 value, bytes calldata data) external returns (bytes4 magicValue);
 }

@@ -27,11 +27,7 @@ contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistry
 
     /// @inheritdoc IDiamondCut
     /// @dev Reverts if the sender is not the proxy admin.
-    function diamondCut(
-        FacetCut[] calldata cuts,
-        address target,
-        bytes calldata data
-    ) external override {
+    function diamondCut(FacetCut[] calldata cuts, address target, bytes calldata data) external override {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, target, data);
     }

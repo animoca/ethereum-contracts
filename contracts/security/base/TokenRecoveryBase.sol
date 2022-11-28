@@ -46,11 +46,7 @@ contract TokenRecoveryBase is Context {
     /// @param accounts the list of accounts to transfer the tokens to.
     /// @param tokens the list of ERC20 token addresses.
     /// @param amounts the list of token amounts to transfer.
-    function recoverERC20s(
-        address[] calldata accounts,
-        IERC20[] calldata tokens,
-        uint256[] calldata amounts
-    ) external virtual {
+    function recoverERC20s(address[] calldata accounts, IERC20[] calldata tokens, uint256[] calldata amounts) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         require(length == tokens.length && length == amounts.length, "Recovery: inconsistent arrays");
@@ -70,11 +66,7 @@ contract TokenRecoveryBase is Context {
     /// @param accounts the list of accounts to transfer the tokens to.
     /// @param contracts the list of ERC721 contract addresses.
     /// @param tokenIds the list of token ids to transfer.
-    function recoverERC721s(
-        address[] calldata accounts,
-        IERC721[] calldata contracts,
-        uint256[] calldata tokenIds
-    ) external virtual {
+    function recoverERC721s(address[] calldata accounts, IERC721[] calldata contracts, uint256[] calldata tokenIds) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         require(length == contracts.length && length == tokenIds.length, "Recovery: inconsistent arrays");

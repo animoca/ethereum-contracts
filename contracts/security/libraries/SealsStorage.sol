@@ -17,11 +17,7 @@ library SealsStorage {
     /// @dev Emits a {Sealed} event.
     /// @param sealer The sealer address
     /// @param sealId The seal identifier.
-    function seal(
-        Layout storage s,
-        address sealer,
-        uint256 sealId
-    ) internal {
+    function seal(Layout storage s, address sealer, uint256 sealId) internal {
         require(!s.seals[sealId], "Seals: sealed");
         s.seals[sealId] = true;
         emit Sealed(sealId, sealer);

@@ -43,13 +43,7 @@ interface IERC1155 {
     /// @param id Identifier of the token to transfer.
     /// @param value Amount of token to transfer.
     /// @param data Optional data to send along to a receiver contract.
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes calldata data) external;
 
     /// @notice Safely transfers a batch of tokens.
     /// @dev Reverts if `to` is the zero address.
@@ -63,13 +57,7 @@ interface IERC1155 {
     /// @param ids Identifiers of the tokens to transfer.
     /// @param values Amounts of tokens to transfer.
     /// @param data Optional data to send along to a receiver contract.
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external;
+    function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external;
 
     /// @notice Enables or disables an operator's approval.
     /// @dev Emits an {ApprovalForAll} event.
