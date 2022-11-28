@@ -1,0 +1,22 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ERC2981Storage",
+  "sourceName": "contracts/token/ERC721/libraries/ERC2981Storage.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "percentage",
+          "type": "uint256"
+        }
+      ],
+      "name": "IncorrectRoyaltyPercentage",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220c0485b0de25e3dd9d72fe8c285bd08f39530248f324ed1b7595964668ef76aa264736f6c63430008110033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220c0485b0de25e3dd9d72fe8c285bd08f39530248f324ed1b7595964668ef76aa264736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
