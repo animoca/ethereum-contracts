@@ -5,6 +5,7 @@
 ### Breaking changes
 
 - Upgraded to `@openzeppelin/contracts@4.8.0`.
+- Changed the approval typehash of `ForwarderRegistry`.
 
 ## 0.2.0
 
