@@ -44,11 +44,7 @@ library ProxyAdminStorage {
     /// @dev Reverts if `sender` is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.
     /// @param newAdmin The new proxy admin.
-    function changeProxyAdmin(
-        Layout storage s,
-        address sender,
-        address newAdmin
-    ) internal {
+    function changeProxyAdmin(Layout storage s, address sender, address newAdmin) internal {
         address previousAdmin = s.admin;
         require(sender == previousAdmin, "ProxyAdmin: not the admin");
         if (previousAdmin != newAdmin) {

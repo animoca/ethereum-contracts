@@ -23,30 +23,17 @@ abstract contract ERC721Base is Context, IERC721, IERC721Events {
     }
 
     /// @inheritdoc IERC721
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external override {
+    function transferFrom(address from, address to, uint256 tokenId) external override {
         ERC721Storage.layout().transferFrom(_msgSender(), from, to, tokenId);
     }
 
     /// @inheritdoc IERC721
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId) external virtual override {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId);
     }
 
     /// @inheritdoc IERC721
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external virtual override {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external virtual override {
         ERC721Storage.layout().safeTransferFrom(_msgSender(), from, to, tokenId, data);
     }
 

@@ -20,12 +20,7 @@ contract ERC20ReceiverMock is ERC20Receiver {
     //==================================================== ERC20Receiver ====================================================//
 
     /// @inheritdoc IERC20Receiver
-    function onERC20Received(
-        address sender,
-        address from,
-        uint256 value,
-        bytes memory data
-    ) public virtual override returns (bytes4) {
+    function onERC20Received(address sender, address from, uint256 value, bytes memory data) public virtual override returns (bytes4) {
         require(msg.sender == _tokenAddress, "ERC20Receiver: wrong token");
         if (_accept) {
             emit ERC20Received(sender, from, value, data);

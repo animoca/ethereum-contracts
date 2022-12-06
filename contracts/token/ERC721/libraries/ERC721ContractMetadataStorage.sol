@@ -22,11 +22,7 @@ library ERC721ContractMetadataStorage {
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
-    function constructorInit(
-        Layout storage s,
-        string memory tokenName,
-        string memory tokenSymbol
-    ) internal {
+    function constructorInit(Layout storage s, string memory tokenName, string memory tokenSymbol) internal {
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
@@ -39,11 +35,7 @@ library ERC721ContractMetadataStorage {
     /// @dev Reverts if the proxy initialization phase is set to `1` or above.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
-    function proxyInit(
-        Layout storage s,
-        string calldata tokenName,
-        string calldata tokenSymbol
-    ) internal {
+    function proxyInit(Layout storage s, string calldata tokenName, string calldata tokenSymbol) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
         s.tokenName = tokenName;
         s.tokenSymbol = tokenSymbol;

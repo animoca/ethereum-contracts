@@ -11,10 +11,10 @@ import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.
 contract ContractOwnershipMock is ContractOwnership, ForwarderRegistryContext {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
-    constructor(address initialOwner, IForwarderRegistry forwarderRegistry)
-        ContractOwnership(initialOwner)
-        ForwarderRegistryContext(forwarderRegistry)
-    {}
+    constructor(
+        address initialOwner,
+        IForwarderRegistry forwarderRegistry
+    ) ContractOwnership(initialOwner) ForwarderRegistryContext(forwarderRegistry) {}
 
     function enforceIsContractOwner(address account) external view {
         ContractOwnershipStorage.layout().enforceIsContractOwner(account);

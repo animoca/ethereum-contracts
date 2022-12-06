@@ -12,11 +12,7 @@ contract ForwarderMock {
     }
 
     /// @notice Forward while appending a sender address to the calldata (EIP-2771-compatible)
-    function forward(
-        address from,
-        address target,
-        bytes calldata data
-    ) external payable {
+    function forward(address from, address target, bytes calldata data) external payable {
         target.functionCallWithValue(abi.encodePacked(data, from), msg.value);
     }
 }

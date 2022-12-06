@@ -14,9 +14,5 @@ interface IERC721BatchTransfer {
     /// @param from Current tokens owner.
     /// @param to Address of the new token owner.
     /// @param tokenIds Identifiers of the tokens to transfer.
-    function batchTransferFrom(
-        address from,
-        address to,
-        uint256[] calldata tokenIds
-    ) external;
+    function batchTransferFrom(address from, address to, uint256[] calldata tokenIds) external;
 }

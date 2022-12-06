@@ -14,11 +14,7 @@ interface IERC20SafeTransfers {
     /// @param value The amount of tokens to transfer.
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
     /// @return result Whether the operation succeeded.
-    function safeTransfer(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bool result);
+    function safeTransfer(address to, uint256 value, bytes calldata data) external returns (bool result);
 
     /// @notice Transfers an amount of tokens to a recipient from a specified address. If the recipient is a contract, calls `onERC20Received` on it.
     /// @dev Reverts if `to` is the zero address.
@@ -32,10 +28,5 @@ interface IERC20SafeTransfers {
     /// @param value The amount of tokens to transfer.
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
     /// @return result Whether the operation succeeded.
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bool result);
+    function safeTransferFrom(address from, address to, uint256 value, bytes calldata data) external returns (bool result);
 }

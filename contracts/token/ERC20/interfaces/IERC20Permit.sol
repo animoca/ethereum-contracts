@@ -19,15 +19,7 @@ interface IERC20Permit {
     /// @param v Permit signature v parameter
     /// @param r Permit signature r parameter.
     /// @param s Permit signature s parameter.
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
 
     /// @notice Gets the current permit nonce of an account.
     /// @param owner The account to check the nonce of.

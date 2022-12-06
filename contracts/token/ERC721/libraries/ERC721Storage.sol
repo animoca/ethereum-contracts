@@ -73,12 +73,7 @@ library ERC721Storage {
     /// @param sender The message sender.
     /// @param to The address to approve, or the zero address to remove any existing approval.
     /// @param tokenId The token identifier to give approval for.
-    function approve(
-        Layout storage s,
-        address sender,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function approve(Layout storage s, address sender, address to, uint256 tokenId) internal {
         uint256 owner = s.owners[tokenId];
         require(_tokenExists(owner), "ERC721: non-existing token");
         address ownerAddress = _tokenOwner(owner);
@@ -107,12 +102,7 @@ library ERC721Storage {
     /// @param sender The message sender.
     /// @param operator The address to approve for all tokens.
     /// @param approved True to set an approval for all tokens, false to unset it.
-    function setApprovalForAll(
-        Layout storage s,
-        address sender,
-        address operator,
-        bool approved
-    ) internal {
+    function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         require(operator != sender, "ERC721: self-approval for all");
         s.operators[sender][operator] = approved;
         emit ApprovalForAll(sender, operator, approved);
@@ -129,13 +119,7 @@ library ERC721Storage {
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
-    function transferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function transferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId) internal {
         require(to != address(0), "ERC721: transfer to address(0)");
 
         uint256 owner = s.owners[tokenId];
@@ -172,13 +156,7 @@ library ERC721Storage {
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
-    function safeTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId) internal {
         s.transferFrom(sender, from, to, tokenId);
         if (to.isContract()) {
             _callOnERC721Received(sender, from, to, tokenId, "");
@@ -199,14 +177,7 @@ library ERC721Storage {
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
     /// @param data Optional data to send along to a receiver contract.
-    function safeTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) internal {
+    function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId, bytes calldata data) internal {
         s.transferFrom(sender, from, to, tokenId);
         if (to.isContract()) {
             _callOnERC721Received(sender, from, to, tokenId, data);
@@ -224,13 +195,7 @@ library ERC721Storage {
     /// @param from Current tokens owner.
     /// @param to Address of the new token owner.
     /// @param tokenIds Identifiers of the tokens to transfer.
-    function batchTransferFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        address to,
-        uint256[] calldata tokenIds
-    ) internal {
+    function batchTransferFrom(Layout storage s, address sender, address from, address to, uint256[] calldata tokenIds) internal {
         require(to != address(0), "ERC721: transfer to address(0)");
         bool operatable = _isOperatable(s, from, sender);
 
@@ -265,11 +230,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
-    function mint(
-        Layout storage s,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function mint(Layout storage s, address to, uint256 tokenId) internal {
         require(to != address(0), "ERC721: mint to address(0)");
         require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
 
@@ -294,13 +255,7 @@ library ERC721Storage {
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
     /// @param data Optional data to pass along to the receiver call.
-    function safeMint(
-        Layout storage s,
-        address sender,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) internal {
+    function safeMint(Layout storage s, address sender, address to, uint256 tokenId, bytes memory data) internal {
         s.mint(to, tokenId);
         if (to.isContract()) {
             _callOnERC721Received(sender, address(0), to, tokenId, data);
@@ -315,11 +270,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
     /// @param to Address of the new tokens owner.
     /// @param tokenIds Identifiers of the tokens to mint.
-    function batchMint(
-        Layout storage s,
-        address to,
-        uint256[] memory tokenIds
-    ) internal {
+    function batchMint(Layout storage s, address to, uint256[] memory tokenIds) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
         uint256 length = tokenIds.length;
@@ -345,11 +296,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
     /// @param recipients Addresses of the new tokens owners.
     /// @param tokenIds Identifiers of the tokens to mint.
-    function deliver(
-        Layout storage s,
-        address[] memory recipients,
-        uint256[] memory tokenIds
-    ) internal {
+    function deliver(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
         require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
@@ -368,11 +315,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
-    function mintOnce(
-        Layout storage s,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function mintOnce(Layout storage s, address to, uint256 tokenId) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
         uint256 owner = s.owners[tokenId];
@@ -400,13 +343,7 @@ library ERC721Storage {
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
     /// @param data Optional data to pass along to the receiver call.
-    function safeMintOnce(
-        Layout storage s,
-        address sender,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) internal {
+    function safeMintOnce(Layout storage s, address sender, address to, uint256 tokenId, bytes memory data) internal {
         s.mintOnce(to, tokenId);
         if (to.isContract()) {
             _callOnERC721Received(sender, address(0), to, tokenId, data);
@@ -422,11 +359,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
     /// @param to Address of the new tokens owner.
     /// @param tokenIds Identifiers of the tokens to mint.
-    function batchMintOnce(
-        Layout storage s,
-        address to,
-        uint256[] memory tokenIds
-    ) internal {
+    function batchMintOnce(Layout storage s, address to, uint256[] memory tokenIds) internal {
         require(to != address(0), "ERC721: mint to address(0)");
 
         uint256 length = tokenIds.length;
@@ -456,11 +389,7 @@ library ERC721Storage {
     /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
     /// @param recipients Addresses of the new tokens owners.
     /// @param tokenIds Identifiers of the tokens to mint.
-    function deliverOnce(
-        Layout storage s,
-        address[] memory recipients,
-        uint256[] memory tokenIds
-    ) internal {
+    function deliverOnce(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
         require(length == tokenIds.length, "ERC721: inconsistent arrays");
         unchecked {
@@ -489,12 +418,7 @@ library ERC721Storage {
     /// @param sender The message sender.
     /// @param from The current token owner.
     /// @param tokenId The identifier of the token to burn.
-    function burnFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        uint256 tokenId
-    ) internal {
+    function burnFrom(Layout storage s, address sender, address from, uint256 tokenId) internal {
         uint256 owner = s.owners[tokenId];
         require(from == _tokenOwner(owner), "ERC721: non-owned token");
 
@@ -519,12 +443,7 @@ library ERC721Storage {
     /// @param sender The message sender.
     /// @param from The current tokens owner.
     /// @param tokenIds The identifiers of the tokens to burn.
-    function batchBurnFrom(
-        Layout storage s,
-        address sender,
-        address from,
-        uint256[] calldata tokenIds
-    ) internal {
+    function batchBurnFrom(Layout storage s, address sender, address from, uint256[] calldata tokenIds) internal {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
@@ -587,11 +506,7 @@ library ERC721Storage {
     /// @param owner The address which gives the approval for all tokens.
     /// @param operator The address which receives the approval for all tokens.
     /// @return approvedForAll Whether the operator is approved for all tokens by the owner.
-    function isApprovedForAll(
-        Layout storage s,
-        address owner,
-        address operator
-    ) internal view returns (bool approvedForAll) {
+    function isApprovedForAll(Layout storage s, address owner, address operator) internal view returns (bool approvedForAll) {
         return s.operators[owner][operator];
     }
 
@@ -616,13 +531,7 @@ library ERC721Storage {
     /// @param to New token owner.
     /// @param tokenId Identifier of the token transferred.
     /// @param data Optional data to send along with the receiver contract call.
-    function _callOnERC721Received(
-        address sender,
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) private {
+    function _callOnERC721Received(address sender, address from, address to, uint256 tokenId, bytes memory data) private {
         require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == ERC721_RECEIVED, "ERC721: safe transfer rejected");
     }
 
@@ -630,11 +539,7 @@ library ERC721Storage {
     /// @param owner The token owner.
     /// @param account The account to check the operatability of.
     /// @return operatable True if `account` is `owner` or is an operator for `owner`, false otherwise.
-    function _isOperatable(
-        Layout storage s,
-        address owner,
-        address account
-    ) private view returns (bool operatable) {
+    function _isOperatable(Layout storage s, address owner, address account) private view returns (bool operatable) {
         return (owner == account) || s.operators[owner][account];
     }
 

@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IERC2981",
-  "sourceName": "contracts/token/ERC721/interfaces/IERC2981.sol",
+  "sourceName": "contracts/token/royalty/interfaces/IERC2981.sol",
   "abi": [
     {
       "inputs": [

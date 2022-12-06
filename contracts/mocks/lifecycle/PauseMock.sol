@@ -12,11 +12,10 @@ import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.
 contract PauseMock is Pause, ForwarderRegistryContext {
     using PauseStorage for PauseStorage.Layout;
 
-    constructor(bool isPaused, IForwarderRegistry forwarderRegistry)
-        Pause(isPaused)
-        ContractOwnership(msg.sender)
-        ForwarderRegistryContext(forwarderRegistry)
-    {}
+    constructor(
+        bool isPaused,
+        IForwarderRegistry forwarderRegistry
+    ) Pause(isPaused) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
     function enforceIsPaused() external view {
         PauseStorage.layout().enforceIsPaused();

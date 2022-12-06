@@ -13,22 +13,14 @@ library TokenMetadataPerTokenStorage {
     /// @notice Sets the metadata URI for a token.
     /// @param id The token identifier.
     /// @param uri The token metadata URI.
-    function setTokenURI(
-        Layout storage s,
-        uint256 id,
-        string calldata uri
-    ) internal {
+    function setTokenURI(Layout storage s, uint256 id, string calldata uri) internal {
         s.uris[id] = uri;
     }
 
     /// @notice Sets the metadata URIs for a batch of tokens.
     /// @param ids The token identifiers.
     /// @param uris The token metadata URIs.
-    function batchSetTokenURI(
-        Layout storage s,
-        uint256[] calldata ids,
-        string[] calldata uris
-    ) internal {
+    function batchSetTokenURI(Layout storage s, uint256[] calldata ids, string[] calldata uris) internal {
         uint256 length = ids.length;
         require(length == uris.length, "Metadata: inconsistent arrays");
         unchecked {

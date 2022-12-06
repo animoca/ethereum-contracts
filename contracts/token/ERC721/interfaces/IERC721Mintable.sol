@@ -21,11 +21,7 @@ interface IERC721Mintable {
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
     /// @param data Optional data to pass along to the receiver call.
-    function safeMint(
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external;
+    function safeMint(address to, uint256 tokenId, bytes calldata data) external;
 
     /// @notice Unsafely mints a batch of tokens.
     /// @dev Reverts if `to` is the zero address.

@@ -22,11 +22,7 @@ library CheckpointsStorage {
     /// @dev Emits a {CheckpointSet} event if the timestamp is set to a non-zero value.
     /// @param checkpointId The checkpoint identifier.
     /// @param timestamp The checkpoint timestamp.
-    function setCheckpoint(
-        Layout storage s,
-        bytes32 checkpointId,
-        uint256 timestamp
-    ) internal {
+    function setCheckpoint(Layout storage s, bytes32 checkpointId, uint256 timestamp) internal {
         if (s.checkpoints[checkpointId] != 0) {
             revert(string(abi.encodePacked("Checkpoints: checkpoint '", checkpointId.toASCIIString(), "' already set")));
         }
@@ -41,11 +37,7 @@ library CheckpointsStorage {
     /// @dev Emits a {CheckpointSet} event for each timestamp set to a non-zero value.
     /// @param checkpointIds The checkpoint identifiers.
     /// @param timestamps The checkpoint timestamps.
-    function batchSetCheckpoint(
-        Layout storage s,
-        bytes32[] calldata checkpointIds,
-        uint256[] calldata timestamps
-    ) internal {
+    function batchSetCheckpoint(Layout storage s, bytes32[] calldata checkpointIds, uint256[] calldata timestamps) internal {
         uint256 length = checkpointIds.length;
         require(length == timestamps.length, "Checkpoints: wrong array length");
         unchecked {

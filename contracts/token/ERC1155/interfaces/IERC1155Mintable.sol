@@ -15,12 +15,7 @@ interface IERC1155Mintable {
     /// @param id Identifier of the token to mint.
     /// @param value Amount of token to mint.
     /// @param data Optional data to send along to a receiver contract.
-    function safeMint(
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external;
+    function safeMint(address to, uint256 id, uint256 value, bytes calldata data) external;
 
     /// @notice Safely mints a batch of tokens.
     /// @dev Reverts if `ids` and `values` have different lengths.
@@ -32,10 +27,5 @@ interface IERC1155Mintable {
     /// @param ids Identifiers of the tokens to mint.
     /// @param values Amounts of tokens to mint.
     /// @param data Optional data to send along to a receiver contract.
-    function safeBatchMint(
-        address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external;
+    function safeBatchMint(address to, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external;
 }

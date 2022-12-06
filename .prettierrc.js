@@ -16,7 +16,6 @@ module.exports = {
         printWidth: 150,
         tabWidth: 4,
         singleQuote: false,
-        explicitTypes: 'always',
       },
     },
   ],

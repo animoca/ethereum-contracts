@@ -18,12 +18,7 @@ abstract contract ERC1155MintableBase is Context, IERC1155Mintable {
 
     /// @inheritdoc IERC1155Mintable
     /// @dev Reverts if the sender does not have the 'minter' role.
-    function safeMint(
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external virtual override {
+    function safeMint(address to, uint256 id, uint256 value, bytes calldata data) external virtual override {
         address sender = _msgSender();
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, sender);
         ERC1155Storage.layout().safeMint(sender, to, id, value, data);
@@ -31,12 +26,7 @@ abstract contract ERC1155MintableBase is Context, IERC1155Mintable {
 
     /// @inheritdoc IERC1155Mintable
     /// @dev Reverts if the sender does not have the 'minter' role.
-    function safeBatchMint(
-        address to,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external virtual override {
+    function safeBatchMint(address to, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external virtual override {
         address sender = _msgSender();
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, sender);
         ERC1155Storage.layout().safeBatchMint(sender, to, ids, values, data);
