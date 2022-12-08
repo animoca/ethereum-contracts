@@ -2,7 +2,6 @@
 pragma solidity ^0.8.8;
 
 import {IERC2981} from "./../interfaces/IERC2981.sol";
-import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC2981Storage {
@@ -14,7 +13,7 @@ library ERC2981Storage {
         uint96 royaltyPercentage;
     }
 
-    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.token.ERC2981.storage")) - 1);
+    bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.token.royalty.ERC2981.storage")) - 1);
 
     uint256 internal constant ROYALTY_FEE_DENOMINATOR = 100000;
 
@@ -29,21 +28,21 @@ library ERC2981Storage {
     /// @notice Sets the royalty percentage.
     /// @dev Reverts with IncorrectRoyaltyPercentage if `percentage` is above 100% (> FEE_DENOMINATOR).
     /// @param percentage The new percentage to set. For example 50000 sets 50% royalty.
-    function setRoyaltyPercentage(Layout storage l, uint256 percentage) internal {
+    function setRoyaltyPercentage(Layout storage s, uint256 percentage) internal {
         if (percentage > ROYALTY_FEE_DENOMINATOR) {
             revert IncorrectRoyaltyPercentage(percentage);
         }
-        l.royaltyPercentage = uint96(percentage);
+        s.royaltyPercentage = uint96(percentage);
     }
 
     /// @notice Sets the royalty receiver.
     /// @dev Reverts with IncorrectRoyaltyReceiver if `receiver` is the zero address.
     /// @param receiver The new receiver to set.
-    function setRoyaltyReceiver(Layout storage l, address receiver) internal {
+    function setRoyaltyReceiver(Layout storage s, address receiver) internal {
         if (receiver == address(0)) {
             revert IncorrectRoyaltyReceiver();
         }
-        l.royaltyReceiver = receiver;
+        s.royaltyReceiver = receiver;
     }
 
     /// @notice Called with the sale price to determine how much royalty is owed and to whom.
@@ -51,13 +50,13 @@ library ERC2981Storage {
     /// @param salePrice The sale price of the NFT asset specified by `tokenId`
     /// @return receiver Address of who should be sent the royalty payment
     /// @return royaltyAmount The royalty payment amount for `salePrice`
-    function royaltyInfo(Layout storage l, uint256, uint256 salePrice) internal view returns (address receiver, uint256 royaltyAmount) {
-        receiver = l.royaltyReceiver;
-        uint256 royaltyPercentage = l.royaltyPercentage;
+    function royaltyInfo(Layout storage s, uint256, uint256 salePrice) internal view returns (address receiver, uint256 royaltyAmount) {
+        receiver = s.royaltyReceiver;
+        uint256 royaltyPercentage = s.royaltyPercentage;
         if (salePrice == 0 || royaltyPercentage == 0) {
             royaltyAmount = 0;
         } else {
-            if (salePrice < 100000) {
+            if (salePrice < ROYALTY_FEE_DENOMINATOR) {
                 royaltyAmount = (salePrice * royaltyPercentage) / ROYALTY_FEE_DENOMINATOR;
             } else {
                 royaltyAmount = (salePrice / ROYALTY_FEE_DENOMINATOR) * royaltyPercentage;

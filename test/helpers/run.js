@@ -5,6 +5,7 @@ const {ZeroAddress} = require('../../src/constants');
 const {deployContract, deployContractFromPath} = require('./contract');
 const {deployDiamond, facetInit, mergeABIs} = require('./diamond');
 const {deployForwarderRegistry} = require('./metatx');
+const {deployOperatorFilterRegistry} = require('./operatorFilterRegistry');
 
 async function getDeployerAddress() {
   return (await ethers.getSigners())[0].address;
@@ -12,6 +13,10 @@ async function getDeployerAddress() {
 
 async function getForwarderRegistryAddress() {
   return (await deployForwarderRegistry()).address;
+}
+
+async function getOperatorFilterRegistryAddress() {
+  return (await deployOperatorFilterRegistry()).address;
 }
 
 async function buildDefaultArguments(defaultArguments) {
@@ -171,5 +176,6 @@ function runBehaviorTests(name, config, behaviorFn) {
 module.exports = {
   getDeployerAddress,
   getForwarderRegistryAddress,
+  getOperatorFilterRegistryAddress,
   runBehaviorTests,
 };

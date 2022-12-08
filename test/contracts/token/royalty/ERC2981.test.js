@@ -80,16 +80,16 @@ runBehaviorTests('ERC2981', config, function (deployFn) {
       const percentage = 50;
       const percentageArg = (await this.contract.ROYALTY_FEE_DENOMINATOR()).mul(percentage).div(100);
       await this.contract.setRoyaltyPercentage(percentageArg);
-      const tokenValue = 100;
-      const royaltyInfo = await this.contract.royaltyInfo(0, tokenValue);
-      const royaltyAmount = (tokenValue * percentage) / 100;
+      const saleAmount = 100;
+      const royaltyInfo = await this.contract.royaltyInfo(0, saleAmount);
+      const royaltyAmount = (saleAmount * percentage) / 100;
       expect(royaltyInfo.royaltyAmount).to.equal(royaltyAmount);
     });
   });
 
   describe('royaltyInfo(uint256,uint256)', function () {
     it('returns 0 before setting info', async function () {
-      const royaltyInfo = await this.contract.royaltyInfo(0, 1);
+      const royaltyInfo = await this.contract.royaltyInfo(0, 1000000);
       expect(royaltyInfo.receiver).to.equal(ZeroAddress);
       expect(royaltyInfo.royaltyAmount).to.equal(0);
     });

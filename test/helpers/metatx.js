@@ -1,4 +1,3 @@
-const {ethers} = require('hardhat');
 const {deployContract} = require('./contract');
 
 let forwarderRegistry = undefined;
