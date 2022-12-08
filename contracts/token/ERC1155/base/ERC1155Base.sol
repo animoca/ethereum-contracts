@@ -5,7 +5,7 @@ import {IERC1155} from "./../interfaces/IERC1155.sol";
 import {ERC1155Storage} from "./../libraries/ERC1155Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
-/// @title ERC1155 Multi Token Standard, basic interface (proxiable version).
+/// @title ERC1155 Multi Token Standard (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC165 (Interface Detection Standard).
 abstract contract ERC1155Base is Context, IERC1155 {

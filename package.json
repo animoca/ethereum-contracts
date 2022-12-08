@@ -1,6 +1,6 @@
 {
   "name": "@animoca/ethereum-contracts",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Base dependency for solidity smart-contracts projects",
   "keywords": [
     "animoca",
@@ -52,7 +52,7 @@
     "@openzeppelin/contracts": "=4.8.0",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",
-    "eslint": "^8.28.0",
+    "eslint": "^8.29.0",
     "eslint-config-mocha": "^0.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-mocha": "^10.1.0",
@@ -61,18 +61,18 @@
     "fs-extra": "^11.1.0",
     "glob": "^8.0.3",
     "hardhat": "^2.12.3",
-    "hardhat-deploy": "^0.11.21",
+    "hardhat-deploy": "^0.11.22",
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.mergewith": "^4.6.2",
     "mocha": "^10.1.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.0",
+    "prettier": "^2.8.1",
     "prettier-plugin-solidity": "^1.0.0",
     "solhint": "^3.3.7",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
-    "solidity-docgen": "^0.6.0-beta.31"
+    "solidity-docgen": "^0.6.0-beta.32"
   }
 }

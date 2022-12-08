@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+### New features
+
+- Added support for ERC2981 royalty standard.
+- Added support for token OperatorFilterer for ERC721 and ERC1155.
+
 ## 0.3.0
 
 ### Breaking changes
