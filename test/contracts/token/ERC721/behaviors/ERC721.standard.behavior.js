@@ -6,7 +6,7 @@ const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsI
 const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 
-function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}) {
+function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}, operatorFilterRegistryAddress = null) {
   describe('like an ERC721', function () {
     let accounts, deployer, owner, approved, operator, other;
 
@@ -32,6 +32,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, this.token.address);
       this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
       this.nftBalance = await this.token.balanceOf(owner.address);
+      if (operatorFilterRegistryAddress !== null) {
+        await this.token.updateOperatorFilterRegistry(operatorFilterRegistryAddress);
+      }
     };
 
     beforeEach(async function () {
