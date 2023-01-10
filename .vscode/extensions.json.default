@@ -5,7 +5,6 @@
     "esbenp.prettier-vscode",
     "hbenl.vscode-mocha-test-adapter",
     "nomicfoundation.hardhat-solidity",
-    "ms-vscode-remote.vscode-remote-extensionpack"
   ],
   "unwantedRecommendations": []
 }

@@ -1,6 +1,11 @@
 node_modules/
 .npmrc*
 
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
+
 .yalc
 yalc.lock
 
