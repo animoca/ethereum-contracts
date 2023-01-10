@@ -2,6 +2,12 @@
 
 ## 0.3.2
 
+### Improvements
+
+- Updated to latest dependencies.
+
+## 0.3.2
+
 ### Bugfixes
 
 - Fixed bugs when using yarn v2 or above.

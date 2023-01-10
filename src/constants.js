@@ -28,6 +28,7 @@ const ZeroBytes32 = constants.HashZero;
 
 module.exports = {
   // BigNumber
+  NegativeOne,
   Zero,
   One,
   Two,
