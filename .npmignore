@@ -1,3 +1,8 @@
+# Same content as .gitignore + other files not to pack
+
+# not in .gitignore
+audit/
+
 # npm
 node_modules/
 .npmrc*
