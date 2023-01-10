@@ -1,6 +1,6 @@
 {
   "name": "@animoca/ethereum-contracts",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Base dependency for solidity smart-contracts projects",
   "keywords": [
     "animoca",
@@ -39,7 +39,7 @@
     "clean:artifacts:hard": "rm -rf artifacts || :",
     "clean:hardhat": "rm -rf hardhat.config.last.json || :",
     "clean:flatten": "rm -rf flattened || :",
-    "clean:coverage": "rm -rf coverage coverage.json || :",
+    "clean:coverage": "rm -rf coverage coverage.json *.coverage || :",
     "clean:docgen": "rm -rf docs || :",
     "clean": "run-p clean:compile clean:artifacts:soft clean:hardhat clean:flatten clean:coverage clean:docgen",
     "run-all": "run-s format fix clean clean:artifacts:hard compile docgen flatten test-p coverage",
