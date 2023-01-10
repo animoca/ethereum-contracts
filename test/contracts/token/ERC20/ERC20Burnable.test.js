@@ -1,3 +1,4 @@
+const {ethers} = require('hardhat');
 const {behavesLikeERC20} = require('./behaviors/ERC20.behavior');
 const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 

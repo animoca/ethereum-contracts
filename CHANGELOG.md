@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2
+
+### Bugfixes
+
+- Fixed bugs when using yarn v2 or above.
+
 ## 0.3.1
 
 ### New features
