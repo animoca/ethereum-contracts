@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {provider} = ethers;
-const {loadFixture} = require('../../helpers/fixtures');
-const {deployContract} = require('../../helpers/contract');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 function decodeAggregateReturnData(returnData, returnTypes) {
   return returnData.map((res, i) => {

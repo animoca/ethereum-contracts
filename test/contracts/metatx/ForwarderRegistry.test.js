@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroAddress} = require('../../../src/constants');
-const {loadFixture} = require('../../helpers/fixtures');
-const {deployContract} = require('../../helpers/contract');
+const {constants} = ethers;
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 const ForwarderApprovalType = {
   ForwarderApproval: [
@@ -43,7 +43,7 @@ describe('Meta Transactions', function () {
   describe('ForwarderRegistry', function () {
     describe('isTrustedForwarder(address)', function () {
       it('always returns true', async function () {
-        expect(await this.contract.isTrustedForwarder(ZeroAddress)).to.be.true;
+        expect(await this.contract.isTrustedForwarder(constants.AddressZero)).to.be.true;
         expect(await this.contract.isTrustedForwarder(deployer.address)).to.be.true;
         expect(await this.contract.isTrustedForwarder(other.address)).to.be.true;
         expect(await this.contract.isTrustedForwarder(this.contract.address)).to.be.true;
@@ -236,7 +236,7 @@ describe('Meta Transactions', function () {
             signature,
             false
           );
-          await this.forwarder.forward(ZeroAddress, this.contract.address, approvalData);
+          await this.forwarder.forward(constants.AddressZero, this.contract.address, approvalData);
 
           const {to, data} = await this.receiver.populateTransaction.test(42);
           const {data: relayerData} = await this.contract.populateTransaction.forward(to, data);

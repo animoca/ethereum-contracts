@@ -1,5 +1,7 @@
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 const {behavesLikeERC721Metadata} = require('./behaviors/ERC721.metadata.behavior');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
 const name = 'ERC721MetadataPerTokenMock';
 const symbol = 'ERC721MetadataPerTokenMock';

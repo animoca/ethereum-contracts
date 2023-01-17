@@ -16,6 +16,3 @@ max_line_length = 150
 
 [*.md]
 max_line_length = 150
-
-[.mnemonic*]
-insert_final_newline = false

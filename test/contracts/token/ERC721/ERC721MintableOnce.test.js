@@ -1,4 +1,6 @@
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 const {behavesLikeERC721Burnable} = require('./behaviors/ERC721.burnable.behavior');
 const {behavesLikeERC721Mintable} = require('./behaviors/ERC721.mintable.behavior');
 const {behavesLikeERC721Deliverable} = require('./behaviors/ERC721.deliverable.behavior');

@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
-const {ZeroAddress} = require('../../../../../src/constants');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 
 function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
   const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods;
@@ -146,13 +146,13 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
       context('when clearing an approval', function () {
         context('when there was no prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = ZeroAddress;
+            this.approvedAddress = constants.AddressZero;
           });
           setApprovalBySender(nft3);
         });
         context('when there was a prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = ZeroAddress;
+            this.approvedAddress = constants.AddressZero;
           });
           setApprovalBySender(nft1);
         });

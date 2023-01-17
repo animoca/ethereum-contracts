@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
-const {ZeroAddress, ZeroBytes32} = require('../../../../src/constants');
-const {loadFixture} = require('../../../helpers/fixtures');
-const {deployContract} = require('../../../helpers/contract');
+const {constants} = ethers;
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 describe('OperatorFilterRegistryMock', function () {
   let deployer, other;
@@ -19,75 +19,75 @@ describe('OperatorFilterRegistryMock', function () {
   });
 
   it('test isOperatorAllowed', async function () {
-    await this.contract.isOperatorAllowed(ZeroAddress, ZeroAddress);
+    await this.contract.isOperatorAllowed(constants.AddressZero, constants.AddressZero);
   });
   it('test register', async function () {
-    await this.contract.register(ZeroAddress);
+    await this.contract.register(constants.AddressZero);
   });
   it('test registerAndSubscribe', async function () {
-    await this.contract.registerAndSubscribe(ZeroAddress, ZeroAddress);
+    await this.contract.registerAndSubscribe(constants.AddressZero, constants.AddressZero);
   });
   it('test registerAndCopyEntries', async function () {
-    await this.contract.registerAndCopyEntries(ZeroAddress, ZeroAddress);
+    await this.contract.registerAndCopyEntries(constants.AddressZero, constants.AddressZero);
   });
   it('test unregister', async function () {
-    await this.contract.unregister(ZeroAddress);
+    await this.contract.unregister(constants.AddressZero);
   });
   it('test updateOperator', async function () {
-    await this.contract.updateOperator(ZeroAddress, ZeroAddress, true);
+    await this.contract.updateOperator(constants.AddressZero, constants.AddressZero, true);
   });
   it('test updateOperators', async function () {
-    await this.contract.updateOperators(ZeroAddress, [ZeroAddress], true);
+    await this.contract.updateOperators(constants.AddressZero, [constants.AddressZero], true);
   });
   it('test updateCodeHash', async function () {
-    await this.contract.updateCodeHash(ZeroAddress, ZeroBytes32, true);
+    await this.contract.updateCodeHash(constants.AddressZero, constants.HashZero, true);
   });
   it('test updateCodeHashes', async function () {
-    await this.contract.updateCodeHashes(ZeroAddress, [ZeroBytes32], true);
+    await this.contract.updateCodeHashes(constants.AddressZero, [constants.HashZero], true);
   });
   it('test subscribe', async function () {
-    await this.contract.subscribe(ZeroAddress, ZeroAddress);
+    await this.contract.subscribe(constants.AddressZero, constants.AddressZero);
   });
   it('test unsubscribe', async function () {
-    await this.contract.unsubscribe(ZeroAddress, ZeroAddress);
+    await this.contract.unsubscribe(constants.AddressZero, constants.AddressZero);
   });
   it('test subscriptionOf', async function () {
-    await this.contract.subscriptionOf(ZeroAddress);
+    await this.contract.subscriptionOf(constants.AddressZero);
   });
   it('test subscribers', async function () {
-    await this.contract.subscribers(ZeroAddress);
+    await this.contract.subscribers(constants.AddressZero);
   });
   it('test subscriberAt', async function () {
-    await this.contract.subscriberAt(ZeroAddress, 0);
+    await this.contract.subscriberAt(constants.AddressZero, 0);
   });
   it('test copyEntriesOf', async function () {
-    await this.contract.copyEntriesOf(ZeroAddress, ZeroAddress);
+    await this.contract.copyEntriesOf(constants.AddressZero, constants.AddressZero);
   });
   it('test isOperatorFiltered', async function () {
-    await this.contract.isOperatorFiltered(ZeroAddress, ZeroAddress);
+    await this.contract.isOperatorFiltered(constants.AddressZero, constants.AddressZero);
   });
   it('test isCodeHashOfFiltered', async function () {
-    await this.contract.isCodeHashOfFiltered(ZeroAddress, ZeroAddress);
+    await this.contract.isCodeHashOfFiltered(constants.AddressZero, constants.AddressZero);
   });
   it('test isCodeHashFiltered', async function () {
-    await this.contract.isCodeHashFiltered(ZeroAddress, ZeroBytes32);
+    await this.contract.isCodeHashFiltered(constants.AddressZero, constants.HashZero);
   });
   it('test filteredOperators', async function () {
-    await this.contract.filteredOperators(ZeroAddress);
+    await this.contract.filteredOperators(constants.AddressZero);
   });
   it('test filteredCodeHashes', async function () {
-    await this.contract.filteredCodeHashes(ZeroAddress);
+    await this.contract.filteredCodeHashes(constants.AddressZero);
   });
   it('test filteredOperatorAt', async function () {
-    await this.contract.filteredOperatorAt(ZeroAddress, 0);
+    await this.contract.filteredOperatorAt(constants.AddressZero, 0);
   });
   it('test filteredCodeHashAt', async function () {
-    await this.contract.filteredCodeHashAt(ZeroAddress, 0);
+    await this.contract.filteredCodeHashAt(constants.AddressZero, 0);
   });
   it('test isRegistered', async function () {
-    await this.contract.isRegistered(ZeroAddress);
+    await this.contract.isRegistered(constants.AddressZero);
   });
   it('test codeHashOf', async function () {
-    await this.contract.codeHashOf(ZeroAddress);
+    await this.contract.codeHashOf(constants.AddressZero);
   });
 });

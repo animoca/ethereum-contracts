@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroBytes32} = require('../../../src/constants');
-const {loadFixture} = require('../../helpers/fixtures');
-const {deployContract} = require('../../helpers/contract');
+const {constants} = ethers;
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 describe('Bytes32', function () {
   const fixture = async function () {
@@ -14,7 +14,7 @@ describe('Bytes32', function () {
 
   context('toBase32String(bytes32)', function () {
     it('returns aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa with a zero value', async function () {
-      expect(await this.contract.toBase32String(ZeroBytes32)).to.equal('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      expect(await this.contract.toBase32String(constants.HashZero)).to.equal('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     });
     it('returns h777777777777777777777777777777777777777777777777774 with a max value', async function () {
       expect(await this.contract.toBase32String('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')).to.equal(
@@ -30,7 +30,7 @@ describe('Bytes32', function () {
 
   context('toASCIIString(bytes32)', function () {
     it('returns an empty string with a zero value', async function () {
-      expect(await this.contract.toASCIIString(ZeroBytes32)).to.equal('');
+      expect(await this.contract.toASCIIString(constants.HashZero)).to.equal('');
     });
 
     it('returns an equal and same-length string for a bytes32 converted from a short string', async function () {

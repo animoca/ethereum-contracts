@@ -8,8 +8,3 @@ coverage*
 
 contracts_*
 flattened*
-
-deployments/
-generated/
-
-project-template/

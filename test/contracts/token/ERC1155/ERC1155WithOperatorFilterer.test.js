@@ -1,5 +1,7 @@
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress, getOperatorFilterRegistryAddress} = require('../../../helpers/registries');
 const {behavesLikeERC1155} = require('./behaviors/ERC1155.behavior');
-const {getDeployerAddress, getForwarderRegistryAddress, getOperatorFilterRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
 const config = {
   immutable: {
