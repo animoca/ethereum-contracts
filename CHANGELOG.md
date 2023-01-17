@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0
+
+### Breaking changes
+
+- Move helpers to `@animoca/ethereum-contract-helpers`.
+
+### Improvements
+
+- Fix versioning rules.
+- Update dependencies.
+
 ## 0.3.4
 
 ### Improvements
