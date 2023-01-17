@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {makeInterfaceId, supportsInterfaces} = require('./behaviors/SupportsInterface.behavior');
 
 const config = {

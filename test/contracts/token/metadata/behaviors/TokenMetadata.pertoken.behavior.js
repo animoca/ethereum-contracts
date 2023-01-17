@@ -1,6 +1,6 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 function behavesLikeTokenMetadataPerToken({deploy, mint, tokenMetadata, revertMessages}) {
   describe('like a Token Metadata Per Token', function () {

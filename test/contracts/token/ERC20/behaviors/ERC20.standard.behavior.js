@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {Zero, One, MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC20Standard(implementation) {
   const {features, revertMessages, deploy} = implementation;
@@ -12,7 +12,7 @@ function behavesLikeERC20Standard(implementation) {
     const AccountIndex = {deployer: 0, owner: 1, recipient: 2, spender: 3, maxSpender: 4};
 
     const initialSupply = ethers.BigNumber.from('100');
-    const initialAllowance = initialSupply.sub(One);
+    const initialAllowance = initialSupply.sub(1);
 
     before(async function () {
       accounts = await ethers.getSigners();
@@ -22,7 +22,7 @@ function behavesLikeERC20Standard(implementation) {
     const fixture = async function () {
       this.contract = (await deploy([owner.address], [initialSupply], deployer)).connect(owner);
       await this.contract.approve(spender.address, initialAllowance);
-      await this.contract.approve(maxSpender.address, MaxUInt256);
+      await this.contract.approve(maxSpender.address, constants.MaxUint256);
     };
 
     beforeEach(async function () {
@@ -37,7 +37,7 @@ function behavesLikeERC20Standard(implementation) {
 
     describe('balanceOf(address)', function () {
       it('returns zero for an account without balance', async function () {
-        expect(await this.contract.balanceOf(spender.address)).to.equal(Zero);
+        expect(await this.contract.balanceOf(spender.address)).to.equal(0);
       });
 
       it('returns the correct balance for an account with balance', async function () {
@@ -47,8 +47,8 @@ function behavesLikeERC20Standard(implementation) {
 
     describe('allowance(address,address)', function () {
       it('returns zero when there is no allowance', async function () {
-        expect(await this.contract.allowance(owner.address, recipient.address)).to.equal(Zero);
-        expect(await this.contract.allowance(owner.address, owner.address)).to.equal(Zero);
+        expect(await this.contract.allowance(owner.address, recipient.address)).to.equal(0);
+        expect(await this.contract.allowance(owner.address, owner.address)).to.equal(0);
       });
 
       it('returns the allowance if it has been set', async function () {
@@ -56,13 +56,13 @@ function behavesLikeERC20Standard(implementation) {
       });
 
       it('returns the max allowance if it has been set at max', async function () {
-        expect(await this.contract.allowance(owner.address, maxSpender.address)).to.equal(MaxUInt256);
+        expect(await this.contract.allowance(owner.address, maxSpender.address)).to.equal(constants.MaxUint256);
       });
     });
 
     describe('approve(address,uint256)', function () {
       it('reverts if approving the zero address', async function () {
-        await expect(this.contract.approve(ZeroAddress, One)).to.be.revertedWith(revertMessages.ApproveToZero);
+        await expect(this.contract.approve(constants.AddressZero, 1)).to.be.revertedWith(revertMessages.ApproveToZero);
       });
 
       const approveWasSuccessful = function (approvedIndex, amount) {
@@ -91,7 +91,7 @@ function behavesLikeERC20Standard(implementation) {
       };
 
       context('when approving a zero amount', function () {
-        approvesBySender(Zero);
+        approvesBySender(0);
       });
       context('when approving a non-zero amount', function () {
         const amount = initialSupply;
@@ -113,11 +113,11 @@ function behavesLikeERC20Standard(implementation) {
     describe('transfer(address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when sent to the zero address', async function () {
-          await expect(this.contract.transfer(ZeroAddress, One)).to.be.revertedWith(revertMessages.TransferToZero);
+          await expect(this.contract.transfer(constants.AddressZero, 1)).to.be.revertedWith(revertMessages.TransferToZero);
         });
 
         it('reverts with an insufficient balance', async function () {
-          await expect(this.contract.transfer(recipient.address, initialSupply.add(One))).to.be.revertedWith(revertMessages.TransferExceedsBalance);
+          await expect(this.contract.transfer(recipient.address, initialSupply.add(1))).to.be.revertedWith(revertMessages.TransferExceedsBalance);
         });
       });
 
@@ -162,11 +162,11 @@ function behavesLikeERC20Standard(implementation) {
       };
 
       context('when transferring a zero value', function () {
-        transfersByRecipient(Zero);
+        transfersByRecipient(0);
       });
 
       context('when transferring a non-zero value', function () {
-        transfersByRecipient(One);
+        transfersByRecipient(1);
       });
 
       context('when transferring the full balance', function () {
@@ -177,26 +177,26 @@ function behavesLikeERC20Standard(implementation) {
     describe('transferFrom(address,address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when from is the zero address', async function () {
-          await expect(this.contract.connect(spender).transferFrom(ZeroAddress, recipient.address, One)).to.be.revertedWith(
+          await expect(this.contract.connect(spender).transferFrom(constants.AddressZero, recipient.address, 1)).to.be.revertedWith(
             revertMessages.TransferExceedsAllowance
           );
         });
 
         it('reverts when sent to the zero address', async function () {
-          await expect(this.contract.connect(spender).transferFrom(owner.address, ZeroAddress, One)).to.be.revertedWith(
+          await expect(this.contract.connect(spender).transferFrom(owner.address, constants.AddressZero, 1)).to.be.revertedWith(
             revertMessages.TransferToZero
           );
         });
 
         it('reverts with an insufficient balance', async function () {
-          await this.contract.approve(spender.address, initialSupply.add(One));
-          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialSupply.add(One))).to.be.revertedWith(
+          await this.contract.approve(spender.address, initialSupply.add(1));
+          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialSupply.add(1))).to.be.revertedWith(
             revertMessages.TransferExceedsBalance
           );
         });
 
         it('reverts with an insufficient allowance', async function () {
-          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialAllowance.add(One))).to.be.revertedWith(
+          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialAllowance.add(1))).to.be.revertedWith(
             revertMessages.TransferExceedsAllowance
           );
         });
@@ -228,7 +228,7 @@ function behavesLikeERC20Standard(implementation) {
         if (fromIndex != senderIndex) {
           if (withEIP717) {
             it('[EIP717] keeps allowance at max ', async function () {
-              expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(MaxUInt256);
+              expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(constants.MaxUint256);
             });
           } else {
             it('decreases the spender allowance', async function () {
@@ -240,7 +240,7 @@ function behavesLikeERC20Standard(implementation) {
             it('emits an Approval event', async function () {
               await expect(this.receipt)
                 .to.emit(this.contract, 'Approval')
-                .withArgs(accounts[fromIndex].address, accounts[senderIndex].address, withEIP717 ? MaxUInt256 : this.allowance.sub(value));
+                .withArgs(accounts[fromIndex].address, accounts[senderIndex].address, withEIP717 ? constants.MaxUint256 : this.allowance.sub(value));
             });
           }
         }
@@ -287,11 +287,11 @@ function behavesLikeERC20Standard(implementation) {
       };
 
       context('when transferring a zero value', function () {
-        transfersBySender(Zero);
+        transfersBySender(0);
       });
 
       context('when transferring a non-zero value', function () {
-        transfersBySender(One);
+        transfersBySender(1);
       });
 
       context('when transferring the full allowance', function () {

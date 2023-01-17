@@ -1,10 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
-const {MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
-const ReceiverType = require('../../ReceiverType');
-const {nonFungibleTokenId, isFungible} = require('../../token');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {nonFungibleTokenId} = require('../../token');
 
 function behavesLikeERC1155WithOperatorFilterer({revertMessages, interfaces, deploy, mint}) {
   let accounts, deployer, owner, approved, operator, other;

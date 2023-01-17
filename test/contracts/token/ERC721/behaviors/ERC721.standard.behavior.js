@@ -1,9 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 
 function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}, operatorFilterRegistryAddress = null) {
@@ -30,7 +30,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, this.token.address);
-      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, constants.AddressZero);
       this.nftBalance = await this.token.balanceOf(owner.address);
       if (operatorFilterRegistryAddress !== null) {
         await this.token.updateOperatorFilterRegistry(operatorFilterRegistryAddress);
@@ -43,7 +43,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('balanceOf(address)', function () {
       it('reverts if querying the zero address', async function () {
-        await expect(this.token.balanceOf(ZeroAddress)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expect(this.token.balanceOf(constants.AddressZero)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
       });
 
       it('returns the amount of tokens owned', async function () {
@@ -67,7 +67,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
         it('reverts if transferred to the zero address', async function () {
           this.sender = owner;
           this.from = owner.address;
-          this.to = ZeroAddress;
+          this.to = constants.AddressZero;
           await expect(transferFunction.call(this, nft1, data)).to.be.revertedWith(revertMessages.TransferToAddressZero);
         });
 
@@ -127,7 +127,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       }
 
       it('clears the approval for the token', async function () {
-        expect(await this.token.getApproved(tokenId)).to.equal(ZeroAddress);
+        expect(await this.token.getApproved(tokenId)).to.equal(constants.AddressZero);
       });
 
       it('emits a Transfer event', async function () {
@@ -302,13 +302,13 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       context('when clearing an approval', function () {
         context('when there was no prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = ZeroAddress;
+            this.approvedAddress = constants.AddressZero;
           });
           setApprovalBySender(nft3);
         });
         context('when there was a prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = ZeroAddress;
+            this.approvedAddress = constants.AddressZero;
           });
           setApprovalBySender(nft1);
         });
@@ -325,7 +325,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
       });
 
       it('returns the zero address if no approval was set', async function () {
-        expect(await this.token.getApproved(nft3)).to.equal(ZeroAddress);
+        expect(await this.token.getApproved(nft3)).to.equal(constants.AddressZero);
       });
     });
 

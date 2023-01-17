@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroAddress} = require('../../../../../src/constants');
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, interfaces, methods}) {
@@ -230,7 +230,7 @@ function behavesLikeERC721Burnable({deploy, mint, features, revertMessages, inte
 
       it('emits Transfer event(s)', async function () {
         for (const id of ids) {
-          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, ZeroAddress, id);
+          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, constants.AddressZero, id);
         }
       });
 

@@ -1,8 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
-const {loadFixture} = require('../../../helpers/fixtures');
-const {ZeroAddress} = require('../../../../src/constants');
+const {constants} = ethers;
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 const {supportsInterfaces} = require('../../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
@@ -48,11 +50,11 @@ runBehaviorTests('ERC2981', config, function (deployFn) {
 
   describe('setRoyaltyReceiver(address)', function () {
     it('reverts when not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).setRoyaltyReceiver(ZeroAddress)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).setRoyaltyReceiver(constants.AddressZero)).to.be.revertedWith('Ownership: not the owner');
     });
 
     it('reverts when trying to set the zero address', async function () {
-      await expect(this.contract.setRoyaltyReceiver(ZeroAddress)).to.be.revertedWithCustomError(this.contract, 'IncorrectRoyaltyReceiver');
+      await expect(this.contract.setRoyaltyReceiver(constants.AddressZero)).to.be.revertedWithCustomError(this.contract, 'IncorrectRoyaltyReceiver');
     });
 
     it('sets the royalty receiver to the new value', async function () {
@@ -64,7 +66,7 @@ runBehaviorTests('ERC2981', config, function (deployFn) {
 
   describe('setRoyaltyPercentage(uint256)', function () {
     it('reverts when not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).setRoyaltyPercentage(ZeroAddress)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).setRoyaltyPercentage(constants.AddressZero)).to.be.revertedWith('Ownership: not the owner');
     });
 
     it('reverts when trying to set the a percentage above 100%', async function () {
@@ -90,7 +92,7 @@ runBehaviorTests('ERC2981', config, function (deployFn) {
   describe('royaltyInfo(uint256,uint256)', function () {
     it('returns 0 before setting info', async function () {
       const royaltyInfo = await this.contract.royaltyInfo(0, 1000000);
-      expect(royaltyInfo.receiver).to.equal(ZeroAddress);
+      expect(royaltyInfo.receiver).to.equal(constants.AddressZero);
       expect(royaltyInfo.royaltyAmount).to.equal(0);
     });
 

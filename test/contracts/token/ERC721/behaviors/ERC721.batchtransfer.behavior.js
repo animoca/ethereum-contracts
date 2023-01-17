@@ -1,8 +1,8 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessages, methods}) {
   const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods;
@@ -53,7 +53,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
 
         it('clears the approval for the token(s)', async function () {
           for (const tokenId of tokenIds) {
-            expect(await this.token.getApproved(tokenId)).to.equal(ZeroAddress);
+            expect(await this.token.getApproved(tokenId)).to.equal(constants.AddressZero);
           }
         });
 
@@ -122,7 +122,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
       describe('batchTransferFrom(address,adress,uint256[])', function () {
         describe('Pre-conditions', function () {
           it('reverts if transferred to the zero address', async function () {
-            await expect(batchTransferFrom_ERC721(this.token, owner.address, ZeroAddress, [nft1], owner)).to.be.revertedWith(
+            await expect(batchTransferFrom_ERC721(this.token, owner.address, constants.AddressZero, [nft1], owner)).to.be.revertedWith(
               revertMessages.TransferToAddressZero
             );
           });

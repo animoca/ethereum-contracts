@@ -1,9 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {setBalance} = require('@nomicfoundation/hardhat-network-helpers');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
-const {deployContract} = require('../../helpers/contract');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../helpers/registries');
 
 const config = {
   immutable: {name: 'TokenRecoveryMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},

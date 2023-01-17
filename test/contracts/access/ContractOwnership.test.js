@@ -1,8 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroAddress} = require('../../../src/constants');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
+const {constants} = ethers;
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../helpers/registries');
 const {supportsInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
 const config = {
@@ -39,7 +41,7 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
   };
 
   const fixtureWithoutOwner = async function () {
-    this.contract = await deployFn({initialOwner: ZeroAddress});
+    this.contract = await deployFn({initialOwner: constants.AddressZero});
   };
 
   describe('constructor(address)', function () {
@@ -49,7 +51,7 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
 
       it('does not set the initial owner', async function () {
-        expect(await this.contract.owner()).to.equal(ZeroAddress);
+        expect(await this.contract.owner()).to.equal(constants.AddressZero);
       });
 
       it('does not emit an OwnershipTransferred event', async function () {
@@ -67,7 +69,9 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
 
       it('emits an OwnershipTransferred event', async function () {
-        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'OwnershipTransferred').withArgs(ZeroAddress, deployer.address);
+        await expect(this.contract.deployTransaction.hash)
+          .to.emit(this.contract, 'OwnershipTransferred')
+          .withArgs(constants.AddressZero, deployer.address);
       });
     });
   });
@@ -85,13 +89,13 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       context('when successful', function () {
         context('with the zero address as new owner', function () {
           beforeEach(async function () {
-            this.receipt = await this.contract.transferOwnership(ZeroAddress);
+            this.receipt = await this.contract.transferOwnership(constants.AddressZero);
           });
           it('unsets the owner', async function () {
-            expect(await this.contract.owner()).to.equal(ZeroAddress);
+            expect(await this.contract.owner()).to.equal(constants.AddressZero);
           });
           it('emits an OwnershipTransferred event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'OwnershipTransferred').withArgs(deployer.address, ZeroAddress);
+            await expect(this.receipt).to.emit(this.contract, 'OwnershipTransferred').withArgs(deployer.address, constants.AddressZero);
           });
         });
 

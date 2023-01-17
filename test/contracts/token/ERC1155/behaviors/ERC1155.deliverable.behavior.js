@@ -1,9 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 const {nonFungibleTokenId, isFungible} = require('../../token');
 
@@ -28,7 +28,7 @@ function behavesLikeERC1155Deliverable({revertMessages, interfaces, methods, dep
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.address);
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.address);
-      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, ZeroAddress);
+      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, constants.AddressZero);
     };
 
     beforeEach(async function () {
@@ -59,7 +59,7 @@ function behavesLikeERC1155Deliverable({revertMessages, interfaces, methods, dep
 
             it('[ERC721] sets an empty approval for the Non-Fungible Token(s)', async function () {
               for (const [id, _value] of nonFungibleTokens) {
-                expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
+                expect(await this.token.getApproved(id)).to.equal(constants.AddressZero);
               }
             });
 
@@ -71,7 +71,7 @@ function behavesLikeERC1155Deliverable({revertMessages, interfaces, methods, dep
             it('[ERC721] emits Transfer event(s) for Non-Fungible Tokens', async function () {
               const to = this.recipients[0];
               for (const [id, _value] of nonFungibleTokens) {
-                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ZeroAddress, to, id);
+                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(constants.AddressZero, to, id);
               }
             });
 
@@ -89,14 +89,16 @@ function behavesLikeERC1155Deliverable({revertMessages, interfaces, methods, dep
       it('emits TransferSingle event(s)', async function () {
         const to = this.recipients[0];
         for (const [id, value] of tokens) {
-          await expect(this.receipt).to.emit(this.token, 'TransferSingle').withArgs(deployer.address, ZeroAddress, to, id, value);
+          await expect(this.receipt).to.emit(this.token, 'TransferSingle').withArgs(deployer.address, constants.AddressZero, to, id, value);
         }
       });
 
       if (receiverType == ReceiverType.ERC1155_RECEIVER) {
         it('should call onERC1155Received', async function () {
           for (const [id, value] of tokens) {
-            await expect(this.receipt).to.emit(this.receiver1155, 'ERC1155Received').withArgs(deployer.address, ZeroAddress, id, value, data);
+            await expect(this.receipt)
+              .to.emit(this.receiver1155, 'ERC1155Received')
+              .withArgs(deployer.address, constants.AddressZero, id, value, data);
           }
         });
       }
@@ -137,13 +139,13 @@ function behavesLikeERC1155Deliverable({revertMessages, interfaces, methods, dep
       });
 
       it('reverts if transferred to the zero address', async function () {
-        this.recipients = [ZeroAddress];
+        this.recipients = [constants.AddressZero];
         await expect(mintFn.call(this, [nft1], [1], '0x42', deployer)).to.be.revertedWith(revertMessages.MintToAddressZero);
       });
 
       it('reverts if a Fungible Token has an overflowing balance', async function () {
         this.recipients = [owner.address];
-        await mintFn.call(this, [fungible1.id], [MaxUInt256], '0x42', deployer);
+        await mintFn.call(this, [fungible1.id], [constants.MaxUint256], '0x42', deployer);
         await expect(mintFn.call(this, [fungible1.id], [1], '0x42', deployer)).to.be.revertedWith(revertMessages.BalanceOverflow);
       });
 

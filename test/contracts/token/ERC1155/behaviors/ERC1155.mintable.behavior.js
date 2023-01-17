@@ -1,9 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 const {nonFungibleTokenId, isFungible} = require('../../token');
 
@@ -30,7 +30,7 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.address);
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.address);
-      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, ZeroAddress);
+      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, constants.AddressZero);
     };
 
     beforeEach(async function () {
@@ -61,7 +61,7 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
 
             it('[ERC721] sets an empty approval for the Non-Fungible Token(s)', async function () {
               for (const [id, _value] of nonFungibleTokens) {
-                expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
+                expect(await this.token.getApproved(id)).to.equal(constants.AddressZero);
               }
             });
 
@@ -71,7 +71,7 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
 
             it('[ERC721] emits Transfer event(s) for Non-Fungible Tokens', async function () {
               for (const [id, _value] of nonFungibleTokens) {
-                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ZeroAddress, this.to, id);
+                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(constants.AddressZero, this.to, id);
               }
             });
 
@@ -88,11 +88,15 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
 
       if (Array.isArray(tokenIds)) {
         it('emits a TransferBatch event', async function () {
-          await expect(this.receipt).to.emit(this.token, 'TransferBatch').withArgs(deployer.address, ZeroAddress, this.to, tokenIds, values);
+          await expect(this.receipt)
+            .to.emit(this.token, 'TransferBatch')
+            .withArgs(deployer.address, constants.AddressZero, this.to, tokenIds, values);
         });
       } else {
         it('emits a TransferSingle event', async function () {
-          await expect(this.receipt).to.emit(this.token, 'TransferSingle').withArgs(deployer.address, ZeroAddress, this.to, tokenIds, values);
+          await expect(this.receipt)
+            .to.emit(this.token, 'TransferSingle')
+            .withArgs(deployer.address, constants.AddressZero, this.to, tokenIds, values);
         });
       }
 
@@ -101,11 +105,13 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
           it('should call onERC1155BatchReceived', async function () {
             await expect(this.receipt)
               .to.emit(this.receiver1155, 'ERC1155BatchReceived')
-              .withArgs(deployer.address, ZeroAddress, tokenIds, values, data);
+              .withArgs(deployer.address, constants.AddressZero, tokenIds, values, data);
           });
         } else {
           it('should call onERC1155Received', async function () {
-            await expect(this.receipt).to.emit(this.receiver1155, 'ERC1155Received').withArgs(deployer.address, ZeroAddress, tokenIds, values, data);
+            await expect(this.receipt)
+              .to.emit(this.receiver1155, 'ERC1155Received')
+              .withArgs(deployer.address, constants.AddressZero, tokenIds, values, data);
           });
         }
       }
@@ -120,13 +126,13 @@ function behavesLikeERC1155Mintable({revertMessages, interfaces, methods, deploy
         });
 
         it('reverts if transferred to the zero address', async function () {
-          this.to = ZeroAddress;
+          this.to = constants.AddressZero;
           await expect(mintFn.call(this, nft1, 1, data, deployer)).to.be.revertedWith(revertMessages.MintToAddressZero);
         });
 
         it('reverts if a Fungible Token has an overflowing balance', async function () {
           this.to = owner.address;
-          await mintFn.call(this, fungible1.id, MaxUInt256, data, deployer);
+          await mintFn.call(this, fungible1.id, constants.MaxUint256, data, deployer);
           await expect(mintFn.call(this, fungible1.id, 1, data, deployer)).to.be.revertedWith(revertMessages.BalanceOverflow);
         });
 

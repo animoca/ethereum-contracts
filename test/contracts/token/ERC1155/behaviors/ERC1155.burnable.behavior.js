@@ -1,10 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
-const ReceiverType = require('../../ReceiverType');
 const {nonFungibleTokenId, isFungible} = require('../../token');
 
 function behavesLikeERC1155Burnable({revertMessages, interfaces, methods, features, deploy, mint}) {
@@ -50,7 +49,7 @@ function behavesLikeERC1155Burnable({revertMessages, interfaces, methods, featur
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.address);
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.address);
-      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, ZeroAddress);
+      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, constants.AddressZero);
       // this.receiver1155721 = await ERC1155721ReceiverMock.new(true, true, this.token.address);
 
       // pre-transfer state
@@ -268,11 +267,15 @@ function behavesLikeERC1155Burnable({revertMessages, interfaces, methods, featur
 
         if (Array.isArray(tokenIds)) {
           it('emits a TransferBatch event', async function () {
-            await expect(this.receipt).to.emit(this.token, 'TransferBatch').withArgs(this.sender, owner.address, ZeroAddress, tokenIds, values);
+            await expect(this.receipt)
+              .to.emit(this.token, 'TransferBatch')
+              .withArgs(this.sender, owner.address, constants.AddressZero, tokenIds, values);
           });
         } else {
           it('emits a TransferSingle event', async function () {
-            await expect(this.receipt).to.emit(this.token, 'TransferSingle').withArgs(this.sender, owner.address, ZeroAddress, tokenIds, values);
+            await expect(this.receipt)
+              .to.emit(this.token, 'TransferSingle')
+              .withArgs(this.sender, owner.address, constants.AddressZero, tokenIds, values);
           });
         }
 
@@ -290,7 +293,7 @@ function behavesLikeERC1155Burnable({revertMessages, interfaces, methods, featur
 
             it('[ERC721] emits Transfer event(s) for Non-Fungible Token(s)', async function () {
               for (const [id, _value] of nonFungibleTokens) {
-                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, ZeroAddress, id);
+                await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, constants.AddressZero, id);
               }
             });
 

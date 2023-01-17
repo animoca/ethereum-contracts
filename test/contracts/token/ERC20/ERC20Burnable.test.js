@@ -1,6 +1,8 @@
 const {ethers} = require('hardhat');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 const {behavesLikeERC20} = require('./behaviors/ERC20.behavior');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../../helpers/run');
 
 const name = 'ERC20 Mock';
 const symbol = 'E20';

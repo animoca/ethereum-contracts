@@ -1,13 +1,13 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroAddress, EmptyByte} = require('../../../src/constants');
-const {getForwarderRegistryAddress} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
-const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('../../helpers/diamond');
-const {deployContract} = require('../../helpers/contract');
+const {constants} = ethers;
+const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('@animoca/ethereum-contract-helpers/src/test/diamond');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getForwarderRegistryAddress} = require('../../helpers/registries');
 const {supportsInterfaces} = require('../introspection/behaviors/SupportsInterface.behavior');
 
-const EmptyInit = [ZeroAddress, EmptyByte];
+const EmptyInit = [constants.AddressZero, '0x'];
 
 async function expectDiamondCutEvent(receipt, expectedCuts, expectedInit, expectedCalldata) {
   const event = (await receipt.wait()).events.find((e) => e.event == 'DiamondCut');
@@ -75,7 +75,7 @@ describe('Diamond', function () {
 
       describe('ADD action', function () {
         it('reverts with a zero address facet', async function () {
-          await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
             'Diamond: facet has no code'
           );
         });
@@ -152,21 +152,21 @@ describe('Diamond', function () {
         });
 
         it('reverts with an empty list of selectors', async function () {
-          await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Remove, []]], EmptyInit)).to.be.revertedWith(
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, []]], EmptyInit)).to.be.revertedWith(
             'Diamond: no function selectors'
           );
         });
 
         it('reverts with a non-existing function selector', async function () {
-          await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: selector not found'
-          );
+          await expect(
+            cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit)
+          ).to.be.revertedWith('Diamond: selector not found');
         });
 
         it('reverts with an immutable function selector', async function () {
           const artifact = await ethers.getContractFactory('DiamondMock');
           const selectors = [ethers.utils.Interface.getSighash(artifact.interface.functions['immutableFunction()'])];
-          await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Remove, selectors]], EmptyInit)).to.be.revertedWith(
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, selectors]], EmptyInit)).to.be.revertedWith(
             'Diamond: immutable function'
           );
         });
@@ -175,7 +175,7 @@ describe('Diamond', function () {
           context('when selectors slot was fully filled', function () {
             beforeEach(async function () {
               await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit);
-              this.cuts = [[ZeroAddress, FacetCutAction.Remove, getSelectors(this.facet)]];
+              this.cuts = [[constants.AddressZero, FacetCutAction.Remove, getSelectors(this.facet)]];
               this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
             });
 
@@ -196,7 +196,7 @@ describe('Diamond', function () {
             it('removes each function selector in facetAddress(bytes4)', async function () {
               const selectors = getSelectors(this.facet);
               for (const selector of selectors) {
-                expect(await this.contract.facetAddress(selector)).to.equal(ZeroAddress);
+                expect(await this.contract.facetAddress(selector)).to.equal(constants.AddressZero);
               }
             });
 
@@ -209,7 +209,7 @@ describe('Diamond', function () {
             beforeEach(async function () {
               const selectors = getSelectors(this.facet, (el) => el.name !== 'c');
               await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, selectors]], EmptyInit);
-              this.cuts = [[ZeroAddress, FacetCutAction.Remove, selectors]];
+              this.cuts = [[constants.AddressZero, FacetCutAction.Remove, selectors]];
               this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
             });
 
@@ -230,7 +230,7 @@ describe('Diamond', function () {
             it('removes each function selector in facetAddress(bytes4)', async function () {
               const selectors = getSelectors(this.facet);
               for (const selector of selectors) {
-                expect(await this.contract.facetAddress(selector)).to.equal(ZeroAddress);
+                expect(await this.contract.facetAddress(selector)).to.equal(constants.AddressZero);
               }
             });
 
@@ -256,7 +256,7 @@ describe('Diamond', function () {
                   el.name === 'g' ||
                   el.name === 'h'
               );
-              this.cuts = [[ZeroAddress, FacetCutAction.Remove, this.removedSelectors]];
+              this.cuts = [[constants.AddressZero, FacetCutAction.Remove, this.removedSelectors]];
               this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
             });
 
@@ -280,7 +280,7 @@ describe('Diamond', function () {
 
             it('removes each function selector in facetAddress(bytes4)', async function () {
               for (const removedSelector of this.removedSelectors) {
-                expect(await this.contract.facetAddress(removedSelector)).to.equal(ZeroAddress);
+                expect(await this.contract.facetAddress(removedSelector)).to.equal(constants.AddressZero);
               }
             });
 
@@ -294,7 +294,7 @@ describe('Diamond', function () {
               const selectors = getSelectors(this.facet, (el) => el.name !== 'doSomething');
               await cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, selectors]], EmptyInit);
               this.removedSelectors = getSelectors(this.facet, (el) => el.name !== 'doSomething' && el.name === 'a');
-              this.cuts = [[ZeroAddress, FacetCutAction.Remove, this.removedSelectors]];
+              this.cuts = [[constants.AddressZero, FacetCutAction.Remove, this.removedSelectors]];
               this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
             });
 
@@ -318,7 +318,7 @@ describe('Diamond', function () {
 
             it('removes each function selector in facetAddress(bytes4)', async function () {
               for (const removedSelector of this.removedSelectors) {
-                expect(await this.contract.facetAddress(removedSelector)).to.equal(ZeroAddress);
+                expect(await this.contract.facetAddress(removedSelector)).to.equal(constants.AddressZero);
               }
             });
 
@@ -331,9 +331,9 @@ describe('Diamond', function () {
 
       describe('REPLACE action', function () {
         it('reverts with a zero address facet', async function () {
-          await expect(cutFn(this.contract, [[ZeroAddress, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: facet has no code'
-          );
+          await expect(
+            cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)
+          ).to.be.revertedWith('Diamond: facet has no code');
         });
 
         it('reverts with an empty list of selectors', async function () {
@@ -497,11 +497,11 @@ describe('Diamond', function () {
         this.cuts = [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]];
       });
       it('reverts with a zero address as init target and a non-empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [ZeroAddress, '0x00'])).to.be.revertedWith('Diamond: data is not empty');
+        await expect(cutFn(this.contract, [], [constants.AddressZero, '0x00'])).to.be.revertedWith('Diamond: data is not empty');
       });
 
       it('reverts with a non-zero address as init target and an empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [this.facet.address, EmptyByte])).to.be.revertedWith('Diamond: data is empty');
+        await expect(cutFn(this.contract, [], [this.facet.address, '0x'])).to.be.revertedWith('Diamond: data is empty');
       });
 
       it('reverts with non-contract target address', async function () {

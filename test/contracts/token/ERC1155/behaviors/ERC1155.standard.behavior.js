@@ -1,9 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const {MaxUInt256, ZeroAddress} = require('../../../../../src/constants');
 const ReceiverType = require('../../ReceiverType');
 const {nonFungibleTokenId, isFungible} = require('../../token');
 
@@ -38,7 +38,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.address);
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.address);
-      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, ZeroAddress);
+      this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, constants.AddressZero);
       // this.receiver1155721 = await ERC1155721ReceiverMock.new(true, true, this.token.address);
 
       // pre-transfer state
@@ -53,8 +53,8 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
 
     describe('balanceOf(address,uint256)', function () {
       it('reverts when queried about the zero address', async function () {
-        await expect(this.token.balanceOf(ZeroAddress, nft1)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
-        await expect(this.token.balanceOf(ZeroAddress, fungible1.id)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expect(this.token.balanceOf(constants.AddressZero, nft1)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expect(this.token.balanceOf(constants.AddressZero, fungible1.id)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
       });
 
       // it('returns 1 for each Non-Fungible Token owned', async function () {
@@ -77,7 +77,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
       });
 
       it('reverts when queried about the zero address', async function () {
-        await expect(this.token.balanceOfBatch([ZeroAddress], [nft1])).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expect(this.token.balanceOfBatch([constants.AddressZero], [nft1])).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
       });
 
       context('when the given addresses own some tokens', function () {
@@ -229,7 +229,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
 
               it('[ERC721] clears the Non-Fungible Token(s) approval', async function () {
                 for (const [id, _value] of nonFungibleTokens) {
-                  expect(await this.token.getApproved(id)).to.equal(ZeroAddress);
+                  expect(await this.token.getApproved(id)).to.equal(constants.AddressZero);
                 }
               });
 
@@ -340,7 +340,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
         describe('Pre-conditions', function () {
           const data = '0x42';
           it('reverts if transferred to the zero address', async function () {
-            await expect(transferFunction.call(this, owner.address, ZeroAddress, nft1, 1, data, owner)).to.be.revertedWith(
+            await expect(transferFunction.call(this, owner.address, constants.AddressZero, nft1, 1, data, owner)).to.be.revertedWith(
               revertMessages.TransferToAddressZero
             );
           });
@@ -355,7 +355,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           });
 
           it('reverts in case of balance overflow', async function () {
-            await mint(this.token, other.address, fungible1.id, MaxUInt256);
+            await mint(this.token, other.address, fungible1.id, constants.MaxUint256);
             await expect(transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, owner)).to.be.revertedWith(
               revertMessages.BalanceOverflow
             );

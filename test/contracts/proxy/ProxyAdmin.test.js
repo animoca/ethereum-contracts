@@ -1,9 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {ZeroAddress, ZeroBytes32} = require('../../../src/constants');
+const {constants} = ethers;
 const {getStorageAt} = require('@nomicfoundation/hardhat-network-helpers');
-const {getDeployerAddress, getForwarderRegistryAddress, runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
+const {getForwarderRegistryAddress} = require('../../helpers/registries');
 
 const config = {
   immutable: {name: 'ProxyAdminMock', ctorArguments: ['initialAdmin', 'forwarderRegistry'], testMsgData: true},
@@ -36,7 +38,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
 
   describe('constructor(address)', function () {
     it('reverts with a zero-address initial admin', async function () {
-      await expect(deployFn({initialAdmin: ZeroAddress})).to.be.revertedWith('ProxyAdmin: no initial admin');
+      await expect(deployFn({initialAdmin: constants.AddressZero})).to.be.revertedWith('ProxyAdmin: no initial admin');
     });
 
     context('with a non-zero address as initial admin', function () {
@@ -55,7 +57,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
       });
 
       it('emits an AdminChanged event', async function () {
-        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'AdminChanged').withArgs(ZeroAddress, deployer.address);
+        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'AdminChanged').withArgs(constants.AddressZero, deployer.address);
       });
     });
   });
@@ -72,18 +74,18 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
       context('when successful', function () {
         context('with the zero address as new admin', function () {
           beforeEach(async function () {
-            this.receipt = await this.contract.changeProxyAdmin(ZeroAddress);
+            this.receipt = await this.contract.changeProxyAdmin(constants.AddressZero);
           });
           it('unsets the admin', async function () {
-            expect(await this.contract.proxyAdmin()).to.equal(ZeroAddress);
+            expect(await this.contract.proxyAdmin()).to.equal(constants.AddressZero);
           });
           it('unsets the admin (direct storage access)', async function () {
             expect(await getStorageAt(this.contract.address, '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')).to.equal(
-              ZeroBytes32
+              constants.HashZero
             );
           });
           it('emits an AdminChanged event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'AdminChanged').withArgs(deployer.address, ZeroAddress);
+            await expect(this.receipt).to.emit(this.contract, 'AdminChanged').withArgs(deployer.address, constants.AddressZero);
           });
         });
 

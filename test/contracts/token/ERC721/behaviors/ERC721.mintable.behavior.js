@@ -1,10 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {deployContract} = require('../../../../helpers/contract');
-const {ZeroAddress} = require('../../../../../src/constants');
-const ReceiverType = require('../../ReceiverType');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const ReceiverType = require('../../ReceiverType');
 
 function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, features, methods}) {
   const {
@@ -25,7 +25,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
       this.token = await deploy(deployer);
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, this.token.address);
-      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ZeroAddress);
+      this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, constants.AddressZero);
     };
 
     beforeEach(async function () {
@@ -36,7 +36,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
       describe('Pre-conditions', function () {
         it('reverts if minted to the zero address', async function () {
           this.sender = deployer;
-          this.to = ZeroAddress;
+          this.to = constants.AddressZero;
           await expect(mintFunction.call(this, 1, data)).to.be.revertedWith(revertMessages.MintToAddressZero);
         });
 
@@ -91,7 +91,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
 
       it('emits Transfer event(s)', async function () {
         for (const id of ids) {
-          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ZeroAddress, this.to, id);
+          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(constants.AddressZero, this.to, id);
         }
       });
 
@@ -102,7 +102,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
 
       if (data !== undefined && receiverType == ReceiverType.ERC721_RECEIVER) {
         it('calls onERC721Received', async function () {
-          await expect(this.receipt).to.emit(this.receiver721, 'ERC721Received').withArgs(deployer.address, ZeroAddress, tokenIds, data);
+          await expect(this.receipt).to.emit(this.receiver721, 'ERC721Received').withArgs(deployer.address, constants.AddressZero, tokenIds, data);
         });
       }
     };

@@ -1,10 +1,10 @@
+const {ethers} = require('hardhat');
 const {behavesLikeERC1155Standard} = require('./ERC1155.standard.behavior');
 const {behavesLikeERC1155WithOperatorFilterer} = require('./ERC1155.operatorfilterer.behavior');
 const {behavesLikeERC1155Mintable} = require('./ERC1155.mintable.behavior');
 const {behavesLikeERC1155Deliverable} = require('./ERC1155.deliverable.behavior');
 const {behavesLikeERC1155Burnable} = require('./ERC1155.burnable.behavior');
 const {behavesLikeERC1155MetadataURI} = require('./ERC1155.metadatauri.behavior');
-const {ZeroAddress} = require('../../../../../src/constants');
 
 function behavesLikeERC1155(implementation) {
   if (implementation.features.WithOperatorFilterer) {
@@ -12,7 +12,7 @@ function behavesLikeERC1155(implementation) {
       behavesLikeERC1155Standard(implementation);
     });
     context('with a zero-address Operator Filter Registry', function () {
-      behavesLikeERC1155Standard(implementation, ZeroAddress);
+      behavesLikeERC1155Standard(implementation, ethers.constants.AddressZero);
     });
     context('with a non-contract Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation, '0x0000000000000000000000000000000000000001');

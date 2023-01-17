@@ -1,6 +1,5 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {behavesLikeTokenMetadataPerToken} = require('../../metadata/behaviors/TokenMetadata.pertoken.behavior');
 const {behavesLikeTokenMetadataWithBaseURI} = require('../../metadata/behaviors/TokenMetadata.withbaseuri.behavior');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');

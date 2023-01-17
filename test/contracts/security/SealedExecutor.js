@@ -1,8 +1,9 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {getForwarderRegistryAddress, getDeployerAddress, runBehaviorTests} = require('../../helpers/run');
-const {loadFixture} = require('../../helpers/fixtures');
-const {deployContract} = require('../../helpers/contract');
+const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
+const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
+const {getForwarderRegistryAddress} = require('../../helpers/registries');
 
 const config = {
   immutable: {name: 'SealedExecutorMock', ctorArguments: ['forwarderRegistry'], testMsgData: true},

@@ -1,7 +1,7 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {loadFixture} = require('../../../../helpers/fixtures');
-const {ZeroAddress} = require('../../../../../src/constants');
+const {constants} = ethers;
+const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces, features, methods}) {
@@ -37,7 +37,7 @@ function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces,
 
       it('emits Transfer event(s)', async function () {
         for (const id of ids) {
-          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ZeroAddress, owner.address, id);
+          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(constants.AddressZero, owner.address, id);
         }
       });
 
@@ -55,7 +55,7 @@ function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces,
         });
 
         it('reverts if minted to the zero address', async function () {
-          await expect(this.token.deliver([ZeroAddress], [1])).to.be.revertedWith(revertMessages.MintToAddressZero);
+          await expect(this.token.deliver([constants.AddressZero], [1])).to.be.revertedWith(revertMessages.MintToAddressZero);
         });
 
         it('reverts if the token already exists', async function () {
