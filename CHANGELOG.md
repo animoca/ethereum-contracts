@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+### New features
+
+- `CumulativeMerkleClaim`: a contract to manage payouts which accumulate over time.
+
 ## 1.0.0
 
 ### Breaking changes
