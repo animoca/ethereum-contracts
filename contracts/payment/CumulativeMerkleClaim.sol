@@ -32,7 +32,7 @@ abstract contract CumulativeMerkleClaim is Pause {
     /// @param recipient The recipient of the claim.
     /// @param claimData The encoded claim data for the claim.
     /// @param nonce The nonce as when the claim was made.
-    event PayoutClaimed(bytes32 root, address recipient, bytes claimData, uint256 nonce);
+    event PayoutClaimed(bytes32 indexed root, address indexed recipient, bytes claimData, uint256 nonce);
 
     /// @notice Thrown when trying to claim the same leaf more than once.
     /// @param recipient The recipient of the claim.

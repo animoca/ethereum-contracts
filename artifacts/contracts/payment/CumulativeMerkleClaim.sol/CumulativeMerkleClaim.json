@@ -87,13 +87,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bytes32",
           "name": "root",
           "type": "bytes32"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "recipient",
           "type": "address"
