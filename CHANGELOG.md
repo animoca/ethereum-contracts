@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1
+
+### Bugfixes
+
+- Fix dependabot security alerts.
+- Update to latest dependencies.
+
 ## 1.1.0
 
 ### New features
