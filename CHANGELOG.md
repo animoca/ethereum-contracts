@@ -9,8 +9,11 @@
 ### Breaking changes
 
 - Removed `ERC20SimpleMock`, `ERC20Mock` and `ERC20BurnableMock`.
+- Upgraded to `@openzeppelin/contracts@4.9.0`.
 
 ### Improvements
+
+- Update to latest dependencies.
 
 ## 1.1.1
 
