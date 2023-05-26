@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 import {IOperatorFilterRegistry} from "./../../../token/royalty/interfaces/IOperatorFilterRegistry.sol";
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
