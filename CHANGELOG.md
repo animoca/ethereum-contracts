@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0
+
+### New feature
+
+- Added preset ERC20 contracts `ERC20FixedSupply` and `ERC20MintBurn` (and their proxied versions).
+
+### Breaking changes
+
+- Removed `ERC20SimpleMock`, `ERC20Mock` and `ERC20BurnableMock`.
+
+### Improvements
+
 ## 1.1.1
 
 ### Bugfixes

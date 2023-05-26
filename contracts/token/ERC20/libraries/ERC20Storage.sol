@@ -24,6 +24,7 @@ library ERC20Storage {
     }
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.storage")) - 1);
+    bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.phase")) - 1);
 
     bytes4 internal constant ERC20_RECEIVED = IERC20Receiver.onERC20Received.selector;
 
@@ -35,6 +36,13 @@ library ERC20Storage {
         InterfaceDetectionStorage.Layout storage erc165Layout = InterfaceDetectionStorage.layout();
         erc165Layout.setSupportedInterface(type(IERC20).interfaceId, true);
         erc165Layout.setSupportedInterface(type(IERC20Allowance).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    function initWithAllocations(address[] memory initialHolders, uint256[] memory initialAllocations) internal {
+        ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
+        init();
+        layout().batchMint(initialHolders, initialAllocations);
     }
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20BatchTransfers.

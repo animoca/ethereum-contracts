@@ -24,6 +24,13 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
         ERC20Storage.init();
     }
 
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
+    /// @dev Reverts if the sender is not the proxy admin.
+    function initERC20StorageWithAllocations(address[] calldata initialHolders, uint256[] calldata initialAllocations) external {
+        ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
+        ERC20Storage.initWithAllocations(initialHolders, initialAllocations);
+    }
+
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ForwarderRegistryContextBase) returns (address) {
         return ForwarderRegistryContextBase._msgSender();
