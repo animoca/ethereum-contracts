@@ -9,7 +9,7 @@
 ### Breaking changes
 
 - Removed `ERC20SimpleMock`, `ERC20Mock` and `ERC20BurnableMock`.
-- Upgraded to `@openzeppelin/contracts@4.9.0`.
+- Upgraded to `@openzeppelin/contracts@4.9.1`.
 - Upgraded to `solc@0.8.19`.
 
 ### Improvements
