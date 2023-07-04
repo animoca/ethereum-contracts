@@ -20,6 +20,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../../metatx/base/ForwarderRegistryContextBase.sol";
 import {ForwarderRegistryContext} from "./../../../../metatx/ForwarderRegistryContext.sol";
 
+/// @title ERC20 Fungible Token Standard, fixed supply preset contract (proxied version).
 contract ERC20FixedSupplyProxied is
     ERC20Base,
     ERC20DetailedBase,
@@ -29,12 +30,11 @@ contract ERC20FixedSupplyProxied is
     ERC20BatchTransfersBase,
     InterfaceDetection,
     TokenRecoveryBase,
+    ContractOwnershipBase,
     ForwarderRegistryContext
 {
     using ERC20Storage for ERC20Storage.Layout;
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
-    using ERC20MetadataStorage for ERC20MetadataStorage.Layout;
-    using ERC20PermitStorage for ERC20PermitStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContext(forwarderRegistry) {}

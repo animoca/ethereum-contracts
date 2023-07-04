@@ -15,6 +15,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegistryContextBase.sol";
 import {ForwarderRegistryContext} from "./../../../metatx/ForwarderRegistryContext.sol";
 
+/// @title ERC20 Fungible Token Standard, fixed supply preset contract (immutable version).
 contract ERC20FixedSupply is
     ERC20,
     ERC20Detailed,

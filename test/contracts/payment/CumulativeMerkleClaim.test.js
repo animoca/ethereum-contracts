@@ -40,9 +40,18 @@ describe('CumulativeMerkleClaim', function () {
       await this.contract.setMerkleRoot(constants.HashZero);
       expect(await this.contract.nonce()).to.equal(nonce.add(constants.One));
     });
+
+    it('unpauses the contract', async function () {
+      await this.contract.setMerkleRoot(constants.HashZero);
+      expect(await this.contract.paused()).to.be.false;
+    });
     it('emits a MerkleRootSet event', async function () {
       const root = constants.HashZero;
       await expect(this.contract.setMerkleRoot(root)).to.emit(this.contract, 'MerkleRootSet').withArgs(root);
+    });
+
+    it('emits an Unpaused event', async function () {
+      await expect(this.contract.setMerkleRoot(constants.HashZero)).to.emit(this.contract, 'Unpaused');
     });
   });
 
@@ -81,7 +90,6 @@ describe('CumulativeMerkleClaim', function () {
         this.tree = new MerkleTree(this.leaves, keccak256, {hashLeaves: true, sortPairs: true});
         this.root = this.tree.getHexRoot();
         await this.contract.setMerkleRoot(this.root);
-        await this.contract.unpause();
       });
       it('reverts with InvalidProof if the proof canot be verified', async function () {
         const claimData = ethers.utils.defaultAbiCoder.encode(['uint256'], [this.elements[0].amount]);

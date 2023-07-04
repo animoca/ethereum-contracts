@@ -38,10 +38,10 @@
     "clean:artifacts:hard": "rm -rf \"artifacts\"",
     "clean:hardhat": "rm -rf \"hardhat.config.last.json\"",
     "clean:flatten": "rm -rf \"flattened\"",
-    "clean:coverage": "rm -rf \"coverage\" \"coverage.json\" \"*.coverage\"",
+    "clean:coverage": "rm -rf coverage coverage.json artifacts.coverage cache.coverage",
     "clean:docgen": "rm -rf \"docs\"",
     "clean": "run-p clean:compile clean:artifacts:soft clean:hardhat clean:flatten clean:coverage clean:docgen",
-    "run-all": "run-s format fix clean clean:artifacts:hard compile docgen flatten test-p coverage",
+    "run-all": "run-s clean clean:artifacts:hard format fix compile docgen flatten test-p coverage",
     "prepack": "run-s clean:artifacts:hard compile clean"
   },
   "devDependencies": {

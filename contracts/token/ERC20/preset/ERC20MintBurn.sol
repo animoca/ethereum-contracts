@@ -2,7 +2,6 @@
 pragma solidity 0.8.19;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
-import {ERC20Storage} from "./../../../token/ERC20/libraries/ERC20Storage.sol";
 import {ERC20} from "./../ERC20.sol";
 import {ERC20Detailed} from "./../ERC20Detailed.sol";
 import {ERC20Metadata} from "./../ERC20Metadata.sol";
@@ -17,6 +16,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegistryContextBase.sol";
 import {ForwarderRegistryContext} from "./../../../metatx/ForwarderRegistryContext.sol";
 
+/// @title ERC20 Fungible Token Standard, mintable and burnable preset contract (immutable version).
 contract ERC20MintBurn is
     ERC20,
     ERC20Detailed,
@@ -29,8 +29,6 @@ contract ERC20MintBurn is
     TokenRecovery,
     ForwarderRegistryContext
 {
-    using ERC20Storage for ERC20Storage.Layout;
-
     constructor(
         string memory tokenName,
         string memory tokenSymbol,
