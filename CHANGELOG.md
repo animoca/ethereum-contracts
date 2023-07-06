@@ -2,14 +2,14 @@
 
 ## 2.0.0
 
-### New feature
+### New features
 
 - Added preset ERC20 contracts `ERC20FixedSupply` and `ERC20MintBurn` (and their proxied versions).
 
 ### Breaking changes
 
 - Removed `ERC20SimpleMock`, `ERC20Mock` and `ERC20BurnableMock`.
-- Upgraded to `@openzeppelin/contracts@4.9.1`.
+- Upgraded to `@openzeppelin/contracts@4.9.2`.
 - Upgraded to `solc@0.8.19`.
 
 ### Improvements

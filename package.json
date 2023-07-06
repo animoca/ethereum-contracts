@@ -49,7 +49,7 @@
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "@openzeppelin/contracts": "^4.9.1",
+    "@openzeppelin/contracts": "=4.9.2",
     "chai": "^4.3.7",
     "cross-env": "^7.0.3",
     "eslint": "^8.42.0",
