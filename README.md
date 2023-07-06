@@ -110,12 +110,8 @@ Run the tests:
 
 ```bash
 yarn test
-```
-
-Run the tests (parallel mode):
-
-```bash
-yarn test-p
+# or
+yarn test-p # parallel mode
 ```
 
 Run the coverage tests:

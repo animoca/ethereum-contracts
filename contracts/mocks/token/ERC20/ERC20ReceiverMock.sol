@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 import {IERC20Receiver} from "./../../../token/ERC20/interfaces/IERC20Receiver.sol";
 import {ERC20Storage} from "./../../../token/ERC20/libraries/ERC20Storage.sol";

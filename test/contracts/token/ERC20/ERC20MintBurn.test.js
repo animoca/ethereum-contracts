@@ -11,8 +11,14 @@ const tokenURI = 'uri';
 
 const config = {
   immutable: {
-    name: 'ERC20BurnableMock',
+    name: 'ERC20MintBurnMock',
     ctorArguments: ['name', 'symbol', 'decimals', 'forwarderRegistry'],
+    testMsgData: true,
+  },
+  proxied: {
+    name: 'ERC20MintBurnProxiedMock',
+    ctorArguments: ['forwarderRegistry'],
+    init: {method: 'init', arguments: ['name', 'symbol', 'decimals']},
     testMsgData: true,
   },
   diamond: {
@@ -89,7 +95,7 @@ const config = {
   },
 };
 
-runBehaviorTests('ERC20 Burnable', config, function (deployFn) {
+runBehaviorTests('ERC20MintBurn', config, function (deployFn) {
   const implementation = {
     name,
     symbol,

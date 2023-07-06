@@ -26,7 +26,7 @@ runBehaviorTests('SealedExecutor', config, function (deployFn) {
     await this.contract.grantRole(sealerRole, sealer.address);
     await this.nonMinterContract.grantRole(sealerRole, sealer.address);
 
-    this.target = await deployContract('ERC20SimpleMock', await getForwarderRegistryAddress());
+    this.target = await deployContract('ERC20MintBurn', '', '', 18, await getForwarderRegistryAddress());
     await this.target.grantRole(await this.target.MINTER_ROLE(), this.contract.address);
     this.encodedCall = this.target.interface.encodeFunctionData('mint', [deployer.address, 1]);
     this.sealId = 1;

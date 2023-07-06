@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity 0.8.19;
 
 /// @title MultiStaticCall - Aggregate results from multiple static calls
 /// @dev Derived from https://github.com/makerdao/multicall (MIT licence)
