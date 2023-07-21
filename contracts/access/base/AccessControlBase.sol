@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
+import {IAccessControl} from "./../../access/interfaces/IAccessControl.sol";
 import {AccessControlStorage} from "./../libraries/AccessControlStorage.sol";
 import {ContractOwnershipStorage} from "./../libraries/ContractOwnershipStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -8,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title Access control via roles management (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
-abstract contract AccessControlBase is Context {
+abstract contract AccessControlBase is IAccessControl, Context {
     using AccessControlStorage for AccessControlStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
@@ -54,10 +55,7 @@ abstract contract AccessControlBase is Context {
         AccessControlStorage.layout().renounceRole(_msgSender(), role);
     }
 
-    /// @notice Retrieves whether an account has a role.
-    /// @param role The role.
-    /// @param account The account.
-    /// @return whether `account` has `role`.
+    /// @inheritdoc IAccessControl
     function hasRole(bytes32 role, address account) external view returns (bool) {
         return AccessControlStorage.layout().hasRole(role, account);
     }

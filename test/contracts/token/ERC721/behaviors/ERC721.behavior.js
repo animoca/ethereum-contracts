@@ -6,6 +6,7 @@ const {behavesLikeERC721Mintable} = require('./ERC721.mintable.behavior');
 const {behavesLikeERC721Deliverable} = require('./ERC721.deliverable.behavior');
 const {behavesLikeERC721Burnable} = require('./ERC721.burnable.behavior');
 const {behavesLikeERC721Metadata} = require('./ERC721.metadata.behavior');
+const {behavesLikeERC2981} = require('./../../royalty/behaviors/ERC2981.behavior');
 
 function behavesLikeERC721(implementation) {
   if (implementation.features.WithOperatorFilterer) {
@@ -33,6 +34,10 @@ function behavesLikeERC721(implementation) {
 
   if (implementation.interfaces.ERC721Metadata) {
     behavesLikeERC721Metadata(implementation);
+  }
+
+  if (implementation.features.ERC2981) {
+    behavesLikeERC2981(implementation);
   }
 }
 

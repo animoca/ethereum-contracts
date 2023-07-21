@@ -26,11 +26,13 @@ const config = {
       {name: 'ProxyAdminFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initProxyAdminStorage', arguments: ['initialAdmin']}},
       {name: 'DiamondCutFacet', ctorArguments: ['forwarderRegistry'], init: {method: 'initDiamondCutStorage'}},
       {name: 'InterfaceDetectionFacet'},
+      {name: 'ForwarderRegistryContextFacet', ctorArguments: ['forwarderRegistry']},
       {
         name: 'ContractOwnershipFacet',
         ctorArguments: ['forwarderRegistry'],
         init: {method: 'initContractOwnershipStorage', arguments: ['initialOwner']},
       },
+      {name: 'TokenRecoveryFacet', ctorArguments: ['forwarderRegistry']},
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
         name: 'ERC20FacetMock',

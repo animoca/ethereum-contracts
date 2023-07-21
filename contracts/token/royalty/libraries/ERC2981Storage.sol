@@ -5,7 +5,6 @@ import {IERC2981} from "./../interfaces/IERC2981.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC2981Storage {
-    using ERC2981Storage for ERC2981Storage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {

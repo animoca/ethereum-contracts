@@ -10,7 +10,7 @@ import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegi
 
 /// @title ERC721 Non-Fungible Token Standard with Operator Filterer (facet version).
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
-/// @dev Note: This facet depends on {ProxyAdminFacet}, {InterfaceDetectionFacet}, {ContractOwnershipFacet} and {OperatorFiltererFacet}.
+/// @dev Note: This facet depends on {ProxyAdminFacet}, {InterfaceDetectionFacet} and {OperatorFiltererFacet}.
 contract ERC721WithOperatorFiltererFacet is ERC721WithOperatorFiltererBase, ForwarderRegistryContextBase {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 

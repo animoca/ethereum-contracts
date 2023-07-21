@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
+import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {IERC721Mintable} from "./../interfaces/IERC721Mintable.sol";
 import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {IERC721Burnable} from "./../interfaces/IERC721Burnable.sol";
@@ -47,6 +48,11 @@ library ERC721Storage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721BatchTransfer.
     function initERC721BatchTransfer() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721BatchTransfer).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    function initERC721Metadata() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.

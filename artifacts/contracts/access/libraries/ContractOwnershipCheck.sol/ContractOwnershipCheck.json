@@ -1,0 +1,27 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ContractOwnershipCheck",
+  "sourceName": "contracts/access/libraries/ContractOwnershipCheck.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotTargetContractOwner",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122026e7fccd04ccdd45e765ce67211b1c47e5ccd60c99e39f5ecd463b30c21f6b6d64736f6c63430008130033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122026e7fccd04ccdd45e765ce67211b1c47e5ccd60c99e39f5ecd463b30c21f6b6d64736f6c63430008130033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
