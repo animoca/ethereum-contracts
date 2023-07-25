@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
@@ -35,10 +36,6 @@ library ERC721Storage {
     // Burnt token magic value
     // This magic number is used as the owner's value to indicate that the token has been burnt
     uint256 internal constant BURNT_TOKEN_OWNER_VALUE = 0xdead000000000000000000000000000000000000000000000000000000000000;
-
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     function init() internal {
@@ -98,7 +95,7 @@ library ERC721Storage {
             }
             s.approvals[tokenId] = to;
         }
-        emit Approval(ownerAddress, to, tokenId);
+        emit IERC721Events.Approval(ownerAddress, to, tokenId);
     }
 
     /// @notice Sets or unsets an approval to transfer all tokens on behalf of their owner.
@@ -111,7 +108,7 @@ library ERC721Storage {
     function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         require(operator != sender, "ERC721: self-approval for all");
         s.operators[sender][operator] = approved;
-        emit ApprovalForAll(sender, operator, approved);
+        emit IERC721Events.ApprovalForAll(sender, operator, approved);
     }
 
     /// @notice Unsafely transfers the ownership of a token to a recipient by a sender.
@@ -146,7 +143,7 @@ library ERC721Storage {
             }
         }
 
-        emit Transfer(from, to, tokenId);
+        emit IERC721Events.Transfer(from, to, tokenId);
     }
 
     /// @notice Safely transfers the ownership of a token to a recipient by a sender.
@@ -216,7 +213,7 @@ library ERC721Storage {
                     require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
                 }
                 s.owners[tokenId] = uint256(uint160(to));
-                emit Transfer(from, to, tokenId);
+                emit IERC721Events.Transfer(from, to, tokenId);
             }
 
             if (from != to && length != 0) {
@@ -247,7 +244,7 @@ library ERC721Storage {
             ++s.balances[to];
         }
 
-        emit Transfer(address(0), to, tokenId);
+        emit IERC721Events.Transfer(address(0), to, tokenId);
     }
 
     /// @notice Safely mints a token.
@@ -286,7 +283,7 @@ library ERC721Storage {
                 require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
 
                 s.owners[tokenId] = uint256(uint160(to));
-                emit Transfer(address(0), to, tokenId);
+                emit IERC721Events.Transfer(address(0), to, tokenId);
             }
 
             s.balances[to] += length;
@@ -335,7 +332,7 @@ library ERC721Storage {
             ++s.balances[to];
         }
 
-        emit Transfer(address(0), to, tokenId);
+        emit IERC721Events.Transfer(address(0), to, tokenId);
     }
 
     /// @notice Safely mints a token once.
@@ -378,7 +375,7 @@ library ERC721Storage {
 
                 s.owners[tokenId] = uint256(uint160(to));
 
-                emit Transfer(address(0), to, tokenId);
+                emit IERC721Events.Transfer(address(0), to, tokenId);
             }
 
             s.balances[to] += length;
@@ -411,7 +408,7 @@ library ERC721Storage {
                 s.owners[tokenId] = uint256(uint160(to));
                 ++s.balances[to];
 
-                emit Transfer(address(0), to, tokenId);
+                emit IERC721Events.Transfer(address(0), to, tokenId);
             }
         }
     }
@@ -438,7 +435,7 @@ library ERC721Storage {
             // cannot underflow as balance is verified through TOKEN ownership
             --s.balances[from];
         }
-        emit Transfer(from, address(0), tokenId);
+        emit IERC721Events.Transfer(from, address(0), tokenId);
     }
 
     /// @notice Burns a batch of tokens by a sender.
@@ -462,7 +459,7 @@ library ERC721Storage {
                     require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
                 }
                 s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
-                emit Transfer(from, address(0), tokenId);
+                emit IERC721Events.Transfer(from, address(0), tokenId);
             }
 
             if (length != 0) {

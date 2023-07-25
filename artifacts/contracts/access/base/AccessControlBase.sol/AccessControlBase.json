@@ -88,7 +88,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "",
+          "name": "hasRole_",
           "type": "bool"
         }
       ],

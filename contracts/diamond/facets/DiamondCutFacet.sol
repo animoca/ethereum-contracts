@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.21;
 pragma experimental ABIEncoderV2;
 
+import {FacetCut, Initialization} from "./../DiamondCommon.sol";
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./../interfaces/IDiamondCutBatchInit.sol";
@@ -27,14 +28,14 @@ contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistry
 
     /// @inheritdoc IDiamondCut
     /// @dev Reverts if the sender is not the proxy admin.
-    function diamondCut(FacetCut[] calldata cuts, address target, bytes calldata data) external override {
+    function diamondCut(FacetCut[] calldata cuts, address target, bytes calldata data) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, target, data);
     }
 
     /// @inheritdoc IDiamondCutBatchInit
     /// @dev Reverts if the sender is not the proxy admin.
-    function diamondCut(FacetCut[] calldata cuts, Initialization[] calldata initializations) external override {
+    function diamondCut(FacetCut[] calldata cuts, Initialization[] calldata initializations) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, initializations);
     }

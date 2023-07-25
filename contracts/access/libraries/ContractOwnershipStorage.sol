@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC173Events} from "./../events/IERC173Events.sol";
 import {IERC173} from "./../interfaces/IERC173.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
@@ -16,8 +17,6 @@ library ContractOwnershipStorage {
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.storage")) - 1);
     bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.access.ContractOwnership.phase")) - 1);
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
     /// @notice Initializes the storage with an initial contract owner (immutable version).
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
@@ -26,7 +25,7 @@ library ContractOwnershipStorage {
     function constructorInit(Layout storage s, address initialOwner) internal {
         if (initialOwner != address(0)) {
             s.contractOwner = initialOwner;
-            emit OwnershipTransferred(address(0), initialOwner);
+            emit IERC173Events.OwnershipTransferred(address(0), initialOwner);
         }
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC173).interfaceId, true);
     }
@@ -52,7 +51,7 @@ library ContractOwnershipStorage {
         require(sender == previousOwner, "Ownership: not the owner");
         if (previousOwner != newOwner) {
             s.contractOwner = newOwner;
-            emit OwnershipTransferred(previousOwner, newOwner);
+            emit IERC173Events.OwnershipTransferred(previousOwner, newOwner);
         }
     }
 

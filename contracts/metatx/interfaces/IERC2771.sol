@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 /// @title Secure Protocol for Native Meta Transactions.
 /// @dev See https://eips.ethereum.org/EIPS/eip-2771

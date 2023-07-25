@@ -14,7 +14,7 @@
               "type": "address"
             },
             {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
+              "internalType": "enum FacetCutAction",
               "name": "action",
               "type": "uint8"
             },
@@ -25,7 +25,7 @@
             }
           ],
           "indexed": false,
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
+          "internalType": "struct FacetCut[]",
           "name": "cuts",
           "type": "tuple[]"
         },
@@ -55,7 +55,7 @@
               "type": "address"
             },
             {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
+              "internalType": "enum FacetCutAction",
               "name": "action",
               "type": "uint8"
             },
@@ -65,7 +65,7 @@
               "type": "bytes4[]"
             }
           ],
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
+          "internalType": "struct FacetCut[]",
           "name": "cuts",
           "type": "tuple[]"
         },

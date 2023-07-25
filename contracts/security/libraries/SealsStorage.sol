@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
+
+import {ISealsEvents} from "./../events/ISealsEvents.sol";
 
 library SealsStorage {
     using SealsStorage for SealsStorage.Layout;
@@ -10,8 +12,6 @@ library SealsStorage {
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.security.Seals.storage")) - 1);
 
-    event Sealed(uint256 sealId, address sealer);
-
     /// @notice Registers a unique seal identifier.
     /// @dev Reverts if the sealId has already been used.
     /// @dev Emits a {Sealed} event.
@@ -20,7 +20,7 @@ library SealsStorage {
     function seal(Layout storage s, address sealer, uint256 sealId) internal {
         require(!s.seals[sealId], "Seals: sealed");
         s.seals[sealId] = true;
-        emit Sealed(sealId, sealer);
+        emit ISealsEvents.Sealed(sealId, sealer);
     }
 
     /// @notice Retrieves whether a seal has been used already.

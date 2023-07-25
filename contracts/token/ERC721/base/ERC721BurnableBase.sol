@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721Burnable} from "./../interfaces/IERC721Burnable.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -8,16 +9,16 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Burnable (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
-abstract contract ERC721BurnableBase is Context, IERC721Burnable {
+abstract contract ERC721BurnableBase is IERC721Events, IERC721Burnable, Context {
     using ERC721Storage for ERC721Storage.Layout;
 
     /// @inheritdoc IERC721Burnable
-    function burnFrom(address from, uint256 tokenId) external virtual override {
+    function burnFrom(address from, uint256 tokenId) external virtual {
         ERC721Storage.layout().burnFrom(_msgSender(), from, tokenId);
     }
 
     /// @inheritdoc IERC721Burnable
-    function batchBurnFrom(address from, uint256[] calldata tokenIds) external virtual override {
+    function batchBurnFrom(address from, uint256[] calldata tokenIds) external virtual {
         ERC721Storage.layout().batchBurnFrom(_msgSender(), from, tokenIds);
     }
 }

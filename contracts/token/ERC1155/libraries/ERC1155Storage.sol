@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC1155Events} from "./../events/IERC1155Events.sol";
 import {IERC1155} from "./../interfaces/IERC1155.sol";
 import {IERC1155MetadataURI} from "./../interfaces/IERC1155MetadataURI.sol";
 import {IERC1155Mintable} from "./../interfaces/IERC1155Mintable.sol";
@@ -25,11 +26,6 @@ library ERC1155Storage {
 
     bytes4 internal constant ERC1155_SINGLE_RECEIVED = IERC1155TokenReceiver.onERC1155Received.selector;
     bytes4 internal constant ERC1155_BATCH_RECEIVED = IERC1155TokenReceiver.onERC1155BatchReceived.selector;
-
-    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
-    event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values);
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-    event URI(string value, uint256 indexed id);
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC1155.
     function init() internal {
@@ -76,7 +72,7 @@ library ERC1155Storage {
 
         _transferToken(s, from, to, id, value);
 
-        emit TransferSingle(sender, from, to, id, value);
+        emit IERC1155Events.TransferSingle(sender, from, to, id, value);
 
         if (to.isContract()) {
             _callOnERC1155Received(sender, from, to, id, value, data);
@@ -119,7 +115,7 @@ library ERC1155Storage {
             }
         }
 
-        emit TransferBatch(sender, from, to, ids, values);
+        emit IERC1155Events.TransferBatch(sender, from, to, ids, values);
 
         if (to.isContract()) {
             _callOnERC1155BatchReceived(sender, from, to, ids, values, data);
@@ -143,7 +139,7 @@ library ERC1155Storage {
 
         _mintToken(s, to, id, value);
 
-        emit TransferSingle(sender, address(0), to, id, value);
+        emit IERC1155Events.TransferSingle(sender, address(0), to, id, value);
 
         if (to.isContract()) {
             _callOnERC1155Received(sender, address(0), to, id, value, data);
@@ -174,7 +170,7 @@ library ERC1155Storage {
             }
         }
 
-        emit TransferBatch(sender, address(0), to, ids, values);
+        emit IERC1155Events.TransferBatch(sender, address(0), to, ids, values);
 
         if (to.isContract()) {
             _callOnERC1155BatchReceived(sender, address(0), to, ids, values, data);
@@ -222,7 +218,7 @@ library ERC1155Storage {
     function burnFrom(Layout storage s, address sender, address from, uint256 id, uint256 value) internal {
         require(_isOperatable(s, from, sender), "ERC1155: non-approved sender");
         _burnToken(s, from, id, value);
-        emit TransferSingle(sender, from, address(0), id, value);
+        emit IERC1155Events.TransferSingle(sender, from, address(0), id, value);
     }
 
     /// @notice Burns multiple tokens by a sender.
@@ -245,7 +241,7 @@ library ERC1155Storage {
             }
         }
 
-        emit TransferBatch(sender, from, address(0), ids, values);
+        emit IERC1155Events.TransferBatch(sender, from, address(0), ids, values);
     }
 
     /// @notice Enables or disables an operator's approval by a sender.
@@ -256,7 +252,7 @@ library ERC1155Storage {
     function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         require(operator != sender, "ERC1155: self-approval for all");
         s.operators[sender][operator] = approved;
-        emit ApprovalForAll(sender, operator, approved);
+        emit IERC1155Events.ApprovalForAll(sender, operator, approved);
     }
 
     /// @notice Retrieves the approval status of an operator for a given owner.

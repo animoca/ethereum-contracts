@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IProxyAdminEvents} from "./../events/IProxyAdminEvents.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ProxyInitialization} from "./ProxyInitialization.sol";
 
@@ -15,8 +16,6 @@ library ProxyAdminStorage {
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1);
     bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("eip1967.proxy.admin.phase")) - 1);
 
-    event AdminChanged(address previousAdmin, address newAdmin);
-
     /// @notice Initializes the storage with an initial admin (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Reverts if `initialAdmin` is the zero address.
@@ -25,7 +24,7 @@ library ProxyAdminStorage {
     function constructorInit(Layout storage s, address initialAdmin) internal {
         require(initialAdmin != address(0), "ProxyAdmin: no initial admin");
         s.admin = initialAdmin;
-        emit AdminChanged(address(0), initialAdmin);
+        emit IProxyAdminEvents.AdminChanged(address(0), initialAdmin);
     }
 
     /// @notice Initializes the storage with an initial admin (proxied version).
@@ -49,7 +48,7 @@ library ProxyAdminStorage {
         require(sender == previousAdmin, "ProxyAdmin: not the admin");
         if (previousAdmin != newAdmin) {
             s.admin = newAdmin;
-            emit AdminChanged(previousAdmin, newAdmin);
+            emit IProxyAdminEvents.AdminChanged(previousAdmin, newAdmin);
         }
     }
 

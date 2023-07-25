@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 import {IERC165} from "./interfaces/IERC165.sol";
 import {InterfaceDetectionStorage} from "./libraries/InterfaceDetectionStorage.sol";
@@ -10,7 +10,7 @@ abstract contract InterfaceDetection is IERC165 {
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     /// @inheritdoc IERC165
-    function supportsInterface(bytes4 interfaceId) external view override returns (bool) {
+    function supportsInterface(bytes4 interfaceId) external view returns (bool) {
         return InterfaceDetectionStorage.layout().supportsInterface(interfaceId);
     }
 }

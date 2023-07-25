@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC20Events} from "./../events/IERC20Events.sol";
 import {IERC20} from "./../interfaces/IERC20.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
 import {IERC20BatchTransfers} from "./../interfaces/IERC20BatchTransfers.sol";
@@ -27,9 +28,6 @@ library ERC20Storage {
     bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.token.ERC20.ERC20.phase")) - 1);
 
     bytes4 internal constant ERC20_RECEIVED = IERC20Receiver.onERC20Received.selector;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
     function init() internal {
@@ -75,7 +73,7 @@ library ERC20Storage {
     function approve(Layout storage s, address owner, address spender, uint256 value) internal {
         require(spender != address(0), "ERC20: approval to address(0)");
         s.allowances[owner][spender] = value;
-        emit Approval(owner, spender, value);
+        emit IERC20Events.Approval(owner, spender, value);
     }
 
     /// @notice Increases the allowance granted to an account by an owner.
@@ -97,7 +95,7 @@ library ERC20Storage {
                 allowance_ = newAllowance;
             }
         }
-        emit Approval(owner, spender, allowance_);
+        emit IERC20Events.Approval(owner, spender, allowance_);
     }
 
     /// @notice Decreases the allowance granted to an account by an owner.
@@ -121,7 +119,7 @@ library ERC20Storage {
                 allowance_ = newAllowance;
             }
         }
-        emit Approval(owner, spender, allowance_);
+        emit IERC20Events.Approval(owner, spender, allowance_);
     }
 
     /// @notice Transfers an amount of tokens from an account to a recipient.
@@ -147,7 +145,7 @@ library ERC20Storage {
             }
         }
 
-        emit Transfer(from, to, value);
+        emit IERC20Events.Transfer(from, to, value);
     }
 
     /// @notice Transfers an amount of tokens from an account to a recipient by a sender.
@@ -206,7 +204,7 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
-                emit Transfer(from, to, value);
+                emit IERC20Events.Transfer(from, to, value);
             }
 
             if (totalValue != 0 && totalValue != selfTransferTotalValue) {
@@ -258,7 +256,7 @@ library ERC20Storage {
                     }
                 }
 
-                emit Transfer(from, to, value);
+                emit IERC20Events.Transfer(from, to, value);
             }
 
             if (totalValue != 0 && totalValue != selfTransferTotalValue) {
@@ -334,7 +332,7 @@ library ERC20Storage {
                 s.balances[to] += value; // balance cannot overflow if supply does not
             }
         }
-        emit Transfer(address(0), to, value);
+        emit IERC20Events.Transfer(address(0), to, value);
     }
 
     /// @notice Mints multiple amounts of tokens to multiple recipients, increasing the total supply.
@@ -364,7 +362,7 @@ library ERC20Storage {
                     totalValue = newTotalValue;
                     s.balances[to] += value; // balance cannot overflow if supply does not
                 }
-                emit Transfer(address(0), to, value);
+                emit IERC20Events.Transfer(address(0), to, value);
             }
 
             if (totalValue != 0) {
@@ -395,7 +393,7 @@ library ERC20Storage {
             }
         }
 
-        emit Transfer(from, address(0), value);
+        emit IERC20Events.Transfer(from, address(0), value);
     }
 
     /// @notice Burns an amount of tokens from an account by a sender, decreasing the total supply.
@@ -448,7 +446,7 @@ library ERC20Storage {
                     totalValue += value; // totalValue cannot overflow if the individual balances do not underflow
                 }
 
-                emit Transfer(from, address(0), value);
+                emit IERC20Events.Transfer(from, address(0), value);
             }
 
             if (totalValue != 0) {

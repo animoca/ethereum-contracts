@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {ICheckpoints} from "./../interfaces/ICheckpoints.sol";
 import {CheckpointsStorage} from "./../libraries/CheckpointsStorage.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -8,14 +9,9 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title Timestamp-based checkpoints management (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC173 (Contract Ownership standard).
-abstract contract CheckpointsBase is Context {
+abstract contract CheckpointsBase is ICheckpoints, Context {
     using CheckpointsStorage for CheckpointsStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
-
-    /// @notice Emitted when a checkpoint is set.
-    /// @param checkpointId The checkpoint identifier.
-    /// @param timestamp The timestamp associated to the checkpoint.
-    event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
 
     /// @notice Sets the checkpoints.
     /// @dev Reverts if the caller is not the contract owner.
@@ -49,16 +45,12 @@ abstract contract CheckpointsBase is Context {
         CheckpointsStorage.layout().triggerCheckpoint(checkpointId);
     }
 
-    /// @notice Gets the checkpoint timestamp.
-    /// @param checkpointId The checkpoint identifier.
-    /// @return timestamp The timestamp associated to the checkpoint. A zero value indicates that the checkpoint is not set.
+    // /// @inheritdoc ICheckpoints
     function checkpoint(bytes32 checkpointId) external view returns (uint256) {
         return CheckpointsStorage.layout().checkpoint(checkpointId);
     }
 
-    /// @notice Retrieves whether the checkpoint has been reached already.
-    /// @param checkpointId The checkpoint identifier.
-    /// @return reached True if the checkpoint has been set and the current block timestamp has already reached it, false otherwise.
+    // /// @inheritdoc ICheckpoints
     function checkpointReached(bytes32 checkpointId) external view returns (bool) {
         return CheckpointsStorage.layout().checkpointReached(checkpointId);
     }

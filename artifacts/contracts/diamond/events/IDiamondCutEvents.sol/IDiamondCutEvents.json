@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "IDiamondCutCommon",
-  "sourceName": "contracts/diamond/interfaces/IDiamondCutCommon.sol",
+  "contractName": "IDiamondCutEvents",
+  "sourceName": "contracts/diamond/events/IDiamondCutEvents.sol",
   "abi": [
     {
       "anonymous": false,
@@ -14,7 +14,7 @@
               "type": "address"
             },
             {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
+              "internalType": "enum FacetCutAction",
               "name": "action",
               "type": "uint8"
             },
@@ -25,7 +25,7 @@
             }
           ],
           "indexed": false,
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
+          "internalType": "struct FacetCut[]",
           "name": "cuts",
           "type": "tuple[]"
         },

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
 import {AccessControlStorage} from "./../../../access/libraries/AccessControlStorage.sol";
@@ -11,7 +12,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
 /// @dev Note: This contract requires AccessControl.
-abstract contract ERC721DeliverableOnceBase is Context, IERC721Deliverable {
+abstract contract ERC721DeliverableOnceBase is IERC721Events, IERC721Deliverable, Context {
     using ERC721Storage for ERC721Storage.Layout;
     using AccessControlStorage for AccessControlStorage.Layout;
 
@@ -21,7 +22,7 @@ abstract contract ERC721DeliverableOnceBase is Context, IERC721Deliverable {
     /// @inheritdoc IERC721Deliverable
     /// @dev Reverts if the sender does not have the 'minter' role.
     /// @dev Reverts if one of `tokenIds` has been previously burnt.
-    function deliver(address[] calldata recipients, uint256[] calldata tokenIds) external virtual override {
+    function deliver(address[] calldata recipients, uint256[] calldata tokenIds) external virtual {
         AccessControlStorage.layout().enforceHasRole(_MINTER_ROLE, _msgSender());
         ERC721Storage.layout().deliverOnce(recipients, tokenIds);
     }

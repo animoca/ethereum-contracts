@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 import {IERC20Permit} from "./../interfaces/IERC20Permit.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";

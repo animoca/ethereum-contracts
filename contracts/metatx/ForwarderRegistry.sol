@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.21;
 
 import {IERC1271} from "./../cryptography/interfaces/IERC1271.sol";
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
@@ -121,12 +121,12 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     }
 
     /// @inheritdoc IForwarderRegistry
-    function isApprovedForwarder(address sender, address forwarder) external view override returns (bool) {
+    function isApprovedForwarder(address sender, address forwarder) external view returns (bool) {
         return _forwarders[sender][forwarder].approved;
     }
 
     /// @inheritdoc IERC2771
-    function isTrustedForwarder(address) external pure override returns (bool) {
+    function isTrustedForwarder(address) external pure returns (bool) {
         return true;
     }
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
@@ -25,7 +25,7 @@ abstract contract ERC721MetadataBase is TokenMetadataBase, IERC721Metadata {
     }
 
     /// @inheritdoc IERC721Metadata
-    function tokenURI(uint256 tokenId) external view virtual override returns (string memory uri) {
+    function tokenURI(uint256 tokenId) external view virtual returns (string memory uri) {
         ERC721Storage.layout().ownerOf(tokenId); // reverts if the token does not exist
         return TokenMetadataStorage.layout().tokenMetadataURI(address(this), tokenId);
     }

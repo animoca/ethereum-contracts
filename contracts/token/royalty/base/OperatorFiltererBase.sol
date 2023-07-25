@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 import {IOperatorFilterRegistry} from "./../interfaces/IOperatorFilterRegistry.sol";
 import {OperatorFiltererStorage} from "./../libraries/OperatorFiltererStorage.sol";

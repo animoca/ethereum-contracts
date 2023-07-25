@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IPauseEvents} from "./../events/IPauseEvents.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PauseStorage {
@@ -13,9 +14,6 @@ library PauseStorage {
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.storage")) - 1);
     bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Pause.phase")) - 1);
 
-    event Paused();
-    event Unpaused();
-
     /// @notice Initializes the storage with an initial pause state (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
     /// @dev Emits a {Paused} event if `isPaused` is true.
@@ -23,7 +21,7 @@ library PauseStorage {
     function constructorInit(Layout storage s, bool isPaused) internal {
         if (isPaused) {
             s.isPaused = true;
-            emit Paused();
+            emit IPauseEvents.Paused();
         }
     }
 
@@ -44,7 +42,7 @@ library PauseStorage {
     function pause(Layout storage s) internal {
         s.enforceIsNotPaused();
         s.isPaused = true;
-        emit Paused();
+        emit IPauseEvents.Paused();
     }
 
     /// @notice Unpauses the contract.
@@ -53,7 +51,7 @@ library PauseStorage {
     function unpause(Layout storage s) internal {
         s.enforceIsPaused();
         s.isPaused = false;
-        emit Unpaused();
+        emit IPauseEvents.Unpaused();
     }
 
     /// @notice Gets the paused state of the contract.

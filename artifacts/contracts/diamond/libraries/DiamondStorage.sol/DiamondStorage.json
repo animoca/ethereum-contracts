@@ -2,52 +2,9 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "DiamondStorage",
   "sourceName": "contracts/diamond/libraries/DiamondStorage.sol",
-  "abi": [
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "address",
-              "name": "facet",
-              "type": "address"
-            },
-            {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
-              "name": "action",
-              "type": "uint8"
-            },
-            {
-              "internalType": "bytes4[]",
-              "name": "selectors",
-              "type": "bytes4[]"
-            }
-          ],
-          "indexed": false,
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
-          "name": "cuts",
-          "type": "tuple[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "target",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "DiamondCut",
-      "type": "event"
-    }
-  ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201b353dc162ce064350c09fd6251083ab196121dd1581399d95ea1a46c5bc9b0464736f6c63430008130033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201b353dc162ce064350c09fd6251083ab196121dd1581399d95ea1a46c5bc9b0464736f6c63430008130033",
+  "abi": [],
+  "bytecode": "0x60556032600b8282823980515f1a607314602657634e487b7160e01b5f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f80fdfea26469706673582212201c05adba2ac3dd566579858f5ca11304a7ee7b7641df7b8a611a8cbb66bd5ab064736f6c63430008150033",
+  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040525f80fdfea26469706673582212201c05adba2ac3dd566579858f5ca11304a7ee7b7641df7b8a611a8cbb66bd5ab064736f6c63430008150033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

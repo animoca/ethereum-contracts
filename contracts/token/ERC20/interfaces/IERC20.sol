@@ -1,22 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
-/// @title ERC20 Token Standard, basic interface.
+import {IERC20Events} from "./../events/IERC20Events.sol";
+
+/// @title ERC20 Token Standard, basic interface (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-20
 /// @dev Note: The ERC-165 identifier for this interface is 0x36372b07.
-interface IERC20 {
-    /// @notice Emitted when tokens are transferred, including zero value transfers.
-    /// @param from The account where the transferred tokens are withdrawn from.
-    /// @param to The account where the transferred tokens are deposited to.
-    /// @param value The amount of tokens being transferred.
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /// @notice Emitted when an approval is set.
-    /// @param owner The account granting an allowance to `spender`.
-    /// @param spender The account being granted an allowance from `owner`.
-    /// @param value The allowance amount being granted.
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
+interface IERC20 is IERC20Events {
     /// @notice Sets the allowance to an account from the sender.
     /// @notice Warning: Beware that changing an allowance with this method brings the risk that someone may use both the old and
     ///  the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce

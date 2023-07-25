@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Mintable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721

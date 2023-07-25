@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {IAccessControlEvents} from "./../events/IAccessControlEvents.sol";
 import {Bytes32} from "./../../utils/libraries/Bytes32.sol";
 
 library AccessControlStorage {
@@ -13,9 +14,6 @@ library AccessControlStorage {
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
 
-    event RoleGranted(bytes32 role, address account, address operator);
-    event RoleRevoked(bytes32 role, address account, address operator);
-
     /// @notice Grants a role to an account.
     /// @dev Note: Call to this function should be properly access controlled.
     /// @dev Emits a {RoleGranted} event if the account did not previously have the role.
@@ -25,7 +23,7 @@ library AccessControlStorage {
     function grantRole(Layout storage s, bytes32 role, address account, address operator) internal {
         if (!s.hasRole(role, account)) {
             s.roles[role][account] = true;
-            emit RoleGranted(role, account, operator);
+            emit IAccessControlEvents.RoleGranted(role, account, operator);
         }
     }
 
@@ -38,7 +36,7 @@ library AccessControlStorage {
     function revokeRole(Layout storage s, bytes32 role, address account, address operator) internal {
         if (s.hasRole(role, account)) {
             s.roles[role][account] = false;
-            emit RoleRevoked(role, account, operator);
+            emit IAccessControlEvents.RoleRevoked(role, account, operator);
         }
     }
 
@@ -50,7 +48,7 @@ library AccessControlStorage {
     function renounceRole(Layout storage s, address sender, bytes32 role) internal {
         s.enforceHasRole(role, sender);
         s.roles[role][sender] = false;
-        emit RoleRevoked(role, sender, sender);
+        emit IAccessControlEvents.RoleRevoked(role, sender, sender);
     }
 
     /// @notice Retrieves whether an account has a role.

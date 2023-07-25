@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 /// @title ERC1155 Multi Token Standard, Tokens Receiver.
 /// @notice Interface for any contract that wants to support transfers from ERC1155 asset contracts.

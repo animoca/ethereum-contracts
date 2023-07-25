@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "IERC721Events",
-  "sourceName": "contracts/token/ERC721/interfaces/IERC721Events.sol",
+  "contractName": "IERC20Events",
+  "sourceName": "contracts/token/ERC20/events/IERC20Events.sol",
   "abi": [
     {
       "anonymous": false,
@@ -15,42 +15,17 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "approved",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
+          "name": "spender",
           "type": "address"
         },
         {
           "indexed": false,
-          "internalType": "bool",
-          "name": "approved",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
         }
       ],
-      "name": "ApprovalForAll",
+      "name": "Approval",
       "type": "event"
     },
     {
@@ -69,9 +44,9 @@
           "type": "address"
         },
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "uint256",
-          "name": "tokenId",
+          "name": "value",
           "type": "uint256"
         }
       ],

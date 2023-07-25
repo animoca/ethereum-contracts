@@ -5,10 +5,10 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@animoca/ethereum-contract-helpers@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "@animoca/ethereum-contract-helpers@npm:0.0.4"
-  checksum: 92e2c5dbec0129899f013d524b49488928cd14a18e78c7738d807ac5ca4f09038a9dd24b89ae949b527973f8cf86e6bf24a34b8c8954a2bb39d8b625ae98b98f
+"@animoca/ethereum-contract-helpers@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@animoca/ethereum-contract-helpers@npm:0.0.5"
+  checksum: b02434af5a1f2213f3e89692c72b4218b4f071a2c6bdaef6b90dc45b79bd760589d44e946690bcd571915081de36d1c7b38ce778c5cad74ab5eaa1e0fde116fa
   languageName: node
   linkType: hard
 
@@ -16,7 +16,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@animoca/ethereum-contracts@workspace:."
   dependencies:
-    "@animoca/ethereum-contract-helpers": ^0.0.4
+    "@animoca/ethereum-contract-helpers": ^0.0.5
     "@nomicfoundation/hardhat-chai-matchers": ^1.0.6
     "@nomicfoundation/hardhat-network-helpers": ^1.0.8
     "@nomiclabs/hardhat-ethers": ^2.2.3

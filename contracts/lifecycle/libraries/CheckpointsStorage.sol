@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
+import {ICheckpointsEvents} from "./../events/ICheckpointsEvents.sol";
 import {Bytes32} from "./../../utils/libraries/Bytes32.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
@@ -15,8 +16,6 @@ library CheckpointsStorage {
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.lifecycle.Checkpoints.storage")) - 1);
 
-    event CheckpointSet(bytes32 checkpointId, uint256 timestamp);
-
     /// @notice Sets the checkpoint.
     /// @dev Reverts if the checkpoint is already set.
     /// @dev Emits a {CheckpointSet} event if the timestamp is set to a non-zero value.
@@ -28,7 +27,7 @@ library CheckpointsStorage {
         }
         if (timestamp != 0) {
             s.checkpoints[checkpointId] = timestamp;
-            emit CheckpointSet(checkpointId, timestamp);
+            emit ICheckpointsEvents.CheckpointSet(checkpointId, timestamp);
         }
     }
 
@@ -54,7 +53,7 @@ library CheckpointsStorage {
     function triggerCheckpoint(Layout storage s, bytes32 checkpointId) internal {
         s.enforceCheckpointNotReached(checkpointId);
         s.checkpoints[checkpointId] = block.timestamp;
-        emit CheckpointSet(checkpointId, block.timestamp);
+        emit ICheckpointsEvents.CheckpointSet(checkpointId, block.timestamp);
     }
 
     /// @notice Gets the checkpoint timestamp.

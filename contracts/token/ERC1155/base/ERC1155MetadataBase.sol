@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.21;
 
 import {IERC1155MetadataURI} from "./../interfaces/IERC1155MetadataURI.sol";
 import {TokenMetadataStorage} from "./../../metadata/libraries/TokenMetadataStorage.sol";

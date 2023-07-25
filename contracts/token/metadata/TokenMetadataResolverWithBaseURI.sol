@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.21;
 
 import {ITokenMetadataResolver} from "./interfaces/ITokenMetadataResolver.sol";
 import {ContractOwnershipCheck} from "./../../access/libraries/ContractOwnershipCheck.sol";
