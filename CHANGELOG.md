@@ -27,6 +27,7 @@
 ### Improvements
 
 - Removed events duplication in storage libraries and use events from interfaces instead.
+- Changed `TokenRecovery` functions from `external` to `public` to allow calling them from overriding implementations.
 - Updated dependencies versions.
 
 ## 2.0.0
