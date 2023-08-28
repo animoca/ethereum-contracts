@@ -1,11 +1,12 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Standard(implementation) {
-  const {features, revertMessages, deploy} = implementation;
+  const {features, errors, deploy} = implementation;
 
   describe('like an ERC20', function () {
     let accounts, deployer, owner, recipient, spender, maxSpender;
@@ -62,7 +63,7 @@ function behavesLikeERC20Standard(implementation) {
 
     describe('approve(address,uint256)', function () {
       it('reverts if approving the zero address', async function () {
-        await expect(this.contract.approve(constants.AddressZero, 1)).to.be.revertedWith(revertMessages.ApproveToZero);
+        await expectRevert(this.contract.approve(constants.AddressZero, 1), this.contract, errors.ApprovalToAddressZero, {owner: owner.address});
       });
 
       const approveWasSuccessful = function (approvedIndex, amount) {
@@ -113,11 +114,16 @@ function behavesLikeERC20Standard(implementation) {
     describe('transfer(address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when sent to the zero address', async function () {
-          await expect(this.contract.transfer(constants.AddressZero, 1)).to.be.revertedWith(revertMessages.TransferToZero);
+          await expectRevert(this.contract.transfer(constants.AddressZero, 1), this.contract, errors.TransferToAddressZero, {owner: owner.address});
         });
 
         it('reverts with an insufficient balance', async function () {
-          await expect(this.contract.transfer(recipient.address, initialSupply.add(1))).to.be.revertedWith(revertMessages.TransferExceedsBalance);
+          const value = initialSupply.add(1);
+          await expectRevert(this.contract.transfer(recipient.address, value), this.contract, errors.TransferExceedsBalance, {
+            owner: owner.address,
+            balance: initialSupply,
+            value,
+          });
         });
       });
 
@@ -177,27 +183,41 @@ function behavesLikeERC20Standard(implementation) {
     describe('transferFrom(address,address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when from is the zero address', async function () {
-          await expect(this.contract.connect(spender).transferFrom(constants.AddressZero, recipient.address, 1)).to.be.revertedWith(
-            revertMessages.TransferExceedsAllowance
+          await expectRevert(
+            this.contract.connect(spender).transferFrom(constants.AddressZero, recipient.address, 1),
+            this.contract,
+            errors.TransferExceedsAllowance,
+            {owner: constants.AddressZero, spender: spender.address, allowance: 0, value: 1}
           );
         });
 
         it('reverts when sent to the zero address', async function () {
-          await expect(this.contract.connect(spender).transferFrom(owner.address, constants.AddressZero, 1)).to.be.revertedWith(
-            revertMessages.TransferToZero
+          await expectRevert(
+            this.contract.connect(spender).transferFrom(owner.address, constants.AddressZero, 1),
+            this.contract,
+            errors.TransferToAddressZero,
+            {owner: owner.address}
           );
         });
 
         it('reverts with an insufficient balance', async function () {
-          await this.contract.approve(spender.address, initialSupply.add(1));
-          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialSupply.add(1))).to.be.revertedWith(
-            revertMessages.TransferExceedsBalance
+          const value = initialSupply.add(1);
+          await this.contract.approve(spender.address, value);
+          await expectRevert(
+            this.contract.connect(spender).transferFrom(owner.address, recipient.address, value),
+            this.contract,
+            errors.TransferExceedsBalance,
+            {owner: owner.address, balance: initialSupply, value}
           );
         });
 
         it('reverts with an insufficient allowance', async function () {
-          await expect(this.contract.connect(spender).transferFrom(owner.address, recipient.address, initialAllowance.add(1))).to.be.revertedWith(
-            revertMessages.TransferExceedsAllowance
+          const value = initialAllowance.add(1);
+          await expectRevert(
+            this.contract.connect(spender).transferFrom(owner.address, recipient.address, value),
+            this.contract,
+            errors.TransferExceedsAllowance,
+            {owner: owner.address, spender: spender.address, allowance: initialAllowance, value}
           );
         });
       });
@@ -236,7 +256,7 @@ function behavesLikeERC20Standard(implementation) {
             });
           }
 
-          if (features.AllowanceTracking) {
+          if (features && features.AllowanceTracking) {
             it('emits an Approval event', async function () {
               await expect(this.receipt)
                 .to.emit(this.contract, 'Approval')
@@ -299,7 +319,7 @@ function behavesLikeERC20Standard(implementation) {
       });
     });
 
-    if (features.ERC165) {
+    if (features && features.ERC165) {
       supportsInterfaces(['IERC165', 'contracts/token/ERC20/interfaces/IERC20.sol:IERC20']);
     }
   });

@@ -1,12 +1,14 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
+const exp = require('constants');
 
 function behavesLikeERC20Mintable(implementation) {
-  const {features, interfaces, revertMessages, methods, deploy} = implementation;
-  const {'mint(address,uint256)': mint, 'batchMint(address[],uint256[])': batchMint} = methods;
+  const {features, interfaces, errors, methods, deploy} = implementation;
+  const {'mint(address,uint256)': mint, 'batchMint(address[],uint256[])': batchMint} = methods || {};
 
   describe('like an ERC20 Mintable', function () {
     let accounts, deployer, recipient1, recipient2;
@@ -29,16 +31,22 @@ function behavesLikeERC20Mintable(implementation) {
       describe('mint(address,uint256)', function () {
         context('Pre-conditions', function () {
           it('reverts if sent by a non-minter', async function () {
-            await expect(mint(this.contract.connect(recipient1), recipient1.address, 1)).to.be.revertedWith(revertMessages.NotMinter);
+            await expectRevert(mint(this.contract.connect(recipient1), recipient1.address, 1), this.contract, errors.NotMinter, {
+              role: await this.contract.MINTER_ROLE(),
+              account: recipient1.address,
+            });
           });
 
           it('reverts if minted to the zero address', async function () {
-            await expect(mint(this.contract, constants.AddressZero, 1)).to.be.revertedWith(revertMessages.MintToZero);
+            await expectRevert(mint(this.contract, constants.AddressZero, 1), this.contract, errors.MintToAddressZero);
           });
 
           it('reverts if minting would overflow the total supply', async function () {
             await mint(this.contract, recipient1.address, constants.MaxUint256);
-            await expect(mint(this.contract, recipient2.address, 1)).to.be.revertedWith(revertMessages.SupplyOverflow);
+            await expectRevert(mint(this.contract, recipient2.address, 1), this.contract, errors.SupplyOverflow, {
+              supply: constants.MaxUint256,
+              value: 1,
+            });
           });
         });
 
@@ -81,26 +89,34 @@ function behavesLikeERC20Mintable(implementation) {
       describe('batchMint(address[],uint256[])', function () {
         context('Pre-conditions', function () {
           it('reverts if sent by a non-minter', async function () {
-            await expect(batchMint(this.contract.connect(recipient1), [recipient1.address], [1])).to.be.revertedWith(revertMessages.NotMinter);
+            await expectRevert(batchMint(this.contract.connect(recipient1), [recipient1.address], [1]), this.contract, errors.NotMinter, {
+              role: await this.contract.MINTER_ROLE(),
+              account: recipient1.address,
+            });
           });
 
           it('reverts with inconsistent arrays', async function () {
-            await expect(batchMint(this.contract, [recipient1.address], [])).to.be.revertedWith(revertMessages.InconsistentArrays);
-            await expect(batchMint(this.contract, [], [1])).to.be.revertedWith(revertMessages.InconsistentArrays);
+            await expectRevert(batchMint(this.contract, [recipient1.address], []), this.contract, errors.InconsistentArrayLengths);
+            await expectRevert(batchMint(this.contract, [], [1]), this.contract, errors.InconsistentArrayLengths);
           });
 
           it('reverts if minted to the zero address', async function () {
-            await expect(batchMint(this.contract, [constants.AddressZero], [1])).to.be.revertedWith(revertMessages.MintToZero);
+            await expectRevert(batchMint(this.contract, [constants.AddressZero], [1]), this.contract, errors.MintToAddressZero);
           });
 
           it('reverts if minting would overflow the total supply', async function () {
             await batchMint(this.contract, [recipient1.address], [constants.MaxUint256]);
-            await expect(batchMint(this.contract, [recipient2.address], [1])).to.be.revertedWith(revertMessages.SupplyOverflow);
+            await expectRevert(batchMint(this.contract, [recipient2.address], [1]), this.contract, errors.SupplyOverflow, {
+              supply: constants.MaxUint256,
+              value: 1,
+            });
           });
 
           it('reverts if cumulative values overflow', async function () {
-            await expect(batchMint(this.contract, [recipient1.address, recipient2.address], [1, constants.MaxUint256])).to.be.revertedWith(
-              revertMessages.BatchMintValuesOverflow
+            await expectRevert(
+              batchMint(this.contract, [recipient1.address, recipient2.address], [1, constants.MaxUint256]),
+              this.contract,
+              errors.BatchMintValuesOverflow
             );
           });
         });
@@ -166,7 +182,7 @@ function behavesLikeERC20Mintable(implementation) {
       });
     }
 
-    if (features.ERC165 && interfaces.ERC20Mintable) {
+    if (features && features.ERC165 && interfaces && interfaces.ERC20Mintable) {
       supportsInterfaces(['IERC20Mintable']);
     }
   });

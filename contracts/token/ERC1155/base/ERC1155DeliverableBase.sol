@@ -19,7 +19,7 @@ abstract contract ERC1155DeliverableBase is IERC1155Events, IERC1155Deliverable,
     bytes32 private constant _MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC1155Deliverable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function safeDeliver(address[] calldata recipients, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external virtual {
         address sender = _msgSender();
         AccessControlStorage.layout().enforceHasRole(_MINTER_ROLE, sender);

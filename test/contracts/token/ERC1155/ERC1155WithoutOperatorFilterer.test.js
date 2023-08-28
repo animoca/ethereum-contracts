@@ -56,35 +56,22 @@ const config = {
 
 runBehaviorTests('ERC1155WithoutOperatorFilterer', config, function (deployFn) {
   const implementation = {
-    revertMessages: {
-      NonApproved: 'ERC1155: non-approved sender',
-      SelfApprovalForAll: 'ERC1155: self-approval for all',
-      BalanceOfAddressZero: 'ERC1155: balance of address(0)',
-      TransferToAddressZero: 'ERC1155: transfer to address(0)',
-      InsufficientBalance: 'ERC1155: insufficient balance',
-      BalanceOverflow: 'ERC1155: balance overflow',
-      MintToAddressZero: 'ERC1155: mint to address(0)',
-      TransferRejected: 'ERC1155: transfer rejected',
-      NonExistingToken: 'ERC1155: non-existing token',
-      NonOwnedToken: 'ERC1155: non-owned token',
-      ExistingToken: 'ERC1155: existing token',
-      InconsistentArrays: 'ERC1155: inconsistent arrays',
+    errors: {
+      // ERC1155
+      SelfApprovalForAll: {custom: true, error: 'ERC1155SelfApprovalForAll', args: ['account']},
+      TransferToAddressZero: {custom: true, error: 'ERC1155TransferToAddressZero'},
+      NonApproved: {custom: true, error: 'ERC1155NonApproved', args: ['sender', 'owner']},
+      InsufficientBalance: {custom: true, error: 'ERC1155InsufficientBalance', args: ['owner', 'id', 'balance', 'value']},
+      BalanceOverflow: {custom: true, error: 'ERC1155BalanceOverflow', args: ['recipient', 'id', 'balance', 'value']},
+      SafeTransferRejected: {custom: true, error: 'ERC1155SafeTransferRejected', args: ['recipient', 'id', 'value']},
+      SafeBatchTransferRejected: {custom: true, error: 'ERC1155SafeBatchTransferRejected', args: ['recipient', 'ids', 'values']},
+      BalanceOfAddressZero: {custom: true, error: 'ERC1155BalanceOfAddressZero'},
 
-      // Admin
-      NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      // Misc
+      InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
     },
-    features: {},
     interfaces: {
       ERC1155: true,
-    },
-    methods: {
-      'batchTransferFrom(address,address,uint256[])': async function (contract, from, to, ids, signer) {
-        return contract.connect(signer).batchTransferFrom(from, to, ids);
-      },
-      'mint(address,uint256)': async function (contract, to, tokenId, signer) {
-        return contract.connect(signer).mint(to, tokenId);
-      },
     },
     deploy: async function (deployer) {
       const contract = await deployFn();
@@ -93,9 +80,6 @@ runBehaviorTests('ERC1155WithoutOperatorFilterer', config, function (deployFn) {
     },
     mint: async function (contract, to, id, value) {
       return contract.safeMint(to, id, value, '0x');
-    },
-    tokenMetadata: async function (contract, id) {
-      return contract.tokenURI(id);
     },
   };
 

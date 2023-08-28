@@ -5,6 +5,11 @@
   "abi": [
     {
       "inputs": [],
+      "name": "IllegalInterfaceId",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "metadataResolver",
       "outputs": [
         {

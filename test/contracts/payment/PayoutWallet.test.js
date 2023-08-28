@@ -50,7 +50,7 @@ runBehaviorTests('PayoutWallet', config, function (deployFn) {
 
   describe('constructor(address payable)', function () {
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expect(deployFn({payoutWallet: constants.AddressZero})).to.be.revertedWith('PayoutWallet: zero address');
+      await expect(deployFn({payoutWallet: constants.AddressZero})).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
     });
 
     it('sets the payout wallet', async function () {
@@ -64,11 +64,13 @@ runBehaviorTests('PayoutWallet', config, function (deployFn) {
 
   describe('setPayoutWallet(address payable)', function () {
     it('reverts if not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).setPayoutWallet(other.address)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).setPayoutWallet(other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expect(this.contract.setPayoutWallet(constants.AddressZero)).to.be.revertedWith('PayoutWallet: zero address');
+      await expect(this.contract.setPayoutWallet(constants.AddressZero)).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
     });
 
     context('when successful', function () {

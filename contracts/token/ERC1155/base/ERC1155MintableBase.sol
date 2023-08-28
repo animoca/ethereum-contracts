@@ -18,7 +18,7 @@ abstract contract ERC1155MintableBase is IERC1155Events, IERC1155Mintable, Conte
     bytes32 public constant MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC1155Mintable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function safeMint(address to, uint256 id, uint256 value, bytes calldata data) external virtual {
         address sender = _msgSender();
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, sender);
@@ -26,7 +26,7 @@ abstract contract ERC1155MintableBase is IERC1155Events, IERC1155Mintable, Conte
     }
 
     /// @inheritdoc IERC1155Mintable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function safeBatchMint(address to, uint256[] calldata ids, uint256[] calldata values, bytes calldata data) external virtual {
         address sender = _msgSender();
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, sender);

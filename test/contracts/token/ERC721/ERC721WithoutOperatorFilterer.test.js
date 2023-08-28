@@ -65,24 +65,21 @@ const config = {
 
 runBehaviorTests('ERC721WithoutOperatorFilterer', config, function (deployFn) {
   const implementation = {
-    revertMessages: {
-      NonApproved: 'ERC721: non-approved sender',
-      SelfApproval: 'ERC721: self-approval',
-      SelfApprovalForAll: 'ERC721: self-approval for all',
-      BalanceOfAddressZero: 'ERC721: balance of address(0)',
-      TransferToAddressZero: 'ERC721: transfer to address(0)',
-      MintToAddressZero: 'ERC721: mint to address(0)',
-      SafeTransferRejected: 'ERC721: safe transfer rejected',
-      NonExistingToken: 'ERC721: non-existing token',
-      NonOwnedToken: 'ERC721: non-owned token',
-      ExistingToken: 'ERC721: existing token',
-      InconsistentArrays: 'ERC721: inconsistent arrays',
+    errors: {
+      // ERC721
+      SelfApproval: {custom: true, error: 'ERC721SelfApproval', args: ['account']},
+      SelfApprovalForAll: {custom: true, error: 'ERC721SelfApprovalForAll', args: ['account']},
+      NonApprovedForApproval: {custom: true, error: 'ERC721NonApprovedForApproval', args: ['sender', 'owner', 'tokenId']},
+      TransferToAddressZero: {custom: true, error: 'ERC721TransferToAddressZero'},
+      NonExistingToken: {custom: true, error: 'ERC721NonExistingToken', args: ['tokenId']},
+      NonApprovedForTransfer: {custom: true, error: 'ERC721NonApprovedForTransfer', args: ['sender', 'owner', 'tokenId']},
+      NonOwnedToken: {custom: true, error: 'ERC721NonOwnedToken', args: ['account', 'tokenId']},
+      SafeTransferRejected: {custom: true, error: 'ERC721SafeTransferRejected', args: ['recipient', 'tokenId']},
+      BalanceOfAddressZero: {custom: true, error: 'ERC721BalanceOfAddressZero'},
 
-      // Admin
-      NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      // Misc
+      InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
     },
-    features: {},
     interfaces: {
       ERC721: true,
       ERC721BatchTransfer: true,
@@ -90,9 +87,6 @@ runBehaviorTests('ERC721WithoutOperatorFilterer', config, function (deployFn) {
     methods: {
       'batchTransferFrom(address,address,uint256[])': async function (contract, from, to, ids, signer) {
         return contract.connect(signer).batchTransferFrom(from, to, ids);
-      },
-      'mint(address,uint256)': async function (contract, to, tokenId, signer) {
-        return contract.connect(signer).mint(to, tokenId);
       },
     },
     deploy: async function (deployer) {

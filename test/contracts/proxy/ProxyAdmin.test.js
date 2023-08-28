@@ -38,7 +38,8 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
 
   describe('constructor(address)', function () {
     it('reverts with a zero-address initial admin', async function () {
-      await expect(deployFn({initialAdmin: constants.AddressZero})).to.be.revertedWith('ProxyAdmin: no initial admin');
+      const artifact = await ethers.getContractFactory('ProxyAdminMock');
+      await expect(deployFn({initialAdmin: constants.AddressZero})).to.be.revertedWithCustomError(artifact, 'NoInitialProxyAdmin');
     });
 
     context('with a non-zero address as initial admin', function () {
@@ -68,7 +69,9 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
     });
     describe('changeProxyAdmin(address)', function () {
       it('reverts if the caller is not the contract admin', async function () {
-        await expect(this.contract.connect(other).changeProxyAdmin(other.address)).to.be.revertedWith('ProxyAdmin: not the admin');
+        await expect(this.contract.connect(other).changeProxyAdmin(other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin')
+          .withArgs(other.address);
       });
 
       context('when successful', function () {
@@ -127,7 +130,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
 
     describe('ProxyAdminStorage.enforceIsProxyAdmin(address)', function () {
       it('reverts with a non-admin account', async function () {
-        await expect(this.contract.enforceIsProxyAdmin(other.address)).to.be.revertedWith('ProxyAdmin: not the admin');
+        await expect(this.contract.enforceIsProxyAdmin(other.address)).to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin');
       });
 
       it('does not revert with the admin account', async function () {

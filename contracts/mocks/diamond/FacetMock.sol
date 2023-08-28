@@ -4,17 +4,19 @@ pragma solidity 0.8.21;
 contract FacetMock {
     event FacetFunctionCalled();
 
+    error RevertedWithMessage();
+
     function doSomething() external {
         emit FacetFunctionCalled();
     }
 
     function revertsWithoutMessage() external pure {
-        // solhint-disable-next-line reason-string
+        // solhint-disable-next-line custom-errors, reason-string
         revert();
     }
 
     function revertsWithMessage() external pure {
-        revert("Facet: reverted");
+        revert RevertedWithMessage();
     }
 
     // These functions are placeholders for tests to manipulate the selectorCount in different scenarios

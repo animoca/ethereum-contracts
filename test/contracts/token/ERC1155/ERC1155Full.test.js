@@ -107,35 +107,43 @@ runBehaviorTests('ERC1155Full', config, function (deployFn) {
   const implementation = {
     name,
     symbol,
-    revertMessages: {
-      NonApproved: 'ERC1155: non-approved sender',
-      SelfApprovalForAll: 'ERC1155: self-approval for all',
-      BalanceOfAddressZero: 'ERC1155: balance of address(0)',
-      TransferToAddressZero: 'ERC1155: transfer to address(0)',
-      InsufficientBalance: 'ERC1155: insufficient balance',
-      BalanceOverflow: 'ERC1155: balance overflow',
-      MintToAddressZero: 'ERC1155: mint to address(0)',
-      TransferRejected: 'ERC1155: transfer rejected',
-      NonExistingToken: 'ERC1155: non-existing token',
-      NonOwnedToken: 'ERC1155: non-owned token',
-      ExistingToken: 'ERC1155: existing token',
-      InconsistentArrays: 'ERC1155: inconsistent arrays',
+    errors: {
+      // ERC1155
+      SelfApprovalForAll: {custom: true, error: 'ERC1155SelfApprovalForAll', args: ['account']},
+      TransferToAddressZero: {custom: true, error: 'ERC1155TransferToAddressZero'},
+      NonApproved: {custom: true, error: 'ERC1155NonApproved', args: ['sender', 'owner']},
+      InsufficientBalance: {custom: true, error: 'ERC1155InsufficientBalance', args: ['owner', 'id', 'balance', 'value']},
+      BalanceOverflow: {custom: true, error: 'ERC1155BalanceOverflow', args: ['recipient', 'id', 'balance', 'value']},
+      SafeTransferRejected: {custom: true, error: 'ERC1155SafeTransferRejected', args: ['recipient', 'id', 'value']},
+      SafeBatchTransferRejected: {custom: true, error: 'ERC1155SafeBatchTransferRejected', args: ['recipient', 'ids', 'values']},
+      BalanceOfAddressZero: {custom: true, error: 'ERC1155BalanceOfAddressZero'},
 
-      // Admin
-      NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      // ERC1155Mintable
+      MintToAddressZero: {custom: true, error: 'ERC1155MintToAddressZero'},
+
+      // ERC2981
+      IncorrectRoyaltyReceiver: {custom: true, error: 'ERC2981IncorrectRoyaltyReceiver'},
+      IncorrectRoyaltyPercentage: {custom: true, error: 'ERC2981IncorrectRoyaltyPercentage', args: ['percentage']},
+
+      // OperatorFilterer
+      OperatorNotAllowed: {custom: true, error: 'OperatorNotAllowed', args: ['operator']},
+
+      // Misc
+      InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
+      NotMinter: {custom: true, error: 'NotRoleHolder', args: ['role', 'account']},
+      NotContractOwner: {custom: true, error: 'NotContractOwner', args: ['account']},
     },
     features: {
       NameSymbolMetadata: true,
       MetadataResolver: true,
       WithOperatorFilterer: true,
-      ERC2981: true,
     },
     interfaces: {
       ERC1155: true,
       ERC1155Mintable: true,
       ERC1155Deliverable: true,
       ERC1155MetadataURI: true,
+      ERC2981: true,
     },
     methods: {
       'safeMint(address,uint256,uint256,bytes)': async function (contract, to, id, value, data, signer) {

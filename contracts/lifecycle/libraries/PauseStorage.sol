@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
+import {Paused, NotPaused} from "./../errors/PauseErrors.sol";
 import {IPauseEvents} from "./../events/IPauseEvents.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
@@ -28,7 +29,7 @@ library PauseStorage {
     /// @notice Initializes the storage with an initial pause state (proxied version).
     /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @dev Emits a {Paused} event if `isPaused` is true.
     /// @param isPaused The initial pause state.
     function proxyInit(Layout storage s, bool isPaused) internal {
@@ -37,7 +38,7 @@ library PauseStorage {
     }
 
     /// @notice Pauses the contract.
-    /// @dev Reverts if the contract is paused.
+    /// @dev Reverts with {Paused} if the contract is paused.
     /// @dev Emits a {Paused} event.
     function pause(Layout storage s) internal {
         s.enforceIsNotPaused();
@@ -46,7 +47,7 @@ library PauseStorage {
     }
 
     /// @notice Unpauses the contract.
-    /// @dev Reverts if the contract is not paused.
+    /// @dev Reverts with {NotPaused} if the contract is not paused.
     /// @dev Emits an {Unpaused} event.
     function unpause(Layout storage s) internal {
         s.enforceIsPaused();
@@ -61,15 +62,15 @@ library PauseStorage {
     }
 
     /// @notice Ensures that the contract is paused.
-    /// @dev Reverts if the contract is not paused.
+    /// @dev Reverts with {NotPaused} if the contract is not paused.
     function enforceIsPaused(Layout storage s) internal view {
-        require(s.isPaused, "Pause: not paused");
+        if (!s.isPaused) revert NotPaused();
     }
 
     /// @notice Ensures that the contract is not paused.
-    /// @dev Reverts if the contract is paused.
+    /// @dev Reverts with {Paused} if the contract is paused.
     function enforceIsNotPaused(Layout storage s) internal view {
-        require(!s.isPaused, "Pause: paused");
+        if (s.isPaused) revert Paused();
     }
 
     function layout() internal pure returns (Layout storage s) {

@@ -7,22 +7,24 @@ import {ERC20Receiver} from "./../../../token/ERC20/ERC20Receiver.sol";
 
 /// @title ERC20 Receiver Mock.
 contract ERC20ReceiverMock is ERC20Receiver {
-    bool internal immutable _accept;
-    address internal immutable _tokenAddress;
+    bool internal immutable _ACCCEPT;
+    address internal immutable _TOKEN_ADDRESS;
 
     event ERC20Received(address sender, address from, uint256 value, bytes data);
 
+    error WrongToken();
+
     constructor(bool accept, address tokenAddress) {
-        _accept = accept;
-        _tokenAddress = tokenAddress;
+        _ACCCEPT = accept;
+        _TOKEN_ADDRESS = tokenAddress;
     }
 
     //==================================================== ERC20Receiver ====================================================//
 
     /// @inheritdoc IERC20Receiver
     function onERC20Received(address sender, address from, uint256 value, bytes memory data) public virtual override returns (bytes4) {
-        require(msg.sender == _tokenAddress, "ERC20Receiver: wrong token");
-        if (_accept) {
+        if (msg.sender != _TOKEN_ADDRESS) revert WrongToken();
+        if (_ACCCEPT) {
             emit ERC20Received(sender, from, value, data);
             return ERC20Storage.ERC20_RECEIVED;
         } else {

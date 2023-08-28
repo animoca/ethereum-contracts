@@ -4,6 +4,17 @@
   "sourceName": "contracts/token/royalty/base/OperatorFiltererBase.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "operatorFilterRegistry",
       "outputs": [

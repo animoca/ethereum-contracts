@@ -18,14 +18,14 @@ abstract contract ERC20MintableBase is IERC20Events, IERC20Mintable, Context {
     bytes32 public constant MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC20Mintable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function mint(address to, uint256 value) external virtual {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC20Storage.layout().mint(to, value);
     }
 
     /// @inheritdoc IERC20Mintable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function batchMint(address[] calldata recipients, uint256[] calldata values) external virtual {
         AccessControlStorage.layout().enforceHasRole(MINTER_ROLE, _msgSender());
         ERC20Storage.layout().batchMint(recipients, values);

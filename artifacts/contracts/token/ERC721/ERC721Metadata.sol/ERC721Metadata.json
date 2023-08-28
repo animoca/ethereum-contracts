@@ -4,6 +4,22 @@
   "sourceName": "contracts/token/ERC721/ERC721Metadata.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ERC721NonExistingToken",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "IllegalInterfaceId",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "metadataResolver",
       "outputs": [

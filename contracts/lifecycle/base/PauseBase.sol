@@ -14,8 +14,8 @@ abstract contract PauseBase is IPause, Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     /// @notice Pauses the contract.
-    /// @dev Reverts if the sender is not the contract owner.
-    /// @dev Reverts if the contract is paused.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {Paused} if the contract is paused.
     /// @dev Emits a {Paused} event.
     function pause() external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
@@ -23,8 +23,8 @@ abstract contract PauseBase is IPause, Context {
     }
 
     /// @notice Unpauses the contract.
-    /// @dev Reverts if the sender is not the contract owner.
-    /// @dev Reverts if the contract is not paused.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {NotPaused} if the contract is not paused.
     /// @dev Emits an {Unpaused} event.
     function unpause() external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());

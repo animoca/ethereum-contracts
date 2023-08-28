@@ -15,7 +15,7 @@ abstract contract ERC1155WithOperatorFiltererBase is IERC1155Events, IERC1155, C
     using OperatorFiltererStorage for OperatorFiltererStorage.Layout;
 
     /// @inheritdoc IERC1155
-    /// @dev Reverts with OperatorNotAllowed if the sender is not `from` and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if the sender is not `from` and is not allowed by the operator registry.
     function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes calldata data) external virtual {
         address sender = _msgSender();
         OperatorFiltererStorage.layout().requireAllowedOperatorForTransfer(sender, from);
@@ -23,7 +23,7 @@ abstract contract ERC1155WithOperatorFiltererBase is IERC1155Events, IERC1155, C
     }
 
     /// @inheritdoc IERC1155
-    /// @dev Reverts with OperatorNotAllowed if the sender is not `from` and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if the sender is not `from` and is not allowed by the operator registry.
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -37,7 +37,7 @@ abstract contract ERC1155WithOperatorFiltererBase is IERC1155Events, IERC1155, C
     }
 
     /// @inheritdoc IERC1155
-    /// @dev Reverts with OperatorNotAllowed if `operator` is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if `operator` is not allowed by the operator registry.
     function setApprovalForAll(address operator, bool approved) external virtual {
         if (approved) {
             OperatorFiltererStorage.layout().requireAllowedOperatorForApproval(operator);

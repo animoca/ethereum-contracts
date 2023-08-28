@@ -29,11 +29,13 @@ describe('CumulativeMerkleClaim', function () {
 
   context('setMerkleRoot(bytes32)', function () {
     it('reverts if not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).setMerkleRoot(constants.HashZero)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).setMerkleRoot(constants.HashZero))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
     it('reverts if the contract is not paused', async function () {
       await this.contract.unpause();
-      await expect(this.contract.setMerkleRoot(constants.HashZero)).to.be.revertedWith('Pause: not paused');
+      await expect(this.contract.setMerkleRoot(constants.HashZero)).to.be.revertedWithCustomError(this.contract, 'NotPaused');
     });
     it('increments the nonce', async function () {
       const nonce = await this.contract.nonce();
@@ -57,7 +59,7 @@ describe('CumulativeMerkleClaim', function () {
 
   context('claimPayout(address,bytes,bytes32[])', function () {
     it('reverts if the contract is paused', async function () {
-      await expect(this.contract.claimPayout(constants.AddressZero, constants.HashZero, [])).to.be.revertedWith('Pause: paused');
+      await expect(this.contract.claimPayout(constants.AddressZero, constants.HashZero, [])).to.be.revertedWithCustomError(this.contract, 'Paused');
     });
     context('with a merkle root set', function () {
       beforeEach(async function () {

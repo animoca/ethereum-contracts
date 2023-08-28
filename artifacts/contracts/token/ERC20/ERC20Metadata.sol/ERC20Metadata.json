@@ -4,6 +4,22 @@
   "sourceName": "contracts/token/ERC20/ERC20Metadata.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "IllegalInterfaceId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {

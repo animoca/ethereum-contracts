@@ -1,5 +1,6 @@
 const {ethers} = require('hardhat');
 const {constants} = ethers;
+const {expect} = require('chai');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {getForwarderRegistryAddress} = require('../../../helpers/registries');
@@ -50,7 +51,7 @@ describe('TokenMetadataResolverPerToken', function () {
     it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
       await expect(this.resolver.batchSetTokenURI(this.token.address, [1, 2], ['uri1'])).to.be.revertedWithCustomError(
         this.resolver,
-        'InconsistentArrays'
+        'InconsistentArrayLengths'
       );
     });
 

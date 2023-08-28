@@ -17,7 +17,7 @@ contract ERC20MintableFacet is ERC20MintableBase, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Mintable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC20MintableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20Storage.initERC20Mintable();

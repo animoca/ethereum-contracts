@@ -71,9 +71,9 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
       });
 
       it('CheckpointsStorage.enforceCheckpointReached(bytes32) reverts', async function () {
-        await expect(this.contract.enforceCheckpointReached(this.checkpointId)).to.be.revertedWith(
-          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' not reached yet`
-        );
+        await expect(this.contract.enforceCheckpointReached(this.checkpointId))
+          .to.be.revertedWithCustomError(this.contract, 'CheckpointNotReached')
+          .withArgs(this.checkpointId);
       });
 
       it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) does not revert', async function () {
@@ -91,9 +91,9 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
       });
 
       it('CheckpointsStorage.enforceCheckpointReached(bytes32) reverts', async function () {
-        await expect(this.contract.enforceCheckpointReached(this.checkpointId)).to.be.revertedWith(
-          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' not reached yet`
-        );
+        await expect(this.contract.enforceCheckpointReached(this.checkpointId))
+          .to.be.revertedWithCustomError(this.contract, 'CheckpointNotReached')
+          .withArgs(this.checkpointId);
       });
 
       it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) does not revert', async function () {
@@ -115,9 +115,9 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
       });
 
       it('CheckpointsStorage.enforceCheckpointNotReached(bytes32) reverts', async function () {
-        await expect(this.contract.enforceCheckpointNotReached(this.checkpointId)).to.be.revertedWith(
-          `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already reached`
-        );
+        await expect(this.contract.enforceCheckpointNotReached(this.checkpointId))
+          .to.be.revertedWithCustomError(this.contract, 'CheckpointReached')
+          .withArgs(this.checkpointId);
       });
     });
   });
@@ -129,14 +129,17 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     });
 
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWithCustomError(
+        this.contract,
+        'NotContractOwner'
+      );
     });
 
     it('reverts if the checkpoint is already set', async function () {
       await this.contract.setCheckpoint(this.checkpointId, this.startTime);
-      await expect(this.contract.setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWith(
-        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already set`
-      );
+      await expect(this.contract.setCheckpoint(this.checkpointId, this.startTime))
+        .to.be.revertedWithCustomError(this.contract, 'CheckpointAlreadySet')
+        .withArgs(this.checkpointId);
     });
 
     context('when successful (zero timestamp value)', function () {
@@ -176,20 +179,20 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     });
 
     it('reverts with inconsistent array lengths', async function () {
-      await expect(this.contract.batchSetCheckpoint([], [0])).to.be.revertedWith('Checkpoints: wrong array length');
+      await expect(this.contract.batchSetCheckpoint([], [0])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
 
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).batchSetCheckpoint([this.checkpointId], [this.startTime])).to.be.revertedWith(
-        'Ownership: not the owner'
-      );
+      await expect(this.contract.connect(other).batchSetCheckpoint([this.checkpointId], [this.startTime]))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts if the checkpoint is already set', async function () {
       await this.contract.setCheckpoint(this.checkpointId, this.startTime);
-      await expect(this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime])).to.be.revertedWith(
-        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already set`
-      );
+      await expect(this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]))
+        .to.be.revertedWithCustomError(this.contract, 'CheckpointAlreadySet')
+        .withArgs(this.checkpointId);
     });
 
     context('when successful (zero timestamp value)', function () {
@@ -228,14 +231,16 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     });
 
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).triggerCheckpoint(this.checkpointId)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).triggerCheckpoint(this.checkpointId))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts if the checkpoint is already reached', async function () {
       await this.contract.triggerCheckpoint(this.checkpointId);
-      await expect(this.contract.triggerCheckpoint(this.checkpointId)).to.be.revertedWith(
-        `Checkpoints: checkpoint '${ethers.utils.parseBytes32String(this.checkpointId)}' already reached`
-      );
+      await expect(this.contract.triggerCheckpoint(this.checkpointId))
+        .to.be.revertedWithCustomError(this.contract, 'CheckpointReached')
+        .withArgs(this.checkpointId);
     });
 
     context('when successful', function () {

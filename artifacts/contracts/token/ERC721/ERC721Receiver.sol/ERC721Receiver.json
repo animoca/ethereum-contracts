@@ -4,6 +4,11 @@
   "sourceName": "contracts/token/ERC721/ERC721Receiver.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "IllegalInterfaceId",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",

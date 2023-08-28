@@ -1,11 +1,12 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Allowance(implementation) {
-  const {features, revertMessages, deploy} = implementation;
+  const {features, errors, deploy} = implementation;
 
   describe('like an ERC20 Allowance', function () {
     let deployer, owner, spender, maxSpender;
@@ -28,12 +29,19 @@ function behavesLikeERC20Allowance(implementation) {
     describe('increaseAllowance(address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when the spender is the zero address', async function () {
-          await expect(this.contract.increaseAllowance(constants.AddressZero, 0)).to.be.revertedWith(revertMessages.ApproveToZero);
+          await expectRevert(this.contract.increaseAllowance(constants.AddressZero, 0), this.contract, errors.ApprovalToAddressZero, {
+            owner: owner.address,
+          });
         });
 
         it('reverts when the allowance overflows', async function () {
           await this.contract.increaseAllowance(spender.address, 1);
-          await expect(this.contract.increaseAllowance(spender.address, constants.MaxUint256)).to.be.revertedWith(revertMessages.AllowanceOverflow);
+          await expectRevert(this.contract.increaseAllowance(spender.address, constants.MaxUint256), this.contract, errors.AllowanceOverflow, {
+            owner: owner.address,
+            spender: spender.address,
+            allowance: 1,
+            increment: constants.MaxUint256,
+          });
         });
       });
 
@@ -81,11 +89,18 @@ function behavesLikeERC20Allowance(implementation) {
     describe('decreaseAllowance(address,uint256)', function () {
       context('Pre-conditions', function () {
         it('reverts when the spender is the zero address', async function () {
-          await expect(this.contract.decreaseAllowance(constants.AddressZero, constants.Zero)).to.be.revertedWith(revertMessages.ApproveToZero);
+          await expectRevert(this.contract.decreaseAllowance(constants.AddressZero, 0), this.contract, errors.ApprovalToAddressZero, {
+            owner: owner.address,
+          });
         });
 
         it('reverts when the allowance underflows', async function () {
-          await expect(this.contract.decreaseAllowance(spender.address, constants.One)).to.be.revertedWith(revertMessages.AllowanceUnderflow);
+          await expectRevert(this.contract.decreaseAllowance(spender.address, 1), this.contract, errors.AllowanceUnderflow, {
+            owner: owner.address,
+            spender: spender.address,
+            allowance: 0,
+            decrement: 1,
+          });
         });
       });
 
@@ -129,7 +144,7 @@ function behavesLikeERC20Allowance(implementation) {
         });
       });
 
-      if (features.EIP717) {
+      if (features && features.EIP717) {
         context('[EIP717] when decreasing the allowance of an account with maximum approval', function () {
           beforeEach(async function () {
             this.receipt = await this.contract.decreaseAllowance(maxSpender.address, '1');

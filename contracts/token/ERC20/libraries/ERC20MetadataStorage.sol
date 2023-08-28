@@ -2,7 +2,6 @@
 pragma solidity ^0.8.21;
 
 import {IERC20Metadata} from "./../interfaces/IERC20Metadata.sol";
-import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC20MetadataStorage {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-/// @title Access control via roles management.
+/// @title Access control via roles management (events)
 interface IAccessControlEvents {
     /// @notice Emitted when `role` is granted to `account`.
     /// @param role The role that has been granted.

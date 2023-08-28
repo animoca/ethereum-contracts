@@ -83,7 +83,9 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
 
     describe('transferOwnership(address)', function () {
       it('reverts if the caller is not the contract owner', async function () {
-        await expect(this.contract.connect(other).transferOwnership(other.address)).to.be.revertedWith('Ownership: not the owner');
+        await expect(this.contract.connect(other).transferOwnership(other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+          .withArgs(other.address);
       });
 
       context('when successful', function () {
@@ -131,7 +133,9 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
 
     describe('ContractOwnershipStorage.enforceIsContractOwner(address)', function () {
       it('reverts with a non-owner account', async function () {
-        await expect(this.contract.enforceIsContractOwner(other.address)).to.be.revertedWith('Ownership: not the owner');
+        await expect(this.contract.enforceIsContractOwner(other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+          .withArgs(other.address);
       });
 
       it('does not revert with the owner account', async function () {

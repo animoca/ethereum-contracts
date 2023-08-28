@@ -8,7 +8,10 @@ const {behavesLikeERC1155MetadataURI} = require('./ERC1155.metadatauri.behavior'
 const {behavesLikeERC2981} = require('./../../royalty/behaviors/ERC2981.behavior');
 
 function behavesLikeERC1155(implementation) {
-  if (implementation.features.WithOperatorFilterer) {
+  const features = implementation.features;
+  const interfaces = implementation.interfaces;
+
+  if (features && features.WithOperatorFilterer) {
     context('with an allowing Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation);
     });
@@ -26,15 +29,15 @@ function behavesLikeERC1155(implementation) {
   behavesLikeERC1155Mintable(implementation);
   behavesLikeERC1155Burnable(implementation);
 
-  if (implementation.interfaces.ERC1155Deliverable) {
+  if (interfaces && interfaces.ERC1155Deliverable) {
     behavesLikeERC1155Deliverable(implementation);
   }
 
-  if (implementation.interfaces.ERC1155MetadataURI) {
+  if (interfaces && interfaces.ERC1155MetadataURI) {
     behavesLikeERC1155MetadataURI(implementation);
   }
 
-  if (implementation.features.ERC2981) {
+  if (interfaces && interfaces.ERC2981) {
     behavesLikeERC2981(implementation);
   }
 }

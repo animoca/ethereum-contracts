@@ -8,14 +8,18 @@ import {IForwarderRegistry} from "./../interfaces/IForwarderRegistry.sol";
 /// @dev This contract is to be used as a diamond facet (see ERC2535 Diamond Standard https://eips.ethereum.org/EIPS/eip-2535).
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 contract ForwarderRegistryContextFacet is IERC2771 {
-    IForwarderRegistry public immutable forwarderRegistry;
+    IForwarderRegistry internal immutable _FORWARDER_REGISTRY;
 
     constructor(IForwarderRegistry forwarderRegistry_) {
-        forwarderRegistry = forwarderRegistry_;
+        _FORWARDER_REGISTRY = forwarderRegistry_;
+    }
+
+    function forwarderRegistry() external view returns (IForwarderRegistry) {
+        return _FORWARDER_REGISTRY;
     }
 
     /// @inheritdoc IERC2771
     function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
-        return forwarder == address(forwarderRegistry);
+        return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

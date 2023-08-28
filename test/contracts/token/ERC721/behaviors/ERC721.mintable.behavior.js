@@ -1,17 +1,18 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const ReceiverType = require('../../ReceiverType');
 
-function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, features, methods}) {
+function behavesLikeERC721Mintable({deploy, mint, errors, interfaces, features, methods}) {
   const {
     'mint(address,uint256)': mint_ERC721,
     'batchMint(address,uint256[])': batchMint_ERC721,
     'safeMint(address,uint256,bytes)': safeMint_ERC721,
-  } = methods;
+  } = methods || {};
 
   describe('like an ERC721 Mintable', function () {
     let accounts, deployer, owner;
@@ -37,20 +38,25 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
         it('reverts if minted to the zero address', async function () {
           this.sender = deployer;
           this.to = constants.AddressZero;
-          await expect(mintFunction.call(this, 1, data)).to.be.revertedWith(revertMessages.MintToAddressZero);
+          await expectRevert(mintFunction.call(this, 1, data), this.token, errors.MintToAddressZero);
         });
 
         it('reverts if the token already exists', async function () {
           this.sender = deployer;
           this.to = owner.address;
           await mintFunction.call(this, 1, data);
-          await expect(mintFunction.call(this, 1, data)).to.be.revertedWith(revertMessages.ExistingToken);
+          await expectRevert(mintFunction.call(this, 1, data), this.token, errors.ExistingToken, {
+            tokenId: 1,
+          });
         });
 
         it('reverts if sent by non-minter', async function () {
           this.sender = owner;
           this.to = owner.address;
-          await expect(mintFunction.call(this, 1, data)).to.be.revertedWith(revertMessages.NotMinter);
+          await expectRevert(mintFunction.call(this, 1, data), this.token, errors.NotMinter, {
+            role: await this.token.MINTER_ROLE(),
+            account: owner.address,
+          });
         });
 
         if (data !== undefined) {
@@ -69,7 +75,10 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
           it('reverts when sent to an ERC721Receiver which rejects the transfer', async function () {
             this.sender = deployer;
             this.to = this.refusingReceiver721.address;
-            await expect(mintFunction.call(this, 1, data)).to.be.revertedWith(revertMessages.SafeTransferRejected);
+            await expectRevert(mintFunction.call(this, 1, data), this.token, errors.SafeTransferRejected, {
+              recipient: this.to,
+              tokenId: 1,
+            });
           });
         }
       });
@@ -169,7 +178,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
       });
     }
 
-    if (features.ERC721MintableOnce) {
+    if (features && features.ERC721MintableOnce) {
       describe('[ERC721MintableOnce] wasBurnt(uint256)', function () {
         it('returns false for a token never minted', async function () {
           expect(await this.token.wasBurnt(1)).to.be.false;
@@ -182,7 +191,7 @@ function behavesLikeERC721Mintable({deploy, mint, revertMessages, interfaces, fe
       });
     }
 
-    if (interfaces.ERC721Mintable) {
+    if (interfaces && interfaces.ERC721Mintable) {
       supportsInterfaces(['IERC721Mintable']);
     }
   });

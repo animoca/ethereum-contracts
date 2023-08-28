@@ -17,7 +17,7 @@ contract ERC1155Facet is ERC1155Base, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interfaces as supported: ERC1155.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC1155Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC1155Storage.init();

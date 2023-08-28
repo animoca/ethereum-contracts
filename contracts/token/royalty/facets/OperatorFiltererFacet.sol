@@ -19,8 +19,8 @@ contract OperatorFiltererFacet is OperatorFiltererBase, ForwarderRegistryContext
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Sets the address that the contract will make OperatorFilter checks against.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @param operatorFilterRegistry The operator filter registry address. When set to the zero address, checks will be bypassed.
     function initOperatorFilterer(IOperatorFilterRegistry operatorFilterRegistry) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());

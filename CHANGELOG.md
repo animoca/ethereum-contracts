@@ -7,13 +7,15 @@
 - Added preset ERC721 contracts `ERC721Full`, `ERC721FullBurn` and `ERC721FullMintOnceBurn` (and their proxied versions).
 - Added preset ERC1155 contracts `ERC1155Full` and `ERC1155FullBurn` (and their proxied versions).
 - Token metadata for ERC721 and ERC1155 are now handled through an external resolver contract whose reference is set at construction time. For this feature, added contracts `ITokenMetadataResolver`, `TokenMetadataStorage`, `TokenMetadataBase` and the two resolver implementations `TokenMetadataResolverPerToken` and `TokenMetadataResolverWithBaseURI`. The logic for ERC721 and ERC1155 is implemented in new `ERC721MetadataBase`/`ERC721MetadataFacet`/`ERC721Metadata` and `ER1155MetadataBase`/`ERC1155MetadataFacet`/`ERC1155Metadata` contracts respectively.
+- Added new metadata scheme with `TokenMetadataResolverTwoStepsReveal`.
 - ERC1155 contracts now support `name()` and `symbol()` as part of their metadata implementation.
 - Added contract interfaces `IAccessControl`, `IPause`, `ICheckpoints`, `IPayoutWallet`, `IProxyAdmin` and `ISeals`.
-- Added contract libraries `ContractOwnershipCheck` and `AccessControlCheck` to facilitate the retrieval of access-control information from external contracts.
+- Added functions in contract libraries `ContractOwnershipStorage` and `AccessControlStorage` to facilitate the retrieval of access-control information from external contracts.
 
 ### Breaking changes
 
-- Moved all contracts events definitions to dedicated interfaces in subfolders `events`.
+- Moved all contracts events definitions to dedicated interfaces (see `events` subfolders).
+- Changed all legacy contracts errors to custom errors (see `errors` subfolders).
 - Moved diamond struct and enum definitions to `DiamondCommon`.
 - Removed all previous `ERC721MetadataXXX` contracts.
 - Removed all previous `ERC1155MetadataXXX` contracts.
@@ -24,8 +26,8 @@
 
 ### Improvements
 
-- Removed events duplication in storage libraries and used events from interfaces instead.
-- Updated to latest dependencies.
+- Removed events duplication in storage libraries and use events from interfaces instead.
+- Updated dependencies versions.
 
 ## 2.0.0
 

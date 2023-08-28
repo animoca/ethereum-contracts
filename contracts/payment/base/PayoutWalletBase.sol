@@ -14,8 +14,8 @@ abstract contract PayoutWalletBase is IPayoutWallet, Context {
     using PayoutWalletStorage for PayoutWalletStorage.Layout;
 
     /// @notice Sets the payout wallet.
-    /// @dev Reverts if the sender is not the contract owner.
-    /// @dev Reverts if `payoutWallet_` is the zero address.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `newPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param newPayoutWallet The payout wallet.
     function setPayoutWallet(address payable newPayoutWallet) external {

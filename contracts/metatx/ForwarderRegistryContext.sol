@@ -12,11 +12,11 @@ abstract contract ForwarderRegistryContext is ForwarderRegistryContextBase, IERC
     constructor(IForwarderRegistry forwarderRegistry_) ForwarderRegistryContextBase(forwarderRegistry_) {}
 
     function forwarderRegistry() external view returns (IForwarderRegistry) {
-        return _forwarderRegistry;
+        return _FORWARDER_REGISTRY;
     }
 
     /// @inheritdoc IERC2771
     function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
-        return forwarder == address(_forwarderRegistry);
+        return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

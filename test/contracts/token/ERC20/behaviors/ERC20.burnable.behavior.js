@@ -1,12 +1,13 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Burnable(implementation) {
-  const {features, interfaces, methods, revertMessages, deploy} = implementation;
-  const {'burn(uint256)': burn, 'burnFrom(address,uint256)': burnFrom, 'batchBurnFrom(address[],uint256[])': batchBurnFrom} = methods;
+  const {features, interfaces, methods, errors, deploy} = implementation;
+  const {'burn(uint256)': burn, 'burnFrom(address,uint256)': burnFrom, 'batchBurnFrom(address[],uint256[])': batchBurnFrom} = methods || {};
 
   const initialSupply = ethers.BigNumber.from('100');
   const initialAllowance = initialSupply.sub(1);
@@ -34,7 +35,11 @@ function behavesLikeERC20Burnable(implementation) {
       describe('burn(uint256)', function () {
         context('Pre-conditions', function () {
           it('reverts with an insufficient balance', async function () {
-            await expect(burn(this.contract, initialSupply.add(1))).to.be.revertedWith(revertMessages.BurnExceedsBalance);
+            await expectRevert(burn(this.contract, initialSupply.add(1)), this.contract, errors.BurnExceedsBalance, {
+              owner: owner.address,
+              balance: initialSupply,
+              value: initialSupply.add(1),
+            });
           });
         });
 
@@ -80,19 +85,39 @@ function behavesLikeERC20Burnable(implementation) {
       describe('burnFrom(address,uint256)', function () {
         context('Pre-conditions', function () {
           it('reverts when from is the zero address', async function () {
-            await expect(burnFrom(this.contract.connect(spender), constants.AddressZero, 1)).to.be.revertedWith(revertMessages.BurnExceedsAllowance);
+            await expectRevert(burnFrom(this.contract.connect(spender), constants.AddressZero, 1), this.contract, errors.BurnExceedsAllowance, {
+              owner: constants.AddressZero,
+              spender: spender.address,
+              allowance: 0,
+              value: 1,
+            });
           });
 
           it('reverts with an insufficient balance', async function () {
             await this.contract.approve(spender.address, initialSupply.add(1));
-            await expect(burnFrom(this.contract.connect(spender), owner.address, initialSupply.add(1))).to.be.revertedWith(
-              revertMessages.BurnExceedsBalance
+            await expectRevert(
+              burnFrom(this.contract.connect(spender), owner.address, initialSupply.add(1)),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: initialSupply,
+                value: initialSupply.add(1),
+              }
             );
           });
 
           it('reverts with an insufficient allowance', async function () {
-            await expect(burnFrom(this.contract.connect(spender), owner.address, initialAllowance.add(1))).to.be.revertedWith(
-              revertMessages.BurnExceedsAllowance
+            await expectRevert(
+              burnFrom(this.contract.connect(spender), owner.address, initialAllowance.add(1)),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: initialAllowance,
+                value: initialAllowance.add(1),
+              }
             );
           });
         });
@@ -121,7 +146,7 @@ function behavesLikeERC20Burnable(implementation) {
               });
             }
 
-            if (features.AllowanceTracking) {
+            if (features && features.AllowanceTracking) {
               it('emits an Approval event', async function () {
                 await expect(this.receipt)
                   .to.emit(this.contract, 'Approval')
@@ -178,41 +203,84 @@ function behavesLikeERC20Burnable(implementation) {
       describe('batchBurnFrom(address[],uint256[])', function () {
         context('Pre-conditions', function () {
           it('reverts with inconsistent arrays', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [spender.address, spender.address], [1]), revertMessages.InconsistentArrays);
-            await expect(batchBurnFrom(this.contract.connect(spender), [spender.address], [1, 1]), revertMessages.InconsistentArrays);
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [spender.address, spender.address], [1]),
+              this.contract,
+              errors.InconsistentArrayLengths
+            );
+            await expectRevert(batchBurnFrom(this.contract.connect(spender), [], [1]), this.contract, errors.InconsistentArrayLengths);
           });
 
           it('reverts when one of the owners is the zero address', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [constants.AddressZero], [1]), revertMessages.BurnExceedsAllowance);
-            await expect(
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [constants.AddressZero], [1]),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: constants.AddressZero,
+                spender: spender.address,
+                allowance: 0,
+                value: 1,
+              }
+            );
+            await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [owner.address, constants.AddressZero], [1, 1]),
-              revertMessages.BurnExceedsAllowance
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: constants.AddressZero,
+                spender: spender.address,
+                allowance: 0,
+                value: 1,
+              }
             );
           });
 
           it('reverts with an insufficient balance', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [owner.address], [initialSupply.add(1)]), revertMessages.BurnExceedsBalance);
-            await expect(
-              batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialSupply, 1]),
-              revertMessages.BurnExceedsBalance
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(maxSpender), [owner.address], [initialSupply.add(1)]),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: initialSupply,
+                value: initialSupply.add(1),
+              }
+            );
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(maxSpender), [owner.address, owner.address], [initialSupply, 1]),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: 0,
+                value: 1,
+              }
             );
           });
 
           it('reverts with an insufficient allowance', async function () {
-            await expect(
+            await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [owner.address], [initialAllowance.add(1)]),
-              revertMessages.BurnExceedsAllowance
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: initialAllowance,
+                value: initialAllowance.add(1),
+              }
             );
-            await expect(
+            await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialAllowance, 1]),
-              revertMessages.BurnExceedsAllowance
-            );
-          });
-
-          it('reverts when values overflow', async function () {
-            await expect(
-              batchBurnFrom(this.contract.connect(maxSpender), [owner.address, owner.address], [initialAllowance, constants.MaxUint256]),
-              revertMessages.BatchBurnValuesOverflow
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: 0,
+                value: 1,
+              }
             );
           });
         });
@@ -252,7 +320,7 @@ function behavesLikeERC20Burnable(implementation) {
                 });
               }
 
-              if (features.AllowanceTracking) {
+              if (features && features.AllowanceTracking) {
                 it('emits an Approval event', async function () {
                   await expect(this.receipt)
                     .to.emit(this.contract, 'Approval')
@@ -320,7 +388,7 @@ function behavesLikeERC20Burnable(implementation) {
       });
     }
 
-    if (features.ERC165 && interfaces.ERC20Burnable) {
+    if (features && features.ERC165 && interfaces && interfaces.ERC20Burnable) {
       supportsInterfaces(['IERC20Burnable']);
     }
   });

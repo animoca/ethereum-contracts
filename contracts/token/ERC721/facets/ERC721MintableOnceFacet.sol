@@ -18,7 +18,7 @@ contract ERC721MintableOnceFacet is ERC721MintableOnceBase, ForwarderRegistryCon
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC721MintableOnceStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721Storage.initERC721Mintable();

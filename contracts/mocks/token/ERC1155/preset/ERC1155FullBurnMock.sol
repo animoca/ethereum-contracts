@@ -5,7 +5,6 @@ import {IForwarderRegistry} from "./../../../../metatx/interfaces/IForwarderRegi
 import {IOperatorFilterRegistry} from "./../../../../token/royalty/interfaces/IOperatorFilterRegistry.sol";
 import {ITokenMetadataResolver} from "./../../../../token/metadata/interfaces/ITokenMetadataResolver.sol";
 import {ERC1155FullBurn} from "./../../../../token/ERC1155/preset/ERC1155FullBurn.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC1155FullBurnMock
 contract ERC1155FullBurnMock is ERC1155FullBurn {

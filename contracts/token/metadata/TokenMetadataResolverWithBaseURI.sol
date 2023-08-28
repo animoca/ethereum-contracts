@@ -2,14 +2,14 @@
 pragma solidity 0.8.21;
 
 import {ITokenMetadataResolver} from "./interfaces/ITokenMetadataResolver.sol";
-import {ContractOwnershipCheck} from "./../../access/libraries/ContractOwnershipCheck.sol";
+import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title TokenMetadataResolverWithBaseURI.
-/// @notice Token Metadata Resolver which uses a base metadata URI concatenated with the token identifier to produce a token metadta URI.
+/// @notice Token Metadata Resolver which uses a base metadata URI concatenated with the token identifier to produce a token metadata URI.
 /// @notice Only the owner of the target token contract can set the base metadata URI for this target contract.
 contract TokenMetadataResolverWithBaseURI is ITokenMetadataResolver {
-    using ContractOwnershipCheck for address;
+    using ContractOwnershipStorage for address;
     using Strings for uint256;
 
     mapping(address => string) public baseMetadataURI;
@@ -20,7 +20,7 @@ contract TokenMetadataResolverWithBaseURI is ITokenMetadataResolver {
     event BaseMetadataURISet(address tokenContract, string baseMetadataURI);
 
     /// @notice Sets the base metadata URI.
-    /// @dev Reverts if the sender is not the owner of the token contract.
+    /// @dev Reverts with {NotTargetContractOwner} if the sender is not the owner of the token contract.
     /// @dev Emits a {BaseMetadataURISet} event.
     /// @param tokenContract The token contract on which to set the base metadata URI.
     /// @param baseURI The base metadata URI.

@@ -2,6 +2,7 @@
 pragma solidity 0.8.21;
 pragma experimental ABIEncoderV2;
 
+import {EtherReceptionDisabled} from "./../CommonErrors.sol";
 import {FacetCut, Initialization} from "./DiamondCommon.sol";
 import {IDiamondCutEvents} from "./events/IDiamondCutEvents.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
@@ -19,22 +20,13 @@ contract Diamond is IDiamondCutEvents {
         DiamondStorage.layout().diamondCut(cuts, initializations);
     }
 
+    /// @notice Execute a function from a facet with delegatecall.
+    /// @dev Reverts with {FunctionNotFound} if the function selector is not found.
     fallback() external payable {
-        address facet = DiamondStorage.layout().facetAddress(msg.sig);
-        require(facet != address(0), "Diamond: function not found");
-        assembly {
-            calldatacopy(0, 0, calldatasize())
-            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
-            returndatacopy(0, 0, returndatasize())
-            switch result
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
-            }
-        }
+        DiamondStorage.layout().delegateOnFallback();
     }
 
-    receive() external payable {}
+    receive() external payable virtual {
+        revert EtherReceptionDisabled();
+    }
 }

@@ -30,6 +30,7 @@ describe('MultiStaticCall', function () {
     this.getCurrentBlockGasLimit = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit')];
     this.getCurrentBlockTimestamp = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp')];
     this.revertingCall = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCall')];
+    this.revertingCallWithoutMessage = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCallWithoutMessage')];
   };
 
   beforeEach(async function () {
@@ -38,8 +39,17 @@ describe('MultiStaticCall', function () {
 
   context('tryAggregate(bool,Call[])', function () {
     context('requireSuccess = true', function () {
-      it('reverts if one of the calls fail', async function () {
-        await expect(this.contract.tryAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWith('MultiStaticCall: call failed');
+      it('reverts if one of the calls reverts with a message', async function () {
+        await expect(this.contract.tryAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWithCustomError(
+          this.contract,
+          'Reverted'
+        );
+      });
+
+      it('reverts if one of the calls reverts without a message', async function () {
+        await expect(this.contract.tryAggregate(true, [this.getBlockNumber, this.revertingCallWithoutMessage]))
+          .to.be.revertedWithCustomError(this.contract, 'StaticCallReverted')
+          .withArgs(this.revertingCallWithoutMessage[0], this.revertingCallWithoutMessage[1]);
       });
 
       it('returns the data from the calls', async function () {
@@ -78,8 +88,9 @@ describe('MultiStaticCall', function () {
             this.getCurrentBlockTimestamp,
             this.getEthBalance,
             this.revertingCall,
+            this.revertingCallWithoutMessage,
           ]),
-          ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256', '']
+          ['uint256', 'address', 'uint256', 'uint256', 'uint256', '', '']
         );
 
         expect(result[0].success).to.be.true;
@@ -88,6 +99,7 @@ describe('MultiStaticCall', function () {
         expect(result[3].success).to.be.true;
         expect(result[4].success).to.be.true;
         expect(result[5].success).to.be.false;
+        expect(result[6].success).to.be.false;
         expect(result[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result[2].returnData).to.equal(this.block.gasLimit); // gaslimit
@@ -99,10 +111,17 @@ describe('MultiStaticCall', function () {
 
   context('tryBlockAndAggregate(bool,Call[])', function () {
     context('requireSuccess = true', function () {
-      it('reverts if one of the calls fail', async function () {
-        await expect(this.contract.tryBlockAndAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWith(
-          'MultiStaticCall: call failed'
+      it('reverts if one of the calls reverts with a message', async function () {
+        await expect(this.contract.tryBlockAndAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWithCustomError(
+          this.contract,
+          'Reverted'
         );
+      });
+
+      it('reverts if one of the calls reverts without a message', async function () {
+        await expect(this.contract.tryBlockAndAggregate(true, [this.getBlockNumber, this.revertingCallWithoutMessage]))
+          .to.be.revertedWithCustomError(this.contract, 'StaticCallReverted')
+          .withArgs(this.revertingCallWithoutMessage[0], this.revertingCallWithoutMessage[1]);
       });
 
       it('returns the data from the calls', async function () {
@@ -141,10 +160,11 @@ describe('MultiStaticCall', function () {
           this.getCurrentBlockTimestamp,
           this.getEthBalance,
           this.revertingCall,
+          this.revertingCallWithoutMessage,
         ]);
         const result = {
           blockNumber: aggregated.blockNumber,
-          returnData: decodeAggregateReturnData(aggregated.returnData, ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256', '']),
+          returnData: decodeAggregateReturnData(aggregated.returnData, ['uint256', 'address', 'uint256', 'uint256', 'uint256', '', '']),
         };
 
         expect(result.blockNumber).to.equal(this.block.number);
@@ -154,6 +174,7 @@ describe('MultiStaticCall', function () {
         expect(result.returnData[3].success).to.be.true;
         expect(result.returnData[4].success).to.be.true;
         expect(result.returnData[5].success).to.be.false;
+        expect(result.returnData[6].success).to.be.false;
         expect(result.returnData[0].returnData).to.equal(this.block.number); // blocknumber
         expect(result.returnData[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result.returnData[2].returnData).to.equal(this.block.gasLimit); // gaslimit

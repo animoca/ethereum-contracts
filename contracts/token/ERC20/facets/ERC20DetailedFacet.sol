@@ -19,8 +19,8 @@ contract ERC20DetailedFacet is ERC20DetailedBase, ForwarderRegistryContextBase {
     /// @notice Initializes the storage with the token details.
     /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.

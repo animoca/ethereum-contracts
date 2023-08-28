@@ -13,7 +13,8 @@ abstract contract AccessControlBase is IAccessControl, Context {
     using AccessControlStorage for AccessControlStorage.Layout;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
-    /// @dev Reverts if the sender is not the contract owner.
+    /// @notice Grants a role to an account.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @dev Emits a {RoleGranted} event if the account did not previously have the role.
     /// @param role The role to grant.
     /// @param account The account to grant the role to.
@@ -23,7 +24,8 @@ abstract contract AccessControlBase is IAccessControl, Context {
         AccessControlStorage.layout().grantRole(role, account, operator);
     }
 
-    /// @dev Reverts if the sender is not the contract owner.
+    /// @notice Revokes a role from an account.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @dev Emits a {RoleRevoked} event if the account previously had the role.
     /// @param role The role to revoke.
     /// @param account The account to revoke the role from.

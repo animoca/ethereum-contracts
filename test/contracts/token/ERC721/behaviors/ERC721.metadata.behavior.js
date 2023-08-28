@@ -1,11 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Metadata(implementation) {
-  const {name, symbol, deploy, features, revertMessages} = implementation;
-
+function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
   describe('like an ERC721 Metadata', function () {
     let accounts, deployer, owner, other;
 
@@ -41,11 +40,13 @@ function behavesLikeERC721Metadata(implementation) {
       });
 
       it('reverts if the token does not exist', async function () {
-        await expect(this.token.tokenURI(1)).to.be.revertedWith(revertMessages.NonExistingToken);
+        await expectRevert(this.token.tokenURI(1), this.token, errors.NonExistingToken, {
+          tokenId: 1,
+        });
       });
     });
 
-    if (implementation.features.MetadataResolver) {
+    if (features && features.MetadataResolver) {
       describe('metadataResolver()', function () {
         it('returns a non-zero address', async function () {
           await expect(this.token.metadataResolver()).to.not.equal(ethers.constants.AddressZero);

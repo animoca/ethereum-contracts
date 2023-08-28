@@ -1,5 +1,6 @@
 const {ethers} = require('hardhat');
 const {constants} = ethers;
+const {expect} = require('chai');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {getForwarderRegistryAddress} = require('../../../helpers/registries');

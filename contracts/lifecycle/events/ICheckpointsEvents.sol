@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-/// @title Timestamp-based checkpoints management.
+/// @title Timestamp-based checkpoints management (events)
 interface ICheckpointsEvents {
     /// @notice Emitted when a checkpoint is set.
     /// @param checkpointId The checkpoint identifier.

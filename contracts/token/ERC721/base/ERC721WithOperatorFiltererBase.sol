@@ -16,7 +16,7 @@ abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Cont
     using OperatorFiltererStorage for OperatorFiltererStorage.Layout;
 
     /// @inheritdoc IERC721
-    /// @dev Reverts with OperatorNotAllowed if `to` is not the zero address and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if `to` is not the zero address and is not allowed by the operator registry.
     function approve(address to, uint256 tokenId) external virtual {
         if (to != address(0)) {
             OperatorFiltererStorage.layout().requireAllowedOperatorForApproval(to);
@@ -25,7 +25,7 @@ abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Cont
     }
 
     /// @inheritdoc IERC721
-    /// @dev Reverts with OperatorNotAllowed if `approved` is true and `operator` is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if `approved` is true and `operator` is not allowed by the operator registry.
     function setApprovalForAll(address operator, bool approved) external virtual {
         if (approved) {
             OperatorFiltererStorage.layout().requireAllowedOperatorForApproval(operator);
@@ -34,7 +34,7 @@ abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Cont
     }
 
     /// @inheritdoc IERC721
-    /// @dev Reverts with OperatorNotAllowed if the sender is not `from` and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if the sender is not `from` and is not allowed by the operator registry.
     function transferFrom(address from, address to, uint256 tokenId) external {
         address sender = _msgSender();
         OperatorFiltererStorage.layout().requireAllowedOperatorForTransfer(sender, from);
@@ -42,7 +42,7 @@ abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Cont
     }
 
     /// @inheritdoc IERC721
-    /// @dev Reverts with OperatorNotAllowed if the sender is not `from` and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if the sender is not `from` and is not allowed by the operator registry.
     function safeTransferFrom(address from, address to, uint256 tokenId) external virtual {
         address sender = _msgSender();
         OperatorFiltererStorage.layout().requireAllowedOperatorForTransfer(sender, from);
@@ -50,7 +50,7 @@ abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Cont
     }
 
     /// @inheritdoc IERC721
-    /// @dev Reverts with OperatorNotAllowed if the sender is not `from` and is not allowed by the operator registry.
+    /// @dev Reverts with {OperatorNotAllowed} if the sender is not `from` and is not allowed by the operator registry.
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external virtual {
         address sender = _msgSender();
         OperatorFiltererStorage.layout().requireAllowedOperatorForTransfer(sender, from);

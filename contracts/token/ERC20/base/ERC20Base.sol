@@ -2,7 +2,6 @@
 pragma solidity ^0.8.21;
 
 import {IERC20} from "./../interfaces/IERC20.sol";
-import {IERC1155} from "./../../ERC1155/interfaces/IERC1155.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
 import {ERC20Storage} from "./../libraries/ERC20Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";

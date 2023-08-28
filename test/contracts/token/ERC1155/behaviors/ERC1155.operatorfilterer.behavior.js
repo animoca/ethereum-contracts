@@ -1,10 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {nonFungibleTokenId} = require('../../token');
 
-function behavesLikeERC1155WithOperatorFilterer({revertMessages, interfaces, deploy, mint}) {
+function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
   let accounts, deployer, owner, approved, operator, other;
 
   before(async function () {
@@ -44,9 +45,9 @@ function behavesLikeERC1155WithOperatorFilterer({revertMessages, interfaces, dep
 
     describe('setApprovalForAll(address,bool)', function () {
       it('reverts when setting an operator', async function () {
-        await expect(this.token.connect(owner).setApprovalForAll(other.address, true))
-          .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-          .withArgs(other.address);
+        await expectRevert(this.token.connect(owner).setApprovalForAll(other.address, true), this.token, errors.OperatorNotAllowed, {
+          operator: other.address,
+        });
       });
 
       context('when unsetting an operator', function () {
@@ -67,9 +68,14 @@ function behavesLikeERC1155WithOperatorFilterer({revertMessages, interfaces, dep
         describe('Pre-conditions', function () {
           const data = '0x42';
           it('reverts if sent by an operator', async function () {
-            await expect(transferFunction.call(this, owner.address, other.address, nft1, 1, data, operator))
-              .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-              .withArgs(operator.address);
+            await expectRevert(
+              transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, operator),
+              this.token,
+              errors.OperatorNotAllowed,
+              {
+                operator: operator.address,
+              }
+            );
           });
         });
       };

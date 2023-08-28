@@ -103,42 +103,41 @@ runBehaviorTests('ERC20MintBurn', config, function (deployFn) {
     symbol,
     decimals,
     tokenURI,
-    revertMessages: {
+    errors: {
       // ERC20
-      ApproveToZero: 'ERC20: approval to address(0)',
-      TransferExceedsBalance: 'ERC20: insufficient balance',
-      TransferToZero: 'ERC20: transfer to address(0)',
-      TransferExceedsAllowance: 'ERC20: insufficient allowance',
-      InconsistentArrays: 'ERC20: inconsistent arrays',
-      SupplyOverflow: 'ERC20: supply overflow',
+      ApprovalToAddressZero: {custom: true, error: 'ERC20ApprovalToAddressZero', args: ['owner']},
+      TransferToAddressZero: {custom: true, error: 'ERC20TransferToAddressZero', args: ['owner']},
+      TransferExceedsBalance: {custom: true, error: 'ERC20InsufficientBalance', args: ['owner', 'balance', 'value']},
+      TransferExceedsAllowance: {custom: true, error: 'ERC20InsufficientAllowance', args: ['owner', 'spender', 'allowance', 'value']},
 
       // ERC20Allowance
-      AllowanceUnderflow: 'ERC20: insufficient allowance',
-      AllowanceOverflow: 'ERC20: allowance overflow',
+      AllowanceUnderflow: {custom: true, error: 'ERC20InsufficientAllowance', args: ['owner', 'spender', 'allowance', 'decrement']},
+      AllowanceOverflow: {custom: true, error: 'ERC20AllowanceOverflow', args: ['owner', 'spender', 'allowance', 'increment']},
 
       // ERC20BatchTransfers
-      BatchTransferValuesOverflow: 'ERC20: values overflow',
+      BatchTransferValuesOverflow: {custom: true, error: 'ERC20BatchTransferValuesOverflow'},
 
       // ERC20SafeTransfers
-      SafeTransferRejected: 'ERC20: safe transfer rejected',
+      SafeTransferRejected: {custom: true, error: 'ERC20SafeTransferRejected', args: ['recipient']},
 
       // ERC2612
-      PermitFromZero: 'ERC20: permit from address(0)',
-      PermitExpired: 'ERC20: expired permit',
-      PermitInvalid: 'ERC20: invalid permit',
+      PermitFromAddressZero: {custom: true, error: 'ERC20PermitFromAddressZero'},
+      PermitExpired: {custom: true, error: 'ERC20PermitExpired', args: ['deadline']},
+      PermitInvalid: {custom: true, error: 'ERC20PermitInvalidSignature'},
 
       // ERC20Mintable
-      MintToZero: 'ERC20: mint to address(0)',
-      BatchMintValuesOverflow: 'ERC20: values overflow',
+      MintToAddressZero: {custom: true, error: 'ERC20MintToAddressZero'},
+      SupplyOverflow: {custom: true, error: 'ERC20TotalSupplyOverflow', args: ['supply', 'value']},
+      BatchMintValuesOverflow: {custom: true, error: 'ERC20BatchMintValuesOverflow'},
 
       // ERC20Burnable
-      BurnExceedsBalance: 'ERC20: insufficient balance',
-      BurnExceedsAllowance: 'ERC20: insufficient allowance',
-      BatchBurnValuesOverflow: 'ERC20: insufficient balance',
+      BurnExceedsBalance: {custom: true, error: 'ERC20InsufficientBalance', args: ['owner', 'balance', 'value']},
+      BurnExceedsAllowance: {custom: true, error: 'ERC20InsufficientAllowance', args: ['owner', 'spender', 'allowance', 'value']},
 
-      // Admin
-      NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      // Misc
+      InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
+      NotMinter: {custom: true, error: 'NotRoleHolder', args: ['role', 'account']},
+      NotContractOwner: {custom: true, error: 'NotContractOwner', args: ['account']},
     },
     features: {
       ERC165: true,
@@ -188,13 +187,6 @@ runBehaviorTests('ERC20MintBurn', config, function (deployFn) {
 
   before(async function () {
     [deployer] = await ethers.getSigners();
-  });
-
-  context('constructor', function () {
-    it('it reverts with inconsistent arrays', async function () {
-      await expect(implementation.deploy([], ['1'], deployer)).to.be.revertedWith(implementation.revertMessages.InconsistentArrays);
-      await expect(implementation.deploy([deployer.address], [], deployer)).to.be.revertedWith(implementation.revertMessages.InconsistentArrays);
-    });
   });
 
   behavesLikeERC20(implementation);

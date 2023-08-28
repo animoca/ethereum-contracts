@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
+import {ERC20PermitFromAddressZero, ERC20PermitExpired, ERC20PermitInvalidSignature} from "./../errors/ERC20PermitErrors.sol";
 import {IERC20Permit} from "./../interfaces/IERC20Permit.sol";
-import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ERC20Storage} from "./ERC20Storage.sol";
 import {ERC20DetailedStorage} from "./ERC20DetailedStorage.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
@@ -27,9 +27,9 @@ library ERC20PermitStorage {
     }
 
     /// @notice Sets the allowance to an account from another account using a signed permit.
-    /// @dev Reverts if `owner` is the zero address.
-    /// @dev Reverts if the current blocktime is greather than `deadline`.
-    /// @dev Reverts if `r`, `s`, and `v` do not represent a valid `secp256k1` signature from `owner`.
+    /// @dev Reverts with {ERC20PermitFromZeroAddress} if `owner` is the zero address.
+    /// @dev Reverts with {ERC20PermitExpired} if the current blocktime is greather than `deadline`.
+    /// @dev Reverts with {ERC20PermitInvalidSignature} if `r`, `s`, and `v` do not represent a valid `secp256k1` signature from `owner`.
     /// @dev Emits an {IERC20-Approval} event.
     /// @param owner The token owner granting the allowance to `spender`.
     /// @param spender The token spender being granted the allowance by `owner`.
@@ -39,13 +39,13 @@ library ERC20PermitStorage {
     /// @param r Permit signature r parameter.
     /// @param s Permit signature s parameter.
     function permit(Layout storage st, address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) internal {
-        require(owner != address(0), "ERC20: permit from address(0)");
-        require(block.timestamp <= deadline, "ERC20: expired permit");
+        if (owner == address(0)) revert ERC20PermitFromAddressZero();
+        if (block.timestamp > deadline) revert ERC20PermitExpired(deadline);
         unchecked {
             bytes32 hashStruct = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, st.accountNonces[owner]++, deadline));
             bytes32 hash = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), hashStruct));
             address signer = ecrecover(hash, v, r, s);
-            require(signer == owner, "ERC20: invalid permit");
+            if (signer != owner) revert ERC20PermitInvalidSignature();
         }
         ERC20Storage.layout().approve(owner, spender, value);
     }

@@ -1,12 +1,13 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const ReceiverType = require('../../ReceiverType');
 
-function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}, operatorFilterRegistryAddress = null) {
+function behavesLikeERC721Standard({deploy, mint, errors}, operatorFilterRegistryAddress = null) {
   describe('like an ERC721', function () {
     let accounts, deployer, owner, approved, operator, other;
 
@@ -43,7 +44,7 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('balanceOf(address)', function () {
       it('reverts if querying the zero address', async function () {
-        await expect(this.token.balanceOf(constants.AddressZero)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expectRevert(this.token.balanceOf(constants.AddressZero), this.token, errors.BalanceOfAddressZero);
       });
 
       it('returns the amount of tokens owned', async function () {
@@ -54,7 +55,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('ownerOf(uint256)', function () {
       it('reverts if the token does not exist', async function () {
-        await expect(this.token.ownerOf(unknownNFT)).to.be.revertedWith(revertMessages.NonExistingToken);
+        await expectRevert(this.token.ownerOf(unknownNFT), this.token, errors.NonExistingToken, {
+          tokenId: unknownNFT,
+        });
       });
 
       it('returns the owner of the token', async function () {
@@ -68,28 +71,48 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
           this.sender = owner;
           this.from = owner.address;
           this.to = constants.AddressZero;
-          await expect(transferFunction.call(this, nft1, data)).to.be.revertedWith(revertMessages.TransferToAddressZero);
+          await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.TransferToAddressZero);
         });
 
         it('reverts if the token does not exist', async function () {
           this.sender = owner;
           this.from = owner.address;
           this.to = other.address;
-          await expect(transferFunction.call(this, unknownNFT, data)).to.be.revertedWith(revertMessages.NonExistingToken);
+          await expectRevert(transferFunction.call(this, unknownNFT, data), this.token, errors.NonExistingToken, {
+            tokenId: unknownNFT,
+          });
         });
 
         it('reverts if `from` is not the token owner', async function () {
           this.sender = other;
           this.from = other.address;
           this.to = other.address;
-          await expect(transferFunction.call(this, nft1, data)).to.be.revertedWith(revertMessages.NonOwnedToken);
+          await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.NonOwnedToken, {
+            account: other.address,
+            tokenId: nft1,
+          });
         });
 
-        it('reverts if the sender is not authorized for the token', async function () {
+        it('reverts if the sender is not authorized for the token (token has no approval)', async function () {
           this.sender = other;
           this.from = owner.address;
           this.to = other.address;
-          await expect(transferFunction.call(this, nft1, data, other)).to.be.revertedWith(revertMessages.NonApproved);
+          await expectRevert(transferFunction.call(this, nft3, data), this.token, errors.NonApprovedForTransfer, {
+            sender: other.address,
+            owner: owner.address,
+            tokenId: nft3,
+          });
+        });
+
+        it('reverts if the sender is not authorized for the token (token has approval but the sender is not approved)', async function () {
+          this.sender = other;
+          this.from = owner.address;
+          this.to = other.address;
+          await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.NonApprovedForTransfer, {
+            sender: other.address,
+            owner: owner.address,
+            tokenId: nft1,
+          });
         });
 
         if (data !== undefined) {
@@ -109,7 +132,10 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
             this.sender = owner;
             this.from = owner.address;
             this.to = this.refusingReceiver721.address;
-            await expect(transferFunction.call(this, nft1, data)).to.be.revertedWith(revertMessages.SafeTransferRejected);
+            await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.SafeTransferRejected, {
+              recipient: this.to,
+              tokenId: nft1,
+            });
           });
         }
       });
@@ -235,19 +261,31 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('approve(address,address)', function () {
       it('reverts if the token does not exist', async function () {
-        await expect(this.token.connect(owner).approve(approved.address, unknownNFT)).to.be.revertedWith(revertMessages.NonExistingToken);
+        await expectRevert(this.token.connect(owner).approve(approved.address, unknownNFT), this.token, errors.NonExistingToken, {
+          tokenId: unknownNFT,
+        });
       });
 
       it('reverts in case of self-approval', async function () {
-        await expect(this.token.connect(owner).approve(owner.address, nft3)).to.be.revertedWith(revertMessages.SelfApproval);
+        await expectRevert(this.token.connect(owner).approve(owner.address, nft1), this.token, errors.SelfApproval, {
+          account: owner.address,
+        });
       });
 
       it('reverts if the sender does not own the token and is not an operator for the owner', async function () {
-        await expect(this.token.connect(other).approve(approved.address, nft1)).to.be.revertedWith(revertMessages.NonApproved);
+        await expectRevert(this.token.connect(other).approve(approved.address, nft1), this.token, errors.NonApprovedForApproval, {
+          sender: other.address,
+          owner: owner.address,
+          tokenId: nft1,
+        });
       });
 
       it('reverts if the sender has an approval for the token', async function () {
-        await expect(this.token.connect(approved).approve(other.address, nft1)).to.be.revertedWith(revertMessages.NonApproved);
+        await expectRevert(this.token.connect(approved).approve(other.address, nft1), this.token, errors.NonApprovedForApproval, {
+          sender: approved.address,
+          owner: owner.address,
+          tokenId: nft1,
+        });
       });
 
       function approvalWasSuccessful(tokenId) {
@@ -317,7 +355,9 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('getApproved(uint256)', function () {
       it('reverts if the token does not exist', async function () {
-        await expect(this.token.getApproved(unknownNFT)).to.be.revertedWith(revertMessages.NonExistingToken);
+        await expectRevert(this.token.getApproved(unknownNFT), this.token, errors.NonExistingToken, {
+          tokenId: unknownNFT,
+        });
       });
 
       it('returns the approved address if an approval was set', async function () {
@@ -331,8 +371,12 @@ function behavesLikeERC721Standard({name, deploy, mint, revertMessages, methods}
 
     describe('setApprovalForAll(address,bool)', function () {
       it('reverts in case of self-approval', async function () {
-        await expect(this.token.connect(owner).setApprovalForAll(owner.address, true)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
-        await expect(this.token.connect(owner).setApprovalForAll(owner.address, false)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
+        await expectRevert(this.token.connect(owner).setApprovalForAll(owner.address, true), this.token, errors.SelfApprovalForAll, {
+          account: owner.address,
+        });
+        await expectRevert(this.token.connect(owner).setApprovalForAll(owner.address, false), this.token, errors.SelfApprovalForAll, {
+          account: owner.address,
+        });
       });
 
       context('when setting an operator', function () {

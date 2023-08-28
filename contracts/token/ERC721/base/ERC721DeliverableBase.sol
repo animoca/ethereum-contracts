@@ -20,7 +20,7 @@ abstract contract ERC721DeliverableBase is IERC721Events, IERC721Deliverable, Co
     bytes32 private constant _MINTER_ROLE = "minter";
 
     /// @inheritdoc IERC721Deliverable
-    /// @dev Reverts if the sender does not have the 'minter' role.
+    /// @dev Reverts with {NotRoleHolder} if the sender does not have the 'minter' role.
     function deliver(address[] calldata recipients, uint256[] calldata tokenIds) external virtual {
         AccessControlStorage.layout().enforceHasRole(_MINTER_ROLE, _msgSender());
         ERC721Storage.layout().deliver(recipients, tokenIds);

@@ -2,6 +2,8 @@
 pragma solidity ^0.8.21;
 pragma experimental ABIEncoderV2;
 
+// solhint-disable-next-line max-line-length
+import {EmptyFacet, NonContractFacet, FunctionAlreadyPresent, RemovingWithNonZeroAddressFacet, FunctionNotFound, ModifyingImmutableFunction, ReplacingFunctionByItself, ZeroAddressTargetInitCallButNonEmptyData, EmptyInitCallData, NonContractInitCallTarget, InitCallReverted} from "./../errors/DiamondErrors.sol";
 import {Facet, FacetCutAction, FacetCut, Initialization} from "./../DiamondCommon.sol";
 import {IDiamondCutEvents} from "./../events/IDiamondCutEvents.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
@@ -74,10 +76,10 @@ library DiamondStorage {
             uint256 length = facetCuts.length;
             for (uint256 i; i != length; ++i) {
                 FacetCut memory facetCut = facetCuts[i];
+
+                if (facetCut.selectors.length == 0) revert EmptyFacet(facetCut.facet);
+
                 FacetCutAction action = facetCut.action;
-
-                require(facetCut.selectors.length != 0, "Diamond: no function selectors");
-
                 if (action == FacetCutAction.ADD) {
                     (selectorCount, selectorSlot) = s.addFacetSelectors(selectorCount, selectorSlot, facetCut);
                 } else if (action == FacetCutAction.REPLACE) {
@@ -105,17 +107,14 @@ library DiamondStorage {
         FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
         unchecked {
-            if (facetCut.facet != address(this)) {
-                // allows immutable functions to be added from a constructor
-                require(facetCut.facet.isContract(), "Diamond: facet has no code"); // reverts if executed from a constructor
-            }
+            if (facetCut.facet != address(this) && !facetCut.facet.isContract()) revert NonContractFacet(facetCut.facet);
 
             uint256 length = facetCut.selectors.length;
             for (uint256 i; i != length; ++i) {
                 bytes4 selector = facetCut.selectors[i];
-                bytes32 oldFacet = s.diamondFacets[selector];
+                address oldFacetAddress = address(bytes20(s.diamondFacets[selector]));
 
-                require(address(bytes20(oldFacet)) == address(0), "Diamond: selector already added");
+                if (oldFacetAddress != address(0)) revert FunctionAlreadyPresent(oldFacetAddress, selector);
 
                 // add facet for selector
                 s.diamondFacets[selector] = bytes20(facetCut.facet) | bytes32(selectorCount);
@@ -144,7 +143,7 @@ library DiamondStorage {
         FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
         unchecked {
-            require(facetCut.facet == address(0), "Diamond: non-zero address facet");
+            if (facetCut.facet != address(0)) revert RemovingWithNonZeroAddressFacet(facetCut.facet);
 
             uint256 selectorSlotCount = selectorCount >> 3;
             uint256 selectorInSlotIndex = selectorCount & 7;
@@ -153,8 +152,8 @@ library DiamondStorage {
                 bytes4 selector = facetCut.selectors[i];
                 bytes32 oldFacet = s.diamondFacets[selector];
 
-                require(address(bytes20(oldFacet)) != address(0), "Diamond: selector not found");
-                require(address(bytes20(oldFacet)) != address(this), "Diamond: immutable function");
+                if (address(bytes20(s.diamondFacets[selector])) == address(0)) revert FunctionNotFound(selector);
+                if (address(bytes20(s.diamondFacets[selector])) == address(this)) revert ModifyingImmutableFunction(selector);
 
                 if (selectorSlot == 0) {
                     selectorSlotCount--;
@@ -215,7 +214,8 @@ library DiamondStorage {
 
     function replaceFacetSelectors(Layout storage s, FacetCut memory facetCut) internal {
         unchecked {
-            require(facetCut.facet.isContract(), "Diamond: facet has no code");
+            address facet = facetCut.facet;
+            if (!facet.isContract()) revert NonContractFacet(facetCut.facet);
 
             uint256 length = facetCut.selectors.length;
             for (uint256 i; i != length; ++i) {
@@ -223,23 +223,23 @@ library DiamondStorage {
                 bytes32 oldFacet = s.diamondFacets[selector];
                 address oldFacetAddress = address(bytes20(oldFacet));
 
-                require(oldFacetAddress != address(0), "Diamond: selector not found");
-                require(oldFacetAddress != address(this), "Diamond: immutable function");
-                require(oldFacetAddress != facetCut.facet, "Diamond: identical function");
+                if (oldFacetAddress == address(0)) revert FunctionNotFound(selector);
+                if (oldFacetAddress == address(this)) revert ModifyingImmutableFunction(selector);
+                if (oldFacetAddress == facet) revert ReplacingFunctionByItself(facet, selector);
 
                 // replace old facet address
-                s.diamondFacets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(facetCut.facet);
+                s.diamondFacets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(facet);
             }
         }
     }
 
     function initializationCall(address target, bytes memory data) internal {
         if (target == address(0)) {
-            require(data.length == 0, "Diamond: data is not empty");
+            if (data.length != 0) revert ZeroAddressTargetInitCallButNonEmptyData();
         } else {
-            require(data.length != 0, "Diamond: data is empty");
+            if (data.length == 0) revert EmptyInitCallData(target);
             if (target != address(this)) {
-                require(target.isContract(), "Diamond: target has no code");
+                if (!target.isContract()) revert NonContractInitCallTarget(target);
             }
 
             (bool success, bytes memory returndata) = target.delegatecall(data);
@@ -250,8 +250,26 @@ library DiamondStorage {
                         revert(add(32, returndata), returndataLength)
                     }
                 } else {
-                    revert("Diamond: init call reverted");
+                    revert InitCallReverted(target, data);
                 }
+            }
+        }
+    }
+
+    function delegateOnFallback(Layout storage s) internal {
+        bytes4 selector = msg.sig;
+        address facet = s.facetAddress(selector);
+        if (facet == address(0)) revert FunctionNotFound(selector);
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch result
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
             }
         }
     }

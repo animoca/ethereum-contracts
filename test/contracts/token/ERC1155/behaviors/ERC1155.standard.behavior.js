@@ -1,13 +1,14 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const ReceiverType = require('../../ReceiverType');
 const {nonFungibleTokenId, isFungible} = require('../../token');
 
-function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) {
+function behavesLikeERC1155Standard({errors, deploy, mint}) {
   let accounts, deployer, owner, approved, operator, other;
 
   before(async function () {
@@ -20,7 +21,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
   const fungible3 = {id: 3, supply: 12};
   const nft1 = nonFungibleTokenId(1);
   const nft2 = nonFungibleTokenId(2);
-  const nonExistingNFT = nonFungibleTokenId(99);
+  // const nonExistingNFT = nonFungibleTokenId(99);
 
   describe('like an ERC1155', function () {
     const fixture = async function () {
@@ -31,10 +32,10 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
       await mint(this.token, owner.address, nft1, 1);
       await mint(this.token, owner.address, nft2, 1);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
-      if (interfaces.ERC721) {
-        await this.token.approve(approved, nft1);
-        await this.token.approve(approved, nft2);
-      }
+      // if (interfaces && interfaces.ERC721) {
+      //   await this.token.approve(approved, nft1);
+      //   await this.token.approve(approved, nft2);
+      // }
       this.receiver721 = await deployContract('ERC721ReceiverMock', true, this.token.address);
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.address);
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.address);
@@ -42,9 +43,9 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
       // this.receiver1155721 = await ERC1155721ReceiverMock.new(true, true, this.token.address);
 
       // pre-transfer state
-      if (interfaces.ERC721) {
-        this.nftBalance = await this.token.balanceOf(owner.address);
-      }
+      // if (interfaces && interfaces.ERC721) {
+      //   this.nftBalance = await this.token.balanceOf(owner.address);
+      // }
     };
 
     beforeEach(async function () {
@@ -53,8 +54,8 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
 
     describe('balanceOf(address,uint256)', function () {
       it('reverts when queried about the zero address', async function () {
-        await expect(this.token.balanceOf(constants.AddressZero, nft1)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
-        await expect(this.token.balanceOf(constants.AddressZero, fungible1.id)).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expectRevert(this.token.balanceOf(constants.AddressZero, nft1), this.token, errors.BalanceOfAddressZero);
+        await expectRevert(this.token.balanceOf(constants.AddressZero, fungible1.id), this.token, errors.BalanceOfAddressZero);
       });
 
       // it('returns 1 for each Non-Fungible Token owned', async function () {
@@ -73,11 +74,11 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
 
     describe('balanceOfBatch(address[],uint256[])', function () {
       it('reverts with inconsistent arrays', async function () {
-        await expect(this.token.balanceOfBatch([owner.address], [nft1, nft2])).to.be.revertedWith(revertMessages.InconsistentArrays);
+        await expectRevert(this.token.balanceOfBatch([owner.address], [nft1, nft2]), this.token, errors.InconsistentArrayLengths);
       });
 
       it('reverts when queried about the zero address', async function () {
-        await expect(this.token.balanceOfBatch([constants.AddressZero], [nft1])).to.be.revertedWith(revertMessages.BalanceOfAddressZero);
+        await expectRevert(this.token.balanceOfBatch([constants.AddressZero], [nft1]), this.token, errors.BalanceOfAddressZero);
       });
 
       context('when the given addresses own some tokens', function () {
@@ -95,8 +96,12 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
 
     describe('setApprovalForAll(address,bool)', function () {
       it('reverts in case of self-approval', async function () {
-        await expect(this.token.connect(owner).setApprovalForAll(owner.address, true)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
-        await expect(this.token.connect(owner).setApprovalForAll(owner.address, false)).to.be.revertedWith(revertMessages.SelfApprovalForAll);
+        await expectRevert(this.token.connect(owner).setApprovalForAll(owner.address, true), this.token, errors.SelfApprovalForAll, {
+          account: owner.address,
+        });
+        await expectRevert(this.token.connect(owner).setApprovalForAll(owner.address, false), this.token, errors.SelfApprovalForAll, {
+          account: owner.address,
+        });
       });
 
       context('when setting an operator', function () {
@@ -196,58 +201,54 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           }
 
           if (nonFungibleTokens.length != 0) {
-            if (interfaces.ERC721) {
-              if (selfTransfer) {
-                it('[ERC721] does not affect the Non-Fungible Token(s) ownership', async function () {
-                  for (const [id, _value] of nonFungibleTokens) {
-                    expect(await this.token.ownerOf(id)).to.equal(owner.address);
-                  }
-                });
-              } else {
-                it('[ERC721] gives the ownership of the Non-Fungible Token(s) to the recipient', async function () {
-                  for (const [id, _value] of nonFungibleTokens) {
-                    expect(await this.token.ownerOf(id)).to.equal(this.to);
-                  }
-                });
-              }
-            }
-
-            if (interfaces.ERC721) {
-              if (selfTransfer) {
-                it('[ERC721] does not affect the sender NFTs balance', async function () {
-                  expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance);
-                });
-              } else {
-                it('[ERC721] decreases sender NFTs balance', async function () {
-                  expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance.sub(nonFungibleTokens.length));
-                });
-
-                it('[ERC721] increases recipient NFTs balance', async function () {
-                  expect(await this.token.balanceOf(this.to)).to.equal(nonFungibleTokens.length);
-                });
-              }
-
-              it('[ERC721] clears the Non-Fungible Token(s) approval', async function () {
-                for (const [id, _value] of nonFungibleTokens) {
-                  expect(await this.token.getApproved(id)).to.equal(constants.AddressZero);
-                }
-              });
-
-              it('[ERC721] emits Transfer event(s) for the Non-Fungible Token(s)', async function () {
-                for (const [id, _value] of nonFungibleTokens) {
-                  await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, this.to, id);
-                }
-              });
-            }
+            // if (interfaces && interfaces.ERC721) {
+            //   if (selfTransfer) {
+            //     it('[ERC721] does not affect the Non-Fungible Token(s) ownership', async function () {
+            //       for (const [id, _value] of nonFungibleTokens) {
+            //         expect(await this.token.ownerOf(id)).to.equal(owner.address);
+            //       }
+            //     });
+            //   } else {
+            //     it('[ERC721] gives the ownership of the Non-Fungible Token(s) to the recipient', async function () {
+            //       for (const [id, _value] of nonFungibleTokens) {
+            //         expect(await this.token.ownerOf(id)).to.equal(this.to);
+            //       }
+            //     });
+            //   }
+            // }
+            // if (interfaces && interfaces.ERC721) {
+            //   if (selfTransfer) {
+            //     it('[ERC721] does not affect the sender NFTs balance', async function () {
+            //       expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance);
+            //     });
+            //   } else {
+            //     it('[ERC721] decreases sender NFTs balance', async function () {
+            //       expect(await this.token.balanceOf(owner.address)).to.equal(this.nftBalance.sub(nonFungibleTokens.length));
+            //     });
+            //     it('[ERC721] increases recipient NFTs balance', async function () {
+            //       expect(await this.token.balanceOf(this.to)).to.equal(nonFungibleTokens.length);
+            //     });
+            //   }
+            //   it('[ERC721] clears the Non-Fungible Token(s) approval', async function () {
+            //     for (const [id, _value] of nonFungibleTokens) {
+            //       expect(await this.token.getApproved(id)).to.equal(constants.AddressZero);
+            //     }
+            //   });
+            //   it('[ERC721] emits Transfer event(s) for the Non-Fungible Token(s)', async function () {
+            //     for (const [id, _value] of nonFungibleTokens) {
+            //       await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(owner.address, this.to, id);
+            //     }
+            //   });
+            // }
           }
 
-          if (interfaces.ERC1155Inventory && fungibleTokens.length != 0) {
-            it('[ERC1155Inventory] does not give the ownership for Fungible Token(s)', async function () {
-              for (const [id, _value] of fungibleTokens) {
-                await expect(this.token.ownerOf(id)).to.be.revertedWith(revertMessages.NonExistingNFT);
-              }
-            });
-          }
+          // if (interfaces && interfaces.ERC1155Inventory && fungibleTokens.length != 0) {
+          //   it('[ERC1155Inventory] does not give the ownership for Fungible Token(s)', async function () {
+          //     for (const [id, _value] of fungibleTokens) {
+          //       await expect(this.token.ownerOf(id)).to.be.revertedWith(revertMessages.NonExistingNFT);
+          //     }
+          //   });
+          // }
         }
 
         if (Array.isArray(tokenIds)) {
@@ -292,17 +293,17 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           transferWasSuccessful(tokenIds, values, data, receiverType, selfTransfer);
         });
 
-        const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
-        const approvedTokenIds = ids.filter((id) => id == nft1 || id == nft2);
-        if (interfaces.ERC721 && ids.length != 0 && ids.length == approvedTokenIds.length) {
-          context('[ERC721] when called by a wallet with single token approval', function () {
-            beforeEach(async function () {
-              this.sender = approved.address;
-              this.receipt = await transferFunction.call(this, owner.address, this.to, tokenIds, values, data, approved);
-            });
-            transferWasSuccessful(tokenIds, values, data, receiverType, selfTransfer);
-          });
-        }
+        // const ids = Array.isArray(tokenIds) ? tokenIds : [tokenIds];
+        // const approvedTokenIds = ids.filter((id) => id == nft1 || id == nft2);
+        // if (interfaces && interfaces.ERC721 && ids.length != 0 && ids.length == approvedTokenIds.length) {
+        //   context('[ERC721] when called by a wallet with single token approval', function () {
+        //     beforeEach(async function () {
+        //       this.sender = approved.address;
+        //       this.receipt = await transferFunction.call(this, owner.address, this.to, tokenIds, values, data, approved);
+        //     });
+        //     transferWasSuccessful(tokenIds, values, data, receiverType, selfTransfer);
+        //   });
+        // }
       };
 
       const transfersByRecipient = function (transferFunction, ids, values, data) {
@@ -336,57 +337,82 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
         // });
       };
 
-      const revertsOnPreconditions = function (transferFunction) {
+      const revertsOnPreconditions = function (transferFunction, isBatch) {
         describe('Pre-conditions', function () {
           const data = '0x42';
           it('reverts if transferred to the zero address', async function () {
-            await expect(transferFunction.call(this, owner.address, constants.AddressZero, nft1, 1, data, owner)).to.be.revertedWith(
-              revertMessages.TransferToAddressZero
+            await expectRevert(
+              transferFunction.call(this, owner.address, constants.AddressZero, nft1, 1, data, owner),
+              this.token,
+              errors.TransferToAddressZero
             );
           });
 
           it('reverts if the sender is not approved', async function () {
-            await expect(transferFunction.call(this, owner.address, other.address, nft1, 1, data, other)).to.be.revertedWith(
-              revertMessages.NonApproved
-            );
-            await expect(transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, other)).to.be.revertedWith(
-              revertMessages.NonApproved
+            await expectRevert(transferFunction.call(this, owner.address, other.address, nft1, 1, data, other), this.token, errors.NonApproved, {
+              sender: other.address,
+              owner: owner.address,
+            });
+            await expectRevert(
+              transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, other),
+              this.token,
+              errors.NonApproved,
+              {
+                sender: other.address,
+                owner: owner.address,
+              }
             );
           });
 
           it('reverts in case of balance overflow', async function () {
             await mint(this.token, other.address, fungible1.id, constants.MaxUint256);
-            await expect(transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, owner)).to.be.revertedWith(
-              revertMessages.BalanceOverflow
+            await expectRevert(
+              transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, owner),
+              this.token,
+              errors.BalanceOverflow,
+              {
+                recipient: other.address,
+                id: fungible1.id,
+                balance: constants.MaxUint256,
+                value: 1,
+              }
             );
           });
 
-          if (interfaces.ERC721) {
-            it('[ERC721] reverts if a Non-Fungible Token has a value different from 1', async function () {
-              await expect(transferFunction.call(this, owner.address, other.address, nft1, 0, data, owner)).to.be.revertedWith(
-                revertMessages.WrongNFTValue
-              );
-              await expect(transferFunction.call(this, owner.address, other.address, nft1, 2, data, owner)).to.be.revertedWith(
-                revertMessages.WrongNFTValue
-              );
-            });
+          // if (interfaces && interfaces.ERC721) {
+          //   it('[ERC721] reverts if a Non-Fungible Token has a value different from 1', async function () {
+          //     await expect(transferFunction.call(this, owner.address, other.address, nft1, 0, data, owner)).to.be.revertedWith(
+          //       revertMessages.WrongNFTValue
+          //     );
+          //     await expect(transferFunction.call(this, owner.address, other.address, nft1, 2, data, owner)).to.be.revertedWith(
+          //       revertMessages.WrongNFTValue
+          //     );
+          //   });
 
-            it('[ERC721] reverts with a non-existing Non-Fungible Token', async function () {
-              await expect(transferFunction.call(this, owner.address, other.address, nonExistingNFT, 1, data, owner)).to.be.revertedWith(
-                revertMessages.NonOwnedNFT
-              );
-            });
+          //   it('[ERC721] reverts with a non-existing Non-Fungible Token', async function () {
+          //     await expect(transferFunction.call(this, owner.address, other.address, nonExistingNFT, 1, data, owner)).to.be.revertedWith(
+          //       revertMessages.NonOwnedNFT
+          //     );
+          //   });
 
-            it('[ERC721] reverts if from is not the owner for a Non-Fungible Token', async function () {
-              await expect(transferFunction.call(this, other.address, approved.address, nft1, 1, data, other)).to.be.revertedWith(
-                revertMessages.NonOwnedNFT
-              );
-            });
-          }
+          //   it('[ERC721] reverts if from is not the owner for a Non-Fungible Token', async function () {
+          //     await expect(transferFunction.call(this, other.address, approved.address, nft1, 1, data, other)).to.be.revertedWith(
+          //       revertMessages.NonOwnedNFT
+          //     );
+          //   });
+          // }
 
           it('reverts if from has insufficient balance for a Fungible Token', async function () {
-            await expect(transferFunction.call(this, other.address, approved.address, fungible1.id, 1, data, other)).to.be.revertedWith(
-              revertMessages.InsufficientBalance
+            await expectRevert(
+              transferFunction.call(this, other.address, approved.address, fungible1.id, 1, data, other),
+              this.token,
+              errors.InsufficientBalance,
+              {
+                owner: other.address,
+                id: fungible1.id,
+                balance: 0,
+                value: 1,
+              }
             );
           });
 
@@ -399,9 +425,29 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           });
 
           it('reverts when sent to an ERC1155TokenReceiver which refuses the transfer', async function () {
-            await expect(transferFunction.call(this, owner.address, this.refusingReceiver1155.address, nft1, 1, data, owner)).to.be.revertedWith(
-              revertMessages.TransferRejected
-            );
+            if (isBatch) {
+              await expectRevert(
+                transferFunction.call(this, owner.address, this.refusingReceiver1155.address, nft1, 1, data, owner),
+                this.token,
+                errors.SafeBatchTransferRejected,
+                {
+                  recipient: this.refusingReceiver1155.address,
+                  ids: [nft1],
+                  values: [1],
+                }
+              );
+            } else {
+              await expectRevert(
+                transferFunction.call(this, owner.address, this.refusingReceiver1155.address, nft1, 1, data, owner),
+                this.token,
+                errors.SafeTransferRejected,
+                {
+                  recipient: this.refusingReceiver1155.address,
+                  id: nft1,
+                  value: 1,
+                }
+              );
+            }
           });
 
           it('reverts when sent to an ERC1155TokenReceiver which reverts', async function () {
@@ -415,7 +461,7 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           return this.token.connect(sender)['safeTransferFrom(address,address,uint256,uint256,bytes)'](from, to, id, value, data);
         };
 
-        revertsOnPreconditions(transferFn);
+        revertsOnPreconditions(transferFn, false);
         context('with a Fungible Token', function () {
           context('zero value transfer', function () {
             transfersByRecipient(transferFn, fungible1.id, 0, '0x42');
@@ -438,11 +484,13 @@ function behavesLikeERC1155Standard({revertMessages, interfaces, deploy, mint}) 
           const values_ = Array.isArray(values) ? values : [values];
           return this.token.connect(sender)['safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)'](from, to, ids_, values_, data);
         };
-        revertsOnPreconditions(transferFn);
+        revertsOnPreconditions(transferFn, true);
 
         it('reverts with inconsistent arrays', async function () {
-          await expect(transferFn.call(this, owner.address, other.address, [nft1, nft2], [1], '0x42', owner)).to.be.revertedWith(
-            revertMessages.InconsistentArrays
+          await expectRevert(
+            transferFn.call(this, owner.address, other.address, [nft1, nft2], [1], '0x42', owner),
+            this.token,
+            errors.InconsistentArrayLengths
           );
         });
 

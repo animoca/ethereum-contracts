@@ -1,10 +1,11 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces, features, methods}) {
+function behavesLikeERC721Deliverable({deploy, errors}) {
   describe('like an ERC721 Deliverable', function () {
     let accounts, deployer, owner;
 
@@ -50,21 +51,26 @@ function behavesLikeERC721Deliverable({deploy, mint, revertMessages, interfaces,
     describe('deliver(address[],uint256[])', function () {
       describe('Pre-conditions', function () {
         it('reverts with inconsistent arrays', async function () {
-          await expect(this.token.deliver([], [1])).to.be.revertedWith(revertMessages.InconsistentArrays);
-          await expect(this.token.deliver([owner.address], [])).to.be.revertedWith(revertMessages.InconsistentArrays);
+          await expectRevert(this.token.deliver([], [1]), this.token, errors.InconsistentArrayLengths);
+          await expectRevert(this.token.deliver([owner.address], []), this.token, errors.InconsistentArrayLengths);
         });
 
         it('reverts if minted to the zero address', async function () {
-          await expect(this.token.deliver([constants.AddressZero], [1])).to.be.revertedWith(revertMessages.MintToAddressZero);
+          await expectRevert(this.token.deliver([constants.AddressZero], [1]), this.token, errors.MintToAddressZero);
         });
 
         it('reverts if the token already exists', async function () {
           await this.token.deliver([owner.address], [1]);
-          await expect(this.token.deliver([owner.address], [1])).to.be.revertedWith(revertMessages.ExistingToken);
+          await expectRevert(this.token.deliver([owner.address], [1]), this.token, errors.ExistingToken, {
+            tokenId: 1,
+          });
         });
 
         it('reverts if sent by non-minter', async function () {
-          await expect(this.token.connect(owner).deliver([owner.address], [1])).to.be.revertedWith(revertMessages.NotMinter);
+          await expectRevert(this.token.connect(owner).deliver([owner.address], [1]), this.token, errors.NotMinter, {
+            role: await this.token.MINTER_ROLE(),
+            account: owner.address,
+          });
         });
       });
 

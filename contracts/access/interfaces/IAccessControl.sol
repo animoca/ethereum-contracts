@@ -3,7 +3,7 @@ pragma solidity ^0.8.21;
 
 import {IAccessControlEvents} from "./../events/IAccessControlEvents.sol";
 
-/// @title Access control via roles management.
+/// @title Access control via roles management (functions)
 interface IAccessControl is IAccessControlEvents {
     /// @notice Renounces a role by the sender.
     /// @dev Reverts if `sender` does not have `role`.

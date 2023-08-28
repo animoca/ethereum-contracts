@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
+import {ZeroAddressPayoutWallet} from "./../errors/PayoutWalletErrors.sol";
 import {IPayoutWalletEvents} from "./../events/IPayoutWalletEvents.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
@@ -16,7 +17,7 @@ library PayoutWalletStorage {
 
     /// @notice Initializes the storage with an initial payout wallet (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    /// @dev Reverts if `initialPayoutWallet` is the zero address.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function constructorInit(Layout storage s, address payable initialPayoutWallet) internal {
@@ -26,8 +27,8 @@ library PayoutWalletStorage {
     /// @notice Initializes the storage with an initial payout wallet (proxied version).
     /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Reverts if `initialPayoutWallet` is the zero address.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function proxyInit(Layout storage s, address payable initialPayoutWallet) internal {
@@ -36,11 +37,11 @@ library PayoutWalletStorage {
     }
 
     /// @notice Sets the payout wallet.
-    /// @dev Reverts if `newPayoutWallet` is the zero address.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `newPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param newPayoutWallet The payout wallet.
     function setPayoutWallet(Layout storage s, address payable newPayoutWallet) internal {
-        require(newPayoutWallet != address(0), "PayoutWallet: zero address");
+        if (newPayoutWallet == address(0)) revert ZeroAddressPayoutWallet();
         s.wallet = newPayoutWallet;
         emit IPayoutWalletEvents.PayoutWalletSet(newPayoutWallet);
     }

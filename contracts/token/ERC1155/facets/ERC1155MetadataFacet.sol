@@ -22,8 +22,8 @@ contract ERC1155MetadataFacet is ERC1155MetadataBase, ForwarderRegistryContextBa
     /// @notice Initializes the storage with the contract metadata.
     /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interfaces as supported: ERC1155MetadataURI.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @param name The name of the token.
     /// @param symbol The symbol of the token.
     /// @param metadataResolver The address of the metadata resolver contract.

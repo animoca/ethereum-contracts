@@ -39,7 +39,7 @@ function behavesLikeERC20Detailed(implementation) {
       });
     });
 
-    if (features.ERC165) {
+    if (features && features.ERC165) {
       supportsInterfaces(['IERC20Detailed']);
     }
   });

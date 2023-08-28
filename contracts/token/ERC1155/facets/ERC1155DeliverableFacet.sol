@@ -17,7 +17,7 @@ contract ERC1155DeliverableFacet is ERC1155DeliverableBase, ForwarderRegistryCon
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interfaces as supported: ERC1155Deliverable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC1155DeliverableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC1155Storage.initERC1155Deliverable();

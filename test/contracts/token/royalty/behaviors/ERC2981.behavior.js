@@ -1,10 +1,11 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC2981({deploy}) {
+function behavesLikeERC2981({deploy, errors}) {
   describe('like an ERC2981', function () {
     let deployer, other;
 
@@ -21,14 +22,13 @@ function behavesLikeERC2981({deploy}) {
 
     describe('setRoyaltyReceiver(address)', function () {
       it('reverts when not sent by the contract owner', async function () {
-        await expect(this.contract.connect(other).setRoyaltyReceiver(constants.AddressZero)).to.be.revertedWith('Ownership: not the owner');
+        await expectRevert(this.contract.connect(other).setRoyaltyReceiver(constants.AddressZero), this.contract, errors.NotContractOwner, {
+          account: other.address,
+        });
       });
 
       it('reverts when trying to set the zero address', async function () {
-        await expect(this.contract.setRoyaltyReceiver(constants.AddressZero)).to.be.revertedWithCustomError(
-          this.contract,
-          'IncorrectRoyaltyReceiver'
-        );
+        await expectRevert(this.contract.setRoyaltyReceiver(constants.AddressZero), this.contract, errors.IncorrectRoyaltyReceiver);
       });
 
       it('sets the royalty receiver to the new value', async function () {
@@ -40,16 +40,16 @@ function behavesLikeERC2981({deploy}) {
 
     describe('setRoyaltyPercentage(uint256)', function () {
       it('reverts when not sent by the contract owner', async function () {
-        await expect(this.contract.connect(other).setRoyaltyPercentage(constants.AddressZero)).to.be.revertedWith('Ownership: not the owner');
+        await expectRevert(this.contract.connect(other).setRoyaltyPercentage(constants.AddressZero), this.contract, errors.NotContractOwner, {
+          account: other.address,
+        });
       });
 
       it('reverts when trying to set the a percentage above 100%', async function () {
         const percentageArg = (await this.contract.ROYALTY_FEE_DENOMINATOR()).add(1);
-        await expect(this.contract.setRoyaltyPercentage(percentageArg)).to.be.revertedWithCustomError(
-          this.contract,
-          'IncorrectRoyaltyPercentage',
-          percentageArg
-        );
+        await expectRevert(this.contract.setRoyaltyPercentage(percentageArg), this.contract, errors.IncorrectRoyaltyPercentage, {
+          percentage: percentageArg,
+        });
       });
 
       it('sets the royalty percentage to the new value', async function () {

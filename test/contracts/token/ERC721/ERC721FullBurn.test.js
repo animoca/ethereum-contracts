@@ -125,27 +125,37 @@ runBehaviorTests('ERC721FullBurn', config, function (deployFn) {
   const implementation = {
     name,
     symbol,
-    revertMessages: {
-      NonApproved: 'ERC721: non-approved sender',
-      SelfApproval: 'ERC721: self-approval',
-      SelfApprovalForAll: 'ERC721: self-approval for all',
-      BalanceOfAddressZero: 'ERC721: balance of address(0)',
-      TransferToAddressZero: 'ERC721: transfer to address(0)',
-      MintToAddressZero: 'ERC721: mint to address(0)',
-      SafeTransferRejected: 'ERC721: safe transfer rejected',
-      NonExistingToken: 'ERC721: non-existing token',
-      NonOwnedToken: 'ERC721: non-owned token',
-      ExistingToken: 'ERC721: existing token',
-      InconsistentArrays: 'ERC721: inconsistent arrays',
+    errors: {
+      // ERC721
+      SelfApproval: {custom: true, error: 'ERC721SelfApproval', args: ['account']},
+      SelfApprovalForAll: {custom: true, error: 'ERC721SelfApprovalForAll', args: ['account']},
+      NonApprovedForApproval: {custom: true, error: 'ERC721NonApprovedForApproval', args: ['sender', 'owner', 'tokenId']},
+      TransferToAddressZero: {custom: true, error: 'ERC721TransferToAddressZero'},
+      NonExistingToken: {custom: true, error: 'ERC721NonExistingToken', args: ['tokenId']},
+      NonApprovedForTransfer: {custom: true, error: 'ERC721NonApprovedForTransfer', args: ['sender', 'owner', 'tokenId']},
+      NonOwnedToken: {custom: true, error: 'ERC721NonOwnedToken', args: ['account', 'tokenId']},
+      SafeTransferRejected: {custom: true, error: 'ERC721SafeTransferRejected', args: ['recipient', 'tokenId']},
+      BalanceOfAddressZero: {custom: true, error: 'ERC721BalanceOfAddressZero'},
 
-      // Admin
-      NotMinter: "AccessControl: missing 'minter' role",
-      NotContractOwner: 'Ownership: not the owner',
+      // ERC721Mintable
+      MintToAddressZero: {custom: true, error: 'ERC721MintToAddressZero'},
+      ExistingToken: {custom: true, error: 'ERC721ExistingToken', args: ['tokenId']},
+
+      // ERC2981
+      IncorrectRoyaltyReceiver: {custom: true, error: 'ERC2981IncorrectRoyaltyReceiver'},
+      IncorrectRoyaltyPercentage: {custom: true, error: 'ERC2981IncorrectRoyaltyPercentage', args: ['percentage']},
+
+      // OperatorFilterer
+      OperatorNotAllowed: {custom: true, error: 'OperatorNotAllowed', args: ['operator']},
+
+      // Misc
+      InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
+      NotMinter: {custom: true, error: 'NotRoleHolder', args: ['role', 'account']},
+      NotContractOwner: {custom: true, error: 'NotContractOwner', args: ['account']},
     },
     features: {
       MetadataResolver: true,
       WithOperatorFilterer: true,
-      ERC2981: true,
     },
     interfaces: {
       ERC721: true,
@@ -154,6 +164,7 @@ runBehaviorTests('ERC721FullBurn', config, function (deployFn) {
       ERC721Deliverable: true,
       ERC721Burnable: true,
       ERC721Metadata: true,
+      ERC2981: true,
     },
     methods: {
       'batchTransferFrom(address,address,uint256[])': async function (contract, from, to, ids, signer) {

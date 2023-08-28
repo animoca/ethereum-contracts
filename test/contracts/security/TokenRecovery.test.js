@@ -55,12 +55,14 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
   describe('recoverETH(address[],uint256[])', function () {
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).recoverETH([], [])).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).recoverETH([], []))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts with inconsistent arrays', async function () {
-      await expect(this.contract.recoverETH([deployer.address], [])).to.be.revertedWith('Recovery: inconsistent arrays');
-      await expect(this.contract.recoverETH([], ['1'])).to.be.revertedWith('Recovery: inconsistent arrays');
+      await expect(this.contract.recoverETH([deployer.address], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+      await expect(this.contract.recoverETH([], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
 
     it('reverts with an amount above the contract balance', async function () {
@@ -82,13 +84,18 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
   describe('recoverERC20s(address[],address[],uint256[])', function () {
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).recoverERC20s([], [], [])).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).recoverERC20s([], [], []))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts with inconsistent arrays', async function () {
-      await expect(this.contract.recoverERC20s([deployer.address], [], [])).to.be.revertedWith('Recovery: inconsistent arrays');
-      await expect(this.contract.recoverERC20s([], [this.erc20.address], [])).to.be.revertedWith('Recovery: inconsistent arrays');
-      await expect(this.contract.recoverERC20s([], [], ['1'])).to.be.revertedWith('Recovery: inconsistent arrays');
+      await expect(this.contract.recoverERC20s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+      await expect(this.contract.recoverERC20s([], [this.erc20.address], [])).to.be.revertedWithCustomError(
+        this.contract,
+        'InconsistentArrayLengths'
+      );
+      await expect(this.contract.recoverERC20s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
 
     context('when successful', function () {
@@ -109,13 +116,18 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
   describe('recoverERC721s(address[],address[],uint256[])', function () {
     it('reverts if not called by the contract owner', async function () {
-      await expect(this.contract.connect(other).recoverERC721s([], [], [])).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).recoverERC721s([], [], []))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     it('reverts with inconsistent arrays', async function () {
-      await expect(this.contract.recoverERC721s([deployer.address], [], [])).to.be.revertedWith('Recovery: inconsistent arrays');
-      await expect(this.contract.recoverERC721s([], [this.erc721.address], [])).to.be.revertedWith('Recovery: inconsistent arrays');
-      await expect(this.contract.recoverERC721s([], [], ['1'])).to.be.revertedWith('Recovery: inconsistent arrays');
+      await expect(this.contract.recoverERC721s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+      await expect(this.contract.recoverERC721s([], [this.erc721.address], [])).to.be.revertedWithCustomError(
+        this.contract,
+        'InconsistentArrayLengths'
+      );
+      await expect(this.contract.recoverERC721s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
 
     context('when successful', function () {

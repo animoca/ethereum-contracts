@@ -12,7 +12,7 @@ abstract contract ProxyAdminBase is IProxyAdmin, Context {
     using ProxyAdminStorage for ProxyAdminStorage.Layout;
 
     /// @notice Sets a new proxy admin.
-    /// @dev Reverts if `sender` is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if `sender` is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.
     /// @param newAdmin The new proxy admin.
     function changeProxyAdmin(address newAdmin) external {
@@ -20,7 +20,7 @@ abstract contract ProxyAdminBase is IProxyAdmin, Context {
     }
 
     /// @notice Gets the proxy admin.
-    /// @return admin The proxy admin
+    /// @return admin The proxy admin.
     function proxyAdmin() external view returns (address admin) {
         return ProxyAdminStorage.layout().proxyAdmin();
     }

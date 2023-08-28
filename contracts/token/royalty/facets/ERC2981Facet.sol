@@ -17,7 +17,7 @@ contract ERC2981Facet is ERC2981Base, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC2981.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC2981() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC2981Storage.init();

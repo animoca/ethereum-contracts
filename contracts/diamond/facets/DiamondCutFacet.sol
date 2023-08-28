@@ -20,21 +20,21 @@ contract DiamondCutFacet is IDiamondCut, IDiamondCutBatchInit, ForwarderRegistry
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: DiamondCut, DiamondCutBatchInit.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initDiamondCutStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.initDiamondCut();
     }
 
     /// @inheritdoc IDiamondCut
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function diamondCut(FacetCut[] calldata cuts, address target, bytes calldata data) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, target, data);
     }
 
     /// @inheritdoc IDiamondCutBatchInit
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function diamondCut(FacetCut[] calldata cuts, Initialization[] calldata initializations) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         DiamondStorage.layout().diamondCut(cuts, initializations);

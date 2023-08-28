@@ -11,7 +11,7 @@ abstract contract PayoutWallet is PayoutWalletBase, ContractOwnership {
     using PayoutWalletStorage for PayoutWalletStorage.Layout;
 
     /// @notice Initializes the storage with an initial payout wallet.
-    /// @dev Reverts if `initialPayoutWallet` is the zero address.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     constructor(address payable initialPayoutWallet) {

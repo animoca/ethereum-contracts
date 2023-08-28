@@ -17,7 +17,7 @@ contract ERC1155BurnableFacet is ERC1155BurnableBase, ForwarderRegistryContextBa
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interfaces as supported: ERC1155Burnable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC1155BurnableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC1155Storage.initERC1155Burnable();

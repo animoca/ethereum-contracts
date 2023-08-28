@@ -5,7 +5,6 @@ import {IForwarderRegistry} from "./../../../../metatx/interfaces/IForwarderRegi
 import {IOperatorFilterRegistry} from "./../../../../token/royalty/interfaces/IOperatorFilterRegistry.sol";
 import {ITokenMetadataResolver} from "./../../../../token/metadata/interfaces/ITokenMetadataResolver.sol";
 import {ERC721Full} from "./../../../../token/ERC721/preset/ERC721Full.sol";
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title ERC721FullMock
 contract ERC721FullMock is ERC721Full {

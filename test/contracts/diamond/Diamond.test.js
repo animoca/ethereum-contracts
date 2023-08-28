@@ -1,6 +1,6 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
+const {constants, utils} = ethers;
 const {FacetCutAction, deployDiamond, getSelectors, newFacetFilter} = require('@animoca/ethereum-contract-helpers/src/test/diamond');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -63,7 +63,9 @@ describe('Diamond', function () {
 
   describe('fallback function', function () {
     it('reverts with an unknown function', async function () {
-      await expect(this.contract.doSomething()).to.be.revertedWith('Diamond: function not found');
+      await expect(this.contract.doSomething())
+        .to.be.revertedWithCustomError(this.contract, 'FunctionNotFound')
+        .withArgs(utils.Interface.getSighash(this.contract.interface.functions['doSomething()']));
     });
   });
 
@@ -75,28 +77,31 @@ describe('Diamond', function () {
 
       describe('ADD action', function () {
         it('reverts with a zero address facet', async function () {
-          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: facet has no code'
-          );
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'NonContractFacet')
+            .withArgs(constants.AddressZero);
         });
 
         it('reverts with an empty list of selectors', async function () {
-          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, []]], EmptyInit)).to.be.revertedWith(
-            'Diamond: no function selectors'
-          );
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Add, []]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'EmptyFacet')
+            .withArgs(this.facet.address);
         });
 
         it('reverts with a non-contract facet', async function () {
-          await expect(cutFn(this.contract, [[deployer.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: facet has no code'
-          );
+          await expect(cutFn(this.contract, [[deployer.address, FacetCutAction.Add, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'NonContractFacet')
+            .withArgs(deployer.address);
         });
 
         it('reverts with an existing function selector', async function () {
           const cutFacet = this.facets['DiamondCutFacet'];
-          await expect(cutFn(this.contract, [[cutFacet.address, FacetCutAction.Add, getSelectors(cutFacet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: selector already added'
-          );
+          await expect(cutFn(this.contract, [[cutFacet.address, FacetCutAction.Add, getSelectors(cutFacet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'FunctionAlreadyPresent')
+            .withArgs(
+              cutFacet.address,
+              utils.Interface.getSighash(this.facets['DiamondCutFacet'].interface.functions['diamondCut((address,uint8,bytes4[])[],address,bytes)'])
+            );
         });
 
         context('when successful', function () {
@@ -146,29 +151,28 @@ describe('Diamond', function () {
 
       describe('REMOVE action', function () {
         it('reverts with a non-zero address facet', async function () {
-          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: non-zero address facet'
-          );
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'RemovingWithNonZeroAddressFacet')
+            .withArgs(this.facet.address);
         });
 
         it('reverts with an empty list of selectors', async function () {
-          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, []]], EmptyInit)).to.be.revertedWith(
-            'Diamond: no function selectors'
-          );
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, []]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'EmptyFacet')
+            .withArgs(constants.AddressZero);
         });
 
         it('reverts with a non-existing function selector', async function () {
-          await expect(
-            cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit)
-          ).to.be.revertedWith('Diamond: selector not found');
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'FunctionNotFound')
+            .withArgs(getSelectors(this.facet)[0]);
         });
 
         it('reverts with an immutable function selector', async function () {
-          const artifact = await ethers.getContractFactory('DiamondMock');
-          const selectors = [ethers.utils.Interface.getSighash(artifact.interface.functions['immutableFunction()'])];
-          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, selectors]], EmptyInit)).to.be.revertedWith(
-            'Diamond: immutable function'
-          );
+          const selector = ethers.utils.Interface.getSighash(this.contract.interface.functions['immutableFunction()']);
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Remove, [selector]]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'ModifyingImmutableFunction')
+            .withArgs(selector);
         });
 
         context('when successful (full facet removal)', function () {
@@ -331,15 +335,15 @@ describe('Diamond', function () {
 
       describe('REPLACE action', function () {
         it('reverts with a zero address facet', async function () {
-          await expect(
-            cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)
-          ).to.be.revertedWith('Diamond: facet has no code');
+          await expect(cutFn(this.contract, [[constants.AddressZero, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'NonContractFacet')
+            .withArgs(constants.AddressZero);
         });
 
         it('reverts with an empty list of selectors', async function () {
-          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, []]], EmptyInit)).to.be.revertedWith(
-            'Diamond: no function selectors'
-          );
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, []]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'EmptyFacet')
+            .withArgs(this.facet.address);
         });
 
         it('reverts with a non-contract facet', async function () {
@@ -352,7 +356,9 @@ describe('Diamond', function () {
               ],
               EmptyInit
             )
-          ).to.be.revertedWith('Diamond: facet has no code');
+          )
+            .to.be.revertedWithCustomError(this.contract, 'NonContractFacet')
+            .withArgs(deployer.address);
         });
 
         it('reverts when replacing a function from an identical facet', async function () {
@@ -365,21 +371,23 @@ describe('Diamond', function () {
               ],
               EmptyInit
             )
-          ).to.be.revertedWith('Diamond: identical function');
+          )
+            .to.be.revertedWithCustomError(this.contract, 'ReplacingFunctionByItself')
+            .withArgs(this.facet.address, getSelectors(this.facet)[0]);
         });
 
         it('reverts when replacing a function does not exist', async function () {
-          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit)).to.be.revertedWith(
-            'Diamond: selector not found'
-          );
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, getSelectors(this.facet)]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'FunctionNotFound')
+            .withArgs(getSelectors(this.facet)[0]);
         });
 
         it('reverts with an immutable function selector', async function () {
-          const artifact = await ethers.getContractFactory('DiamondMock');
-          const selectors = [ethers.utils.Interface.getSighash(artifact.interface.functions['immutableFunction()'])];
-          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, selectors]], EmptyInit)).to.be.revertedWith(
-            'Diamond: immutable function'
-          );
+          // const artifact = await ethers.getContractFactory('DiamondMock');
+          const selector = ethers.utils.Interface.getSighash(this.contract.interface.functions['immutableFunction()']);
+          await expect(cutFn(this.contract, [[this.facet.address, FacetCutAction.Replace, [selector]]], EmptyInit))
+            .to.be.revertedWithCustomError(this.contract, 'ModifyingImmutableFunction')
+            .withArgs(selector);
         });
 
         context('when successful (full facet replacement)', function () {
@@ -497,27 +505,35 @@ describe('Diamond', function () {
         this.cuts = [[this.facet.address, FacetCutAction.Add, getSelectors(this.facet)]];
       });
       it('reverts with a zero address as init target and a non-empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [constants.AddressZero, '0x00'])).to.be.revertedWith('Diamond: data is not empty');
+        await expect(cutFn(this.contract, [], [constants.AddressZero, '0x00'])).to.be.revertedWithCustomError(
+          this.contract,
+          'ZeroAddressTargetInitCallButNonEmptyData'
+        );
       });
 
       it('reverts with a non-zero address as init target and an empty init calldata', async function () {
-        await expect(cutFn(this.contract, [], [this.facet.address, '0x'])).to.be.revertedWith('Diamond: data is empty');
+        await expect(cutFn(this.contract, [], [this.facet.address, '0x']))
+          .to.be.revertedWithCustomError(this.contract, 'EmptyInitCallData')
+          .withArgs(this.facet.address);
       });
 
       it('reverts with non-contract target address', async function () {
-        await expect(cutFn(this.contract, [], [deployer.address, '0x00'])).to.be.revertedWith('Diamond: target has no code');
+        await expect(cutFn(this.contract, [], [deployer.address, '0x00']))
+          .to.be.revertedWithCustomError(this.contract, 'NonContractInitCallTarget')
+          .withArgs(deployer.address);
       });
 
       it('reverts when the init function reverts (without an error message)', async function () {
-        await expect(
-          cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithoutMessage')])
-        ).to.be.revertedWith('Diamond: init call reverted');
+        const callData = this.facet.interface.encodeFunctionData('revertsWithoutMessage');
+        await expect(cutFn(this.contract, this.cuts, [this.facet.address, callData]))
+          .to.be.revertedWithCustomError(this.contract, 'InitCallReverted')
+          .withArgs(this.facet.address, callData);
       });
 
       it('reverts when the init function reverts (with an error message)', async function () {
         await expect(
           cutFn(this.contract, this.cuts, [this.facet.address, this.facet.interface.encodeFunctionData('revertsWithMessage')])
-        ).to.be.revertedWith('Facet: reverted');
+        ).to.be.revertedWithCustomError(this.facet, 'RevertedWithMessage');
       });
 
       context('when successful (with a facet function)', function () {
@@ -555,9 +571,9 @@ describe('Diamond', function () {
   describe('diamondCut(FacetCut[],address,bytes)', function () {
     const batchInit = false;
     it('reverts when not called by the proxy admin', async function () {
-      await expect(
-        this.contract.connect(other).functions['diamondCut((address,uint8,bytes4[])[],address,bytes)']([], ...EmptyInit)
-      ).to.be.revertedWith('ProxyAdmin: not the admin');
+      await expect(this.contract.connect(other).functions['diamondCut((address,uint8,bytes4[])[],address,bytes)']([], ...EmptyInit))
+        .to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin')
+        .withArgs(other.address);
     });
 
     describeDiamondCut(async function (contract, cuts, init) {
@@ -568,14 +584,25 @@ describe('Diamond', function () {
   describe('diamondCut(FacetCut[],Initialization[])', function () {
     const batchInit = true;
     it('reverts when not called by the proxy admin', async function () {
-      await expect(
-        this.contract.connect(other).functions['diamondCut((address,uint8,bytes4[])[],(address,bytes)[])']([], [EmptyInit])
-      ).to.be.revertedWith('ProxyAdmin: not the admin');
+      await expect(this.contract.connect(other).functions['diamondCut((address,uint8,bytes4[])[],(address,bytes)[])']([], [EmptyInit]))
+        .to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin')
+        .withArgs(other.address);
     });
 
     describeDiamondCut(async function (contract, cuts, init) {
       return contract.functions['diamondCut((address,uint8,bytes4[])[],(address,bytes)[])'](cuts, [init]);
     }, batchInit);
+  });
+
+  describe('receive()', function () {
+    it('reverts', async function () {
+      await expect(
+        deployer.sendTransaction({
+          to: this.contract.address,
+          value: 0,
+        })
+      ).to.be.revertedWithCustomError(this.contract, 'EtherReceptionDisabled');
+    });
   });
 
   supportsInterfaces(['IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);

@@ -1,6 +1,7 @@
 const {ethers} = require('hardhat');
-const {expect} = require('chai');
 const {constants} = ethers;
+const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 const {decodeSignature} = require('@animoca/ethereum-contract-helpers/src/test/signing');
@@ -16,7 +17,7 @@ const PermitType = {
 };
 
 function behavesLikeERC20Permit(implementation) {
-  const {features, revertMessages, deploy} = implementation;
+  const {features, errors, deploy} = implementation;
 
   describe('like an ERC20 Permit', function () {
     let deployer, owner, spender, other;
@@ -55,9 +56,11 @@ function behavesLikeERC20Permit(implementation) {
             deadline: constants.MaxUint256,
           })
         );
-        await expect(
-          this.contract.permit(owner.address, spender.address, nonce, constants.MaxUint256, signature.v, signature.r, signature.s)
-        ).to.be.revertedWith(revertMessages.PermitInvalid);
+        await expectRevert(
+          this.contract.permit(owner.address, spender.address, nonce, constants.MaxUint256, signature.v, signature.r, signature.s),
+          this.contract,
+          errors.PermitInvalid
+        );
       });
 
       it('reverts when using the zero address as owner/signer', async function () {
@@ -70,8 +73,10 @@ function behavesLikeERC20Permit(implementation) {
             deadline: 0,
           })
         );
-        await expect(this.contract.permit(constants.AddressZero, spender.address, 1, 0, signature.v, signature.r, signature.s)).to.be.revertedWith(
-          revertMessages.PermitFromZero
+        await expectRevert(
+          this.contract.permit(constants.AddressZero, spender.address, 1, 0, signature.v, signature.r, signature.s),
+          this.contract,
+          errors.PermitFromAddressZero
         );
       });
 
@@ -85,8 +90,13 @@ function behavesLikeERC20Permit(implementation) {
             deadline: 0,
           })
         );
-        await expect(this.contract.permit(owner.address, spender.address, 1, 0, signature.v, signature.r, signature.s)).to.be.revertedWith(
-          revertMessages.PermitExpired
+        await expectRevert(
+          this.contract.permit(owner.address, spender.address, 1, 0, signature.v, signature.r, signature.s),
+          this.contract,
+          errors.PermitExpired,
+          {
+            deadline: 0,
+          }
         );
       });
 
@@ -147,7 +157,7 @@ function behavesLikeERC20Permit(implementation) {
       });
     });
 
-    if (features.ERC165) {
+    if (features && features.ERC165) {
       supportsInterfaces(['contracts/token/ERC20/interfaces/IERC20Permit.sol:IERC20Permit']);
     }
   });

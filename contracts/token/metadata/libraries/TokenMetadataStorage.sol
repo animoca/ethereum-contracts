@@ -33,7 +33,7 @@ library TokenMetadataStorage {
     /// @notice Initializes the metadata storage (proxied version).
     /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenMetadataResolver The address of the metadata resolver contract.

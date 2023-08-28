@@ -2,9 +2,7 @@ const {ethers} = require('hardhat');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC1155MetadataURI(implementation) {
-  const {deploy} = implementation;
-
+function behavesLikeERC1155MetadataURI({deploy, features}) {
   describe('like an ERC1155 Metadata', function () {
     let accounts, deployer, owner, other;
 
@@ -27,7 +25,7 @@ function behavesLikeERC1155MetadataURI(implementation) {
       });
     });
 
-    if (implementation.features.MetadataResolver) {
+    if (features && features.MetadataResolver) {
       describe('metadataResolver()', function () {
         it('returns a non-zero address', async function () {
           await expect(this.token.metadataResolver()).to.not.equal(ethers.constants.AddressZero);
