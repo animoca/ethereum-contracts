@@ -2,10 +2,13 @@
 pragma solidity ^0.8.21;
 
 import {NotRoleHolder, NotTargetContractRoleHolder} from "./../errors/AccessControlErrors.sol";
+import {TargetIsNotAContract} from "./../errors/Common.sol";
 import {IAccessControlEvents} from "./../events/IAccessControlEvents.sol";
 import {IAccessControl} from "./../interfaces/IAccessControl.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 library AccessControlStorage {
+    using Address for address;
     using AccessControlStorage for AccessControlStorage.Layout;
 
     struct Layout {
@@ -65,6 +68,7 @@ library AccessControlStorage {
     /// @param account The account to check.
     /// @return hasTargetContractRole_ Whether `account` has `role` in `targetContract`.
     function hasTargetContractRole(address targetContract, bytes32 role, address account) internal view returns (bool hasTargetContractRole_) {
+        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
         return IAccessControl(targetContract).hasRole(role, account);
     }
 
@@ -82,9 +86,7 @@ library AccessControlStorage {
     /// @param role The role to check.
     /// @param account The account to check.
     function enforceHasTargetContractRole(address targetContract, bytes32 role, address account) internal view {
-        if (!hasTargetContractRole(targetContract, role, account)) {
-            revert NotTargetContractRoleHolder(targetContract, role, account);
-        }
+        if (!hasTargetContractRole(targetContract, role, account)) revert NotTargetContractRoleHolder(targetContract, role, account);
     }
 
     function layout() internal pure returns (Layout storage s) {

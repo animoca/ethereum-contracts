@@ -14,6 +14,10 @@ contract ContractOwnershipFacetMock is ContractOwnershipFacet {
         ContractOwnershipStorage.layout().enforceIsContractOwner(account);
     }
 
+    function enforceIsTargetContractOwner(address targetContract, address account) external view {
+        ContractOwnershipStorage.enforceIsTargetContractOwner(targetContract, account);
+    }
+
     function __msgData() external view returns (bytes calldata) {
         return _msgData();
     }

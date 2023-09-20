@@ -16,6 +16,10 @@ contract AccessControlFacetMock is AccessControlFacet {
         AccessControlStorage.layout().enforceHasRole(role, account);
     }
 
+    function enforceHasTargetContractRole(address targetContract, bytes32 role, address account) external view {
+        AccessControlStorage.enforceHasTargetContractRole(targetContract, role, account);
+    }
+
     function __msgData() external view returns (bytes calldata) {
         return _msgData();
     }

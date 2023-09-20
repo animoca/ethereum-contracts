@@ -150,4 +150,27 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
       await this.contract.enforceHasRole(this.role, deployer.address);
     });
   });
+
+  describe('AccessControlStorage.enforceHasTargetContractRole(address,bytes32,address)', function () {
+    it('reverts with a target which is not a contract', async function () {
+      await expect(this.contract.enforceHasTargetContractRole(deployer.address, this.role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'TargetIsNotAContract')
+        .withArgs(deployer.address);
+    });
+
+    it('reverts with an account which does not have the role on the target contract', async function () {
+      const targetContract = await deployFn();
+      const role = await targetContract.TEST_ROLE();
+      await expect(this.contract.enforceHasTargetContractRole(targetContract.address, role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotTargetContractRoleHolder')
+        .withArgs(targetContract.address, this.role, other.address);
+    });
+
+    it('does not revert with an account which has the role', async function () {
+      const targetContract = await deployFn();
+      const role = await targetContract.TEST_ROLE();
+      await targetContract.grantRole(role, deployer.address);
+      await this.contract.enforceHasTargetContractRole(targetContract.address, role, deployer.address);
+    });
+  });
 });

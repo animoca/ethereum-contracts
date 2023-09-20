@@ -20,6 +20,10 @@ contract ContractOwnershipMock is ContractOwnership, ForwarderRegistryContext {
         ContractOwnershipStorage.layout().enforceIsContractOwner(account);
     }
 
+    function enforceIsTargetContractOwner(address targetContract, address account) external view {
+        ContractOwnershipStorage.enforceIsTargetContractOwner(targetContract, account);
+    }
+
     function __msgData() external view returns (bytes calldata) {
         return _msgData();
     }

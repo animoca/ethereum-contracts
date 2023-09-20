@@ -143,6 +143,26 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
     });
 
+    describe('ContractOwnershipStorage.enforceIsTargetContractOwner(address,address)', function () {
+      it('reverts with a target which is not a contract', async function () {
+        await expect(this.contract.enforceIsTargetContractOwner(deployer.address, other.address))
+          .to.be.revertedWithCustomError(this.contract, 'TargetIsNotAContract')
+          .withArgs(deployer.address);
+      });
+
+      it('reverts with an account which is not the target contract owner', async function () {
+        const targetContract = await deployFn();
+        await expect(this.contract.enforceIsTargetContractOwner(targetContract.address, other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotTargetContractOwner')
+          .withArgs(targetContract.address, other.address);
+      });
+
+      it('does not revert with an account which is the target contract owner', async function () {
+        const targetContract = await deployFn();
+        await this.contract.enforceIsTargetContractOwner(targetContract.address, deployer.address);
+      });
+    });
+
     supportsInterfaces(['IERC165', 'IERC173']);
   });
 });

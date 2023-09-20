@@ -2,12 +2,15 @@
 pragma solidity ^0.8.21;
 
 import {NotContractOwner, NotTargetContractOwner} from "./../errors/ContractOwnershipErrors.sol";
+import {TargetIsNotAContract} from "./../errors/Common.sol";
 import {IERC173Events} from "./../events/IERC173Events.sol";
 import {IERC173} from "./../interfaces/IERC173.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ContractOwnershipStorage {
+    using Address for address;
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
@@ -67,6 +70,7 @@ library ContractOwnershipStorage {
     /// @param account The account to check.
     /// @return isTargetContractOwner_ Whether `account` is the owner of `targetContract`.
     function isTargetContractOwner(address targetContract, address account) internal view returns (bool isTargetContractOwner_) {
+        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
         return IERC173(targetContract).owner() == account;
     }
 
@@ -82,9 +86,7 @@ library ContractOwnershipStorage {
     /// @param targetContract The contract to check.
     /// @param account The account to check.
     function enforceIsTargetContractOwner(address targetContract, address account) internal view {
-        if (!isTargetContractOwner(targetContract, account)) {
-            revert NotTargetContractOwner(targetContract, account);
-        }
+        if (!isTargetContractOwner(targetContract, account)) revert NotTargetContractOwner(targetContract, account);
     }
 
     function layout() internal pure returns (Layout storage s) {
