@@ -5,7 +5,7 @@ import {ITokenMetadataResolver} from "./interfaces/ITokenMetadataResolver.sol";
 import {IERC677Receiver} from "./../../token/ERC20/interfaces/IERC677Receiver.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {VRFV2WrapperConsumerBase} from "@chainlink/contracts/src/v0.8/VRFV2WrapperConsumerBase.sol";
+import {VRFV2WrapperConsumerBase} from "@chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
 
 /// @title TokenMetadataResolverRandomizedReveal.
 /// @notice Token Metadata Resolver with a reveal mechanism.
