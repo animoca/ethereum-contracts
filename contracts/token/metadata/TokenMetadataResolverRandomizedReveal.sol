@@ -2,7 +2,8 @@
 pragma solidity 0.8.21;
 
 import {ITokenMetadataResolver} from "./interfaces/ITokenMetadataResolver.sol";
-import {IERC677Receiver} from "./../../token/ERC20/interfaces/IERC677Receiver.sol";
+import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
+import {VRFV2WrapperInterface} from "@chainlink/contracts/src/v0.8/interfaces/VRFV2WrapperInterface.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {VRFV2WrapperConsumerBase} from "@chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
@@ -11,14 +12,14 @@ import {VRFV2WrapperConsumerBase} from "@chainlink/contracts/src/v0.8/vrf/VRFV2W
 /// @notice Token Metadata Resolver with a reveal mechanism.
 /// @notice Before reveal, all the tokens have the same metadata URI. After reveal tokens have individual metadata URIs based on a random offset.
 /// @notice This resolver is designed to work with incremental token IDs NFTs starting at 0 and a fixed token supply.
-contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, IERC677Receiver, VRFV2WrapperConsumerBase {
+contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, VRFV2WrapperConsumerBase {
     using ContractOwnershipStorage for address;
     using Strings for uint256;
 
     enum RevealStatus {
-        NotRequested,
-        Requested,
-        Revealed
+        NotRequested, // 0
+        Requested, // 1
+        Revealed // 2
     }
 
     mapping(address => string) public preRevealTokenMetadataURI; // tokenContract => pre-reveal token metadata URI
@@ -104,34 +105,27 @@ contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, IERC67
 
     /// @notice Requests to switch the base metadata URI to the post-reveal URI while applying a fixed random offset to the metadata token ID URI.
     /// @notice This function is called externally ans requires prior approval of LINK token to be transferred from the sender.
-    /// @notice The amount of LINK token to be approved must be at least the request price found by `VRF_V2_WRAPPER.estimateRequestPrice`.
+    /// @notice The amount of LINK token to be approved can be estimated `VRF_V2_WRAPPER.estimateRequestPrice`, but the actual amount may be higher.
     /// @dev Reverts with {NotTargetContractOwner} if thew sender is not the owner of the token contract.
     /// @dev Reverts with {TokenDataNotSet} if the token data has not been set yet.
     /// @dev Reverts with {TokensAlreadyRevealed} if the tokens have already been revealed.
     /// @dev Emits a {RevealRequested} event.
+    /// @dev Emits an ERC20 {Transfer} event for the VRF request price in LINK token transferred from the sender to this contract.
+    /// @dev Emits an ERC20 {Transfer} event for the VRF request price in LINK token transferred from this contract to the VRF Wrapper.
     /// @param tokenContract The token contract for which to reveal the tokens.
     /// @param callbackGasLimit The gas limit to set for the VRF V2 wrapper callback.
     /// @param requestConfirmations The number of confirmations to wait before fulfilling the request.
     function requestReveal(address tokenContract, uint32 callbackGasLimit, uint16 requestConfirmations) external {
-        LINK.transferFrom(msg.sender, address(this), VRF_V2_WRAPPER.calculateRequestPrice(callbackGasLimit));
-        _requestReveal(msg.sender, tokenContract, callbackGasLimit, requestConfirmations);
-    }
-
-    /// @notice Requests to switch the base metadata URI to the post-reveal URI while applying a fixed random offset to the metadata token ID URI.
-    /// @notice This function is called by the LINK token contract when using the `transferAndCall` function targeting this contract.
-    /// @notice The amount parameter of the `transferAndCall` function must equal the request price found by `VRF_V2_WRAPPER.estimateRequestPrice`.
-    /// @dev Reverts with {WrongLINKTokenAddress} if the sender is not the LINK token contract.
-    /// @dev Reverts with {NotTargetContractOwner} if `from` is not the owner of the token contract.
-    /// @dev Reverts with {TokenDataNotSet} if the token data has not been set yet.
-    /// @dev Reverts with {TokensAlreadyRevealed} if the tokens have already been revealed.
-    /// @dev Emits a {RevealRequested} event.
-    /// @param from The LINK token owner.
-    /// @param data The data passed to the `transferAndCall` function.
-    function onTokenTransfer(address from, uint256, bytes calldata data) external returns (bool) {
-        if (msg.sender != address(LINK)) revert WrongLINKTokenAddress(msg.sender);
-        (address tokenContract, uint32 callbackGasLimit, uint16 requestConfirmations) = abi.decode(data, (address, uint32, uint16));
-        _requestReveal(from, tokenContract, callbackGasLimit, requestConfirmations);
-        return true;
+        tokenContract.enforceIsTargetContractOwner(msg.sender);
+        if (tokenSupply[tokenContract] == 0) revert TokenDataNotSet(tokenContract);
+        if (revealStatus[tokenContract] == RevealStatus.Revealed) revert TokensAlreadyRevealed(tokenContract);
+        uint256 requestPrice = VRF_V2_WRAPPER.calculateRequestPrice(callbackGasLimit);
+        LINK.transferFrom(msg.sender, address(this), requestPrice);
+        LINK.transferAndCall(address(VRF_V2_WRAPPER), requestPrice, abi.encode(callbackGasLimit, requestConfirmations, 1));
+        uint256 requestId = VRF_V2_WRAPPER.lastRequestId();
+        requestIdToTokenContract[requestId] = tokenContract;
+        revealStatus[tokenContract] = RevealStatus.Requested;
+        emit RevealRequested(tokenContract, requestId);
     }
 
     /// @inheritdoc ITokenMetadataResolver
@@ -142,25 +136,6 @@ contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, IERC67
         } else {
             return preRevealTokenMetadataURI[tokenContract];
         }
-    }
-
-    /// @notice Requests to switch the base metadata URI to the post-reveal URI while applying a fixed random offset to the metadata token ID URI.
-    /// @dev Reverts with {NotTargetContractOwner} if `operator` is not the owner of the token contract.
-    /// @dev Reverts with {TokenDataNotSet} if the token data has not been set yet.
-    /// @dev Reverts with {TokensAlreadyRevealed} if the tokens have already been revealed.
-    /// @dev Emits a {RevealRequested} event.
-    /// @param operator The operator requesting the revelation.
-    /// @param tokenContract The token contract on which to set the base metadata URI.
-    /// @param callbackGasLimit The gas limit to set for the VRF V2 wrapper callback.
-    /// @param requestConfirmations The number of confirmations to wait before fulfilling the request.
-    function _requestReveal(address operator, address tokenContract, uint32 callbackGasLimit, uint16 requestConfirmations) internal {
-        tokenContract.enforceIsTargetContractOwner(operator);
-        if (tokenSupply[tokenContract] == 0) revert TokenDataNotSet(tokenContract);
-        if (revealStatus[tokenContract] == RevealStatus.Revealed) revert TokensAlreadyRevealed(tokenContract);
-        uint256 requestId = requestRandomness(callbackGasLimit, requestConfirmations, 1);
-        requestIdToTokenContract[requestId] = tokenContract;
-        revealStatus[tokenContract] = RevealStatus.Requested;
-        emit RevealRequested(tokenContract, requestId);
     }
 
     /// @notice Callback function called by the VRF V2 wrapper when the randomness is received. Applies the random offset.
@@ -178,5 +153,15 @@ contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, IERC67
         metadataOffset[tokenContract] = offset;
         revealStatus[tokenContract] = RevealStatus.Revealed;
         emit TokensRevealed(tokenContract, requestId, offset);
+    }
+
+    // solhint-disable-next-line func-name-mixedcase
+    function CHAINLINK_LINK_TOKEN() external view returns (LinkTokenInterface) {
+        return LINK;
+    }
+
+    // solhint-disable-next-line func-name-mixedcase
+    function CHAINLINK_VRF_WRAPPER() external view returns (VRFV2WrapperInterface) {
+        return VRF_V2_WRAPPER;
     }
 }

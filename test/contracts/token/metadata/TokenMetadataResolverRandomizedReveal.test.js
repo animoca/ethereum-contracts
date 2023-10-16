@@ -36,6 +36,16 @@ describe('TokenMetadataResolverRandomizedReveal', function () {
     await loadFixture(fixture, this);
   });
 
+  describe('constructor(address,address)', function () {
+    it('sets the Chainlink LINK token address', async function () {
+      expect(await this.resolver.CHAINLINK_LINK_TOKEN()).to.equal(this.linkToken.address);
+    });
+
+    it('sets the Chainlink VRF Wrapper address', async function () {
+      expect(await this.resolver.CHAINLINK_VRF_WRAPPER()).to.equal(this.vrfV2Wrapper.address);
+    });
+  });
+
   describe('setTokenData(address,string,string,uint256)', function () {
     it('reverts if not called by the token contract owner', async function () {
       await expect(this.resolver.connect(other).setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply))
@@ -137,99 +147,10 @@ describe('TokenMetadataResolverRandomizedReveal', function () {
 
     context('when successful', function () {
       beforeEach(async function () {
+        await this.vrfV2Wrapper.estimateRequestPrice(0, 0); // for coverage
         await this.resolver.setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply);
         await this.linkToken.approve(this.resolver.address, constants.MaxUint256);
         this.receipt = await this.resolver.requestReveal(this.token.address, 0, 0);
-      });
-
-      it('updates the reveal status', async function () {
-        expect(await this.resolver.revealStatus(this.token.address)).to.equal(1);
-      });
-
-      it('updates the request id', async function () {
-        expect(await this.resolver.requestIdToTokenContract(await this.vrfV2Wrapper.lastRequestId())).to.equal(this.token.address);
-      });
-
-      it('emits a RevealRequested event', async function () {
-        await expect(this.receipt)
-          .to.emit(this.resolver, 'RevealRequested')
-          .withArgs(this.token.address, await this.vrfV2Wrapper.lastRequestId());
-      });
-    });
-  });
-
-  describe('onTokenReceived(address,uint256,bytes)', function () {
-    it('reverts if not called by the LINK contract', async function () {
-      await this.resolver.setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply);
-      await expect(
-        this.resolver.onTokenTransfer(
-          deployer.address,
-          await this.vrfV2Wrapper.estimateRequestPrice(0, 1000000000),
-          ethers.utils.defaultAbiCoder.encode(['address', 'uint32', 'uint16'], [this.token.address, 0, 0]),
-          {gasPrice: 1000000000}
-        )
-      )
-        .to.be.revertedWithCustomError(this.resolver, 'WrongLINKTokenAddress')
-        .withArgs(deployer.address);
-    });
-
-    it('reverts if the LINK transferAndCall caller is not the token contract owner', async function () {
-      await this.resolver.setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply);
-      await expect(
-        this.linkToken
-          .connect(other)
-          .transferAndCall(
-            this.resolver.address,
-            await this.vrfV2Wrapper.estimateRequestPrice(0, 1000000000),
-            ethers.utils.defaultAbiCoder.encode(['address', 'uint32', 'uint16'], [this.token.address, 0, 0]),
-            {gasPrice: 1000000000}
-          )
-      )
-        .to.be.revertedWithCustomError(this.resolver, 'NotTargetContractOwner')
-        .withArgs(this.token.address, other.address);
-    });
-
-    it('reverts if the token data has not been set yet', async function () {
-      await this.linkToken.approve(this.resolver.address, constants.MaxUint256);
-      await expect(
-        this.linkToken.transferAndCall(
-          this.resolver.address,
-          await this.vrfV2Wrapper.estimateRequestPrice(0, 1000000000),
-          ethers.utils.defaultAbiCoder.encode(['address', 'uint32', 'uint16'], [this.token.address, 0, 0]),
-          {gasPrice: 1000000000}
-        )
-      )
-        .to.be.revertedWithCustomError(this.resolver, 'TokenDataNotSet')
-        .withArgs(this.token.address);
-    });
-
-    it('reverts if the tokens have already been revealed', async function () {
-      await this.resolver.setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply);
-      await this.linkToken.approve(this.resolver.address, constants.MaxUint256);
-      await this.resolver.requestReveal(this.token.address, 0, 0);
-      await this.vrfV2Wrapper.fulfillRandomnessRequest(await this.vrfV2Wrapper.lastRequestId());
-      await expect(
-        this.linkToken.transferAndCall(
-          this.resolver.address,
-          await this.vrfV2Wrapper.estimateRequestPrice(0, 1000000000),
-          ethers.utils.defaultAbiCoder.encode(['address', 'uint32', 'uint16'], [this.token.address, 0, 0]),
-          {gasPrice: 1000000000}
-        )
-      )
-        .to.be.revertedWithCustomError(this.resolver, 'TokensAlreadyRevealed')
-        .withArgs(this.token.address);
-    });
-
-    context('when successful', function () {
-      beforeEach(async function () {
-        await this.resolver.setTokenData(this.token.address, preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply);
-        await this.linkToken.approve(this.resolver.address, constants.MaxUint256);
-        this.receipt = await this.linkToken.transferAndCall(
-          this.resolver.address,
-          await this.vrfV2Wrapper.estimateRequestPrice(0, 1000000000),
-          ethers.utils.defaultAbiCoder.encode(['address', 'uint32', 'uint16'], [this.token.address, 0, 0]),
-          {gasPrice: 1000000000}
-        );
       });
 
       it('updates the reveal status', async function () {

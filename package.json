@@ -1,6 +1,6 @@
 {
   "name": "@animoca/ethereum-contracts",
-  "version": "3.0.0-rc.5",
+  "version": "3.0.0-rc.6",
   "description": "Base dependency for solidity smart-contracts projects",
   "keywords": [
     "animoca",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@animoca/ethereum-contract-helpers": "^0.0.6",
-    "@chainlink/contracts": "0.7.1",
+    "@chainlink/contracts": "0.8.0",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
