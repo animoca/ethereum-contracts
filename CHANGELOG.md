@@ -6,7 +6,7 @@
 
 - Added preset ERC721 contracts `ERC721Full`, `ERC721FullBurn` and `ERC721FullMintOnceBurn` (and their proxied versions).
 - Added preset ERC1155 contracts `ERC1155Full` and `ERC1155FullBurn` (and their proxied versions).
-- Token metadata for ERC721 and ERC1155 are now handled through an external resolver contract whose reference is set at construction time. For this feature, added contracts `ITokenMetadataResolver`, `TokenMetadataStorage`, `TokenMetadataBase` and the two resolver implementations `TokenMetadataResolverPerToken` and `TokenMetadataResolverWithBaseURI`. The logic for ERC721 and ERC1155 is implemented in new `ERC721MetadataBase`/`ERC721MetadataFacet`/`ERC721Metadata` and `ER1155MetadataBase`/`ERC1155MetadataFacet`/`ERC1155Metadata` contracts respectively.
+- Token metadata for ERC721 and ERC1155 are now handled through an external resolver contract whose reference is set at construction time. For this feature, added contracts `ITokenMetadataResolver`, `TokenMetadataStorage`, `TokenMetadataBase` and several resolver implementations. The logic for ERC721 and ERC1155 is implemented in new `ERC721MetadataBase`/`ERC721MetadataFacet`/`ERC721Metadata` and `ER1155MetadataBase`/`ERC1155MetadataFacet`/`ERC1155Metadata` contracts respectively.
 - Added new metadata scheme with `TokenMetadataResolverRandomizedReveal`.
 - ERC1155 contracts now support `name()` and `symbol()` as part of their metadata implementation.
 - Added contract interfaces `IAccessControl`, `IPause`, `ICheckpoints`, `IPayoutWallet`, `IProxyAdmin` and `ISeals`.

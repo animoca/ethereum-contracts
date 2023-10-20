@@ -20,7 +20,7 @@ contract TokenMetadataResolverPerToken is ITokenMetadataResolver {
     /// @param tokenContract The token contract on which to set the token URI.
     /// @param tokenId The token identifier.
     /// @param tokenURI The token metadata URI.
-    function setTokenURI(address tokenContract, uint256 tokenId, string calldata tokenURI) external {
+    function setTokenURI(address tokenContract, uint256 tokenId, string calldata tokenURI) public virtual {
         tokenContract.enforceHasTargetContractRole(MINTER_ROLE, msg.sender);
         metadataURI[tokenContract][tokenId] = tokenURI;
     }
@@ -31,7 +31,7 @@ contract TokenMetadataResolverPerToken is ITokenMetadataResolver {
     /// @param tokenContract The token contract on which to set the token URI.
     /// @param tokenIds The token identifiers.
     /// @param tokenURIs The token metadata URIs.
-    function batchSetTokenURI(address tokenContract, uint256[] calldata tokenIds, string[] calldata tokenURIs) external {
+    function batchSetTokenURI(address tokenContract, uint256[] calldata tokenIds, string[] calldata tokenURIs) public virtual {
         uint256 length = tokenIds.length;
         if (length != tokenURIs.length) {
             revert InconsistentArrayLengths();

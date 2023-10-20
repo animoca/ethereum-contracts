@@ -153,8 +153,8 @@ runBehaviorTests('ERC1155Full', config, function (deployFn) {
         return contract.connect(signer).safeBatchMint(to, ids, values, data);
       },
     },
-    deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol});
+    deploy: async function (deployer, args = {}) {
+      const contract = await deployFn({name, symbol, ...args});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },

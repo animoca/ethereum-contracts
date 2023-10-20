@@ -169,8 +169,8 @@ runBehaviorTests('ERC1155FullBurn', config, function (deployFn) {
         return contract.connect(signer).batchBurnFrom(from, ids, values);
       },
     },
-    deploy: async function (deployer) {
-      const contract = await deployFn({name, symbol});
+    deploy: async function (deployer, args = {}) {
+      const contract = await deployFn({name, symbol, ...args});
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },

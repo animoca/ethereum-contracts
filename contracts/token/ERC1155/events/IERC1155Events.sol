@@ -27,7 +27,7 @@ interface IERC1155Events {
     /// @param approved True when then approval is set, false when it is unset.
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
-    /// @notice Emitted optionally when a token metadata URI is set.
+    /// @notice Emitted when a token metadata URI is set updated.
     /// @param value The token metadata URI.
     /// @param id The token identifier.
     event URI(string value, uint256 indexed id);

@@ -73,8 +73,8 @@ runBehaviorTests('ERC1155WithoutOperatorFilterer', config, function (deployFn) {
     interfaces: {
       ERC1155: true,
     },
-    deploy: async function (deployer) {
-      const contract = await deployFn();
+    deploy: async function (deployer, args = {}) {
+      const contract = await deployFn(args);
       await contract.grantRole(await contract.MINTER_ROLE(), deployer.address);
       return contract;
     },

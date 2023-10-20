@@ -103,9 +103,13 @@ contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, VRFV2W
         emit TokenDataSet(tokenContract, preRevealTokenURI, postRevealBaseURI, supply);
     }
 
-    /// @notice Requests to switch the base metadata URI to the post-reveal URI while applying a fixed random offset to the metadata token ID URI.
-    /// @notice This function is called externally ans requires prior approval of LINK token to be transferred from the sender.
-    /// @notice The amount of LINK token to be approved can be estimated `VRF_V2_WRAPPER.estimateRequestPrice`, but the actual amount may be higher.
+    /// @notice Requests to switch the base metadata URI to the post-reveal URI while applying a fixed random offset to the metadata token id.
+    /// @notice The random offset is requested via Chainlink VRF direct funding method:
+    /// @notice  - payment of LINK token  will be made, and pre-approval of LINK to this contract is reqired
+    /// @notice    (the amount to be approved cannot reliably be known in advance, but can be estimated with `VRF_V2_WRAPPER.estimateRequestPrice`),
+    /// @notice  - the randomness request will be fulfilled later by a call to the `rawFulfillRandomWords` callback.
+    /// @notice This function can be called multiple times as long as the tokens have not been effectively revealed yet, so that any failure to
+    /// @notice execute the fulfill callback (such as because of insufficient gas) does not prevent from retrying.
     /// @dev Reverts with {NotTargetContractOwner} if thew sender is not the owner of the token contract.
     /// @dev Reverts with {TokenDataNotSet} if the token data has not been set yet.
     /// @dev Reverts with {TokensAlreadyRevealed} if the tokens have already been revealed.
