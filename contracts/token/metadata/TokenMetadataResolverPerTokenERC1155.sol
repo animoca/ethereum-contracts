@@ -6,7 +6,7 @@ import {TokenMetadataResolverPerToken} from "./TokenMetadataResolverPerToken.sol
 
 /// @title TokenMetadataResolverPerTokenERC1155.
 /// @notice Token Metadata Resolver which stores the metadata URI for each token, for ERC1155 token contracts.
-/// @notice When a metadata URI is set, the target ERC1155 contract will be sked to emit a URI event.
+/// @notice When a metadata URI is set, the target ERC1155 contract will be asked to emit a URI event.
 /// @notice Only minters of the target token contract can set the token metadata URI for this target contract.
 contract TokenMetadataResolverPerTokenERC1155 is TokenMetadataResolverPerToken {
     /// @inheritdoc TokenMetadataResolverPerToken
