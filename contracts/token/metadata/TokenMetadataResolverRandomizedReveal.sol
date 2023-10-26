@@ -110,7 +110,7 @@ contract TokenMetadataResolverRandomizedReveal is ITokenMetadataResolver, VRFV2W
     /// @notice  - the randomness request will be fulfilled later by a call to the `rawFulfillRandomWords` callback.
     /// @notice This function can be called multiple times as long as the tokens have not been effectively revealed yet, so that any failure to
     /// @notice  execute the fulfill callback (such as because of insufficient gas) does not prevent from retrying.
-    /// @dev Reverts with {NotTargetContractOwner} if thew sender is not the owner of the token contract.
+    /// @dev Reverts with {NotTargetContractOwner} if the sender is not the owner of the token contract.
     /// @dev Reverts with {TokenDataNotSet} if the token data has not been set yet.
     /// @dev Reverts with {TokensAlreadyRevealed} if the tokens have already been revealed.
     /// @dev Emits a {RevealRequested} event.
