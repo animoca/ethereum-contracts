@@ -12,10 +12,16 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.0.tgz#d2a39395c587e092d77cbbc80acf956a54f38bf7"
   integrity sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==
 
-"@animoca/ethereum-contract-helpers@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@animoca/ethereum-contract-helpers/-/ethereum-contract-helpers-1.0.0.tgz#8e97e5f11acc46d91168c16e318a17db3663af5b"
-  integrity sha512-XX92MIi8eVR7rhOBizuuyk15zAGLbUQWsIw6mznETypuBlWatO/gySw33tM5F+wJyW/dZmxGDL3CETzrY2wyBg==
+"@animoca/ethereum-contract-helpers@^1.0.1-rc.0":
+  version "1.0.1-rc.0"
+  resolved "https://registry.yarnpkg.com/@animoca/ethereum-contract-helpers/-/ethereum-contract-helpers-1.0.1-rc.0.tgz#4887748a863f06fad830f90f349da71cdcc108e3"
+  integrity sha512-/aWTSIa++nN8pe44cfK+L0kCev5qMcFFWZ0ImW2OAiPHLqe9HPxlUW/+iZ7kywh/38415bHq88SGE2O8cd0jQg==
+  dependencies:
+    fs-extra "^11.1.1"
+    glob "^10.3.10"
+    lodash.clonedeep "^4.5.0"
+    lodash.isequal "^4.5.0"
+    lodash.mergewith "^4.6.2"
 
 "@babel/code-frame@^7.0.0":
   version "7.22.13"
@@ -4421,7 +4427,6 @@ statuses@2.0.1:
   integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
-  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4822,7 +4827,6 @@ workerpool@6.2.1:
   integrity sha512-ILEIE97kDZvF9Wb9f6h5aXK4swSlKGUcOEGiIYb2OOu/IrDU9iwj0fD//SsA6E5ibwJxpEvhullJY4Sl4GcpAw==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
-  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
