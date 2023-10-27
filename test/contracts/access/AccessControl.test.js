@@ -161,16 +161,16 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
     it('reverts with an account which does not have the role on the target contract', async function () {
       const targetContract = await deployFn();
       const role = await targetContract.TEST_ROLE();
-      await expect(this.contract.enforceHasTargetContractRole(targetContract.address, role, other.address))
+      await expect(this.contract.enforceHasTargetContractRole(targetContract.getAddress(), role, other.address))
         .to.be.revertedWithCustomError(this.contract, 'NotTargetContractRoleHolder')
-        .withArgs(targetContract.address, this.role, other.address);
+        .withArgs(await targetContract.getAddress(), this.role, other.address);
     });
 
     it('does not revert with an account which has the role', async function () {
       const targetContract = await deployFn();
       const role = await targetContract.TEST_ROLE();
       await targetContract.grantRole(role, deployer.address);
-      await this.contract.enforceHasTargetContractRole(targetContract.address, role, deployer.address);
+      await this.contract.enforceHasTargetContractRole(targetContract.getAddress(), role, deployer.address);
     });
   });
 });

@@ -45,7 +45,7 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
   });
 
   const fixtureTimeUnset = async function () {
-    this.startTime = '0';
+    this.startTime = 0;
     this.contract = await deployFn();
     await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
@@ -55,7 +55,7 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
   const fixtureTimeSetInFuture = async function () {
-    this.startTime = ethers.BigNumber.from(await time.latest()).add('1000');
+    this.startTime = (await time.latest()) + 1000;
     this.contract = await deployFn();
     await this.contract.batchSetCheckpoint([this.checkpointId], [this.startTime]);
   };
@@ -247,7 +247,7 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
       beforeEach(async function () {
         this.receipt = await this.contract.triggerCheckpoint(this.checkpointId);
         const block = await ethers.provider.getBlock(this.receipt.blockNumber);
-        this.startTime = ethers.BigNumber.from(block.timestamp);
+        this.startTime = BigInt(block.timestamp);
       });
 
       it('sets the checkpoint to the current timestamp', async function () {

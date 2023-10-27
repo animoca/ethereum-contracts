@@ -3,7 +3,6 @@ const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
-const {nonFungibleTokenId} = require('../../token');
 
 function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
   let accounts, deployer, owner, approved, operator, other;
@@ -13,24 +12,19 @@ function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
     [deployer, owner, approved, operator, other] = accounts;
   });
 
-  const fungible1 = {id: 1, supply: 10};
-  const fungible2 = {id: 2, supply: 11};
-  const fungible3 = {id: 3, supply: 12};
-  const nft1 = nonFungibleTokenId(1);
-  const nft2 = nonFungibleTokenId(2);
-  const nonExistingNFT = nonFungibleTokenId(99);
+  const token1 = {id: 1n, supply: 10n};
+  const token2 = {id: 2n, supply: 11n};
+  const token3 = {id: 3n, supply: 12n};
 
   describe('like an ERC1155 with OperatorFilterer', function () {
     const fixture = async function () {
       this.token = await deploy(deployer);
-      await mint(this.token, owner.address, fungible1.id, fungible1.supply);
-      await mint(this.token, owner.address, fungible2.id, fungible2.supply);
-      await mint(this.token, owner.address, fungible3.id, fungible3.supply);
-      await mint(this.token, owner.address, nft1, 1);
-      await mint(this.token, owner.address, nft2, 1);
+      await mint(this.token, owner.address, token1.id, token1.supply);
+      await mint(this.token, owner.address, token2.id, token2.supply);
+      await mint(this.token, owner.address, token3.id, token3.supply);
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
       this.refusingOperatorRegistry = await deployContract('OperatorFilterRegistryMock', false);
-      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.address);
+      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.getAddress());
     };
 
     beforeEach(async function () {
@@ -39,7 +33,7 @@ function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
 
     describe('operatorFilterRegistry()', function () {
       it('returns the correct value', async function () {
-        expect(await this.token.operatorFilterRegistry()).to.equal(this.refusingOperatorRegistry.address);
+        expect(await this.token.operatorFilterRegistry()).to.equal(await this.refusingOperatorRegistry.getAddress());
       });
     });
 
@@ -69,7 +63,7 @@ function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
           const data = '0x42';
           it('reverts if sent by an operator', async function () {
             await expectRevert(
-              transferFunction.call(this, owner.address, other.address, fungible1.id, 1, data, operator),
+              transferFunction.call(this, owner.address, other.address, token1.id, 1, data, operator),
               this.token,
               errors.OperatorNotAllowed,
               {

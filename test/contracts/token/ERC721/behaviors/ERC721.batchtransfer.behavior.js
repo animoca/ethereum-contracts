@@ -1,5 +1,4 @@
 const {ethers} = require('hardhat');
-const {constants} = ethers;
 const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -54,7 +53,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
 
         it('clears the approval for the token(s)', async function () {
           for (const tokenId of tokenIds) {
-            expect(await this.token.getApproved(tokenId)).to.equal(constants.AddressZero);
+            expect(await this.token.getApproved(tokenId)).to.equal(ethers.ZeroAddress);
           }
         });
 
@@ -70,11 +69,11 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
           });
         } else {
           it('decreases the owner balance', async function () {
-            expect(await this.token.balanceOf(this.from)).to.equal(this.nftBalance - tokenIds.length);
+            expect(await this.token.balanceOf(this.from)).to.equal(this.nftBalance - BigInt(tokenIds.length));
           });
 
           it('increases the recipients balance', async function () {
-            expect(await this.token.balanceOf(this.to)).to.equal(tokenIds.length);
+            expect(await this.token.balanceOf(this.to)).to.equal(BigInt(tokenIds.length));
           });
         }
       };
@@ -124,7 +123,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
         describe('Pre-conditions', function () {
           it('reverts if transferred to the zero address', async function () {
             await expectRevert(
-              batchTransferFrom_ERC721(this.token, owner.address, constants.AddressZero, [nft1], owner),
+              batchTransferFrom_ERC721(this.token, owner.address, ethers.ZeroAddress, [nft1], owner),
               this.token,
               errors.TransferToAddressZero
             );

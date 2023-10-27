@@ -28,7 +28,7 @@ function behavesLikeERC1155MetadataURI({deploy, features}) {
     if (features && features.MetadataResolver) {
       describe('metadataResolver()', function () {
         it('returns a non-zero address', async function () {
-          await expect(this.token.metadataResolver()).to.not.equal(ethers.constants.AddressZero);
+          await expect(this.token.metadataResolver()).to.not.equal(ethers.ZeroAddress);
         });
       });
 

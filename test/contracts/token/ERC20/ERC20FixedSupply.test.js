@@ -7,7 +7,7 @@ const {behavesLikeERC20} = require('./behaviors/ERC20.behavior');
 
 const name = 'ERC20 Mock';
 const symbol = 'E20';
-const decimals = ethers.BigNumber.from('18');
+const decimals = 18;
 const tokenURI = 'uri';
 
 const config = {

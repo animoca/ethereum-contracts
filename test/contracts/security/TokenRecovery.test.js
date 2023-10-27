@@ -37,16 +37,16 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
   const fixture = async function () {
     this.contract = await deployFn();
-    await setBalance(this.contract.address, ethers.BigNumber.from('1000'));
+    await setBalance(await this.contract.getAddress(), 1000n);
     const forwarderRegistryAddress = await getForwarderRegistryAddress();
     this.erc20 = await deployContract('ERC20MintBurn', '', '', 18, forwarderRegistryAddress);
     await this.erc20.grantRole(await this.erc20.MINTER_ROLE(), deployer.address);
-    await this.erc20.batchMint([this.contract.address], [1000]);
-    this.erc721 = await deployContract('ERC721Full', '', '', ethers.constants.AddressZero, ethers.constants.AddressZero, forwarderRegistryAddress);
+    await this.erc20.batchMint([this.contract.getAddress()], [1000]);
+    this.erc721 = await deployContract('ERC721Full', '', '', ethers.ZeroAddress, ethers.ZeroAddress, forwarderRegistryAddress);
     await this.erc721.grantRole(await this.erc721.MINTER_ROLE(), deployer.address);
-    await this.erc721.mint(this.contract.address, 0);
-    await this.erc721.mint(this.contract.address, 1);
-    await this.erc721.mint(this.contract.address, 2);
+    await this.erc721.mint(this.contract.getAddress(), 0);
+    await this.erc721.mint(this.contract.getAddress(), 1);
+    await this.erc721.mint(this.contract.getAddress(), 2);
   };
 
   beforeEach(async function () {
@@ -77,7 +77,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       });
 
       it('transfers the tokens to the destination wallets', async function () {
-        expect(await ethers.provider.getBalance(this.contract.address)).to.equal('889');
+        expect(await ethers.provider.getBalance(this.contract.getAddress())).to.equal('889');
       });
     });
   });
@@ -91,7 +91,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
     it('reverts with inconsistent arrays', async function () {
       await expect(this.contract.recoverERC20s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
-      await expect(this.contract.recoverERC20s([], [this.erc20.address], [])).to.be.revertedWithCustomError(
+      await expect(this.contract.recoverERC20s([], [this.erc20.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
         'InconsistentArrayLengths'
       );
@@ -101,14 +101,16 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
     context('when successful', function () {
       beforeEach(async function () {
         this.recipients = [deployer.address, other.address, other.address];
-        this.contracts = [this.erc20.address, this.erc20.address, this.erc20.address];
+        this.contracts = [this.erc20.getAddress(), this.erc20.getAddress(), this.erc20.getAddress()];
         this.values = ['1', '10', '100'];
         this.receipt = await this.contract.recoverERC20s(this.recipients, this.contracts, this.values);
       });
 
       it('transfers the tokens to the destination wallets', async function () {
         for (let i = 0; i < this.recipients.length; i++) {
-          await expect(this.receipt).to.emit(this.erc20, 'Transfer').withArgs(this.contract.address, this.recipients[i], this.values[i]);
+          await expect(this.receipt)
+            .to.emit(this.erc20, 'Transfer')
+            .withArgs(await this.contract.getAddress(), this.recipients[i], this.values[i]);
         }
       });
     });
@@ -123,7 +125,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
     it('reverts with inconsistent arrays', async function () {
       await expect(this.contract.recoverERC721s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
-      await expect(this.contract.recoverERC721s([], [this.erc721.address], [])).to.be.revertedWithCustomError(
+      await expect(this.contract.recoverERC721s([], [this.erc721.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
         'InconsistentArrayLengths'
       );
@@ -133,14 +135,16 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
     context('when successful', function () {
       beforeEach(async function () {
         this.recipients = [deployer.address, other.address, other.address];
-        this.contracts = [this.erc721.address, this.erc721.address, this.erc721.address];
+        this.contracts = [this.erc721.getAddress(), this.erc721.getAddress(), this.erc721.getAddress()];
         this.tokens = [0, 1, 2];
         this.receipt = await this.contract.recoverERC721s(this.recipients, this.contracts, this.tokens);
       });
 
       it('transfers the tokens to the destination wallets', async function () {
         for (let i = 0; i < this.recipients.length; i++) {
-          await expect(this.receipt).to.emit(this.erc721, 'Transfer').withArgs(this.contract.address, this.recipients[i], this.tokens[i]);
+          await expect(this.receipt)
+            .to.emit(this.erc721, 'Transfer')
+            .withArgs(await this.contract.getAddress(), this.recipients[i], this.tokens[i]);
         }
       });
     });

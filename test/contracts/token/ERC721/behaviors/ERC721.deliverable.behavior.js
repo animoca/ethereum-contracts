@@ -1,5 +1,4 @@
 const {ethers} = require('hardhat');
-const {constants} = ethers;
 const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -38,7 +37,7 @@ function behavesLikeERC721Deliverable({deploy, errors}) {
 
       it('emits Transfer event(s)', async function () {
         for (const id of ids) {
-          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(constants.AddressZero, owner.address, id);
+          await expect(this.receipt).to.emit(this.token, 'Transfer').withArgs(ethers.ZeroAddress, owner.address, id);
         }
       });
 
@@ -56,7 +55,7 @@ function behavesLikeERC721Deliverable({deploy, errors}) {
         });
 
         it('reverts if minted to the zero address', async function () {
-          await expectRevert(this.token.deliver([constants.AddressZero], [1]), this.token, errors.MintToAddressZero);
+          await expectRevert(this.token.deliver([ethers.ZeroAddress], [1]), this.token, errors.MintToAddressZero);
         });
 
         it('reverts if the token already exists', async function () {

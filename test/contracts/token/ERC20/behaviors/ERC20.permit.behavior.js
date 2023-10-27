@@ -1,5 +1,4 @@
 const {ethers} = require('hardhat');
-const {constants} = ethers;
 const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -22,8 +21,8 @@ function behavesLikeERC20Permit(implementation) {
   describe('like an ERC20 Permit', function () {
     let deployer, owner, spender, other;
 
-    const initialSupply = ethers.BigNumber.from('100');
-    const noDeadline = constants.MaxUint256;
+    const initialSupply = 100n;
+    const noDeadline = ethers.MaxUint256;
 
     before(async function () {
       [deployer, owner, spender, other] = await ethers.getSigners();
@@ -36,7 +35,7 @@ function behavesLikeERC20Permit(implementation) {
         name: implementation.name,
         version: '1',
         chainId: await getChainId(),
-        verifyingContract: this.contract.address,
+        verifyingContract: await this.contract.getAddress(),
       };
     };
 
@@ -48,16 +47,16 @@ function behavesLikeERC20Permit(implementation) {
       it('reverts when the permit is invalid', async function () {
         const nonce = await this.contract.nonces(owner.address);
         const signature = decodeSignature(
-          await owner._signTypedData(this.domain, PermitType, {
+          await owner.signTypedData(this.domain, PermitType, {
             owner: owner.address,
             spender: spender.address,
             value: 1,
-            nonce: nonce.add(1), // invalid nonce
-            deadline: constants.MaxUint256,
+            nonce: nonce + 1n, // invalid nonce
+            deadline: ethers.MaxUint256,
           })
         );
         await expectRevert(
-          this.contract.permit(owner.address, spender.address, nonce, constants.MaxUint256, signature.v, signature.r, signature.s),
+          this.contract.permit(owner.address, spender.address, nonce, ethers.MaxUint256, signature.v, signature.r, signature.s),
           this.contract,
           errors.PermitInvalid
         );
@@ -65,7 +64,7 @@ function behavesLikeERC20Permit(implementation) {
 
       it('reverts when using the zero address as owner/signer', async function () {
         const signature = decodeSignature(
-          await owner._signTypedData(this.domain, PermitType, {
+          await owner.signTypedData(this.domain, PermitType, {
             owner: owner.address,
             spender: spender.address,
             value: 1,
@@ -74,7 +73,7 @@ function behavesLikeERC20Permit(implementation) {
           })
         );
         await expectRevert(
-          this.contract.permit(constants.AddressZero, spender.address, 1, 0, signature.v, signature.r, signature.s),
+          this.contract.permit(ethers.ZeroAddress, spender.address, 1, 0, signature.v, signature.r, signature.s),
           this.contract,
           errors.PermitFromAddressZero
         );
@@ -82,7 +81,7 @@ function behavesLikeERC20Permit(implementation) {
 
       it('reverts when the permit is expired', async function () {
         const signature = decodeSignature(
-          await owner._signTypedData(this.domain, PermitType, {
+          await owner.signTypedData(this.domain, PermitType, {
             owner: owner.address,
             spender: spender.address,
             value: 1,
@@ -107,7 +106,7 @@ function behavesLikeERC20Permit(implementation) {
         beforeEach(async function () {
           this.nonce = await this.contract.nonces(owner.address);
           this.signature = decodeSignature(
-            await owner._signTypedData(this.domain, PermitType, {
+            await owner.signTypedData(this.domain, PermitType, {
               owner: owner.address,
               spender: spender.address,
               value: 1,
@@ -131,7 +130,7 @@ function behavesLikeERC20Permit(implementation) {
           });
 
           it('updates the permit nonce of the owner correctly', async function () {
-            expect(await this.contract.nonces(owner.address)).to.equal(this.nonce.add(1));
+            expect(await this.contract.nonces(owner.address)).to.equal(this.nonce + 1n);
           });
 
           it('approves the spender allowance from the owner', async function () {
@@ -153,7 +152,7 @@ function behavesLikeERC20Permit(implementation) {
 
     describe('DOMAIN_SEPARATOR()', function () {
       it('returns the correct domain separator', async function () {
-        expect(await this.contract.DOMAIN_SEPARATOR()).to.equal(ethers.utils._TypedDataEncoder.hashDomain(this.domain));
+        expect(await this.contract.DOMAIN_SEPARATOR()).to.equal(ethers.TypedDataEncoder.hashDomain(this.domain));
       });
     });
 

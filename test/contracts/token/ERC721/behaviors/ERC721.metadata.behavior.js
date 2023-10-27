@@ -49,7 +49,7 @@ function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
     if (features && features.MetadataResolver) {
       describe('metadataResolver()', function () {
         it('returns a non-zero address', async function () {
-          await expect(this.token.metadataResolver()).to.not.equal(ethers.constants.AddressZero);
+          await expect(this.token.metadataResolver()).to.not.equal(ethers.ZeroAddress);
         });
       });
     }

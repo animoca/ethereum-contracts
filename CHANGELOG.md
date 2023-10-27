@@ -24,6 +24,7 @@
 - Removed contracts `ERC1155SimpleMock`, `ERC1155WithOperatorFiltererMock`, `ERC1155Mock`, `ERC1155MetadataURIPerTokenMock` and `ERC1155BurnableMock` (and their proxied counterparts).
 - Removed `ERC2981Mock`.
 - Upgraded to `solc@0.8.21`.
+- Upgraded to `ethers6`.
 
 ### Improvements
 

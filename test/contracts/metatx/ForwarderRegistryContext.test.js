@@ -1,6 +1,5 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {getForwarderRegistryAddress} = require('../../helpers/registries');
@@ -43,9 +42,9 @@ runBehaviorTests('ForwarderRegistryContext', config, function (deployFn) {
     });
 
     it('returns false for the any other address', async function () {
-      expect(await this.contract.isTrustedForwarder(this.contract.address)).to.be.false;
+      expect(await this.contract.isTrustedForwarder(this.contract.getAddress())).to.be.false;
       expect(await this.contract.isTrustedForwarder(deployer.address)).to.be.false;
-      expect(await this.contract.isTrustedForwarder(constants.AddressZero)).to.be.false;
+      expect(await this.contract.isTrustedForwarder(ethers.ZeroAddress)).to.be.false;
     });
   });
 });

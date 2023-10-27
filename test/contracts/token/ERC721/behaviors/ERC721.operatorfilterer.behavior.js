@@ -1,5 +1,4 @@
 const {ethers} = require('hardhat');
-const {constants} = ethers;
 const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -30,7 +29,7 @@ function behavesLikeERC721WithOperatorFilterer({deploy, mint, errors, methods}) 
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
       this.nftBalance = await this.token.balanceOf(owner.address);
       this.refusingOperatorRegistry = await deployContract('OperatorFilterRegistryMock', false);
-      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.address);
+      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.getAddress());
     };
 
     beforeEach(async function () {
@@ -39,7 +38,7 @@ function behavesLikeERC721WithOperatorFilterer({deploy, mint, errors, methods}) 
 
     describe('operatorFilterRegistry()', function () {
       it('returns the correct value', async function () {
-        expect(await this.token.operatorFilterRegistry()).to.equal(this.refusingOperatorRegistry.address);
+        expect(await this.token.operatorFilterRegistry()).to.equal(await this.refusingOperatorRegistry.getAddress());
       });
     });
 
@@ -152,13 +151,13 @@ function behavesLikeERC721WithOperatorFilterer({deploy, mint, errors, methods}) 
       context('when clearing an approval', function () {
         context('when there was no prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = constants.AddressZero;
+            this.approvedAddress = ethers.ZeroAddress;
           });
           setApprovalBySender(nft3);
         });
         context('when there was a prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = constants.AddressZero;
+            this.approvedAddress = ethers.ZeroAddress;
           });
           setApprovalBySender(nft1);
         });

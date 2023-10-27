@@ -63,7 +63,7 @@ runBehaviorTests('Pause', config, function (deployFn) {
         expect(await this.contract.paused()).to.be.true;
       });
       it('emits a Paused event', async function () {
-        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'Paused');
+        await expect(this.contract.deploymentTransaction().hash).to.emit(this.contract, 'Paused');
       });
     });
   });

@@ -1,5 +1,4 @@
 const {ethers} = require('hardhat');
-const {constants} = ethers;
 const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -38,14 +37,14 @@ function behavesLikeERC20Mintable(implementation) {
           });
 
           it('reverts if minted to the zero address', async function () {
-            await expectRevert(mint(this.contract, constants.AddressZero, 1), this.contract, errors.MintToAddressZero);
+            await expectRevert(mint(this.contract, ethers.ZeroAddress, 1n), this.contract, errors.MintToAddressZero);
           });
 
           it('reverts if minting would overflow the total supply', async function () {
-            await mint(this.contract, recipient1.address, constants.MaxUint256);
-            await expectRevert(mint(this.contract, recipient2.address, 1), this.contract, errors.SupplyOverflow, {
-              supply: constants.MaxUint256,
-              value: 1,
+            await mint(this.contract, recipient1.address, ethers.MaxUint256);
+            await expectRevert(mint(this.contract, recipient2.address, 1n), this.contract, errors.SupplyOverflow, {
+              supply: ethers.MaxUint256,
+              value: 1n,
             });
           });
         });
@@ -60,7 +59,7 @@ function behavesLikeERC20Mintable(implementation) {
           });
 
           it('emits a Transfer event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(constants.AddressZero, accounts[toIndex].address, value);
+            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(ethers.ZeroAddress, accounts[toIndex].address, value);
           });
         };
 
@@ -72,15 +71,15 @@ function behavesLikeERC20Mintable(implementation) {
         };
 
         context('when minting zero value', function () {
-          mintsTokens(AccountIndex.recipient1, constants.Zero);
+          mintsTokens(AccountIndex.recipient1, 0n);
         });
 
         context('when minting some tokens', function () {
-          mintsTokens(AccountIndex.recipient1, constants.One);
+          mintsTokens(AccountIndex.recipient1, 1n);
         });
 
         context('when minting the maximum supply', function () {
-          mintsTokens(AccountIndex.recipient1, constants.MaxUint256);
+          mintsTokens(AccountIndex.recipient1, ethers.MaxUint256);
         });
       });
     }
@@ -89,7 +88,7 @@ function behavesLikeERC20Mintable(implementation) {
       describe('batchMint(address[],uint256[])', function () {
         context('Pre-conditions', function () {
           it('reverts if sent by a non-minter', async function () {
-            await expectRevert(batchMint(this.contract.connect(recipient1), [recipient1.address], [1]), this.contract, errors.NotMinter, {
+            await expectRevert(batchMint(this.contract.connect(recipient1), [recipient1.address], [1n]), this.contract, errors.NotMinter, {
               role: await this.contract.MINTER_ROLE(),
               account: recipient1.address,
             });
@@ -97,24 +96,24 @@ function behavesLikeERC20Mintable(implementation) {
 
           it('reverts with inconsistent arrays', async function () {
             await expectRevert(batchMint(this.contract, [recipient1.address], []), this.contract, errors.InconsistentArrayLengths);
-            await expectRevert(batchMint(this.contract, [], [1]), this.contract, errors.InconsistentArrayLengths);
+            await expectRevert(batchMint(this.contract, [], [1n]), this.contract, errors.InconsistentArrayLengths);
           });
 
           it('reverts if minted to the zero address', async function () {
-            await expectRevert(batchMint(this.contract, [constants.AddressZero], [1]), this.contract, errors.MintToAddressZero);
+            await expectRevert(batchMint(this.contract, [ethers.ZeroAddress], [1n]), this.contract, errors.MintToAddressZero);
           });
 
           it('reverts if minting would overflow the total supply', async function () {
-            await batchMint(this.contract, [recipient1.address], [constants.MaxUint256]);
-            await expectRevert(batchMint(this.contract, [recipient2.address], [1]), this.contract, errors.SupplyOverflow, {
-              supply: constants.MaxUint256,
+            await batchMint(this.contract, [recipient1.address], [ethers.MaxUint256]);
+            await expectRevert(batchMint(this.contract, [recipient2.address], [1n]), this.contract, errors.SupplyOverflow, {
+              supply: ethers.MaxUint256,
               value: 1,
             });
           });
 
           it('reverts if cumulative values overflow', async function () {
             await expectRevert(
-              batchMint(this.contract, [recipient1.address, recipient2.address], [1, constants.MaxUint256]),
+              batchMint(this.contract, [recipient1.address, recipient2.address], [1n, ethers.MaxUint256]),
               this.contract,
               errors.BatchMintValuesOverflow
             );
@@ -123,17 +122,17 @@ function behavesLikeERC20Mintable(implementation) {
 
         const mintWasSuccessful = function (recipientIndexes, values) {
           let aggregatedValues = {};
-          let totalValue = constants.Zero;
+          let totalValue = 0n;
           for (let i = 0; i < recipientIndexes.length; ++i) {
             const toIndex = recipientIndexes[i];
             const value = values[i];
 
             it('emits a Transfer event', async function () {
-              await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(constants.AddressZero, accounts[toIndex].address, value);
+              await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(ethers.ZeroAddress, accounts[toIndex].address, value);
             });
 
-            aggregatedValues[toIndex] = aggregatedValues[toIndex] ? aggregatedValues[toIndex].add(value) : value;
-            totalValue = totalValue.add(value);
+            aggregatedValues[toIndex] = aggregatedValues[toIndex] ? aggregatedValues[toIndex] + value : value;
+            totalValue = totalValue + value;
           }
 
           for (const toIndex of Object.keys(aggregatedValues)) {
@@ -165,19 +164,19 @@ function behavesLikeERC20Mintable(implementation) {
         });
 
         context('when minting a zero total value', function () {
-          mintsTokens([AccountIndex.recipient1], [constants.Zero]);
+          mintsTokens([AccountIndex.recipient1], [0n]);
         });
 
         context('when minting some tokens', function () {
-          mintsTokens([AccountIndex.recipient1, AccountIndex.recipient2], [constants.One, constants.Two]);
+          mintsTokens([AccountIndex.recipient1, AccountIndex.recipient2], [1n, 2n]);
         });
 
         context('when minting some tokens including zero values', function () {
-          mintsTokens([AccountIndex.recipient1, AccountIndex.recipient1, AccountIndex.recipient2], [constants.One, constants.Zero, constants.One]);
+          mintsTokens([AccountIndex.recipient1, AccountIndex.recipient1, AccountIndex.recipient2], [1n, 0n, 1n]);
         });
 
         context('when minting the maximum supply', function () {
-          mintsTokens([AccountIndex.recipient1], [constants.MaxUint256]);
+          mintsTokens([AccountIndex.recipient1], [ethers.MaxUint256]);
         });
       });
     }

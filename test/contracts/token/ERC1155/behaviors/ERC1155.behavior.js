@@ -16,7 +16,7 @@ function behavesLikeERC1155(implementation) {
       behavesLikeERC1155Standard(implementation);
     });
     context('with a zero-address Operator Filter Registry', function () {
-      behavesLikeERC1155Standard(implementation, ethers.constants.AddressZero);
+      behavesLikeERC1155Standard(implementation, ethers.ZeroAddress);
     });
     context('with a non-contract Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation, '0x0000000000000000000000000000000000000001');

@@ -7,7 +7,7 @@ const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 
 const name = 'ERC677 Mock';
 const symbol = 'E577';
-const decimals = ethers.BigNumber.from('18');
+const decimals = 18;
 const tokenURI = 'uri';
 
 const config = {

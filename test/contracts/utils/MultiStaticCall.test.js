@@ -1,14 +1,13 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {provider} = ethers;
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
 function decodeAggregateReturnData(returnData, returnTypes) {
   return returnData.map((res, i) => {
     return {
-      success: res.success,
-      returnData: ethers.utils.defaultAbiCoder.decode([returnTypes[i]], res.returnData)[0],
+      success: res[0],
+      returnData: res[0] ? ethers.AbiCoder.defaultAbiCoder().decode([returnTypes[i]], res[1])[0] : null,
     };
   });
 }
@@ -22,15 +21,17 @@ describe('MultiStaticCall', function () {
 
   const fixture = async function () {
     this.contract = await deployContract('MultiStaticCallMock');
-    this.block = await provider.getBlock('latest');
+    this.block = await ethers.provider.getBlock('latest');
 
-    this.getEthBalance = [this.contract.address, this.contract.interface.encodeFunctionData('getEthBalance', [other.address])];
-    this.getBlockNumber = [this.contract.address, this.contract.interface.encodeFunctionData('getBlockNumber')];
-    this.getCurrentBlockCoinbase = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockCoinbase')];
-    this.getCurrentBlockGasLimit = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit')];
-    this.getCurrentBlockTimestamp = [this.contract.address, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp')];
-    this.revertingCall = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCall')];
-    this.revertingCallWithoutMessage = [this.contract.address, this.contract.interface.encodeFunctionData('revertingCallWithoutMessage')];
+    const contractAddress = await this.contract.getAddress();
+
+    this.getEthBalance = [contractAddress, this.contract.interface.encodeFunctionData('getEthBalance', [other.address])];
+    this.getBlockNumber = [contractAddress, this.contract.interface.encodeFunctionData('getBlockNumber')];
+    this.getCurrentBlockCoinbase = [contractAddress, this.contract.interface.encodeFunctionData('getCurrentBlockCoinbase')];
+    this.getCurrentBlockGasLimit = [contractAddress, this.contract.interface.encodeFunctionData('getCurrentBlockGasLimit')];
+    this.getCurrentBlockTimestamp = [contractAddress, this.contract.interface.encodeFunctionData('getCurrentBlockTimestamp')];
+    this.revertingCall = [contractAddress, this.contract.interface.encodeFunctionData('revertingCall')];
+    this.revertingCallWithoutMessage = [contractAddress, this.contract.interface.encodeFunctionData('revertingCallWithoutMessage')];
   };
 
   beforeEach(async function () {
@@ -54,13 +55,15 @@ describe('MultiStaticCall', function () {
 
       it('returns the data from the calls', async function () {
         const result = decodeAggregateReturnData(
-          await this.contract.callStatic.tryAggregate(true, [
-            this.getBlockNumber,
-            this.getCurrentBlockCoinbase,
-            this.getCurrentBlockGasLimit,
-            this.getCurrentBlockTimestamp,
-            this.getEthBalance,
-          ]),
+          (
+            await this.contract.tryAggregate.staticCallResult(true, [
+              this.getBlockNumber,
+              this.getCurrentBlockCoinbase,
+              this.getCurrentBlockGasLimit,
+              this.getCurrentBlockTimestamp,
+              this.getEthBalance,
+            ])
+          ).returnData,
           ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256']
         );
 
@@ -74,22 +77,24 @@ describe('MultiStaticCall', function () {
         expect(result[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result[2].returnData).to.equal(this.block.gasLimit); // gaslimit
         expect(result[3].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result[4].returnData).to.equal(await ethers.provider.getBalance(other.address)); // balance
       });
     });
 
     context('requireSuccess = false', function () {
       it('returns the data from the calls, including failures', async function () {
         const result = decodeAggregateReturnData(
-          await this.contract.callStatic.tryAggregate(false, [
-            this.getBlockNumber,
-            this.getCurrentBlockCoinbase,
-            this.getCurrentBlockGasLimit,
-            this.getCurrentBlockTimestamp,
-            this.getEthBalance,
-            this.revertingCall,
-            this.revertingCallWithoutMessage,
-          ]),
+          (
+            await this.contract.tryAggregate.staticCallResult(false, [
+              this.getBlockNumber,
+              this.getCurrentBlockCoinbase,
+              this.getCurrentBlockGasLimit,
+              this.getCurrentBlockTimestamp,
+              this.getEthBalance,
+              this.revertingCall,
+              this.revertingCallWithoutMessage,
+            ])
+          ).returnData,
           ['uint256', 'address', 'uint256', 'uint256', 'uint256', '', '']
         );
 
@@ -104,7 +109,7 @@ describe('MultiStaticCall', function () {
         expect(result[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result[2].returnData).to.equal(this.block.gasLimit); // gaslimit
         expect(result[3].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result[4].returnData).to.equal(await ethers.provider.getBalance(other.address)); // balance
       });
     });
   });
@@ -125,7 +130,7 @@ describe('MultiStaticCall', function () {
       });
 
       it('returns the data from the calls', async function () {
-        const aggregated = await this.contract.callStatic.tryBlockAndAggregate(true, [
+        const aggregated = await this.contract.tryBlockAndAggregate.staticCallResult(true, [
           this.getBlockNumber,
           this.getCurrentBlockCoinbase,
           this.getCurrentBlockGasLimit,
@@ -147,13 +152,13 @@ describe('MultiStaticCall', function () {
         expect(result.returnData[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result.returnData[2].returnData).to.equal(this.block.gasLimit); // gaslimit
         expect(result.returnData[3].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result.returnData[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result.returnData[4].returnData).to.equal(await ethers.provider.getBalance(other.address)); // balance
       });
     });
 
     context('requireSuccess = false', function () {
       it('returns the data from the calls, including failures', async function () {
-        const aggregated = await this.contract.callStatic.tryBlockAndAggregate(false, [
+        const aggregated = await this.contract.tryBlockAndAggregate.staticCallResult(false, [
           this.getBlockNumber,
           this.getCurrentBlockCoinbase,
           this.getCurrentBlockGasLimit,
@@ -179,7 +184,7 @@ describe('MultiStaticCall', function () {
         expect(result.returnData[1].returnData).to.equal(this.block.miner); // coinbase
         expect(result.returnData[2].returnData).to.equal(this.block.gasLimit); // gaslimit
         expect(result.returnData[3].returnData).to.equal(this.block.timestamp); // timestamp
-        expect(result.returnData[4].returnData).to.equal(await provider.getBalance(other.address)); // balance
+        expect(result.returnData[4].returnData).to.equal(await ethers.provider.getBalance(other.address)); // balance
       });
     });
   });

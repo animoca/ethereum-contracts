@@ -1,6 +1,5 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 
@@ -14,7 +13,7 @@ describe('Bytes32', function () {
 
   context('toBase32String(bytes32)', function () {
     it('returns aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa with a zero value', async function () {
-      expect(await this.contract.toBase32String(constants.HashZero)).to.equal('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      expect(await this.contract.toBase32String(ethers.ZeroHash)).to.equal('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     });
     it('returns h777777777777777777777777777777777777777777777777774 with a max value', async function () {
       expect(await this.contract.toBase32String('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')).to.equal(
@@ -30,17 +29,17 @@ describe('Bytes32', function () {
 
   context('toASCIIString(bytes32)', function () {
     it('returns an empty string with a zero value', async function () {
-      expect(await this.contract.toASCIIString(constants.HashZero)).to.equal('');
+      expect(await this.contract.toASCIIString(ethers.ZeroHash)).to.equal('');
     });
 
     it('returns an equal and same-length string for a bytes32 converted from a short string', async function () {
       const str = 'test';
-      expect(await this.contract.toASCIIString(ethers.utils.formatBytes32String(str))).to.equal(str);
+      expect(await this.contract.toASCIIString(ethers.encodeBytes32String(str))).to.equal(str);
     });
 
     it('returns 32-length string for a bytes32 converted from a long string', async function () {
       const str = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-      expect(await this.contract.toASCIIString(ethers.utils.formatBytes32String(str))).to.equal(str.slice(0, 32));
+      expect(await this.contract.toASCIIString(ethers.encodeBytes32String(str))).to.equal(str.slice(0, 32));
     });
   });
 });

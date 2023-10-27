@@ -1,6 +1,5 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
@@ -50,7 +49,7 @@ runBehaviorTests('PayoutWallet', config, function (deployFn) {
 
   describe('constructor(address payable)', function () {
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expect(deployFn({payoutWallet: constants.AddressZero})).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
+      await expect(deployFn({payoutWallet: ethers.ZeroAddress})).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
     });
 
     it('sets the payout wallet', async function () {
@@ -58,7 +57,7 @@ runBehaviorTests('PayoutWallet', config, function (deployFn) {
     });
 
     it('emits a PayoutWalletSet event', async function () {
-      await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'PayoutWalletSet').withArgs(payoutWallet.address);
+      await expect(this.contract.deploymentTransaction().hash).to.emit(this.contract, 'PayoutWalletSet').withArgs(payoutWallet.address);
     });
   });
 
@@ -70,7 +69,7 @@ runBehaviorTests('PayoutWallet', config, function (deployFn) {
     });
 
     it('reverts if setting the payout wallet to the zero address', async function () {
-      await expect(this.contract.setPayoutWallet(constants.AddressZero)).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
+      await expect(this.contract.setPayoutWallet(ethers.ZeroAddress)).to.be.revertedWithCustomError(this.contract, 'ZeroAddressPayoutWallet');
     });
 
     context('when successful', function () {

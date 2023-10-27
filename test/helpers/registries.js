@@ -10,7 +10,7 @@ async function deployForwarderRegistry() {
 }
 
 async function getForwarderRegistryAddress() {
-  return (await deployForwarderRegistry()).address;
+  return (await deployForwarderRegistry()).getAddress();
 }
 
 let operatorFilterRegistry = undefined;
@@ -23,7 +23,7 @@ async function deployOperatorFilterRegistry() {
 }
 
 async function getOperatorFilterRegistryAddress() {
-  return (await deployOperatorFilterRegistry()).address;
+  return (await deployOperatorFilterRegistry()).getAddress();
 }
 
 let tokenMetadataResolverPerToken = undefined;
@@ -36,7 +36,7 @@ async function deployTokenMetadataResolverPerToken() {
 }
 
 async function getTokenMetadataResolverPerTokenAddress() {
-  return (await deployTokenMetadataResolverPerToken()).address;
+  return (await deployTokenMetadataResolverPerToken()).getAddress();
 }
 
 let tokenMetadataResolverWithBaseURI = undefined;
@@ -49,7 +49,7 @@ async function deployTokenMetadataResolverWithBaseURI() {
 }
 
 async function getTokenMetadataResolverWithBaseURIAddress() {
-  return (await deployTokenMetadataResolverWithBaseURI()).address;
+  return (await deployTokenMetadataResolverWithBaseURI()).getAddress();
 }
 
 module.exports = {
