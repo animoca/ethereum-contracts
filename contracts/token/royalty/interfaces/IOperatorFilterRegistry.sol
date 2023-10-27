@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 interface IOperatorFilterRegistry {
     function isOperatorAllowed(address registrant, address operator) external view returns (bool);

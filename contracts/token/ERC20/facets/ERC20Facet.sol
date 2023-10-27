@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC20Storage} from "./../libraries/ERC20Storage.sol";
@@ -18,14 +18,14 @@ contract ERC20Facet is ERC20Base, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC20Storage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20Storage.init();
     }
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20, ERC20Allowance.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC20StorageWithAllocations(address[] calldata initialHolders, uint256[] calldata initialAllocations) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20Storage.initWithAllocations(initialHolders, initialAllocations);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {PayoutWalletStorage} from "./../libraries/PayoutWalletStorage.sol";
@@ -19,9 +19,9 @@ contract PayoutWalletFacet is PayoutWalletBase, ForwarderRegistryContextBase {
 
     /// @notice Initializes the storage with an initial payout wallet.
     /// @notice Sets the proxy initialization phase to `1`.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Reverts if `initialPayoutWallet` is the zero address.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {ZeroAddressPayoutWallet} if `initialPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param initialPayoutWallet The initial payout wallet.
     function initPayoutWalletStorage(address payable initialPayoutWallet) external {

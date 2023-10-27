@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 /// @title ERC20 Token Standard, optional extension: Allowance.
 /// @dev See https://eips.ethereum.org/EIPS/eip-20

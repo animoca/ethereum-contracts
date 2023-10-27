@@ -1,10 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Metadata(implementation) {
-  const {tokenURI, deploy, features, revertMessages} = implementation;
+  const {tokenURI, deploy, features, errors} = implementation;
 
   describe('like an ERC20 Metadata', function () {
     let deployer, other;
@@ -24,7 +25,9 @@ function behavesLikeERC20Metadata(implementation) {
 
     describe('setTokenURI()', function () {
       it('reverts if not called by the contract owner', async function () {
-        await expect(this.token.connect(other).setTokenURI(tokenURI)).to.be.revertedWith(revertMessages.NotContractOwner);
+        await expectRevert(this.token.connect(other).setTokenURI(tokenURI), this.token, errors.NotContractOwner, {
+          account: other.address,
+        });
       });
       it('sets the token URI', async function () {
         await this.token.setTokenURI(tokenURI);
@@ -32,7 +35,7 @@ function behavesLikeERC20Metadata(implementation) {
       });
     });
 
-    if (features.ERC165) {
+    if (features && features.ERC165) {
       supportsInterfaces(['IERC20Metadata']);
     }
   });

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
@@ -18,7 +18,7 @@ contract ERC721MintableFacet is ERC721MintableBase, ForwarderRegistryContextBase
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC721MintableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC721Storage.initERC721Mintable();

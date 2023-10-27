@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {IERC2981} from "./../interfaces/IERC2981.sol";
 import {ERC2981Storage} from "./../libraries/ERC2981Storage.sol";
@@ -17,8 +17,8 @@ abstract contract ERC2981Base is Context, IERC2981 {
     uint256 public constant ROYALTY_FEE_DENOMINATOR = ERC2981Storage.ROYALTY_FEE_DENOMINATOR;
 
     /// @notice Sets the royalty percentage.
-    /// @dev Reverts if the sender is not the contract owner.
-    /// @dev Reverts with IncorrectRoyaltyPercentage if `percentage` is above 100% (> FEE_DENOMINATOR).
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {IncorrectRoyaltyPercentage} if `percentage` is above 100% (> FEE_DENOMINATOR).
     /// @param percentage The new percentage to set. For example 50000 sets 50% royalty.
     function setRoyaltyPercentage(uint256 percentage) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
@@ -26,8 +26,8 @@ abstract contract ERC2981Base is Context, IERC2981 {
     }
 
     /// @notice Sets the royalty receiver.
-    /// @dev Reverts if the sender is not the contract owner.
-    /// @dev Reverts with IncorrectRoyaltyReceiver if `receiver` is the zero address.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {IncorrectRoyaltyReceiver} if `receiver` is the zero address.
     /// @param receiver The new receiver to set.
     function setRoyaltyReceiver(address receiver) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());

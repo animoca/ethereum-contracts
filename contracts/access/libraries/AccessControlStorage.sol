@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
-import {Bytes32} from "./../../utils/libraries/Bytes32.sol";
+import {NotRoleHolder, NotTargetContractRoleHolder} from "./../errors/AccessControlErrors.sol";
+import {TargetIsNotAContract} from "./../errors/Common.sol";
+import {RoleGranted, RoleRevoked} from "./../events/AccessControlEvents.sol";
+import {IAccessControl} from "./../interfaces/IAccessControl.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 library AccessControlStorage {
-    using Bytes32 for bytes32;
+    using Address for address;
     using AccessControlStorage for AccessControlStorage.Layout;
 
     struct Layout {
@@ -12,9 +16,6 @@ library AccessControlStorage {
     }
 
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("animoca.core.access.AccessControl.storage")) - 1);
-
-    event RoleGranted(bytes32 role, address account, address operator);
-    event RoleRevoked(bytes32 role, address account, address operator);
 
     /// @notice Grants a role to an account.
     /// @dev Note: Call to this function should be properly access controlled.
@@ -43,7 +44,7 @@ library AccessControlStorage {
     }
 
     /// @notice Renounces a role by the sender.
-    /// @dev Reverts if `sender` does not have `role`.
+    /// @dev Reverts with {NotRoleHolder} if `sender` does not have `role`.
     /// @dev Emits a {RoleRevoked} event.
     /// @param sender The message sender.
     /// @param role The role to renounce.
@@ -56,19 +57,36 @@ library AccessControlStorage {
     /// @notice Retrieves whether an account has a role.
     /// @param role The role.
     /// @param account The account.
-    /// @return whether `account` has `role`.
-    function hasRole(Layout storage s, bytes32 role, address account) internal view returns (bool) {
+    /// @return hasRole_ Whether `account` has `role`.
+    function hasRole(Layout storage s, bytes32 role, address account) internal view returns (bool hasRole_) {
         return s.roles[role][account];
     }
 
+    /// @notice Checks whether an account has a role in a target contract.
+    /// @param targetContract The contract to check.
+    /// @param role The role to check.
+    /// @param account The account to check.
+    /// @return hasTargetContractRole_ Whether `account` has `role` in `targetContract`.
+    function hasTargetContractRole(address targetContract, bytes32 role, address account) internal view returns (bool hasTargetContractRole_) {
+        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
+        return IAccessControl(targetContract).hasRole(role, account);
+    }
+
     /// @notice Ensures that an account has a role.
-    /// @dev Reverts if `account` does not have `role`.
+    /// @dev Reverts with {NotRoleHolder} if `account` does not have `role`.
     /// @param role The role.
     /// @param account The account.
     function enforceHasRole(Layout storage s, bytes32 role, address account) internal view {
-        if (!s.hasRole(role, account)) {
-            revert(string(abi.encodePacked("AccessControl: missing '", role.toASCIIString(), "' role")));
-        }
+        if (!s.hasRole(role, account)) revert NotRoleHolder(role, account);
+    }
+
+    /// @notice Enforces that an account has a role in a target contract.
+    /// @dev Reverts with {NotTargetContractRoleHolder} if the account does not have the role.
+    /// @param targetContract The contract to check.
+    /// @param role The role to check.
+    /// @param account The account to check.
+    function enforceHasTargetContractRole(address targetContract, bytes32 role, address account) internal view {
+        if (!hasTargetContractRole(targetContract, role, account)) revert NotTargetContractRoleHolder(targetContract, role, account);
     }
 
     function layout() internal pure returns (Layout storage s) {

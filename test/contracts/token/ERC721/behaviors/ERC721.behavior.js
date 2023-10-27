@@ -6,14 +6,18 @@ const {behavesLikeERC721Mintable} = require('./ERC721.mintable.behavior');
 const {behavesLikeERC721Deliverable} = require('./ERC721.deliverable.behavior');
 const {behavesLikeERC721Burnable} = require('./ERC721.burnable.behavior');
 const {behavesLikeERC721Metadata} = require('./ERC721.metadata.behavior');
+const {behavesLikeERC2981} = require('./../../royalty/behaviors/ERC2981.behavior');
 
 function behavesLikeERC721(implementation) {
-  if (implementation.features.WithOperatorFilterer) {
+  const interfaces = implementation.interfaces;
+  const features = implementation.features;
+
+  if (features && features.WithOperatorFilterer) {
     context('with an allowing Operator Filter Registry', function () {
       behavesLikeERC721Standard(implementation);
     });
     context('with a zero-address Operator Filter Registry', function () {
-      behavesLikeERC721Standard(implementation, ethers.constants.AddressZero);
+      behavesLikeERC721Standard(implementation, ethers.ZeroAddress);
     });
     context('with a non-contract Operator Filter Registry', function () {
       behavesLikeERC721Standard(implementation, '0x0000000000000000000000000000000000000001');
@@ -27,12 +31,16 @@ function behavesLikeERC721(implementation) {
   behavesLikeERC721Mintable(implementation);
   behavesLikeERC721Burnable(implementation);
 
-  if (implementation.interfaces.ERC721Deliverable) {
+  if (interfaces && interfaces.ERC721Deliverable) {
     behavesLikeERC721Deliverable(implementation);
   }
 
-  if (implementation.interfaces.ERC721Metadata) {
+  if (interfaces && interfaces.ERC721Metadata) {
     behavesLikeERC721Metadata(implementation);
+  }
+
+  if (interfaces && interfaces.ERC2981) {
+    behavesLikeERC2981(implementation);
   }
 }
 

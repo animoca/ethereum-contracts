@@ -5,14 +5,18 @@ const {behavesLikeERC1155Mintable} = require('./ERC1155.mintable.behavior');
 const {behavesLikeERC1155Deliverable} = require('./ERC1155.deliverable.behavior');
 const {behavesLikeERC1155Burnable} = require('./ERC1155.burnable.behavior');
 const {behavesLikeERC1155MetadataURI} = require('./ERC1155.metadatauri.behavior');
+const {behavesLikeERC2981} = require('./../../royalty/behaviors/ERC2981.behavior');
 
 function behavesLikeERC1155(implementation) {
-  if (implementation.features.WithOperatorFilterer) {
+  const features = implementation.features;
+  const interfaces = implementation.interfaces;
+
+  if (features && features.WithOperatorFilterer) {
     context('with an allowing Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation);
     });
     context('with a zero-address Operator Filter Registry', function () {
-      behavesLikeERC1155Standard(implementation, ethers.constants.AddressZero);
+      behavesLikeERC1155Standard(implementation, ethers.ZeroAddress);
     });
     context('with a non-contract Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation, '0x0000000000000000000000000000000000000001');
@@ -25,12 +29,16 @@ function behavesLikeERC1155(implementation) {
   behavesLikeERC1155Mintable(implementation);
   behavesLikeERC1155Burnable(implementation);
 
-  if (implementation.interfaces.ERC1155Deliverable) {
+  if (interfaces && interfaces.ERC1155Deliverable) {
     behavesLikeERC1155Deliverable(implementation);
   }
 
-  if (implementation.interfaces.ERC1155MetadataURI) {
+  if (interfaces && interfaces.ERC1155MetadataURI) {
     behavesLikeERC1155MetadataURI(implementation);
+  }
+
+  if (interfaces && interfaces.ERC2981) {
+    behavesLikeERC2981(implementation);
   }
 }
 

@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.0.0
+
+### New features
+
+- Added preset ERC721 contracts `ERC721Full`, `ERC721FullBurn` and `ERC721FullMintOnceBurn` (and their proxied versions).
+- Added preset ERC1155 contracts `ERC1155Full` and `ERC1155FullBurn` (and their proxied versions).
+- Token metadata for ERC721 and ERC1155 are now handled through an external resolver contract whose reference is set at construction time. For this feature, added contracts `ITokenMetadataResolver`, `TokenMetadataStorage`, `TokenMetadataBase` and several resolver implementations. The logic for ERC721 and ERC1155 is implemented in new `ERC721MetadataBase`/`ERC721MetadataFacet`/`ERC721Metadata` and `ER1155MetadataBase`/`ERC1155MetadataFacet`/`ERC1155Metadata` contracts respectively.
+- Added new metadata scheme with `TokenMetadataResolverRandomizedReveal`.
+- ERC1155 contracts now support `name()` and `symbol()` as part of their metadata implementation.
+- Added contract interfaces `IAccessControl`, `IPause`, `ICheckpoints`, `IPayoutWallet`, `IProxyAdmin` and `ISeals`.
+- Added functions in contract libraries `ContractOwnershipStorage` and `AccessControlStorage` to facilitate the retrieval of access-control information from external contracts.
+- Added `ERC677Mock`.
+
+### Breaking changes
+
+- Moved all contracts events definitions to dedicated files (see `events` subfolders).
+- Changed all legacy contracts errors to custom errors (see `errors` subfolders).
+- Moved diamond struct and enum definitions to `DiamondCommon`.
+- Removed all previous `ERC721MetadataXXX` contracts.
+- Removed all previous `ERC1155MetadataXXX` contracts.
+- Removed contracts `ERC721SimpleMock`, `ERC721WithOperatorFiltererMock`, `ERC721Mock`, `ERC721MintableOnceMock`, `ERC721MetadataPerTokenMock` and `ERC721BurnableMock`.
+- Removed contracts `ERC1155SimpleMock`, `ERC1155WithOperatorFiltererMock`, `ERC1155Mock`, `ERC1155MetadataURIPerTokenMock` and `ERC1155BurnableMock` (and their proxied counterparts).
+- Removed `ERC2981Mock`.
+- Upgraded to `solc@0.8.22`.
+- Upgraded to `ethers6`.
+
+### Improvements
+
+- Removed events duplication in storage libraries and use events from interfaces instead.
+- Changed `TokenRecovery` functions from `external` to `public` to allow calling them from overriding implementations.
+- Updated dependencies versions.
+
 ## 2.0.0
 
 ### New features

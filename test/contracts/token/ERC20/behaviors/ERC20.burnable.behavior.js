@@ -1,15 +1,15 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
 function behavesLikeERC20Burnable(implementation) {
-  const {features, interfaces, methods, revertMessages, deploy} = implementation;
-  const {'burn(uint256)': burn, 'burnFrom(address,uint256)': burnFrom, 'batchBurnFrom(address[],uint256[])': batchBurnFrom} = methods;
+  const {features, interfaces, methods, errors, deploy} = implementation;
+  const {'burn(uint256)': burn, 'burnFrom(address,uint256)': burnFrom, 'batchBurnFrom(address[],uint256[])': batchBurnFrom} = methods || {};
 
-  const initialSupply = ethers.BigNumber.from('100');
-  const initialAllowance = initialSupply.sub(1);
+  const initialSupply = 100n;
+  const initialAllowance = initialSupply - 1n;
 
   describe('like an ERC20 Burnable', function () {
     let accounts, deployer, owner, spender, maxSpender;
@@ -23,7 +23,7 @@ function behavesLikeERC20Burnable(implementation) {
     const fixture = async function () {
       this.contract = (await deploy([owner.address], [initialSupply], deployer)).connect(owner);
       await this.contract.approve(spender.address, initialAllowance);
-      await this.contract.approve(maxSpender.address, constants.MaxUint256);
+      await this.contract.approve(maxSpender.address, ethers.MaxUint256);
     };
 
     beforeEach(async function () {
@@ -34,21 +34,25 @@ function behavesLikeERC20Burnable(implementation) {
       describe('burn(uint256)', function () {
         context('Pre-conditions', function () {
           it('reverts with an insufficient balance', async function () {
-            await expect(burn(this.contract, initialSupply.add(1))).to.be.revertedWith(revertMessages.BurnExceedsBalance);
+            await expectRevert(burn(this.contract, initialSupply + 1n), this.contract, errors.BurnExceedsBalance, {
+              owner: owner.address,
+              balance: initialSupply,
+              value: initialSupply + 1n,
+            });
           });
         });
 
         const burnWasSuccessful = function (value, senderIndex) {
           it('decreases the sender balance', async function () {
-            expect(await this.contract.balanceOf(accounts[senderIndex].address)).to.equal(initialSupply.sub(value));
+            expect(await this.contract.balanceOf(accounts[senderIndex].address)).to.equal(initialSupply - value);
           });
 
           it('decreases the total supply', async function () {
-            expect(await this.contract.totalSupply()).to.equal(initialSupply.sub(value));
+            expect(await this.contract.totalSupply()).to.equal(initialSupply - value);
           });
 
           it('emits a Transfer event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[senderIndex].address, constants.AddressZero, value);
+            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[senderIndex].address, ethers.ZeroAddress, value);
           });
         };
 
@@ -63,11 +67,11 @@ function behavesLikeERC20Burnable(implementation) {
         };
 
         context('when burning a zero value', function () {
-          burnsTokens(0);
+          burnsTokens(0n);
         });
 
         context('when burning a non-zero value', function () {
-          burnsTokens(1);
+          burnsTokens(1n);
         });
 
         context('when burning the full balance', function () {
@@ -80,56 +84,72 @@ function behavesLikeERC20Burnable(implementation) {
       describe('burnFrom(address,uint256)', function () {
         context('Pre-conditions', function () {
           it('reverts when from is the zero address', async function () {
-            await expect(burnFrom(this.contract.connect(spender), constants.AddressZero, 1)).to.be.revertedWith(revertMessages.BurnExceedsAllowance);
+            await expectRevert(burnFrom(this.contract.connect(spender), ethers.ZeroAddress, 1), this.contract, errors.BurnExceedsAllowance, {
+              owner: ethers.ZeroAddress,
+              spender: spender.address,
+              allowance: 0,
+              value: 1,
+            });
           });
 
           it('reverts with an insufficient balance', async function () {
-            await this.contract.approve(spender.address, initialSupply.add(1));
-            await expect(burnFrom(this.contract.connect(spender), owner.address, initialSupply.add(1))).to.be.revertedWith(
-              revertMessages.BurnExceedsBalance
+            await this.contract.approve(spender.address, initialSupply + 1n);
+            await expectRevert(
+              burnFrom(this.contract.connect(spender), owner.address, initialSupply + 1n),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: initialSupply,
+                value: initialSupply + 1n,
+              }
             );
           });
 
           it('reverts with an insufficient allowance', async function () {
-            await expect(burnFrom(this.contract.connect(spender), owner.address, initialAllowance.add(1))).to.be.revertedWith(
-              revertMessages.BurnExceedsAllowance
+            await expectRevert(
+              burnFrom(this.contract.connect(spender), owner.address, initialAllowance + 1n),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: initialAllowance,
+                value: initialAllowance + 1n,
+              }
             );
           });
         });
 
         const burnWasSuccessful = function (fromIndex, value, senderIndex, withEIP717) {
           it('decreases the owner balance', async function () {
-            expect(await this.contract.balanceOf(accounts[fromIndex].address)).to.equal(initialSupply.sub(value));
+            expect(await this.contract.balanceOf(accounts[fromIndex].address)).to.equal(initialSupply - value);
           });
 
           it('decreases the total supply', async function () {
-            expect(await this.contract.totalSupply()).to.equal(initialSupply.sub(value));
+            expect(await this.contract.totalSupply()).to.equal(initialSupply - value);
           });
 
           it('emits a Transfer event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[fromIndex].address, constants.AddressZero, value);
+            await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[fromIndex].address, ethers.ZeroAddress, value);
           });
 
           if (fromIndex != senderIndex) {
             if (withEIP717) {
               it('[EIP717] keeps allowance at max ', async function () {
-                expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(constants.MaxUint256);
+                expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(ethers.MaxUint256);
               });
             } else {
               it('decreases the spender allowance', async function () {
-                expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(this.allowance.sub(value));
+                expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(this.allowance - value);
               });
             }
 
-            if (features.AllowanceTracking) {
+            if (features && features.AllowanceTracking) {
               it('emits an Approval event', async function () {
                 await expect(this.receipt)
                   .to.emit(this.contract, 'Approval')
-                  .withArgs(
-                    accounts[fromIndex].address,
-                    accounts[senderIndex].address,
-                    withEIP717 ? constants.MaxUint256 : this.allowance.sub(value)
-                  );
+                  .withArgs(accounts[fromIndex].address, accounts[senderIndex].address, withEIP717 ? ethers.MaxUint256 : this.allowance - value);
               });
             }
           }
@@ -161,11 +181,11 @@ function behavesLikeERC20Burnable(implementation) {
         };
 
         context('when burning a zero value', function () {
-          burnsBySender(0);
+          burnsBySender(0n);
         });
 
         context('when burning a non-zero value', function () {
-          burnsBySender(1);
+          burnsBySender(1n);
         });
 
         context('when burning the full allowance', function () {
@@ -178,88 +198,129 @@ function behavesLikeERC20Burnable(implementation) {
       describe('batchBurnFrom(address[],uint256[])', function () {
         context('Pre-conditions', function () {
           it('reverts with inconsistent arrays', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [spender.address, spender.address], [1]), revertMessages.InconsistentArrays);
-            await expect(batchBurnFrom(this.contract.connect(spender), [spender.address], [1, 1]), revertMessages.InconsistentArrays);
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [spender.address, spender.address], [1]),
+              this.contract,
+              errors.InconsistentArrayLengths
+            );
+            await expectRevert(batchBurnFrom(this.contract.connect(spender), [], [1]), this.contract, errors.InconsistentArrayLengths);
           });
 
           it('reverts when one of the owners is the zero address', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [constants.AddressZero], [1]), revertMessages.BurnExceedsAllowance);
-            await expect(
-              batchBurnFrom(this.contract.connect(spender), [owner.address, constants.AddressZero], [1, 1]),
-              revertMessages.BurnExceedsAllowance
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [ethers.ZeroAddress], [1n]),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: ethers.ZeroAddress,
+                spender: spender.address,
+                allowance: 0,
+                value: 1,
+              }
+            );
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [owner.address, ethers.ZeroAddress], [1n, 1n]),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: ethers.ZeroAddress,
+                spender: spender.address,
+                allowance: 0n,
+                value: 1n,
+              }
             );
           });
 
           it('reverts with an insufficient balance', async function () {
-            await expect(batchBurnFrom(this.contract.connect(spender), [owner.address], [initialSupply.add(1)]), revertMessages.BurnExceedsBalance);
-            await expect(
-              batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialSupply, 1]),
-              revertMessages.BurnExceedsBalance
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(maxSpender), [owner.address], [initialSupply + 1n]),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: initialSupply,
+                value: initialSupply + 1n,
+              }
+            );
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(maxSpender), [owner.address, owner.address], [initialSupply, 1n]),
+              this.contract,
+              errors.BurnExceedsBalance,
+              {
+                owner: owner.address,
+                balance: 0n,
+                value: 1n,
+              }
             );
           });
 
           it('reverts with an insufficient allowance', async function () {
-            await expect(
-              batchBurnFrom(this.contract.connect(spender), [owner.address], [initialAllowance.add(1)]),
-              revertMessages.BurnExceedsAllowance
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [owner.address], [initialAllowance + 1n]),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: initialAllowance,
+                value: initialAllowance + 1n,
+              }
             );
-            await expect(
-              batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialAllowance, 1]),
-              revertMessages.BurnExceedsAllowance
-            );
-          });
-
-          it('reverts when values overflow', async function () {
-            await expect(
-              batchBurnFrom(this.contract.connect(maxSpender), [owner.address, owner.address], [initialAllowance, constants.MaxUint256]),
-              revertMessages.BatchBurnValuesOverflow
+            await expectRevert(
+              batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialAllowance, 1n]),
+              this.contract,
+              errors.BurnExceedsAllowance,
+              {
+                owner: owner.address,
+                spender: spender.address,
+                allowance: 0n,
+                value: 1n,
+              }
             );
           });
         });
 
         const burnWasSuccessful = function (ownerIndexes, values, senderIndex, withEIP717) {
-          let totalValue = constants.Zero;
+          let totalValue = 0n;
           let aggregatedValues = {};
           for (let i = 0; i < ownerIndexes.length; ++i) {
             const fromIndex = ownerIndexes[i];
             const value = values[i];
-            totalValue = totalValue.add(value);
+            totalValue = totalValue + value;
 
             it('emits a Transfer event', async function () {
-              await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[fromIndex].address, constants.AddressZero, value);
+              await expect(this.receipt).to.emit(this.contract, 'Transfer').withArgs(accounts[fromIndex].address, ethers.ZeroAddress, value);
             });
 
-            aggregatedValues[fromIndex] = aggregatedValues[fromIndex] ? aggregatedValues[fromIndex].add(value) : value;
+            aggregatedValues[fromIndex] = aggregatedValues[fromIndex] ? aggregatedValues[fromIndex] + value : value;
           }
 
           for (const fromIndex of Object.keys(aggregatedValues)) {
             it('decreases the owners balance', async function () {
-              expect(await this.contract.balanceOf(accounts[fromIndex].address)).to.equal(
-                this.fromBalances[fromIndex].sub(aggregatedValues[fromIndex])
-              );
+              expect(await this.contract.balanceOf(accounts[fromIndex].address)).to.equal(this.fromBalances[fromIndex] - aggregatedValues[fromIndex]);
             });
 
             if (fromIndex != senderIndex) {
               if (withEIP717) {
                 it('[EIP717] keeps allowance at max ', async function () {
-                  expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(constants.MaxUint256);
+                  expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(ethers.MaxUint256);
                 });
               } else {
                 it('decreases the spender allowance', async function () {
                   expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(
-                    this.fromAllowances[fromIndex].sub(aggregatedValues[fromIndex])
+                    this.fromAllowances[fromIndex] - aggregatedValues[fromIndex]
                   );
                 });
               }
 
-              if (features.AllowanceTracking) {
+              if (features && features.AllowanceTracking) {
                 it('emits an Approval event', async function () {
                   await expect(this.receipt)
                     .to.emit(this.contract, 'Approval')
                     .withArgs(
                       accounts[fromIndex].address,
                       accounts[senderIndex].address,
-                      withEIP717 ? constants.MaxUint256 : this.fromAllowances[fromIndex].sub(aggregatedValues[fromIndex])
+                      withEIP717 ? ethers.MaxUint256 : this.fromAllowances[fromIndex] - aggregatedValues[fromIndex]
                     );
                 });
               }
@@ -267,7 +328,7 @@ function behavesLikeERC20Burnable(implementation) {
           }
 
           it('decreases the token(s) total supply', async function () {
-            expect(await this.contract.totalSupply()).to.equal(initialSupply.sub(totalValue));
+            expect(await this.contract.totalSupply()).to.equal(initialSupply - totalValue);
           });
         };
 
@@ -306,21 +367,21 @@ function behavesLikeERC20Burnable(implementation) {
         });
 
         context('when burning a zero total value', function () {
-          burnsBySender([AccountIndex.owner], [constants.Zero]);
+          burnsBySender([AccountIndex.owner], [0n]);
         });
 
         context('when burning zero values', function () {
-          burnsBySender([AccountIndex.owner, AccountIndex.owner, AccountIndex.owner], [constants.Zero, constants.One, constants.Zero]);
+          burnsBySender([AccountIndex.owner, AccountIndex.owner, AccountIndex.owner], [0n, 1n, 0n]);
         });
 
         context('when burning the full allowance', function () {
           burnsBySender([AccountIndex.owner], [initialAllowance]);
-          burnsBySender([AccountIndex.owner, AccountIndex.owner], [initialAllowance.sub(1), constants.One]);
+          burnsBySender([AccountIndex.owner, AccountIndex.owner], [initialAllowance - 1n, 1n]);
         });
       });
     }
 
-    if (features.ERC165 && interfaces.ERC20Burnable) {
+    if (features && features.ERC165 && interfaces && interfaces.ERC20Burnable) {
       supportsInterfaces(['IERC20Burnable']);
     }
   });

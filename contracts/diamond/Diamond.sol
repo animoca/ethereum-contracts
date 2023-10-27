@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 pragma experimental ABIEncoderV2;
 
-import {IDiamondCutCommon} from "./interfaces/IDiamondCutCommon.sol";
+import {EtherReceptionDisabled} from "./../CommonErrors.sol";
+import {FacetCut, Initialization} from "./DiamondCommon.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 
 /// @title ERC2535 Diamond Standard, Diamond.
@@ -14,26 +15,17 @@ contract Diamond {
     /// @dev Emits a {DiamondCut} event.
     /// @param cuts The list of facet addresses, actions and function selectors to apply to the diamond.
     /// @param initializations The list of addresses and encoded function calls to execute with delegatecall.
-    constructor(IDiamondCutCommon.FacetCut[] memory cuts, IDiamondCutCommon.Initialization[] memory initializations) payable {
+    constructor(FacetCut[] memory cuts, Initialization[] memory initializations) payable {
         DiamondStorage.layout().diamondCut(cuts, initializations);
     }
 
+    /// @notice Execute a function from a facet with delegatecall.
+    /// @dev Reverts with {FunctionNotFound} if the function selector is not found.
     fallback() external payable {
-        address facet = DiamondStorage.layout().facetAddress(msg.sig);
-        require(facet != address(0), "Diamond: function not found");
-        assembly {
-            calldatacopy(0, 0, calldatasize())
-            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
-            returndatacopy(0, 0, returndatasize())
-            switch result
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
-            }
-        }
+        DiamondStorage.layout().delegateOnFallback();
     }
 
-    receive() external payable {}
+    receive() external payable virtual {
+        revert EtherReceptionDisabled();
+    }
 }

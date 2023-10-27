@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
+import {IllegalInterfaceId} from "./../errors/InterfaceDetectionErrors.sol";
 import {IERC165} from "./../interfaces/IERC165.sol";
 
 library InterfaceDetectionStorage {
@@ -13,11 +14,11 @@ library InterfaceDetectionStorage {
     bytes4 internal constant ILLEGAL_INTERFACE_ID = 0xffffffff;
 
     /// @notice Sets or unsets an ERC165 interface.
-    /// @dev Reverts if `interfaceId` is `0xffffffff`.
+    /// @dev Revertswith {IllegalInterfaceId} if `interfaceId` is `0xffffffff`.
     /// @param interfaceId the interface identifier.
     /// @param supported True to set the interface, false to unset it.
     function setSupportedInterface(Layout storage s, bytes4 interfaceId, bool supported) internal {
-        require(interfaceId != ILLEGAL_INTERFACE_ID, "InterfaceDetection: wrong value");
+        if (interfaceId == ILLEGAL_INTERFACE_ID) revert IllegalInterfaceId();
         s.supportedInterfaces[interfaceId] = supported;
     }
 

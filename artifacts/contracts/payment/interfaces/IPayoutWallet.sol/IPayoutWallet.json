@@ -1,0 +1,24 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IPayoutWallet",
+  "sourceName": "contracts/payment/interfaces/IPayoutWallet.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "payoutWallet",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "wallet",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

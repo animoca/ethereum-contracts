@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {PauseStorage} from "./../libraries/PauseStorage.sol";
@@ -19,8 +19,8 @@ contract PauseFacet is PauseBase, ForwarderRegistryContextBase {
 
     /// @notice Initializes the storage with an initial pause state.
     /// @notice Sets the proxy initialization phase to `1`.
-    /// @dev Reverts if the caller is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @dev Emits a {Paused} event if `isPaused` is true.
     /// @param isPaused The initial pause state.
     function initPauseStorage(bool isPaused) external {

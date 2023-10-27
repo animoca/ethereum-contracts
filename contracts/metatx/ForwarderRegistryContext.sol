@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
 import {IERC2771} from "./interfaces/IERC2771.sol";
@@ -12,11 +12,11 @@ abstract contract ForwarderRegistryContext is ForwarderRegistryContextBase, IERC
     constructor(IForwarderRegistry forwarderRegistry_) ForwarderRegistryContextBase(forwarderRegistry_) {}
 
     function forwarderRegistry() external view returns (IForwarderRegistry) {
-        return _forwarderRegistry;
+        return _FORWARDER_REGISTRY;
     }
 
     /// @inheritdoc IERC2771
-    function isTrustedForwarder(address forwarder) external view virtual override returns (bool) {
-        return forwarder == address(_forwarderRegistry);
+    function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
+        return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

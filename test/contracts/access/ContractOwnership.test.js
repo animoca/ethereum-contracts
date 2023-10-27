@@ -1,6 +1,5 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
@@ -41,7 +40,7 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
   };
 
   const fixtureWithoutOwner = async function () {
-    this.contract = await deployFn({initialOwner: constants.AddressZero});
+    this.contract = await deployFn({initialOwner: ethers.ZeroAddress});
   };
 
   describe('constructor(address)', function () {
@@ -51,11 +50,11 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
 
       it('does not set the initial owner', async function () {
-        expect(await this.contract.owner()).to.equal(constants.AddressZero);
+        expect(await this.contract.owner()).to.equal(ethers.ZeroAddress);
       });
 
       it('does not emit an OwnershipTransferred event', async function () {
-        await expect(this.contract.deployTransaction.hash).not.to.emit(this.contract, 'OwnershipTransferred');
+        await expect(this.contract.deploymentTransaction().hash).not.to.emit(this.contract, 'OwnershipTransferred');
       });
     });
 
@@ -69,9 +68,9 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
 
       it('emits an OwnershipTransferred event', async function () {
-        await expect(this.contract.deployTransaction.hash)
+        await expect(this.contract.deploymentTransaction().hash)
           .to.emit(this.contract, 'OwnershipTransferred')
-          .withArgs(constants.AddressZero, deployer.address);
+          .withArgs(ethers.ZeroAddress, deployer.address);
       });
     });
   });
@@ -83,19 +82,21 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
 
     describe('transferOwnership(address)', function () {
       it('reverts if the caller is not the contract owner', async function () {
-        await expect(this.contract.connect(other).transferOwnership(other.address)).to.be.revertedWith('Ownership: not the owner');
+        await expect(this.contract.connect(other).transferOwnership(other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+          .withArgs(other.address);
       });
 
       context('when successful', function () {
         context('with the zero address as new owner', function () {
           beforeEach(async function () {
-            this.receipt = await this.contract.transferOwnership(constants.AddressZero);
+            this.receipt = await this.contract.transferOwnership(ethers.ZeroAddress);
           });
           it('unsets the owner', async function () {
-            expect(await this.contract.owner()).to.equal(constants.AddressZero);
+            expect(await this.contract.owner()).to.equal(ethers.ZeroAddress);
           });
           it('emits an OwnershipTransferred event', async function () {
-            await expect(this.receipt).to.emit(this.contract, 'OwnershipTransferred').withArgs(deployer.address, constants.AddressZero);
+            await expect(this.receipt).to.emit(this.contract, 'OwnershipTransferred').withArgs(deployer.address, ethers.ZeroAddress);
           });
         });
 
@@ -131,11 +132,33 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
 
     describe('ContractOwnershipStorage.enforceIsContractOwner(address)', function () {
       it('reverts with a non-owner account', async function () {
-        await expect(this.contract.enforceIsContractOwner(other.address)).to.be.revertedWith('Ownership: not the owner');
+        await expect(this.contract.enforceIsContractOwner(other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+          .withArgs(other.address);
       });
 
       it('does not revert with the owner account', async function () {
         await this.contract.enforceIsContractOwner(deployer.address);
+      });
+    });
+
+    describe('ContractOwnershipStorage.enforceIsTargetContractOwner(address,address)', function () {
+      it('reverts with a target which is not a contract', async function () {
+        await expect(this.contract.enforceIsTargetContractOwner(deployer.address, other.address))
+          .to.be.revertedWithCustomError(this.contract, 'TargetIsNotAContract')
+          .withArgs(deployer.address);
+      });
+
+      it('reverts with an account which is not the target contract owner', async function () {
+        const targetContract = await deployFn();
+        await expect(this.contract.enforceIsTargetContractOwner(targetContract.getAddress(), other.address))
+          .to.be.revertedWithCustomError(this.contract, 'NotTargetContractOwner')
+          .withArgs(await targetContract.getAddress(), other.address);
+      });
+
+      it('does not revert with an account which is the target contract owner', async function () {
+        const targetContract = await deployFn();
+        await this.contract.enforceIsTargetContractOwner(targetContract.getAddress(), deployer.address);
       });
     });
 

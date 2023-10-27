@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {TokenRecoveryBase} from "./base/TokenRecoveryBase.sol";
 import {ContractOwnership} from "./../access/ContractOwnership.sol";

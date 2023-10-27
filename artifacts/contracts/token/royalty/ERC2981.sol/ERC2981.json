@@ -11,12 +11,28 @@
           "type": "uint256"
         }
       ],
-      "name": "IncorrectRoyaltyPercentage",
+      "name": "ERC2981IncorrectRoyaltyPercentage",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "IncorrectRoyaltyReceiver",
+      "name": "ERC2981IncorrectRoyaltyReceiver",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "IllegalInterfaceId",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
       "type": "error"
     },
     {

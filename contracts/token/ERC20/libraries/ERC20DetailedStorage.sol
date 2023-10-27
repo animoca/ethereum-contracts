@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {IERC20Detailed} from "./../interfaces/IERC20Detailed.sol";
 import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
@@ -35,7 +35,7 @@ library ERC20DetailedStorage {
     /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Detailed.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @param tokenName The token name.
     /// @param tokenSymbol The token symbol.
     /// @param tokenDecimals The token decimals.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
@@ -18,6 +18,10 @@ contract AccessControlMock is AccessControl, ForwarderRegistryContext {
 
     function enforceHasRole(bytes32 role, address account) external view {
         AccessControlStorage.layout().enforceHasRole(role, account);
+    }
+
+    function enforceHasTargetContractRole(address targetContract, bytes32 role, address account) external view {
+        AccessControlStorage.enforceHasTargetContractRole(targetContract, role, account);
     }
 
     function __msgData() external view returns (bytes calldata) {

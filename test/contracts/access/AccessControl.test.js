@@ -44,7 +44,9 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
 
   describe('grantRole(bytes32,address)', function () {
     it('reverts if the caller is not the contract owner', async function () {
-      expect(this.contract.connect(other).grantRole(this.role, other.address)).to.be.revertedWith('Ownership: not the owner');
+      expect(this.contract.connect(other).grantRole(this.role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     context('when successful (account did not have the role)', function () {
@@ -79,7 +81,9 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
 
   describe('revokeRole(bytes32,address)', function () {
     it('reverts if the caller is not the contract owner', async function () {
-      await expect(this.contract.connect(other).revokeRole(this.role, other.address)).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).revokeRole(this.role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(other.address);
     });
 
     context('when successful (account already had the role)', function () {
@@ -114,9 +118,9 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
 
   describe('renounceRole(bytes32)', function () {
     it('reverts if the caller does not have the role', async function () {
-      await expect(this.contract.connect(other).renounceRole(this.role)).to.be.revertedWith(
-        `AccessControl: missing '${ethers.utils.parseBytes32String(this.role)}' role`
-      );
+      await expect(this.contract.connect(other).renounceRole(this.role))
+        .to.be.revertedWithCustomError(this.contract, 'NotRoleHolder')
+        .withArgs(this.role, other.address);
     });
 
     context('when successful', function () {
@@ -137,13 +141,36 @@ runBehaviorTests('AccessControl', config, function (deployFn) {
 
   describe('AccessControlStorage.enforceHasRole(bytes32,address)', function () {
     it('reverts with an account which does not have the role', async function () {
-      await expect(this.contract.enforceHasRole(this.role, other.address)).to.be.revertedWith(
-        `AccessControl: missing '${ethers.utils.parseBytes32String(this.role)}' role`
-      );
+      await expect(this.contract.enforceHasRole(this.role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotRoleHolder')
+        .withArgs(this.role, other.address);
     });
 
     it('does not revert with an account which has the role', async function () {
       await this.contract.enforceHasRole(this.role, deployer.address);
+    });
+  });
+
+  describe('AccessControlStorage.enforceHasTargetContractRole(address,bytes32,address)', function () {
+    it('reverts with a target which is not a contract', async function () {
+      await expect(this.contract.enforceHasTargetContractRole(deployer.address, this.role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'TargetIsNotAContract')
+        .withArgs(deployer.address);
+    });
+
+    it('reverts with an account which does not have the role on the target contract', async function () {
+      const targetContract = await deployFn();
+      const role = await targetContract.TEST_ROLE();
+      await expect(this.contract.enforceHasTargetContractRole(targetContract.getAddress(), role, other.address))
+        .to.be.revertedWithCustomError(this.contract, 'NotTargetContractRoleHolder')
+        .withArgs(await targetContract.getAddress(), this.role, other.address);
+    });
+
+    it('does not revert with an account which has the role', async function () {
+      const targetContract = await deployFn();
+      const role = await targetContract.TEST_ROLE();
+      await targetContract.grantRole(role, deployer.address);
+      await this.contract.enforceHasTargetContractRole(targetContract.getAddress(), role, deployer.address);
     });
   });
 });

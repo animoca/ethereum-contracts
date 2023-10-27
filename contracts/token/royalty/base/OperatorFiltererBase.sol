@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {IOperatorFilterRegistry} from "./../interfaces/IOperatorFilterRegistry.sol";
 import {OperatorFiltererStorage} from "./../libraries/OperatorFiltererStorage.sol";
@@ -14,7 +14,7 @@ abstract contract OperatorFiltererBase is Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
 
     /// @notice Updates the address that the contract will make OperatorFilter checks against.
-    /// @dev Reverts if the sender is not the contract owner.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @param registry The new operator filter registry address. When set to the zero address, checks will be bypassed.
     function updateOperatorFilterRegistry(IOperatorFilterRegistry registry) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());

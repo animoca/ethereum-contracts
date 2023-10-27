@@ -1,11 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 
-function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
-  const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods;
+function behavesLikeERC721WithOperatorFilterer({deploy, mint, errors, methods}) {
+  const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods || {};
 
   describe('like an ERC721 with OperatorFilterer', function () {
     let accounts, deployer, owner, approved, operator, other;
@@ -29,7 +29,7 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
       await this.token.connect(owner).setApprovalForAll(operator.address, true);
       this.nftBalance = await this.token.balanceOf(owner.address);
       this.refusingOperatorRegistry = await deployContract('OperatorFilterRegistryMock', false);
-      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.address);
+      await this.token.updateOperatorFilterRegistry(this.refusingOperatorRegistry.getAddress());
     };
 
     beforeEach(async function () {
@@ -38,7 +38,7 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
 
     describe('operatorFilterRegistry()', function () {
       it('returns the correct value', async function () {
-        expect(await this.token.operatorFilterRegistry()).to.equal(this.refusingOperatorRegistry.address);
+        expect(await this.token.operatorFilterRegistry()).to.equal(await this.refusingOperatorRegistry.getAddress());
       });
     });
 
@@ -49,18 +49,18 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
             this.sender = approved;
             this.from = owner.address;
             this.to = other.address;
-            await expect(transferFunction.call(this, nft1, data))
-              .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-              .withArgs(approved.address);
+            await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.OperatorNotAllowed, {
+              operator: approved.address,
+            });
           });
 
           it('reverts if transferred by a non-allowed operator', async function () {
             this.sender = operator;
             this.from = owner.address;
             this.to = other.address;
-            await expect(transferFunction.call(this, nft1, data))
-              .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-              .withArgs(operator.address);
+            await expectRevert(transferFunction.call(this, nft1, data), this.token, errors.OperatorNotAllowed, {
+              operator: operator.address,
+            });
           });
         });
       };
@@ -95,9 +95,14 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
         describe('batchTransferFrom(address,adress,uint256[])', function () {
           describe('Pre-conditions', function () {
             it('reverts if transferred by a non-allowed approved address', async function () {
-              await expect(batchTransferFrom_ERC721(this.token, owner.address, other.address, [nft1], approved))
-                .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-                .withArgs(approved.address);
+              await expectRevert(
+                batchTransferFrom_ERC721(this.token, owner.address, other.address, [nft1], approved),
+                this.token,
+                errors.OperatorNotAllowed,
+                {
+                  operator: approved.address,
+                }
+              );
             });
 
             it('reverts if transferred by a non-allowed operator', async function () {
@@ -146,13 +151,13 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
       context('when clearing an approval', function () {
         context('when there was no prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = constants.AddressZero;
+            this.approvedAddress = ethers.ZeroAddress;
           });
           setApprovalBySender(nft3);
         });
         context('when there was a prior approval', function () {
           beforeEach(async function () {
-            this.approvedAddress = constants.AddressZero;
+            this.approvedAddress = ethers.ZeroAddress;
           });
           setApprovalBySender(nft1);
         });
@@ -161,9 +166,9 @@ function behavesLikeERC721WithOperatorFilterer({name, deploy, mint, methods}) {
 
     describe('setApprovalForAll(address,bool)', function () {
       it('reverts when setting an operator', async function () {
-        await expect(this.token.connect(owner).setApprovalForAll(other.address, true))
-          .to.be.revertedWithCustomError(this.token, 'OperatorNotAllowed')
-          .withArgs(other.address);
+        await expectRevert(this.token.connect(owner).setApprovalForAll(other.address, true), this.token, errors.OperatorNotAllowed, {
+          operator: other.address,
+        });
       });
 
       context('when unsetting an operator', function () {

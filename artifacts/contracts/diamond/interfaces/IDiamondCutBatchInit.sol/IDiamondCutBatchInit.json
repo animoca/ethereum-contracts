@@ -4,7 +4,6 @@
   "sourceName": "contracts/diamond/interfaces/IDiamondCutBatchInit.sol",
   "abi": [
     {
-      "anonymous": false,
       "inputs": [
         {
           "components": [
@@ -14,7 +13,7 @@
               "type": "address"
             },
             {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
+              "internalType": "enum FacetCutAction",
               "name": "action",
               "type": "uint8"
             },
@@ -24,48 +23,7 @@
               "type": "bytes4[]"
             }
           ],
-          "indexed": false,
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
-          "name": "cuts",
-          "type": "tuple[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "target",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "data",
-          "type": "bytes"
-        }
-      ],
-      "name": "DiamondCut",
-      "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "address",
-              "name": "facet",
-              "type": "address"
-            },
-            {
-              "internalType": "enum IDiamondCutCommon.FacetCutAction",
-              "name": "action",
-              "type": "uint8"
-            },
-            {
-              "internalType": "bytes4[]",
-              "name": "selectors",
-              "type": "bytes4[]"
-            }
-          ],
-          "internalType": "struct IDiamondCutCommon.FacetCut[]",
+          "internalType": "struct FacetCut[]",
           "name": "cuts",
           "type": "tuple[]"
         },
@@ -82,7 +40,7 @@
               "type": "bytes"
             }
           ],
-          "internalType": "struct IDiamondCutCommon.Initialization[]",
+          "internalType": "struct Initialization[]",
           "name": "initializations",
           "type": "tuple[]"
         }

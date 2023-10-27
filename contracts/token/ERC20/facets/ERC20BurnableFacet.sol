@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC20Storage} from "./../libraries/ERC20Storage.sol";
@@ -17,7 +17,7 @@ contract ERC20BurnableFacet is ERC20BurnableBase, ForwarderRegistryContextBase {
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC20Burnable.
-    /// @dev Reverts if the sender is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     function initERC20BurnableStorage() external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
         ERC20Storage.initERC20Burnable();

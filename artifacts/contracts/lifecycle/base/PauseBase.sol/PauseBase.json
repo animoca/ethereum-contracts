@@ -4,15 +4,36 @@
   "sourceName": "contracts/lifecycle/base/PauseBase.sol",
   "abi": [
     {
-      "anonymous": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotPaused",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "Paused",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "Pause",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [],
-      "name": "Unpaused",
+      "name": "Unpause",
       "type": "event"
     },
     {

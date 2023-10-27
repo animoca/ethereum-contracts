@@ -9,31 +9,33 @@ const {behavesLikeERC20Burnable} = require('./ERC20.burnable.behavior');
 const {behavesLikeERC20Mintable} = require('./ERC20.mintable.behavior');
 
 function behavesLikeERC20(implementation) {
-  if (implementation.interfaces.ERC20) {
+  const interfaces = implementation.interfaces;
+
+  if (interfaces && interfaces.ERC20) {
     behavesLikeERC20Standard(implementation);
   }
 
-  if (implementation.interfaces.ERC20Allowance) {
+  if (interfaces && interfaces.ERC20Allowance) {
     behavesLikeERC20Allowance(implementation);
   }
 
-  if (implementation.interfaces.ERC20Detailed) {
+  if (interfaces && interfaces.ERC20Detailed) {
     behavesLikeERC20Detailed(implementation);
   }
 
-  if (implementation.interfaces.ERC20Metadata) {
+  if (interfaces && interfaces.ERC20Metadata) {
     behavesLikeERC20Metadata(implementation);
   }
 
-  if (implementation.interfaces.ERC20Permit) {
+  if (interfaces && interfaces.ERC20Permit) {
     behavesLikeERC20Permit(implementation);
   }
 
-  if (implementation.interfaces.ERC20BatchTransfer) {
+  if (interfaces && interfaces.ERC20BatchTransfer) {
     behavesLikeERC20Batch(implementation);
   }
 
-  if (implementation.interfaces.ERC20Safe) {
+  if (interfaces && interfaces.ERC20Safe) {
     behavesLikeERC20Safe(implementation);
   }
 

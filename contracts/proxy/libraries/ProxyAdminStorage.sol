@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
-import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
+import {NoInitialProxyAdmin, NotProxyAdmin} from "./../errors/ProxyAdminErrors.sol";
+import {AdminChanged} from "./../events/ProxyAdminEvents.sol";
 import {ProxyInitialization} from "./ProxyInitialization.sol";
 
 library ProxyAdminStorage {
@@ -15,15 +16,13 @@ library ProxyAdminStorage {
     bytes32 internal constant LAYOUT_STORAGE_SLOT = bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1);
     bytes32 internal constant PROXY_INIT_PHASE_SLOT = bytes32(uint256(keccak256("eip1967.proxy.admin.phase")) - 1);
 
-    event AdminChanged(address previousAdmin, address newAdmin);
-
     /// @notice Initializes the storage with an initial admin (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    /// @dev Reverts if `initialAdmin` is the zero address.
+    /// @dev Reverts {NoInitialProxyAdmin} if `initialAdmin` is the zero address.
     /// @dev Emits an {AdminChanged} event.
     /// @param initialAdmin The initial payout wallet.
     function constructorInit(Layout storage s, address initialAdmin) internal {
-        require(initialAdmin != address(0), "ProxyAdmin: no initial admin");
+        if (initialAdmin == address(0)) revert NoInitialProxyAdmin();
         s.admin = initialAdmin;
         emit AdminChanged(address(0), initialAdmin);
     }
@@ -31,8 +30,8 @@ library ProxyAdminStorage {
     /// @notice Initializes the storage with an initial admin (proxied version).
     /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @dev Reverts if `initialAdmin` is the zero address.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts {NoInitialProxyAdmin} if `initialAdmin` is the zero address.
     /// @dev Emits an {AdminChanged} event.
     /// @param initialAdmin The initial payout wallet.
     function proxyInit(Layout storage s, address initialAdmin) internal {
@@ -41,12 +40,12 @@ library ProxyAdminStorage {
     }
 
     /// @notice Sets a new proxy admin.
-    /// @dev Reverts if `sender` is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if `sender` is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.
     /// @param newAdmin The new proxy admin.
     function changeProxyAdmin(Layout storage s, address sender, address newAdmin) internal {
         address previousAdmin = s.admin;
-        require(sender == previousAdmin, "ProxyAdmin: not the admin");
+        if (sender != previousAdmin) revert NotProxyAdmin(sender);
         if (previousAdmin != newAdmin) {
             s.admin = newAdmin;
             emit AdminChanged(previousAdmin, newAdmin);
@@ -60,10 +59,10 @@ library ProxyAdminStorage {
     }
 
     /// @notice Ensures that an account is the proxy admin.
-    /// @dev Reverts if `account` is not the proxy admin.
+    /// @dev Reverts with {NotProxyAdmin} if `account` is not the proxy admin.
     /// @param account The account.
     function enforceIsProxyAdmin(Layout storage s, address account) internal view {
-        require(account == s.admin, "ProxyAdmin: not the admin");
+        if (account != s.admin) revert NotProxyAdmin(account);
     }
 
     function layout() internal pure returns (Layout storage s) {

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
+import {ERC2981IncorrectRoyaltyReceiver, ERC2981IncorrectRoyaltyPercentage} from "./../errors/ERC2981Errors.sol";
 import {IERC2981} from "./../interfaces/IERC2981.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC2981Storage {
-    using ERC2981Storage for ERC2981Storage.Layout;
     using InterfaceDetectionStorage for InterfaceDetectionStorage.Layout;
 
     struct Layout {
@@ -17,30 +17,27 @@ library ERC2981Storage {
 
     uint256 internal constant ROYALTY_FEE_DENOMINATOR = 100000;
 
-    error IncorrectRoyaltyPercentage(uint256 percentage);
-    error IncorrectRoyaltyReceiver();
-
     /// @notice Marks the following ERC165 interface(s) as supported: ERC2981.
     function init() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC2981).interfaceId, true);
     }
 
     /// @notice Sets the royalty percentage.
-    /// @dev Reverts with IncorrectRoyaltyPercentage if `percentage` is above 100% (> FEE_DENOMINATOR).
+    /// @dev Reverts with {ERC2981IncorrectRoyaltyPercentage} if `percentage` is above 100% (> FEE_DENOMINATOR).
     /// @param percentage The new percentage to set. For example 50000 sets 50% royalty.
     function setRoyaltyPercentage(Layout storage s, uint256 percentage) internal {
         if (percentage > ROYALTY_FEE_DENOMINATOR) {
-            revert IncorrectRoyaltyPercentage(percentage);
+            revert ERC2981IncorrectRoyaltyPercentage(percentage);
         }
         s.royaltyPercentage = uint96(percentage);
     }
 
     /// @notice Sets the royalty receiver.
-    /// @dev Reverts with IncorrectRoyaltyReceiver if `receiver` is the zero address.
+    /// @dev Reverts with {ERC2981IncorrectRoyaltyReceiver} if `receiver` is the zero address.
     /// @param receiver The new receiver to set.
     function setRoyaltyReceiver(Layout storage s, address receiver) internal {
         if (receiver == address(0)) {
-            revert IncorrectRoyaltyReceiver();
+            revert ERC2981IncorrectRoyaltyReceiver();
         }
         s.royaltyReceiver = receiver;
     }

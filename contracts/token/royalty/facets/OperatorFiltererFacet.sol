@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {IOperatorFilterRegistry} from "./../interfaces/IOperatorFilterRegistry.sol";
@@ -19,12 +19,12 @@ contract OperatorFiltererFacet is OperatorFiltererBase, ForwarderRegistryContext
     constructor(IForwarderRegistry forwarderRegistry) ForwarderRegistryContextBase(forwarderRegistry) {}
 
     /// @notice Sets the address that the contract will make OperatorFilter checks against.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
-    /// @param registry The operator filter registry address. When set to the zero address, checks will be bypassed.
-    function init(IOperatorFilterRegistry registry) external {
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
+    /// @param operatorFilterRegistry The operator filter registry address. When set to the zero address, checks will be bypassed.
+    function initOperatorFilterer(IOperatorFilterRegistry operatorFilterRegistry) external {
         ProxyAdminStorage.layout().enforceIsProxyAdmin(_msgSender());
-        OperatorFiltererStorage.layout().proxyInit(registry);
+        OperatorFiltererStorage.layout().proxyInit(operatorFilterRegistry);
     }
 
     /// @inheritdoc ForwarderRegistryContextBase

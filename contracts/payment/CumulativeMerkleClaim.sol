@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {ContractOwnershipStorage} from "./../access/libraries/ContractOwnershipStorage.sol";
@@ -49,8 +49,8 @@ abstract contract CumulativeMerkleClaim is Pause {
     constructor() Pause(true) ContractOwnership(msg.sender) {}
 
     /// @notice Sets the merkle root for a new claiming period and unpauses the contract.
-    /// @dev Reverts if not called by the contract owner.
-    /// @dev Reverts if the contract is not paused.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @dev Reverts with {NotPaused} if the contract is not paused.
     /// @dev Emits an {Unpaused} event.
     /// @dev Emits a {MerkleRootSet} event.
     /// @param merkleRoot The merkle root to set.
@@ -58,12 +58,14 @@ abstract contract CumulativeMerkleClaim is Pause {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         PauseStorage.layout().unpause();
         root = merkleRoot;
-        ++nonce;
+        unchecked {
+            ++nonce;
+        }
         emit MerkleRootSet(merkleRoot);
     }
 
     /// @notice Executes the payout for a given user (anyone can call this function).
-    /// @dev Reverts if the contract is paused.
+    /// @dev Reverts with {Paused} if the contract is paused.
     /// @dev Reverts with {AlreadyClaimed} if this specific payout has already been claimed.
     /// @dev Reverts with {InvalidProof} if the merkle proof cannot be verified.
     /// @dev Emits a {PayoutClaimed} event.
@@ -77,13 +79,8 @@ abstract contract CumulativeMerkleClaim is Pause {
         bytes32 currentRoot = root;
         bytes32 leaf = keccak256(abi.encodePacked(recipient, claimData, currentNonce));
 
-        if (claimed[leaf]) {
-            revert AlreadyClaimed(recipient, claimData, currentNonce);
-        }
-
-        if (!proof.verifyCalldata(currentRoot, leaf)) {
-            revert InvalidProof(recipient, claimData, currentNonce);
-        }
+        if (claimed[leaf]) revert AlreadyClaimed(recipient, claimData, currentNonce);
+        if (!proof.verifyCalldata(currentRoot, leaf)) revert InvalidProof(recipient, claimData, currentNonce);
 
         claimed[leaf] = true;
 

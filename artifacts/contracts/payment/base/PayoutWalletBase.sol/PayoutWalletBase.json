@@ -4,6 +4,22 @@
   "sourceName": "contracts/payment/base/PayoutWalletBase.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAddressPayoutWallet",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {

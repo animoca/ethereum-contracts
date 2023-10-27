@@ -10,7 +10,7 @@ async function deployForwarderRegistry() {
 }
 
 async function getForwarderRegistryAddress() {
-  return (await deployForwarderRegistry()).address;
+  return (await deployForwarderRegistry()).getAddress();
 }
 
 let operatorFilterRegistry = undefined;
@@ -23,12 +23,45 @@ async function deployOperatorFilterRegistry() {
 }
 
 async function getOperatorFilterRegistryAddress() {
-  return (await deployOperatorFilterRegistry()).address;
+  return (await deployOperatorFilterRegistry()).getAddress();
+}
+
+let tokenMetadataResolverPerToken = undefined;
+
+async function deployTokenMetadataResolverPerToken() {
+  if (tokenMetadataResolverPerToken === undefined) {
+    tokenMetadataResolverPerToken = await deployContract('TokenMetadataResolverPerToken');
+  }
+  return tokenMetadataResolverPerToken;
+}
+
+async function getTokenMetadataResolverPerTokenAddress() {
+  return (await deployTokenMetadataResolverPerToken()).getAddress();
+}
+
+let tokenMetadataResolverWithBaseURI = undefined;
+
+async function deployTokenMetadataResolverWithBaseURI() {
+  if (tokenMetadataResolverWithBaseURI === undefined) {
+    tokenMetadataResolverWithBaseURI = await deployContract('TokenMetadataResolverWithBaseURI');
+  }
+  return tokenMetadataResolverWithBaseURI;
+}
+
+async function getTokenMetadataResolverWithBaseURIAddress() {
+  return (await deployTokenMetadataResolverWithBaseURI()).getAddress();
 }
 
 module.exports = {
   deployForwarderRegistry,
   getForwarderRegistryAddress,
+
   deployOperatorFilterRegistry,
   getOperatorFilterRegistryAddress,
+
+  deployTokenMetadataResolverPerToken,
+  getTokenMetadataResolverPerTokenAddress,
+
+  deployTokenMetadataResolverWithBaseURI,
+  getTokenMetadataResolverWithBaseURIAddress,
 };

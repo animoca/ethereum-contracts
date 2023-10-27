@@ -4,6 +4,44 @@
   "sourceName": "contracts/lifecycle/base/CheckpointsBase.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "checkpointId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CheckpointAlreadySet",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "checkpointId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CheckpointReached",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InconsistentArrayLengths",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {

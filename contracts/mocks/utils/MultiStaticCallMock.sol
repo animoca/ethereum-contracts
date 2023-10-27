@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {MultiStaticCall} from "./../../utils/MultiStaticCall.sol";
 
 contract MultiStaticCallMock is MultiStaticCall {
+    error Reverted();
+
     function getBlockNumber() public view returns (uint256 blockNumber) {
         blockNumber = block.number;
     }
@@ -25,6 +27,11 @@ contract MultiStaticCallMock is MultiStaticCall {
     }
 
     function revertingCall() public pure {
-        revert("reverted");
+        revert Reverted();
+    }
+
+    function revertingCallWithoutMessage() public pure {
+        // solhint-disable-next-line custom-errors, reason-string
+        revert();
     }
 }

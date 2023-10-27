@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 /// @title MultiStaticCall - Aggregate results from multiple static calls
 /// @dev Derived from https://github.com/makerdao/multicall (MIT licence)
@@ -14,6 +14,11 @@ contract MultiStaticCall {
         bytes returnData;
     }
 
+    /// @notice Emitted when a static call reverts without return data.
+    /// @param target The target contract address of the static call.
+    /// @param data The encoded function call executed on `target`.
+    error StaticCallReverted(address target, bytes data);
+
     /// @notice Aggregates the results of multiple static calls.
     /// @dev Reverts if `requireSuccess` is true and one of the static calls fails.
     /// @param requireSuccess Whether a failed static call should trigger a revert.
@@ -22,16 +27,23 @@ contract MultiStaticCall {
     function tryAggregate(bool requireSuccess, Call[] calldata calls) public view returns (Result[] memory returnData) {
         uint256 length = calls.length;
         returnData = new Result[](length);
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                (bool success, bytes memory ret) = calls[i].target.staticcall(calls[i].callData);
+        for (uint256 i; i < length; ++i) {
+            address target = calls[i].target;
+            bytes calldata data = calls[i].callData;
+            (bool success, bytes memory ret) = target.staticcall(data);
 
-                if (requireSuccess) {
-                    require(success, "MultiStaticCall: call failed");
+            if (requireSuccess && !success) {
+                uint256 returndataLength = ret.length;
+                if (returndataLength != 0) {
+                    assembly {
+                        revert(add(32, ret), returndataLength)
+                    }
+                } else {
+                    revert StaticCallReverted(target, data);
                 }
-
-                returnData[i] = Result(success, ret);
             }
+
+            returnData[i] = Result(success, ret);
         }
     }
 

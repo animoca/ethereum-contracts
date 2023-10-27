@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {ProxyAdminStorage} from "./../libraries/ProxyAdminStorage.sol";
@@ -17,7 +17,7 @@ contract ProxyAdminFacet is ProxyAdminBase, ForwarderRegistryContextBase {
 
     /// @notice Initializes the storage with an initial admin.
     /// @notice Sets the proxy initialization phase to `1`.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @dev Emits an {AdminChanged} event if `initialAdmin` is not the zero address.
     /// @param initialAdmin The initial payout wallet.
     function initProxyAdminStorage(address initialAdmin) external {

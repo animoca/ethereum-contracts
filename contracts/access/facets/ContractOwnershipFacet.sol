@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 import {ContractOwnershipStorage} from "./../libraries/ContractOwnershipStorage.sol";
@@ -21,8 +21,8 @@ contract ContractOwnershipFacet is ContractOwnershipBase, ForwarderRegistryConte
     /// @notice Initializes the storage with an initial contract owner (proxied version).
     /// @notice Sets the proxy initialization phase to `1`.
     /// @notice Marks the following ERC165 interface(s) as supported: ERC173.
-    /// @dev Reverts if the sender is not the proxy admin.
-    /// @dev Reverts if the proxy initialization phase is set to `1` or above.
+    /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
+    /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
     /// @dev Emits an {OwnershipTransferred} if `initialOwner` is not the zero address.
     /// @param initialOwner The initial contract owner.
     function initContractOwnershipStorage(address initialOwner) external {

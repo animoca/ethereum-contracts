@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
 /// @title ERC1155 Multi Token Standard, optional extension: Metadata URI.
 /// @dev See https://eips.ethereum.org/EIPS/eip-1155

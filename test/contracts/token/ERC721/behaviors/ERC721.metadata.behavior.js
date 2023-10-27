@@ -1,13 +1,10 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
-const {behavesLikeTokenMetadataPerToken} = require('../../metadata/behaviors/TokenMetadata.pertoken.behavior');
-const {behavesLikeTokenMetadataWithBaseURI} = require('../../metadata/behaviors/TokenMetadata.withbaseuri.behavior');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Metadata(implementation) {
-  const {name, symbol, deploy, features, revertMessages} = implementation;
-
+function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
   describe('like an ERC721 Metadata', function () {
     let accounts, deployer, owner, other;
 
@@ -37,19 +34,28 @@ function behavesLikeERC721Metadata(implementation) {
     });
 
     describe('tokenURI(uint256)', function () {
+      it('does not revert when called on an existing token', async function () {
+        await this.token.mint(deployer.address, 1);
+        await this.token.tokenURI(1);
+      });
+
       it('reverts if the token does not exist', async function () {
-        await expect(this.token.tokenURI(1)).to.be.revertedWith(revertMessages.NonExistingToken);
+        await expectRevert(this.token.tokenURI(1), this.token, errors.NonExistingToken, {
+          tokenId: 1,
+        });
       });
     });
 
+    if (features && features.MetadataResolver) {
+      describe('metadataResolver()', function () {
+        it('returns a non-zero address', async function () {
+          await expect(this.token.metadataResolver()).to.not.equal(ethers.ZeroAddress);
+        });
+      });
+    }
+
     supportsInterfaces(['IERC721Metadata']);
   });
-
-  if (features.BaseMetadataURI) {
-    behavesLikeTokenMetadataWithBaseURI(implementation);
-  } else if (features.MetadataPerToken) {
-    behavesLikeTokenMetadataPerToken(implementation);
-  }
 }
 
 module.exports = {

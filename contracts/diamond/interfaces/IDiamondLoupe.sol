@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 pragma experimental ABIEncoderV2;
+
+import {Facet} from "./../DiamondCommon.sol";
 
 /// @title ERC2535 Diamond Standard, Diamond Loupe.
 /// @dev See https://eips.ethereum.org/EIPS/eip-2535
 /// @dev Note: the ERC-165 identifier for this interface is 0x48e2b093
 interface IDiamondLoupe {
-    struct Facet {
-        address facet;
-        bytes4[] selectors;
-    }
-
     /// @notice Gets all the facet addresses used by the diamond and their function selectors.
     /// @return diamondFacets The facet addresses used by the diamond and their function selectors.
     function facets() external view returns (Facet[] memory diamondFacets);

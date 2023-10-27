@@ -1,11 +1,11 @@
 const {ethers} = require('hardhat');
 const {expect} = require('chai');
-const {constants} = ethers;
+const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessages, methods}) {
-  const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods;
+function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, methods}) {
+  const {'batchTransferFrom(address,address,uint256[])': batchTransferFrom_ERC721} = methods || {};
 
   describe('like an ERC721 BatchTransfer', function () {
     let accounts, deployer, owner, approved, operator, other;
@@ -53,7 +53,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
 
         it('clears the approval for the token(s)', async function () {
           for (const tokenId of tokenIds) {
-            expect(await this.token.getApproved(tokenId)).to.equal(constants.AddressZero);
+            expect(await this.token.getApproved(tokenId)).to.equal(ethers.ZeroAddress);
           }
         });
 
@@ -69,11 +69,11 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
           });
         } else {
           it('decreases the owner balance', async function () {
-            expect(await this.token.balanceOf(this.from)).to.equal(this.nftBalance - tokenIds.length);
+            expect(await this.token.balanceOf(this.from)).to.equal(this.nftBalance - BigInt(tokenIds.length));
           });
 
           it('increases the recipients balance', async function () {
-            expect(await this.token.balanceOf(this.to)).to.equal(tokenIds.length);
+            expect(await this.token.balanceOf(this.to)).to.equal(BigInt(tokenIds.length));
           });
         }
       };
@@ -122,26 +122,54 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
       describe('batchTransferFrom(address,adress,uint256[])', function () {
         describe('Pre-conditions', function () {
           it('reverts if transferred to the zero address', async function () {
-            await expect(batchTransferFrom_ERC721(this.token, owner.address, constants.AddressZero, [nft1], owner)).to.be.revertedWith(
-              revertMessages.TransferToAddressZero
+            await expectRevert(
+              batchTransferFrom_ERC721(this.token, owner.address, ethers.ZeroAddress, [nft1], owner),
+              this.token,
+              errors.TransferToAddressZero
             );
           });
 
           it('reverts if the token does not exist', async function () {
-            await expect(batchTransferFrom_ERC721(this.token, owner.address, other.address, [unknownNFT], owner)).to.be.revertedWith(
-              revertMessages.NonExistingToken
+            await expectRevert(
+              batchTransferFrom_ERC721(this.token, owner.address, other.address, [unknownNFT], owner),
+              this.token,
+              errors.NonExistingToken,
+              {
+                tokenId: unknownNFT,
+              }
             );
           });
 
           it('reverts if `from` is not the token owner', async function () {
-            await expect(batchTransferFrom_ERC721(this.token, other.address, other.address, [nft1], other)).to.be.revertedWith(
-              revertMessages.NonOwnedToken
+            await expectRevert(batchTransferFrom_ERC721(this.token, other.address, other.address, [nft1], other), this.token, errors.NonOwnedToken, {
+              account: other.address,
+              tokenId: nft1,
+            });
+          });
+
+          it('reverts if the sender is not authorized for the token (token has no approval)', async function () {
+            await expectRevert(
+              batchTransferFrom_ERC721(this.token, owner.address, other.address, [nft3], other),
+              this.token,
+              errors.NonApprovedForTransfer,
+              {
+                sender: other.address,
+                owner: owner.address,
+                tokenId: nft3,
+              }
             );
           });
 
-          it('reverts if the sender is not authorized for the token', async function () {
-            await expect(batchTransferFrom_ERC721(this.token, owner.address, other.address, [nft1], other)).to.be.revertedWith(
-              revertMessages.NonApproved
+          it('reverts if the sender is not authorized for the token (sender is not the approved account)', async function () {
+            await expectRevert(
+              batchTransferFrom_ERC721(this.token, owner.address, other.address, [nft1], other),
+              this.token,
+              errors.NonApprovedForTransfer,
+              {
+                sender: other.address,
+                owner: owner.address,
+                tokenId: nft1,
+              }
             );
           });
         });
@@ -158,7 +186,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, revertMessage
       });
     }
 
-    if (interfaces.ERC721BatchTransfer) {
+    if (interfaces && interfaces.ERC721BatchTransfer) {
       supportsInterfaces(['IERC721BatchTransfer']);
     }
   });

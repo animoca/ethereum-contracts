@@ -4,6 +4,17 @@
   "sourceName": "contracts/proxy/base/ProxyAdminBase.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotProxyAdmin",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {

@@ -37,7 +37,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
   describe('setSupportedInterface(bytes4,bool)', function () {
     context('registering a new interface', function () {
       it('reverts with illegal value 0xffffffff', async function () {
-        await expect(this.contract.setSupportedInterface('0xffffffff', true)).to.be.revertedWith('InterfaceDetection: wrong value');
+        await expect(this.contract.setSupportedInterface('0xffffffff', true)).to.be.revertedWithCustomError(this.contract, 'IllegalInterfaceId');
       });
 
       context('when successful', function () {
@@ -51,7 +51,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
 
     context('unregistering an existing interface', function () {
       it('reverts with illegal value 0xffffffff', async function () {
-        await expect(this.contract.setSupportedInterface('0xffffffff', false)).to.be.revertedWith('InterfaceDetection: wrong value');
+        await expect(this.contract.setSupportedInterface('0xffffffff', false)).to.be.revertedWithCustomError(this.contract, 'IllegalInterfaceId');
       });
 
       context('when successful', function () {

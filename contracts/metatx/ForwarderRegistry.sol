@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {IERC1271} from "./../cryptography/interfaces/IERC1271.sol";
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
@@ -31,8 +31,8 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
 
     mapping(address => mapping(address => Forwarder)) private _forwarders;
 
-    uint256 private immutable _deploymentChainId;
-    bytes32 private immutable _deploymentDomainSeparator;
+    uint256 private immutable _DEPLOYMENT_CHAIN_ID;
+    bytes32 private immutable _DEPLOYMENT_DOMAIN_SEPARATOR;
 
     /// @notice Emitted when a forwarder is approved or disapproved.
     /// @param sender The account for which `forwarder` is approved or disapproved.
@@ -46,8 +46,8 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         assembly {
             chainId := chainid()
         }
-        _deploymentChainId = chainId;
-        _deploymentDomainSeparator = _calculateDomainSeparator(chainId);
+        _DEPLOYMENT_CHAIN_ID = chainId;
+        _DEPLOYMENT_DOMAIN_SEPARATOR = _calculateDomainSeparator(chainId);
     }
 
     /// @notice Disapproves a forwarder for the sender.
@@ -109,7 +109,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         }
 
         // in case a fork happens, to support the chain that had to change its chainId, we compute the domain operator
-        return chainId == _deploymentChainId ? _deploymentDomainSeparator : _calculateDomainSeparator(chainId);
+        return chainId == _DEPLOYMENT_CHAIN_ID ? _DEPLOYMENT_DOMAIN_SEPARATOR : _calculateDomainSeparator(chainId);
     }
 
     /// @notice Gets the current nonce for the sender/forwarder pair.
@@ -121,12 +121,12 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     }
 
     /// @inheritdoc IForwarderRegistry
-    function isApprovedForwarder(address sender, address forwarder) external view override returns (bool) {
+    function isApprovedForwarder(address sender, address forwarder) external view returns (bool) {
         return _forwarders[sender][forwarder].approved;
     }
 
     /// @inheritdoc IERC2771
-    function isTrustedForwarder(address) external pure override returns (bool) {
+    function isTrustedForwarder(address) external pure returns (bool) {
         return true;
     }
 

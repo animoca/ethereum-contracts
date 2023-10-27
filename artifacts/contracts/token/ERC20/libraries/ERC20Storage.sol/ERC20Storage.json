@@ -2,60 +2,9 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "ERC20Storage",
   "sourceName": "contracts/token/ERC20/libraries/ERC20Storage.sol",
-  "abi": [
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    }
-  ],
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122046ef56184fcba23b22fd742e0534e212561fc0dd4e7a738b7a1e867ceb04d11864736f6c63430008130033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122046ef56184fcba23b22fd742e0534e212561fc0dd4e7a738b7a1e867ceb04d11864736f6c63430008130033",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220f32353e6b2993cfea50e59783cba84756397a51c4c40d2ecc0b81ef5987115f864736f6c63430008160033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220f32353e6b2993cfea50e59783cba84756397a51c4c40d2ecc0b81ef5987115f864736f6c63430008160033",
   "linkReferences": {},
   "deployedLinkReferences": {}
 }

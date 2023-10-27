@@ -62,8 +62,8 @@ runBehaviorTests('Pause', config, function (deployFn) {
       it('starts with a paused state', async function () {
         expect(await this.contract.paused()).to.be.true;
       });
-      it('emits a Paused event', async function () {
-        await expect(this.contract.deployTransaction.hash).to.emit(this.contract, 'Paused');
+      it('emits a Pause event', async function () {
+        await expect(this.contract.deploymentTransaction().hash).to.emit(this.contract, 'Pause');
       });
     });
   });
@@ -74,12 +74,12 @@ runBehaviorTests('Pause', config, function (deployFn) {
     });
 
     it('reverts if not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).pause()).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).pause()).to.be.revertedWithCustomError(this.contract, 'NotContractOwner').withArgs(other.address);
     });
 
     it('reverts if the contract is already paused', async function () {
       await this.contract.pause();
-      await expect(this.contract.pause()).to.be.revertedWith('Pause: paused');
+      await expect(this.contract.pause()).to.be.revertedWithCustomError(this.contract, 'Paused');
     });
     context('when successful', function () {
       beforeEach(async function () {
@@ -90,8 +90,8 @@ runBehaviorTests('Pause', config, function (deployFn) {
         expect(await this.contract.paused()).to.be.true;
       });
 
-      it('emits a Paused event', async function () {
-        expect(this.receipt).to.emit(this.contract, 'Paused');
+      it('emits a Pause event', async function () {
+        expect(this.receipt).to.emit(this.contract, 'Pause');
       });
 
       it('PauseStorage.enforceIsPaused() does not revert', async function () {
@@ -99,7 +99,7 @@ runBehaviorTests('Pause', config, function (deployFn) {
       });
 
       it('PauseStorage.enforceIsNotPaused() reverts', async function () {
-        await expect(this.contract.enforceIsNotPaused()).to.be.revertedWith('Pause: paused');
+        await expect(this.contract.enforceIsNotPaused()).to.be.revertedWithCustomError(this.contract, 'Paused');
       });
     });
   });
@@ -110,12 +110,12 @@ runBehaviorTests('Pause', config, function (deployFn) {
     });
 
     it('reverts if not sent by the contract owner', async function () {
-      await expect(this.contract.connect(other).unpause()).to.be.revertedWith('Ownership: not the owner');
+      await expect(this.contract.connect(other).unpause()).to.be.revertedWithCustomError(this.contract, 'NotContractOwner').withArgs(other.address);
     });
 
     it('reverts if the contract is already unpaused', async function () {
       await this.contract.unpause();
-      await expect(this.contract.unpause()).to.be.revertedWith('Pause: not paused');
+      await expect(this.contract.unpause()).to.be.revertedWithCustomError(this.contract, 'NotPaused');
     });
     context('when successful', function () {
       beforeEach(async function () {
@@ -126,12 +126,12 @@ runBehaviorTests('Pause', config, function (deployFn) {
         expect(await this.contract.paused()).to.be.false;
       });
 
-      it('emits an Unpaused event', async function () {
-        expect(this.receipt).to.emit(this.contract, 'Unpaused');
+      it('emits an Unpause event', async function () {
+        expect(this.receipt).to.emit(this.contract, 'Unpause');
       });
 
       it('PauseStorage.enforceIsPaused() reverts', async function () {
-        await expect(this.contract.enforceIsPaused()).to.be.revertedWith('Pause: not paused');
+        await expect(this.contract.enforceIsPaused()).to.be.revertedWithCustomError(this.contract, 'NotPaused');
       });
 
       it('PauseStorage.enforceIsNotPaused() does not revert', async function () {

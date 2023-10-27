@@ -1,14 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
+pragma solidity ^0.8.22;
 
+// solhint-disable-next-line max-line-length
+import {ERC721SelfApproval, ERC721SelfApprovalForAll, ERC721NonApprovedForApproval, ERC721TransferToAddressZero, ERC721NonExistingToken, ERC721NonApprovedForTransfer, ERC721NonOwnedToken, ERC721SafeTransferRejected, ERC721BalanceOfAddressZero} from "./../errors/ERC721Errors.sol";
+import {ERC721MintToAddressZero, ERC721ExistingToken} from "./../errors/ERC721MintableErrors.sol";
+import {ERC721BurntToken} from "./../errors/ERC721MintableOnceErrors.sol";
+import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
+import {Transfer, Approval, ApprovalForAll} from "./../events/ERC721Events.sol";
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
+import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
 import {IERC721Mintable} from "./../interfaces/IERC721Mintable.sol";
 import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {IERC721Burnable} from "./../interfaces/IERC721Burnable.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC721Storage {
@@ -35,10 +41,6 @@ library ERC721Storage {
     // This magic number is used as the owner's value to indicate that the token has been burnt
     uint256 internal constant BURNT_TOKEN_OWNER_VALUE = 0xdead000000000000000000000000000000000000000000000000000000000000;
 
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721.
     function init() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721).interfaceId, true);
@@ -47,6 +49,11 @@ library ERC721Storage {
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721BatchTransfer.
     function initERC721BatchTransfer() internal {
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721BatchTransfer).interfaceId, true);
+    }
+
+    /// @notice Marks the following ERC165 interface(s) as supported: ERC721Metadata.
+    function initERC721Metadata() internal {
+        InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC721Metadata).interfaceId, true);
     }
 
     /// @notice Marks the following ERC165 interface(s) as supported: ERC721Mintable.
@@ -66,19 +73,19 @@ library ERC721Storage {
 
     /// @notice Sets or unsets an approval to transfer a single token on behalf of its owner.
     /// @dev Note: This function implements {ERC721-approve(address,uint256)}.
-    /// @dev Reverts if `tokenId` does not exist.
-    /// @dev Reverts if `to` is the token owner.
-    /// @dev Reverts if `sender` is not the token owner and has not been approved by the token owner.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721SelfApproval} if `to` is the token owner.
+    /// @dev Reverts with {ERC721NonApprovedForApproval} if `sender` is not the token owner and has not been approved by the token owner.
     /// @dev Emits an {Approval} event.
     /// @param sender The message sender.
     /// @param to The address to approve, or the zero address to remove any existing approval.
     /// @param tokenId The token identifier to give approval for.
     function approve(Layout storage s, address sender, address to, uint256 tokenId) internal {
         uint256 owner = s.owners[tokenId];
-        require(_tokenExists(owner), "ERC721: non-existing token");
+        if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
         address ownerAddress = _tokenOwner(owner);
-        require(to != ownerAddress, "ERC721: self-approval");
-        require(_isOperatable(s, ownerAddress, sender), "ERC721: non-approved sender");
+        if (to == ownerAddress) revert ERC721SelfApproval(ownerAddress);
+        if (!_isOperatable(s, ownerAddress, sender)) revert ERC721NonApprovedForApproval(sender, ownerAddress, tokenId);
         if (to == address(0)) {
             if (_tokenHasApproval(owner)) {
                 // remove the approval bit if it is present
@@ -97,13 +104,13 @@ library ERC721Storage {
 
     /// @notice Sets or unsets an approval to transfer all tokens on behalf of their owner.
     /// @dev Note: This function implements {ERC721-setApprovalForAll(address,bool)}.
-    /// @dev Reverts if `sender` is the same as `operator`.
+    /// @dev Reverts with {ERC721SelfApprovalForAll} if `sender` is the same as `operator`.
     /// @dev Emits an {ApprovalForAll} event.
     /// @param sender The message sender.
     /// @param operator The address to approve for all tokens.
     /// @param approved True to set an approval for all tokens, false to unset it.
     function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
-        require(operator != sender, "ERC721: self-approval for all");
+        if (operator == sender) revert ERC721SelfApprovalForAll(sender);
         s.operators[sender][operator] = approved;
         emit ApprovalForAll(sender, operator, approved);
     }
@@ -111,23 +118,24 @@ library ERC721Storage {
     /// @notice Unsafely transfers the ownership of a token to a recipient by a sender.
     /// @dev Note: This function implements {ERC721-transferFrom(address,address,uint256)}.
     /// @dev Resets the token approval for `tokenId`.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts with {ERC721TransferToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721NonOwnedToken} if `from` is not the owner of `tokenId`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if `sender` is not `from` and has not been approved by `from` for `tokenId`.
     /// @dev Emits a {Transfer} event.
     /// @param sender The message sender.
     /// @param from The current token owner.
     /// @param to The recipient of the token transfer.
     /// @param tokenId The identifier of the token to transfer.
     function transferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId) internal {
-        require(to != address(0), "ERC721: transfer to address(0)");
+        if (to == address(0)) revert ERC721TransferToAddressZero();
 
         uint256 owner = s.owners[tokenId];
-        require(_tokenExists(owner), "ERC721: non-existing token");
-        require(_tokenOwner(owner) == from, "ERC721: non-owned token");
+        if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+        if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
 
         if (!_isOperatable(s, from, sender)) {
-            require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+            if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
         }
 
         s.owners[tokenId] = uint256(uint160(to));
@@ -147,10 +155,12 @@ library ERC721Storage {
     /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256)}.
     /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Resets the token approval for `tokenId`.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Reverts with {ERC721TransferToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721NonOwnedToken} if `from` is not the owner of `tokenId`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts with {ERC721SafeTransferRejected} if `to` is a contract and the call to
+    ///  {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event.
     /// @param sender The message sender.
     /// @param from The current token owner.
@@ -167,10 +177,12 @@ library ERC721Storage {
     /// @dev Note: This function implements {ERC721-safeTransferFrom(address,address,uint256,bytes)}.
     /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
     /// @dev Resets the token approval for `tokenId`.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `from` is not the owner of `tokenId`.
-    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for `tokenId`.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Reverts with {ERC721TransferToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721NonOwnedToken} if `from` is not the owner of `tokenId`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts with {ERC721SafeTransferRejected} if `to` is a contract and the call to
+    ///  {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event.
     /// @param sender The message sender.
     /// @param from The current token owner.
@@ -187,33 +199,34 @@ library ERC721Storage {
     /// @notice Unsafely transfers a batch of tokens to a recipient by a sender.
     /// @dev Note: This function implements {ERC721BatchTransfer-batchTransferFrom(address,address,uint256[])}.
     /// @dev Resets the token approval for each of `tokenIds`.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if one of `tokenIds` is not owned by `from`.
-    /// @dev Reverts if the sender is not `from` and has not been approved by `from` for each of `tokenIds`.
+    /// @dev Reverts with {ERC721TransferToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721NonExistingToken} if one of `tokenIds` does not exist.
+    /// @dev Reverts with {ERC721NonOwnedToken} if one of `tokenIds` is not owned by `from`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if the sender is not `from` and has not been approved by `from` for each of `tokenIds`.
     /// @dev Emits a {Transfer} event for each of `tokenIds`.
     /// @param sender The message sender.
     /// @param from Current tokens owner.
     /// @param to Address of the new token owner.
     /// @param tokenIds Identifiers of the tokens to transfer.
     function batchTransferFrom(Layout storage s, address sender, address from, address to, uint256[] calldata tokenIds) internal {
-        require(to != address(0), "ERC721: transfer to address(0)");
+        if (to == address(0)) revert ERC721TransferToAddressZero();
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                require(_tokenExists(owner), "ERC721: non-existing token");
-                require(_tokenOwner(owner) == from, "ERC721: non-owned token");
-                if (!operatable) {
-                    require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
-                }
-                s.owners[tokenId] = uint256(uint160(to));
-                emit Transfer(from, to, tokenId);
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+            if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
+            if (!operatable) {
+                if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
             }
+            s.owners[tokenId] = uint256(uint160(to));
+            emit Transfer(from, to, tokenId);
+        }
 
-            if (from != to && length != 0) {
+        if (from != to && length != 0) {
+            unchecked {
                 // cannot underflow as balance is verified through ownership
                 s.balances[from] -= length;
                 // cannot overflow as supply cannot overflow
@@ -225,14 +238,14 @@ library ERC721Storage {
     /// @notice Unsafely mints a token.
     /// @dev Note: This function implements {ERC721Mintable-mint(address,uint256)}.
     /// @dev Note: Either `mint` or `mintOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` already exists.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if `tokenId` already exists.
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
     function mint(Layout storage s, address to, uint256 tokenId) internal {
-        require(to != address(0), "ERC721: mint to address(0)");
-        require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
+        if (to == address(0)) revert ERC721MintToAddressZero();
+        if (_tokenExists(s.owners[tokenId])) revert ERC721ExistingToken(tokenId);
 
         s.owners[tokenId] = uint256(uint160(to));
 
@@ -248,9 +261,10 @@ library ERC721Storage {
     /// @dev Note: This function implements {ERC721Mintable-safeMint(address,uint256,bytes)}.
     /// @dev Note: Either `safeMint` or `safeMintOnce` should be used in a given contract, but not both.
     /// @dev Warning: Since a `to` contract can run arbitrary code, developers should be aware of potential re-entrancy attacks.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` already exists.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if `tokenId` already exists.
+    /// @dev Reverts with {ERC721SafeTransferRejected} if `to` is a contract and the call to
+    ///  {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
@@ -265,24 +279,24 @@ library ERC721Storage {
     /// @notice Unsafely mints a batch of tokens.
     /// @dev Note: This function implements {ERC721Mintable-batchMint(address,uint256[])}.
     /// @dev Note: Either `batchMint` or `batchMintOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if one of `tokenIds` already exists.
     /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
     /// @param to Address of the new tokens owner.
     /// @param tokenIds Identifiers of the tokens to mint.
     function batchMint(Layout storage s, address to, uint256[] memory tokenIds) internal {
-        require(to != address(0), "ERC721: mint to address(0)");
+        if (to == address(0)) revert ERC721MintToAddressZero();
 
         uint256 length = tokenIds.length;
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            if (_tokenExists(s.owners[tokenId])) revert ERC721ExistingToken(tokenId);
+
+            s.owners[tokenId] = uint256(uint160(to));
+            emit Transfer(address(0), to, tokenId);
+        }
+
         unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                require(!_tokenExists(s.owners[tokenId]), "ERC721: existing token");
-
-                s.owners[tokenId] = uint256(uint160(to));
-                emit Transfer(address(0), to, tokenId);
-            }
-
             s.balances[to] += length;
         }
     }
@@ -290,37 +304,35 @@ library ERC721Storage {
     /// @notice Unsafely mints tokens to multiple recipients.
     /// @dev Note: This function implements {ERC721Deliverable-deliver(address[],uint256[])}.
     /// @dev Note: Either `deliver` or `deliverOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `recipients` and `tokenIds` have different lengths.
-    /// @dev Reverts if one of `recipients` is the zero address.
-    /// @dev Reverts if one of `tokenIds` already exists.
+    /// @dev Reverts with {InconsistentArrayLengths} if `recipients` and `tokenIds` have different lengths.
+    /// @dev Reverts with {ERC721MintToAddressZero} if one of `recipients` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if one of `tokenIds` already exists.
     /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
     /// @param recipients Addresses of the new tokens owners.
     /// @param tokenIds Identifiers of the tokens to mint.
     function deliver(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
-        require(length == tokenIds.length, "ERC721: inconsistent arrays");
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                s.mint(recipients[i], tokenIds[i]);
-            }
+        if (length != tokenIds.length) revert InconsistentArrayLengths();
+        for (uint256 i; i < length; ++i) {
+            s.mint(recipients[i], tokenIds[i]);
         }
     }
 
     /// @notice Unsafely mints a token once.
     /// @dev Note: This function implements {ERC721Mintable-mint(address,uint256)}.
     /// @dev Note: Either `mint` or `mintOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` already exists.
-    /// @dev Reverts if `tokenId` has been previously burnt.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if `tokenId` already exists.
+    /// @dev Reverts with {ERC721BurntToken} if `tokenId` has been previously burnt.
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
     function mintOnce(Layout storage s, address to, uint256 tokenId) internal {
-        require(to != address(0), "ERC721: mint to address(0)");
+        if (to == address(0)) revert ERC721MintToAddressZero();
 
         uint256 owner = s.owners[tokenId];
-        require(!_tokenExists(owner), "ERC721: existing token");
-        require(!_tokenWasBurnt(owner), "ERC721: burnt token");
+        if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
+        if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
 
         s.owners[tokenId] = uint256(uint160(to));
 
@@ -335,10 +347,11 @@ library ERC721Storage {
     /// @notice Safely mints a token once.
     /// @dev Note: This function implements {ERC721Mintable-safeMint(address,uint256,bytes)}.
     /// @dev Note: Either `safeMint` or `safeMintOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if `tokenId` already exists.
-    /// @dev Reverts if `tokenId` has been previously burnt.
-    /// @dev Reverts if `to` is a contract and the call to {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if `tokenId` already exists.
+    /// @dev Reverts with {ERC721BurntToken} if `tokenId` has been previously burnt.
+    /// @dev Reverts with {ERC721SafeTransferRejected} if `to` is a contract and the call to
+    ///  {IERC721Receiver-onERC721Received} fails, reverts or is rejected.
     /// @dev Emits a {Transfer} event from the zero address.
     /// @param to Address of the new token owner.
     /// @param tokenId Identifier of the token to mint.
@@ -353,28 +366,28 @@ library ERC721Storage {
     /// @notice Unsafely mints a batch of tokens once.
     /// @dev Note: This function implements {ERC721Mintable-batchMint(address,uint256[])}.
     /// @dev Note: Either `batchMint` or `batchMintOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `to` is the zero address.
-    /// @dev Reverts if one of `tokenIds` already exists.
-    /// @dev Reverts if one of `tokenIds` has been previously burnt.
+    /// @dev Reverts with {ERC721MintToAddressZero} if `to` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if one of `tokenIds` already exists.
+    /// @dev Reverts with {ERC721BurntToken} if one of `tokenIds` has been previously burnt.
     /// @dev Emits a {Transfer} event from the zero address for each of `tokenIds`.
     /// @param to Address of the new tokens owner.
     /// @param tokenIds Identifiers of the tokens to mint.
     function batchMintOnce(Layout storage s, address to, uint256[] memory tokenIds) internal {
-        require(to != address(0), "ERC721: mint to address(0)");
+        if (to == address(0)) revert ERC721MintToAddressZero();
 
         uint256 length = tokenIds.length;
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
+            if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
+
+            s.owners[tokenId] = uint256(uint160(to));
+
+            emit Transfer(address(0), to, tokenId);
+        }
+
         unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                require(!_tokenExists(owner), "ERC721: existing token");
-                require(!_tokenWasBurnt(owner), "ERC721: burnt token");
-
-                s.owners[tokenId] = uint256(uint160(to));
-
-                emit Transfer(address(0), to, tokenId);
-            }
-
             s.balances[to] += length;
         }
     }
@@ -382,48 +395,49 @@ library ERC721Storage {
     /// @notice Unsafely mints tokens to multiple recipients once.
     /// @dev Note: This function implements {ERC721Deliverable-deliver(address[],uint256[])}.
     /// @dev Note: Either `deliver` or `deliverOnce` should be used in a given contract, but not both.
-    /// @dev Reverts if `recipients` and `tokenIds` have different lengths.
-    /// @dev Reverts if one of `recipients` is the zero address.
-    /// @dev Reverts if one of `tokenIds` already exists.
-    /// @dev Reverts if one of `tokenIds` has been previously burnt.
+    /// @dev Reverts with {InconsistentArrayLengths} if `recipients` and `tokenIds` have different lengths.
+    /// @dev Reverts with {ERC721MintToAddressZero} if one of `recipients` is the zero address.
+    /// @dev Reverts with {ERC721ExistingToken} if one of `tokenIds` already exists.
+    /// @dev Reverts with {ERC721BurntToken} if one of `tokenIds` has been previously burnt.
     /// @dev Emits a {Transfer} event from the zero address for each of `recipients` and `tokenIds`.
     /// @param recipients Addresses of the new tokens owners.
     /// @param tokenIds Identifiers of the tokens to mint.
     function deliverOnce(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
-        require(length == tokenIds.length, "ERC721: inconsistent arrays");
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                require(to != address(0), "ERC721: mint to address(0)");
+        if (length != tokenIds.length) revert InconsistentArrayLengths();
+        for (uint256 i; i < length; ++i) {
+            address to = recipients[i];
+            if (to == address(0)) revert ERC721MintToAddressZero();
 
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                require(!_tokenExists(owner), "ERC721: existing token");
-                require(!_tokenWasBurnt(owner), "ERC721: burnt token");
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
+            if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
 
-                s.owners[tokenId] = uint256(uint160(to));
+            s.owners[tokenId] = uint256(uint160(to));
+            unchecked {
                 ++s.balances[to];
-
-                emit Transfer(address(0), to, tokenId);
             }
+
+            emit Transfer(address(0), to, tokenId);
         }
     }
 
     /// @notice Burns a token by a sender.
     /// @dev Note: This function implements {ERC721Burnable-burnFrom(address,uint256)}.
-    /// @dev Reverts if `tokenId` is not owned by `from`.
-    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for `tokenId`.
+    /// @dev Reverts with {ERC721NonOwnedToken} if `tokenId` is not owned by `from`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if `sender` is not `from` and has not been approved by `from` for `tokenId`.
     /// @dev Emits a {Transfer} event with `to` set to the zero address.
     /// @param sender The message sender.
     /// @param from The current token owner.
     /// @param tokenId The identifier of the token to burn.
     function burnFrom(Layout storage s, address sender, address from, uint256 tokenId) internal {
         uint256 owner = s.owners[tokenId];
-        require(from == _tokenOwner(owner), "ERC721: non-owned token");
+        if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+        if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
 
         if (!_isOperatable(s, from, sender)) {
-            require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
+            if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
         }
 
         s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
@@ -437,8 +451,8 @@ library ERC721Storage {
 
     /// @notice Burns a batch of tokens by a sender.
     /// @dev Note: This function implements {ERC721Burnable-batchBurnFrom(address,uint256[])}.
-    /// @dev Reverts if one of `tokenIds` is not owned by `from`.
-    /// @dev Reverts if `sender` is not `from` and has not been approved by `from` for each of `tokenIds`.
+    /// @dev Reverts with {ERC721NonOwnedToken} if one of `tokenIds` is not owned by `from`.
+    /// @dev Reverts with {ERC721NonApprovedForTransfer} if `sender` is not `from` and has not been approved by `from` for each of `tokenIds`.
     /// @dev Emits a {Transfer} event with `to` set to the zero address for each of `tokenIds`.
     /// @param sender The message sender.
     /// @param from The current tokens owner.
@@ -447,19 +461,20 @@ library ERC721Storage {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                require(from == _tokenOwner(owner), "ERC721: non-owned token");
-                if (!operatable) {
-                    require(_tokenHasApproval(owner) && sender == s.approvals[tokenId], "ERC721: non-approved sender");
-                }
-                s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
-                emit Transfer(from, address(0), tokenId);
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+            if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
+            if (!operatable) {
+                if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
             }
+            s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
+            emit Transfer(from, address(0), tokenId);
+        }
 
-            if (length != 0) {
+        if (length != 0) {
+            unchecked {
                 s.balances[from] -= length;
             }
         }
@@ -467,33 +482,33 @@ library ERC721Storage {
 
     /// @notice Gets the balance of an address.
     /// @dev Note: This function implements {ERC721-balanceOf(address)}.
-    /// @dev Reverts if `owner` is the zero address.
+    /// @dev Reverts with {ERC721BalanceOfAddressZero} if `owner` is the zero address.
     /// @param owner The address to query the balance of.
     /// @return balance The amount owned by the owner.
     function balanceOf(Layout storage s, address owner) internal view returns (uint256 balance) {
-        require(owner != address(0), "ERC721: balance of address(0)");
+        if (owner == address(0)) revert ERC721BalanceOfAddressZero();
         return s.balances[owner];
     }
 
     /// @notice Gets the owner of a token.
     /// @dev Note: This function implements {ERC721-ownerOf(uint256)}.
-    /// @dev Reverts if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
     /// @param tokenId The token identifier to query the owner of.
     /// @return tokenOwner The owner of the token.
     function ownerOf(Layout storage s, uint256 tokenId) internal view returns (address tokenOwner) {
         uint256 owner = s.owners[tokenId];
-        require(_tokenExists(owner), "ERC721: non-existing token");
+        if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
         return _tokenOwner(owner);
     }
 
     /// @notice Gets the approved address for a token.
     /// @dev Note: This function implements {ERC721-getApproved(uint256)}.
-    /// @dev Reverts if `tokenId` does not exist.
+    /// @dev Reverts with {ERC721NonExistingToken} if `tokenId` does not exist.
     /// @param tokenId The token identifier to query the approval of.
     /// @return approved The approved address for the token identifier, or the zero address if no approval is set.
     function getApproved(Layout storage s, uint256 tokenId) internal view returns (address approved) {
         uint256 owner = s.owners[tokenId];
-        require(_tokenExists(owner), "ERC721: non-existing token");
+        if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
         if (_tokenHasApproval(owner)) {
             return s.approvals[tokenId];
         } else {
@@ -525,14 +540,14 @@ library ERC721Storage {
     }
 
     /// @notice Calls {IERC721Receiver-onERC721Received} on a target contract.
-    /// @dev Reverts if the call to the target fails, reverts or is rejected.
+    /// @dev Reverts with {ERC721SafeTransferRejected} if the call to the target fails, reverts or is rejected.
     /// @param sender The message sender.
     /// @param from Previous token owner.
     /// @param to New token owner.
     /// @param tokenId Identifier of the token transferred.
     /// @param data Optional data to send along with the receiver contract call.
     function _callOnERC721Received(address sender, address from, address to, uint256 tokenId, bytes memory data) private {
-        require(IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) == ERC721_RECEIVED, "ERC721: safe transfer rejected");
+        if (IERC721Receiver(to).onERC721Received(sender, from, tokenId, data) != ERC721_RECEIVED) revert ERC721SafeTransferRejected(to, tokenId);
     }
 
     /// @notice Returns whether an account is authorised to make a transfer on behalf of an owner.

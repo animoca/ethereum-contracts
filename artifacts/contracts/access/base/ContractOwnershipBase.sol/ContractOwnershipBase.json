@@ -4,6 +4,17 @@
   "sourceName": "contracts/access/base/ContractOwnershipBase.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "NotContractOwner",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
