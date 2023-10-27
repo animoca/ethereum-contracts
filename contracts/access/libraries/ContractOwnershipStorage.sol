@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {NotContractOwner, NotTargetContractOwner} from "./../errors/ContractOwnershipErrors.sol";
 import {TargetIsNotAContract} from "./../errors/Common.sol";
-import {IERC173Events} from "./../events/IERC173Events.sol";
+import {OwnershipTransferred} from "./../events/ERC173Events.sol";
 import {IERC173} from "./../interfaces/IERC173.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
@@ -29,7 +29,7 @@ library ContractOwnershipStorage {
     function constructorInit(Layout storage s, address initialOwner) internal {
         if (initialOwner != address(0)) {
             s.contractOwner = initialOwner;
-            emit IERC173Events.OwnershipTransferred(address(0), initialOwner);
+            emit OwnershipTransferred(address(0), initialOwner);
         }
         InterfaceDetectionStorage.layout().setSupportedInterface(type(IERC173).interfaceId, true);
     }
@@ -55,7 +55,7 @@ library ContractOwnershipStorage {
         if (sender != previousOwner) revert NotContractOwner(sender);
         if (previousOwner != newOwner) {
             s.contractOwner = newOwner;
-            emit IERC173Events.OwnershipTransferred(previousOwner, newOwner);
+            emit OwnershipTransferred(previousOwner, newOwner);
         }
     }
 

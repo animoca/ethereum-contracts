@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.22;
 
 import {IERC677Receiver} from "./../../token/ERC20/interfaces/IERC677Receiver.sol";
 import {VRFV2WrapperInterface} from "@chainlink/contracts/src/v0.8/interfaces/VRFV2WrapperInterface.sol";
@@ -31,7 +31,7 @@ contract VRFV2WrapperMock is IERC677Receiver, VRFV2WrapperInterface {
     function fulfillRandomnessRequest(uint256 requestId) external {
         uint32 nWords = numWords[requestId];
         uint256[] memory randomWords = new uint256[](nWords);
-        for (uint256 i; i != nWords; ++i) {
+        for (uint256 i; i < nWords; ++i) {
             randomWords[i] = 123;
         }
         consumers[requestId].rawFulfillRandomWords(requestId, randomWords);

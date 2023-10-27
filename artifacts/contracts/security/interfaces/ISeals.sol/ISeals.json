@@ -4,25 +4,6 @@
   "sourceName": "contracts/security/interfaces/ISeals.sol",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "sealId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "sealer",
-          "type": "address"
-        }
-      ],
-      "name": "Sealed",
-      "type": "event"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",

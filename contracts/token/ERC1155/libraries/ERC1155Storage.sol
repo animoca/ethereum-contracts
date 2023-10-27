@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 // solhint-disable-next-line max-line-length
 import {ERC1155SelfApprovalForAll, ERC1155TransferToAddressZero, ERC1155NonApproved, ERC1155InsufficientBalance, ERC1155BalanceOverflow, ERC1155SafeTransferRejected, ERC1155SafeBatchTransferRejected, ERC1155BalanceOfAddressZero} from "./../errors/ERC1155Errors.sol";
 import {ERC1155MintToAddressZero} from "./../errors/ERC1155MintableErrors.sol";
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
-import {IERC1155Events} from "./../events/IERC1155Events.sol";
+import {TransferSingle, TransferBatch, ApprovalForAll} from "./../events/ERC1155Events.sol";
 import {IERC1155} from "./../interfaces/IERC1155.sol";
 import {IERC1155MetadataURI} from "./../interfaces/IERC1155MetadataURI.sol";
 import {IERC1155Mintable} from "./../interfaces/IERC1155Mintable.sol";
@@ -77,7 +77,7 @@ library ERC1155Storage {
 
         _transferToken(s, from, to, id, value);
 
-        emit IERC1155Events.TransferSingle(sender, from, to, id, value);
+        emit TransferSingle(sender, from, to, id, value);
 
         if (to.isContract()) {
             _callOnERC1155Received(sender, from, to, id, value, data);
@@ -116,13 +116,11 @@ library ERC1155Storage {
 
         if (!_isOperatable(s, from, sender)) revert ERC1155NonApproved(sender, from);
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                _transferToken(s, from, to, ids[i], values[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            _transferToken(s, from, to, ids[i], values[i]);
         }
 
-        emit IERC1155Events.TransferBatch(sender, from, to, ids, values);
+        emit TransferBatch(sender, from, to, ids, values);
 
         if (to.isContract()) {
             _callOnERC1155BatchReceived(sender, from, to, ids, values, data);
@@ -147,7 +145,7 @@ library ERC1155Storage {
 
         _mintToken(s, to, id, value);
 
-        emit IERC1155Events.TransferSingle(sender, address(0), to, id, value);
+        emit TransferSingle(sender, address(0), to, id, value);
 
         if (to.isContract()) {
             _callOnERC1155Received(sender, address(0), to, id, value, data);
@@ -173,13 +171,11 @@ library ERC1155Storage {
         uint256 length = ids.length;
         if (length != values.length) revert InconsistentArrayLengths();
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                _mintToken(s, to, ids[i], values[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            _mintToken(s, to, ids[i], values[i]);
         }
 
-        emit IERC1155Events.TransferBatch(sender, address(0), to, ids, values);
+        emit TransferBatch(sender, address(0), to, ids, values);
 
         if (to.isContract()) {
             _callOnERC1155BatchReceived(sender, address(0), to, ids, values, data);
@@ -210,10 +206,8 @@ library ERC1155Storage {
     ) internal {
         uint256 length = recipients.length;
         if (length != ids.length || length != values.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                s.safeMint(sender, recipients[i], ids[i], values[i], data);
-            }
+        for (uint256 i; i < length; ++i) {
+            s.safeMint(sender, recipients[i], ids[i], values[i], data);
         }
     }
 
@@ -228,7 +222,7 @@ library ERC1155Storage {
     function burnFrom(Layout storage s, address sender, address from, uint256 id, uint256 value) internal {
         if (!_isOperatable(s, from, sender)) revert ERC1155NonApproved(sender, from);
         _burnToken(s, from, id, value);
-        emit IERC1155Events.TransferSingle(sender, from, address(0), id, value);
+        emit TransferSingle(sender, from, address(0), id, value);
     }
 
     /// @notice Burns multiple tokens by a sender.
@@ -245,13 +239,11 @@ library ERC1155Storage {
         if (length != values.length) revert InconsistentArrayLengths();
         if (!_isOperatable(s, from, sender)) revert ERC1155NonApproved(sender, from);
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                _burnToken(s, from, ids[i], values[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            _burnToken(s, from, ids[i], values[i]);
         }
 
-        emit IERC1155Events.TransferBatch(sender, from, address(0), ids, values);
+        emit TransferBatch(sender, from, address(0), ids, values);
     }
 
     /// @notice Enables or disables an operator's approval by a sender.
@@ -263,7 +255,7 @@ library ERC1155Storage {
     function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         if (operator == sender) revert ERC1155SelfApprovalForAll(sender);
         s.operators[sender][operator] = approved;
-        emit IERC1155Events.ApprovalForAll(sender, operator, approved);
+        emit ApprovalForAll(sender, operator, approved);
     }
 
     /// @notice Retrieves the approval status of an operator for a given owner.
@@ -296,10 +288,8 @@ library ERC1155Storage {
 
         balances = new uint256[](owners.length);
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                balances[i] = s.balanceOf(owners[i], ids[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            balances[i] = s.balanceOf(owners[i], ids[i]);
         }
     }
 
@@ -320,8 +310,8 @@ library ERC1155Storage {
 
     function _transferToken(Layout storage s, address from, address to, uint256 id, uint256 value) private {
         if (value != 0) {
+            uint256 fromBalance = s.balances[id][from];
             unchecked {
-                uint256 fromBalance = s.balances[id][from];
                 uint256 newFromBalance = fromBalance - value;
                 if (newFromBalance >= fromBalance) revert ERC1155InsufficientBalance(from, id, fromBalance, value);
                 if (from != to) {
@@ -349,8 +339,8 @@ library ERC1155Storage {
 
     function _burnToken(Layout storage s, address from, uint256 id, uint256 value) private {
         if (value != 0) {
+            uint256 balance = s.balances[id][from];
             unchecked {
-                uint256 balance = s.balances[id][from];
                 uint256 newBalance = balance - value;
                 if (newBalance >= balance) revert ERC1155InsufficientBalance(from, id, balance, value);
                 s.balances[id][from] = newBalance;

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {IAccessControlEvents} from "./../events/IAccessControlEvents.sol";
+pragma solidity ^0.8.22;
 
 /// @title Access control via roles management (functions)
-interface IAccessControl is IAccessControlEvents {
+interface IAccessControl {
     /// @notice Renounces a role by the sender.
     /// @dev Reverts if `sender` does not have `role`.
     /// @dev Emits a {RoleRevoked} event.

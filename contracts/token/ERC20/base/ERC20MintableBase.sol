@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC20Events} from "./../events/IERC20Events.sol";
 import {IERC20Mintable} from "./../interfaces/IERC20Mintable.sol";
 import {ERC20Storage} from "./../libraries/ERC20Storage.sol";
 import {AccessControlStorage} from "./../../../access/libraries/AccessControlStorage.sol";
@@ -11,7 +10,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC20 (Fungible Token Standard).
 /// @dev Note: This contract requires AccessControl.
-abstract contract ERC20MintableBase is IERC20Events, IERC20Mintable, Context {
+abstract contract ERC20MintableBase is IERC20Mintable, Context {
     using ERC20Storage for ERC20Storage.Layout;
     using AccessControlStorage for AccessControlStorage.Layout;
 

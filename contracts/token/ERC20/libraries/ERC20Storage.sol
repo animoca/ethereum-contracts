@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 // solhint-disable-next-line max-line-length
 import {ERC20ApprovalToAddressZero, ERC20InsufficientAllowance, ERC20TransferToAddressZero, ERC20InsufficientBalance} from "./../errors/ERC20Errors.sol";
@@ -8,7 +8,7 @@ import {ERC20BatchTransferValuesOverflow} from "./../errors/ERC20BatchTransfersE
 import {ERC20SafeTransferRejected} from "./../errors/ERC20SafeTransfersErrors.sol";
 import {ERC20MintToAddressZero, ERC20BatchMintValuesOverflow, ERC20TotalSupplyOverflow} from "./../errors/ERC20MintableErrors.sol";
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
-import {IERC20Events} from "./../events/IERC20Events.sol";
+import {Transfer, Approval} from "./../events/ERC20Events.sol";
 import {IERC20} from "./../interfaces/IERC20.sol";
 import {IERC20Allowance} from "./../interfaces/IERC20Allowance.sol";
 import {IERC20BatchTransfers} from "./../interfaces/IERC20BatchTransfers.sol";
@@ -80,7 +80,7 @@ library ERC20Storage {
     function approve(Layout storage s, address owner, address spender, uint256 value) internal {
         if (spender == address(0)) revert ERC20ApprovalToAddressZero(owner);
         s.allowances[owner][spender] = value;
-        emit IERC20Events.Approval(owner, spender, value);
+        emit Approval(owner, spender, value);
     }
 
     /// @notice Increases the allowance granted to an account by an owner.
@@ -102,7 +102,7 @@ library ERC20Storage {
                 currentAllowance = newAllowance;
             }
         }
-        emit IERC20Events.Approval(owner, spender, currentAllowance);
+        emit Approval(owner, spender, currentAllowance);
     }
 
     /// @notice Decreases the allowance granted to an account by an owner.
@@ -126,7 +126,7 @@ library ERC20Storage {
                 currentAllowance = newAllowance;
             }
         }
-        emit IERC20Events.Approval(owner, spender, currentAllowance);
+        emit Approval(owner, spender, currentAllowance);
     }
 
     /// @notice Transfers an amount of tokens from an account to a recipient.
@@ -152,7 +152,7 @@ library ERC20Storage {
             }
         }
 
-        emit IERC20Events.Transfer(from, to, value);
+        emit Transfer(from, to, value);
     }
 
     /// @notice Transfers an amount of tokens from an account to a recipient by a sender.
@@ -195,13 +195,13 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                if (to == address(0)) revert ERC20TransferToAddressZero(from);
+        for (uint256 i; i < length; ++i) {
+            address to = recipients[i];
+            if (to == address(0)) revert ERC20TransferToAddressZero(from);
 
-                uint256 value = values[i];
-                if (value != 0) {
+            uint256 value = values[i];
+            if (value != 0) {
+                unchecked {
                     uint256 newTotalValue = totalValue + value;
                     if (newTotalValue <= totalValue) revert ERC20BatchTransferValuesOverflow();
                     totalValue = newTotalValue;
@@ -212,10 +212,12 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
-                emit IERC20Events.Transfer(from, to, value);
             }
+            emit Transfer(from, to, value);
+        }
 
-            if (totalValue != 0 && totalValue != selfTransferTotalValue) {
+        if (totalValue != 0 && totalValue != selfTransferTotalValue) {
+            unchecked {
                 uint256 newBalance = balance - totalValue;
                 // balance must be sufficient, including self-transfers
                 if (newBalance >= balance) revert ERC20InsufficientBalance(from, balance, totalValue);
@@ -247,14 +249,14 @@ library ERC20Storage {
 
         uint256 totalValue;
         uint256 selfTransferTotalValue;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                if (to == address(0)) revert ERC20TransferToAddressZero(from);
+        for (uint256 i; i < length; ++i) {
+            address to = recipients[i];
+            if (to == address(0)) revert ERC20TransferToAddressZero(from);
 
-                uint256 value = values[i];
+            uint256 value = values[i];
 
-                if (value != 0) {
+            if (value != 0) {
+                unchecked {
                     uint256 newTotalValue = totalValue + value;
                     if (newTotalValue <= totalValue) revert ERC20BatchTransferValuesOverflow();
                     totalValue = newTotalValue;
@@ -265,15 +267,17 @@ library ERC20Storage {
                         selfTransferTotalValue += value; // cannot overflow as 'selfTransferTotalValue <= totalValue' is always true
                     }
                 }
-
-                emit IERC20Events.Transfer(from, to, value);
             }
 
+            emit Transfer(from, to, value);
+
             if (totalValue != 0 && totalValue != selfTransferTotalValue) {
-                uint256 newBalance = balance - totalValue;
-                // balance must be sufficient, including self-transfers
-                if (newBalance >= balance) revert ERC20InsufficientBalance(from, balance, totalValue);
-                s.balances[from] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
+                unchecked {
+                    uint256 newBalance = balance - totalValue;
+                    // balance must be sufficient, including self-transfers
+                    if (newBalance >= balance) revert ERC20InsufficientBalance(from, balance, totalValue);
+                    s.balances[from] = newBalance + selfTransferTotalValue; // do not deduct self-transfers from the sender balance
+                }
             }
         }
 
@@ -343,7 +347,7 @@ library ERC20Storage {
                 s.balances[to] += value; // balance cannot overflow if supply does not
             }
         }
-        emit IERC20Events.Transfer(address(0), to, value);
+        emit Transfer(address(0), to, value);
     }
 
     /// @notice Mints multiple amounts of tokens to multiple recipients, increasing the total supply.
@@ -362,22 +366,24 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                if (to == address(0)) revert ERC20MintToAddressZero();
+        for (uint256 i; i < length; ++i) {
+            address to = recipients[i];
+            if (to == address(0)) revert ERC20MintToAddressZero();
 
-                uint256 value = values[i];
-                if (value != 0) {
+            uint256 value = values[i];
+            if (value != 0) {
+                unchecked {
                     uint256 newTotalValue = totalValue + value;
                     if (newTotalValue <= totalValue) revert ERC20BatchMintValuesOverflow();
                     totalValue = newTotalValue;
                     s.balances[to] += value; // balance cannot overflow if supply does not
                 }
-                emit IERC20Events.Transfer(address(0), to, value);
             }
+            emit Transfer(address(0), to, value);
+        }
 
-            if (totalValue != 0) {
+        if (totalValue != 0) {
+            unchecked {
                 uint256 supply = s.supply;
                 uint256 newSupply = supply + totalValue;
                 if (newSupply <= supply) revert ERC20TotalSupplyOverflow(supply, totalValue);
@@ -405,7 +411,7 @@ library ERC20Storage {
             }
         }
 
-        emit IERC20Events.Transfer(from, address(0), value);
+        emit Transfer(from, address(0), value);
     }
 
     /// @notice Burns an amount of tokens from an account by a sender, decreasing the total supply.
@@ -442,27 +448,29 @@ library ERC20Storage {
         if (length == 0) return;
 
         uint256 totalValue;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address from = owners[i];
-                uint256 value = values[i];
+        for (uint256 i; i < length; ++i) {
+            address from = owners[i];
+            uint256 value = values[i];
 
-                if (from != sender) {
-                    s.decreaseAllowance(from, sender, value);
-                }
+            if (from != sender) {
+                s.decreaseAllowance(from, sender, value);
+            }
 
-                if (value != 0) {
-                    uint256 balance = s.balances[from];
+            if (value != 0) {
+                uint256 balance = s.balances[from];
+                unchecked {
                     uint256 newBalance = balance - value;
                     if (newBalance >= balance) revert ERC20InsufficientBalance(from, balance, value);
                     s.balances[from] = newBalance;
                     totalValue += value; // totalValue cannot overflow if the individual balances do not underflow
                 }
-
-                emit IERC20Events.Transfer(from, address(0), value);
             }
 
-            if (totalValue != 0) {
+            emit Transfer(from, address(0), value);
+        }
+
+        if (totalValue != 0) {
+            unchecked {
                 s.supply -= totalValue; // _totalSupply cannot underfow as balances do not underflow
             }
         }

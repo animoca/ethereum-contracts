@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {InitializationPhaseAlreadyReached} from "./../errors/ProxyInitializationErrors.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";

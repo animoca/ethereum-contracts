@@ -4,18 +4,6 @@
   "sourceName": "contracts/lifecycle/interfaces/IPause.sol",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [],
-      "name": "Paused",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [],
-      "name": "Unpaused",
-      "type": "event"
-    },
-    {
       "inputs": [],
       "name": "paused",
       "outputs": [

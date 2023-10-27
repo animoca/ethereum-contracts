@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.22;
 
 /// @title MultiStaticCall - Aggregate results from multiple static calls
 /// @dev Derived from https://github.com/makerdao/multicall (MIT licence)
@@ -27,25 +27,23 @@ contract MultiStaticCall {
     function tryAggregate(bool requireSuccess, Call[] calldata calls) public view returns (Result[] memory returnData) {
         uint256 length = calls.length;
         returnData = new Result[](length);
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address target = calls[i].target;
-                bytes calldata data = calls[i].callData;
-                (bool success, bytes memory ret) = target.staticcall(data);
+        for (uint256 i; i < length; ++i) {
+            address target = calls[i].target;
+            bytes calldata data = calls[i].callData;
+            (bool success, bytes memory ret) = target.staticcall(data);
 
-                if (requireSuccess && !success) {
-                    uint256 returndataLength = ret.length;
-                    if (returndataLength != 0) {
-                        assembly {
-                            revert(add(32, ret), returndataLength)
-                        }
-                    } else {
-                        revert StaticCallReverted(target, data);
+            if (requireSuccess && !success) {
+                uint256 returndataLength = ret.length;
+                if (returndataLength != 0) {
+                    assembly {
+                        revert(add(32, ret), returndataLength)
                     }
+                } else {
+                    revert StaticCallReverted(target, data);
                 }
-
-                returnData[i] = Result(success, ret);
             }
+
+            returnData[i] = Result(success, ret);
         }
     }
 

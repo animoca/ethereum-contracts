@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {IOperatorFilterRegistry} from "./../royalty/interfaces/IOperatorFilterRegistry.sol";
 import {ERC1155Storage} from "./libraries/ERC1155Storage.sol";

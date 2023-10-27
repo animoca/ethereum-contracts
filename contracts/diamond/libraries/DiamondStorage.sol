@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 pragma experimental ABIEncoderV2;
 
 // solhint-disable-next-line max-line-length
 import {EmptyFacet, NonContractFacet, FunctionAlreadyPresent, RemovingWithNonZeroAddressFacet, FunctionNotFound, ModifyingImmutableFunction, ReplacingFunctionByItself, ZeroAddressTargetInitCallButNonEmptyData, EmptyInitCallData, NonContractInitCallTarget, InitCallReverted} from "./../errors/DiamondErrors.sol";
 import {Facet, FacetCutAction, FacetCut, Initialization} from "./../DiamondCommon.sol";
-import {IDiamondCutEvents} from "./../events/IDiamondCutEvents.sol";
+import {DiamondCut} from "./../events/DiamondCutEvents.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./../interfaces/IDiamondCutBatchInit.sol";
 import {IDiamondLoupe} from "./../interfaces/IDiamondLoupe.sol";
@@ -47,56 +47,52 @@ library DiamondStorage {
     function diamondCut(Layout storage s, FacetCut[] memory cuts, address target, bytes memory data) internal {
         s.cutFacets(cuts);
         initializationCall(target, data);
-        emit IDiamondCutEvents.DiamondCut(cuts, target, data);
+        emit DiamondCut(cuts, target, data);
     }
 
     function diamondCut(Layout storage s, FacetCut[] memory cuts, Initialization[] memory initializations) internal {
         s.cutFacets(cuts);
         uint256 length = initializations.length;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                initializationCall(initializations[i].target, initializations[i].data);
-            }
+        for (uint256 i; i < length; ++i) {
+            initializationCall(initializations[i].target, initializations[i].data);
         }
-        emit IDiamondCutEvents.DiamondCut(cuts, address(0), "");
+        emit DiamondCut(cuts, address(0), "");
     }
 
     function cutFacets(Layout storage s, FacetCut[] memory facetCuts) internal {
-        unchecked {
-            uint256 originalSelectorCount = s.selectorCount;
-            uint256 selectorCount = originalSelectorCount;
-            bytes32 selectorSlot;
+        uint256 originalSelectorCount = s.selectorCount;
+        uint256 selectorCount = originalSelectorCount;
+        bytes32 selectorSlot;
 
-            // Check if last selector slot is not full
-            if (selectorCount & 7 > 0) {
-                // get last selectorSlot
-                selectorSlot = s.selectorSlots[selectorCount >> 3];
+        // Check if last selector slot is not full
+        if (selectorCount & 7 > 0) {
+            // get last selectorSlot
+            selectorSlot = s.selectorSlots[selectorCount >> 3];
+        }
+
+        uint256 length = facetCuts.length;
+        for (uint256 i; i < length; ++i) {
+            FacetCut memory facetCut = facetCuts[i];
+
+            if (facetCut.selectors.length == 0) revert EmptyFacet(facetCut.facet);
+
+            FacetCutAction action = facetCut.action;
+            if (action == FacetCutAction.ADD) {
+                (selectorCount, selectorSlot) = s.addFacetSelectors(selectorCount, selectorSlot, facetCut);
+            } else if (action == FacetCutAction.REPLACE) {
+                s.replaceFacetSelectors(facetCut);
+            } else {
+                (selectorCount, selectorSlot) = s.removeFacetSelectors(selectorCount, selectorSlot, facetCut);
             }
+        }
 
-            uint256 length = facetCuts.length;
-            for (uint256 i; i != length; ++i) {
-                FacetCut memory facetCut = facetCuts[i];
+        if (selectorCount != originalSelectorCount) {
+            s.selectorCount = uint16(selectorCount);
+        }
 
-                if (facetCut.selectors.length == 0) revert EmptyFacet(facetCut.facet);
-
-                FacetCutAction action = facetCut.action;
-                if (action == FacetCutAction.ADD) {
-                    (selectorCount, selectorSlot) = s.addFacetSelectors(selectorCount, selectorSlot, facetCut);
-                } else if (action == FacetCutAction.REPLACE) {
-                    s.replaceFacetSelectors(facetCut);
-                } else {
-                    (selectorCount, selectorSlot) = s.removeFacetSelectors(selectorCount, selectorSlot, facetCut);
-                }
-            }
-
-            if (selectorCount != originalSelectorCount) {
-                s.selectorCount = uint16(selectorCount);
-            }
-
-            // If last selector slot is not full
-            if (selectorCount & 7 > 0) {
-                s.selectorSlots[selectorCount >> 3] = selectorSlot;
-            }
+        // If last selector slot is not full
+        if (selectorCount & 7 > 0) {
+            s.selectorSlots[selectorCount >> 3] = selectorSlot;
         }
     }
 
@@ -106,34 +102,34 @@ library DiamondStorage {
         bytes32 selectorSlot,
         FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
-        unchecked {
-            if (facetCut.facet != address(this) && !facetCut.facet.isContract()) revert NonContractFacet(facetCut.facet);
+        if (facetCut.facet != address(this) && !facetCut.facet.isContract()) revert NonContractFacet(facetCut.facet);
 
-            uint256 length = facetCut.selectors.length;
-            for (uint256 i; i != length; ++i) {
-                bytes4 selector = facetCut.selectors[i];
-                address oldFacetAddress = address(bytes20(s.diamondFacets[selector]));
+        uint256 length = facetCut.selectors.length;
+        for (uint256 i; i < length; ++i) {
+            bytes4 selector = facetCut.selectors[i];
+            address oldFacetAddress = address(bytes20(s.diamondFacets[selector]));
 
-                if (oldFacetAddress != address(0)) revert FunctionAlreadyPresent(oldFacetAddress, selector);
+            if (oldFacetAddress != address(0)) revert FunctionAlreadyPresent(oldFacetAddress, selector);
 
-                // add facet for selector
-                s.diamondFacets[selector] = bytes20(facetCut.facet) | bytes32(selectorCount);
-                uint256 selectorInSlotPosition = (selectorCount & 7) << 5;
+            // add facet for selector
+            s.diamondFacets[selector] = bytes20(facetCut.facet) | bytes32(selectorCount);
+            uint256 selectorInSlotPosition = (selectorCount & 7) << 5;
 
-                // clear selector position in slot and add selector
-                selectorSlot = (selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);
+            // clear selector position in slot and add selector
+            selectorSlot = (selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);
 
-                // if slot is full then write it to storage
-                if (selectorInSlotPosition == 224) {
-                    s.selectorSlots[selectorCount >> 3] = selectorSlot;
-                    selectorSlot = 0;
-                }
-
-                ++selectorCount;
+            // if slot is full then write it to storage
+            if (selectorInSlotPosition == 224) {
+                s.selectorSlots[selectorCount >> 3] = selectorSlot;
+                selectorSlot = 0;
             }
 
-            return (selectorCount, selectorSlot);
+            unchecked {
+                ++selectorCount;
+            }
         }
+
+        return (selectorCount, selectorSlot);
     }
 
     function removeFacetSelectors(
@@ -142,94 +138,94 @@ library DiamondStorage {
         bytes32 selectorSlot,
         FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
-        unchecked {
-            if (facetCut.facet != address(0)) revert RemovingWithNonZeroAddressFacet(facetCut.facet);
+        if (facetCut.facet != address(0)) revert RemovingWithNonZeroAddressFacet(facetCut.facet);
 
-            uint256 selectorSlotCount = selectorCount >> 3;
-            uint256 selectorInSlotIndex = selectorCount & 7;
+        uint256 selectorSlotCount = selectorCount >> 3;
+        uint256 selectorInSlotIndex = selectorCount & 7;
 
-            for (uint256 i; i != facetCut.selectors.length; ++i) {
-                bytes4 selector = facetCut.selectors[i];
-                bytes32 oldFacet = s.diamondFacets[selector];
+        for (uint256 i; i < facetCut.selectors.length; ++i) {
+            bytes4 selector = facetCut.selectors[i];
+            bytes32 oldFacet = s.diamondFacets[selector];
 
-                if (address(bytes20(s.diamondFacets[selector])) == address(0)) revert FunctionNotFound(selector);
-                if (address(bytes20(s.diamondFacets[selector])) == address(this)) revert ModifyingImmutableFunction(selector);
+            if (address(bytes20(s.diamondFacets[selector])) == address(0)) revert FunctionNotFound(selector);
+            if (address(bytes20(s.diamondFacets[selector])) == address(this)) revert ModifyingImmutableFunction(selector);
 
-                if (selectorSlot == 0) {
+            if (selectorSlot == 0) {
+                unchecked {
                     selectorSlotCount--;
-                    selectorSlot = s.selectorSlots[selectorSlotCount];
-                    selectorInSlotIndex = 7;
-                } else {
+                }
+                selectorSlot = s.selectorSlots[selectorSlotCount];
+                selectorInSlotIndex = 7;
+            } else {
+                unchecked {
                     selectorInSlotIndex--;
-                }
-
-                bytes4 lastSelector;
-                uint256 oldSelectorsSlotCount;
-                uint256 oldSelectorInSlotPosition;
-
-                // adding a block here prevents stack too deep error
-                {
-                    // replace selector with last selector in l.facets
-                    lastSelector = bytes4(selectorSlot << (selectorInSlotIndex << 5));
-
-                    if (lastSelector != selector) {
-                        // update last selector slot position info
-                        s.diamondFacets[lastSelector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(s.diamondFacets[lastSelector]);
-                    }
-
-                    delete s.diamondFacets[selector];
-                    uint256 oldSelectorCount = uint16(uint256(oldFacet));
-                    oldSelectorsSlotCount = oldSelectorCount >> 3;
-                    oldSelectorInSlotPosition = (oldSelectorCount & 7) << 5;
-                }
-
-                if (oldSelectorsSlotCount != selectorSlotCount) {
-                    bytes32 oldSelectorSlot = s.selectorSlots[oldSelectorsSlotCount];
-
-                    // clears the selector we are deleting and puts the last selector in its place.
-                    oldSelectorSlot =
-                        (oldSelectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
-                        (bytes32(lastSelector) >> oldSelectorInSlotPosition);
-
-                    // update storage with the modified slot
-                    s.selectorSlots[oldSelectorsSlotCount] = oldSelectorSlot;
-                } else {
-                    // clears the selector we are deleting and puts the last selector in its place.
-                    selectorSlot =
-                        (selectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
-                        (bytes32(lastSelector) >> oldSelectorInSlotPosition);
-                }
-
-                if (selectorInSlotIndex == 0) {
-                    delete s.selectorSlots[selectorSlotCount];
-                    selectorSlot = 0;
                 }
             }
 
-            selectorCount = (selectorSlotCount << 3) | selectorInSlotIndex;
+            bytes4 lastSelector;
+            uint256 oldSelectorsSlotCount;
+            uint256 oldSelectorInSlotPosition;
 
-            return (selectorCount, selectorSlot);
+            // adding a block here prevents stack too deep error
+            {
+                // replace selector with last selector in l.facets
+                lastSelector = bytes4(selectorSlot << (selectorInSlotIndex << 5));
+
+                if (lastSelector != selector) {
+                    // update last selector slot position info
+                    s.diamondFacets[lastSelector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(s.diamondFacets[lastSelector]);
+                }
+
+                delete s.diamondFacets[selector];
+                uint256 oldSelectorCount = uint16(uint256(oldFacet));
+                oldSelectorsSlotCount = oldSelectorCount >> 3;
+                oldSelectorInSlotPosition = (oldSelectorCount & 7) << 5;
+            }
+
+            if (oldSelectorsSlotCount != selectorSlotCount) {
+                bytes32 oldSelectorSlot = s.selectorSlots[oldSelectorsSlotCount];
+
+                // clears the selector we are deleting and puts the last selector in its place.
+                oldSelectorSlot =
+                    (oldSelectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
+                    (bytes32(lastSelector) >> oldSelectorInSlotPosition);
+
+                // update storage with the modified slot
+                s.selectorSlots[oldSelectorsSlotCount] = oldSelectorSlot;
+            } else {
+                // clears the selector we are deleting and puts the last selector in its place.
+                selectorSlot =
+                    (selectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
+                    (bytes32(lastSelector) >> oldSelectorInSlotPosition);
+            }
+
+            if (selectorInSlotIndex == 0) {
+                delete s.selectorSlots[selectorSlotCount];
+                selectorSlot = 0;
+            }
         }
+
+        selectorCount = (selectorSlotCount << 3) | selectorInSlotIndex;
+
+        return (selectorCount, selectorSlot);
     }
 
     function replaceFacetSelectors(Layout storage s, FacetCut memory facetCut) internal {
-        unchecked {
-            address facet = facetCut.facet;
-            if (!facet.isContract()) revert NonContractFacet(facetCut.facet);
+        address facet = facetCut.facet;
+        if (!facet.isContract()) revert NonContractFacet(facetCut.facet);
 
-            uint256 length = facetCut.selectors.length;
-            for (uint256 i; i != length; ++i) {
-                bytes4 selector = facetCut.selectors[i];
-                bytes32 oldFacet = s.diamondFacets[selector];
-                address oldFacetAddress = address(bytes20(oldFacet));
+        uint256 length = facetCut.selectors.length;
+        for (uint256 i; i < length; ++i) {
+            bytes4 selector = facetCut.selectors[i];
+            bytes32 oldFacet = s.diamondFacets[selector];
+            address oldFacetAddress = address(bytes20(oldFacet));
 
-                if (oldFacetAddress == address(0)) revert FunctionNotFound(selector);
-                if (oldFacetAddress == address(this)) revert ModifyingImmutableFunction(selector);
-                if (oldFacetAddress == facet) revert ReplacingFunctionByItself(facet, selector);
+            if (oldFacetAddress == address(0)) revert FunctionNotFound(selector);
+            if (oldFacetAddress == address(this)) revert ModifyingImmutableFunction(selector);
+            if (oldFacetAddress == facet) revert ReplacingFunctionByItself(facet, selector);
 
-                // replace old facet address
-                s.diamondFacets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(facet);
-            }
+            // replace old facet address
+            s.diamondFacets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(facet);
         }
     }
 
@@ -320,7 +316,7 @@ library DiamondStorage {
                 }
             }
 
-            for (uint256 facetIndex; facetIndex != numFacets; ++facetIndex) {
+            for (uint256 facetIndex; facetIndex < numFacets; ++facetIndex) {
                 uint256 numSelectors = numFacetSelectors[facetIndex];
                 bytes4[] memory selectors = diamondFacets[facetIndex].selectors;
 
@@ -394,7 +390,7 @@ library DiamondStorage {
 
                     bool continueLoop;
 
-                    for (uint256 facetIndex; facetIndex != numFacets; ++facetIndex) {
+                    for (uint256 facetIndex; facetIndex < numFacets; ++facetIndex) {
                         if (facet == addresses[facetIndex]) {
                             continueLoop = true;
                             break;

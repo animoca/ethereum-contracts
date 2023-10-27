@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC20Events} from "./../events/IERC20Events.sol";
 import {IERC20BatchTransfers} from "./../interfaces/IERC20BatchTransfers.sol";
 import {ERC20Storage} from "./../libraries/ERC20Storage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -9,7 +8,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC20 Fungible Token Standard, optional extension: Batch Transfers (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC20 (Fungible Token Standard).
-abstract contract ERC20BatchTransfersBase is IERC20Events, IERC20BatchTransfers, Context {
+abstract contract ERC20BatchTransfersBase is IERC20BatchTransfers, Context {
     using ERC20Storage for ERC20Storage.Layout;
 
     /// @inheritdoc IERC20BatchTransfers

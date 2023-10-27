@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {AlreadySealed} from "./../errors/SealsErrors.sol";
-import {ISealsEvents} from "./../events/ISealsEvents.sol";
+import {Sealed} from "./../events/SealsEvents.sol";
 
 library SealsStorage {
     using SealsStorage for SealsStorage.Layout;
@@ -21,7 +21,7 @@ library SealsStorage {
     function seal(Layout storage s, address sealer, uint256 sealId) internal {
         if (s.seals[sealId]) revert AlreadySealed(sealId);
         s.seals[sealId] = true;
-        emit ISealsEvents.Sealed(sealId, sealer);
+        emit Sealed(sealId, sealer);
     }
 
     /// @notice Retrieves whether a seal has been used already.

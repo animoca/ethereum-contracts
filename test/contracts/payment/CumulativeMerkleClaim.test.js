@@ -52,7 +52,7 @@ describe('CumulativeMerkleClaim', function () {
     });
 
     it('emits an Unpaused event', async function () {
-      await expect(this.contract.setMerkleRoot(ethers.ZeroHash)).to.emit(this.contract, 'Unpaused');
+      await expect(this.contract.setMerkleRoot(ethers.ZeroHash)).to.emit(this.contract, 'Unpause');
     });
   });
 

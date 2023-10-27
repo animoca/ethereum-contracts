@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {CheckpointAlreadySet, CheckpointNotReached, CheckpointReached} from "./../errors/CheckpointsErrors.sol";
 import {InconsistentArrayLengths} from "./../../CommonErrors.sol";
-import {ICheckpointsEvents} from "./../events/ICheckpointsEvents.sol";
+import {CheckpointSet} from "./../events/CheckpointsEvents.sol";
 
 library CheckpointsStorage {
     using CheckpointsStorage for CheckpointsStorage.Layout;
@@ -24,7 +24,7 @@ library CheckpointsStorage {
         if (s.checkpoints[checkpointId] != 0) revert CheckpointAlreadySet(checkpointId);
         if (timestamp != 0) {
             s.checkpoints[checkpointId] = timestamp;
-            emit ICheckpointsEvents.CheckpointSet(checkpointId, timestamp);
+            emit CheckpointSet(checkpointId, timestamp);
         }
     }
 
@@ -37,10 +37,8 @@ library CheckpointsStorage {
         uint256 length = checkpointIds.length;
         if (length != timestamps.length) revert InconsistentArrayLengths();
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                s.setCheckpoint(checkpointIds[i], timestamps[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            s.setCheckpoint(checkpointIds[i], timestamps[i]);
         }
     }
 
@@ -51,7 +49,7 @@ library CheckpointsStorage {
     function triggerCheckpoint(Layout storage s, bytes32 checkpointId) internal {
         s.enforceCheckpointNotReached(checkpointId);
         s.checkpoints[checkpointId] = block.timestamp;
-        emit ICheckpointsEvents.CheckpointSet(checkpointId, block.timestamp);
+        emit CheckpointSet(checkpointId, block.timestamp);
     }
 
     /// @notice Gets the checkpoint timestamp.

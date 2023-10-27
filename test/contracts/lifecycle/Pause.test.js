@@ -62,8 +62,8 @@ runBehaviorTests('Pause', config, function (deployFn) {
       it('starts with a paused state', async function () {
         expect(await this.contract.paused()).to.be.true;
       });
-      it('emits a Paused event', async function () {
-        await expect(this.contract.deploymentTransaction().hash).to.emit(this.contract, 'Paused');
+      it('emits a Pause event', async function () {
+        await expect(this.contract.deploymentTransaction().hash).to.emit(this.contract, 'Pause');
       });
     });
   });
@@ -90,8 +90,8 @@ runBehaviorTests('Pause', config, function (deployFn) {
         expect(await this.contract.paused()).to.be.true;
       });
 
-      it('emits a Paused event', async function () {
-        expect(this.receipt).to.emit(this.contract, 'Paused');
+      it('emits a Pause event', async function () {
+        expect(this.receipt).to.emit(this.contract, 'Pause');
       });
 
       it('PauseStorage.enforceIsPaused() does not revert', async function () {
@@ -126,8 +126,8 @@ runBehaviorTests('Pause', config, function (deployFn) {
         expect(await this.contract.paused()).to.be.false;
       });
 
-      it('emits an Unpaused event', async function () {
-        expect(this.receipt).to.emit(this.contract, 'Unpaused');
+      it('emits an Unpause event', async function () {
+        expect(this.receipt).to.emit(this.contract, 'Unpause');
       });
 
       it('PauseStorage.enforceIsPaused() reverts', async function () {

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC20Events} from "./../events/IERC20Events.sol";
 import {IERC20Permit} from "./../interfaces/IERC20Permit.sol";
 import {ERC20PermitStorage} from "./../libraries/ERC20PermitStorage.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -10,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC20 (Fungible Token Standard).
 /// @dev Note: This contract requires ERC20Detailed.
-abstract contract ERC20PermitBase is IERC20Events, IERC20Permit, Context {
+abstract contract ERC20PermitBase is IERC20Permit, Context {
     using ERC20PermitStorage for ERC20PermitStorage.Layout;
 
     /// @inheritdoc IERC20Permit

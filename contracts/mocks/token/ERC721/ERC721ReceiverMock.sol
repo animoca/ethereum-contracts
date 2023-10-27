@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.22;
 
 import {IERC721Receiver} from "./../../../token/ERC721/interfaces/IERC721Receiver.sol";
 import {ERC721Storage} from "./../../../token/ERC721/libraries/ERC721Storage.sol";

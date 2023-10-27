@@ -4,25 +4,6 @@
   "sourceName": "contracts/lifecycle/interfaces/ICheckpoints.sol",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "bytes32",
-          "name": "checkpointId",
-          "type": "bytes32"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "CheckpointSet",
-      "type": "event"
-    },
-    {
       "inputs": [
         {
           "internalType": "bytes32",

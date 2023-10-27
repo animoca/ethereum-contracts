@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {IERC721Events} from "./../events/IERC721Events.sol";
+pragma solidity ^0.8.22;
 
 /// @title ERC721 Non-Fungible Token Standard, basic interface (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 /// @dev This interface only contains the standard functions. See IERC721Events for the events.
 /// @dev Note: The ERC-165 identifier for this interface is 0x80ac58cd.
-interface IERC721 is IERC721Events {
+interface IERC721 {
     /// @notice Sets or unsets an approval to transfer a single token on behalf of its owner.
     /// @dev Note: There can only be one approved address per token at a given time.
     /// @dev Note: A token approval gets reset when this token is transferred, including a self-transfer.

@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.22;
 pragma experimental ABIEncoderV2;
 
 import {EtherReceptionDisabled} from "./../CommonErrors.sol";
 import {FacetCut, Initialization} from "./DiamondCommon.sol";
-import {IDiamondCutEvents} from "./events/IDiamondCutEvents.sol";
 import {DiamondStorage} from "./libraries/DiamondStorage.sol";
 
 /// @title ERC2535 Diamond Standard, Diamond.
 /// @dev See https://eips.ethereum.org/EIPS/eip-2535
-contract Diamond is IDiamondCutEvents {
+contract Diamond {
     using DiamondStorage for DiamondStorage.Layout;
 
     /// @notice Add/replace/remove facet functions and execute a batch of functions with delegatecall.

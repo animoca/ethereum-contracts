@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @notice Thrown when the allowance increase creates an overflow.
 /// @param owner The owner of the tokens.

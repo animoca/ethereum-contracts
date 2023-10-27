@@ -27,13 +27,13 @@
     {
       "anonymous": false,
       "inputs": [],
-      "name": "Paused",
+      "name": "Pause",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [],
-      "name": "Unpaused",
+      "name": "Unpause",
       "type": "event"
     },
     {

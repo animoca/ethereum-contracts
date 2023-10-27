@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {NotRoleHolder, NotTargetContractRoleHolder} from "./../errors/AccessControlErrors.sol";
 import {TargetIsNotAContract} from "./../errors/Common.sol";
-import {IAccessControlEvents} from "./../events/IAccessControlEvents.sol";
+import {RoleGranted, RoleRevoked} from "./../events/AccessControlEvents.sol";
 import {IAccessControl} from "./../interfaces/IAccessControl.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
@@ -26,7 +26,7 @@ library AccessControlStorage {
     function grantRole(Layout storage s, bytes32 role, address account, address operator) internal {
         if (!s.hasRole(role, account)) {
             s.roles[role][account] = true;
-            emit IAccessControlEvents.RoleGranted(role, account, operator);
+            emit RoleGranted(role, account, operator);
         }
     }
 
@@ -39,7 +39,7 @@ library AccessControlStorage {
     function revokeRole(Layout storage s, bytes32 role, address account, address operator) internal {
         if (s.hasRole(role, account)) {
             s.roles[role][account] = false;
-            emit IAccessControlEvents.RoleRevoked(role, account, operator);
+            emit RoleRevoked(role, account, operator);
         }
     }
 
@@ -51,7 +51,7 @@ library AccessControlStorage {
     function renounceRole(Layout storage s, address sender, bytes32 role) internal {
         s.enforceHasRole(role, sender);
         s.roles[role][sender] = false;
-        emit IAccessControlEvents.RoleRevoked(role, sender, sender);
+        emit RoleRevoked(role, sender, sender);
     }
 
     /// @notice Retrieves whether an account has a role.

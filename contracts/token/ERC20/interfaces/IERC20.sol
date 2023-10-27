@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {IERC20Events} from "./../events/IERC20Events.sol";
+pragma solidity ^0.8.22;
 
 /// @title ERC20 Token Standard, basic interface (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-20
 /// @dev Note: The ERC-165 identifier for this interface is 0x36372b07.
-interface IERC20 is IERC20Events {
+interface IERC20 {
     /// @notice Sets the allowance to an account from the sender.
     /// @notice Warning: Beware that changing an allowance with this method brings the risk that someone may use both the old and
     ///  the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce

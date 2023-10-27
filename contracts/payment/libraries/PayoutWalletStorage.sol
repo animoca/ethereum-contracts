@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {ZeroAddressPayoutWallet} from "./../errors/PayoutWalletErrors.sol";
-import {IPayoutWalletEvents} from "./../events/IPayoutWalletEvents.sol";
+import {PayoutWalletSet} from "./../events/PayoutWalletEvents.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PayoutWalletStorage {
@@ -43,7 +43,7 @@ library PayoutWalletStorage {
     function setPayoutWallet(Layout storage s, address payable newPayoutWallet) internal {
         if (newPayoutWallet == address(0)) revert ZeroAddressPayoutWallet();
         s.wallet = newPayoutWallet;
-        emit IPayoutWalletEvents.PayoutWalletSet(newPayoutWallet);
+        emit PayoutWalletSet(newPayoutWallet);
     }
 
     /// @notice Gets the payout wallet.

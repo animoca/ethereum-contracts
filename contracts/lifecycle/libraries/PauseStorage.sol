@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {Paused, NotPaused} from "./../errors/PauseErrors.sol";
-import {IPauseEvents} from "./../events/IPauseEvents.sol";
+import {Pause, Unpause} from "./../events/PauseEvents.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 
 library PauseStorage {
@@ -17,12 +17,12 @@ library PauseStorage {
 
     /// @notice Initializes the storage with an initial pause state (immutable version).
     /// @dev Note: This function should be called ONLY in the constructor of an immutable (non-proxied) contract.
-    /// @dev Emits a {Paused} event if `isPaused` is true.
+    /// @dev Emits a {Pause} event if `isPaused` is true.
     /// @param isPaused The initial pause state.
     function constructorInit(Layout storage s, bool isPaused) internal {
         if (isPaused) {
             s.isPaused = true;
-            emit IPauseEvents.Paused();
+            emit Pause();
         }
     }
 
@@ -30,7 +30,7 @@ library PauseStorage {
     /// @notice Sets the proxy initialization phase to `1`.
     /// @dev Note: This function should be called ONLY in the init function of a proxied contract.
     /// @dev Reverts with {InitializationPhaseAlreadyReached} if the proxy initialization phase is set to `1` or above.
-    /// @dev Emits a {Paused} event if `isPaused` is true.
+    /// @dev Emits a {Pause} event if `isPaused` is true.
     /// @param isPaused The initial pause state.
     function proxyInit(Layout storage s, bool isPaused) internal {
         ProxyInitialization.setPhase(PROXY_INIT_PHASE_SLOT, 1);
@@ -39,20 +39,20 @@ library PauseStorage {
 
     /// @notice Pauses the contract.
     /// @dev Reverts with {Paused} if the contract is paused.
-    /// @dev Emits a {Paused} event.
+    /// @dev Emits a {Pause} event.
     function pause(Layout storage s) internal {
         s.enforceIsNotPaused();
         s.isPaused = true;
-        emit IPauseEvents.Paused();
+        emit Pause();
     }
 
     /// @notice Unpauses the contract.
     /// @dev Reverts with {NotPaused} if the contract is not paused.
-    /// @dev Emits an {Unpaused} event.
+    /// @dev Emits an {Unpause} event.
     function unpause(Layout storage s) internal {
         s.enforceIsPaused();
         s.isPaused = false;
-        emit IPauseEvents.Unpaused();
+        emit Unpause();
     }
 
     /// @notice Gets the paused state of the contract.

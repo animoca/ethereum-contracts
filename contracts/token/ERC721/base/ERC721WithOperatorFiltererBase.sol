@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
 import {OperatorFiltererStorage} from "./../../royalty/libraries/OperatorFiltererStorage.sol";
@@ -11,7 +10,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC165 (Interface Detection Standard).
 /// @dev Note: This contract requires OperatorFilterer.
-abstract contract ERC721WithOperatorFiltererBase is IERC721Events, IERC721, Context {
+abstract contract ERC721WithOperatorFiltererBase is IERC721, Context {
     using ERC721Storage for ERC721Storage.Layout;
     using OperatorFiltererStorage for OperatorFiltererStorage.Layout;
 

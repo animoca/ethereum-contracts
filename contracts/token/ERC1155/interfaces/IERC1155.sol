@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {IERC1155Events} from "./../events/IERC1155Events.sol";
+pragma solidity ^0.8.22;
 
 /// @title ERC1155 Multi Token Standard, basic interface (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-1155
 /// @dev Note: The ERC-165 identifier for this interface is 0xd9b67a26.
-interface IERC1155 is IERC1155Events {
+interface IERC1155 {
     /// @notice Safely transfers some token.
     /// @dev Reverts if `to` is the zero address.
     /// @dev Reverts if the sender is not `from` and has not been approved by `from`.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+pragma solidity 0.8.22;
 
 import {InconsistentArrayLengths} from "./../../CommonErrors.sol";
 import {ITokenMetadataResolver} from "./interfaces/ITokenMetadataResolver.sol";
@@ -38,10 +38,8 @@ contract TokenMetadataResolverPerToken is ITokenMetadataResolver {
         }
         tokenContract.enforceHasTargetContractRole(MINTER_ROLE, msg.sender);
 
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                metadataURI[tokenContract][tokenIds[i]] = tokenURIs[i];
-            }
+        for (uint256 i; i < length; ++i) {
+            metadataURI[tokenContract][tokenIds[i]] = tokenURIs[i];
         }
     }
 

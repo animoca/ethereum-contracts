@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {ERC1155Storage} from "./libraries/ERC1155Storage.sol";
 import {ERC1155BurnableBase} from "./base/ERC1155BurnableBase.sol";

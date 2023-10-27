@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @title ERC20 Token Standard, Tokens Receiver.
 /// @notice Interface for supporting safe transfers from ERC20 contracts with the Safe Transfers extension.

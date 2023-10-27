@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @notice Thrown when an account does not have the required role.
 /// @param role The role the caller is missing.

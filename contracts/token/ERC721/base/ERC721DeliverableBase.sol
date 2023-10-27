@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
 import {AccessControlStorage} from "./../../../access/libraries/AccessControlStorage.sol";
@@ -12,7 +11,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
 /// @dev Note: This contract requires AccessControl.
-abstract contract ERC721DeliverableBase is IERC721Events, IERC721Deliverable, Context {
+abstract contract ERC721DeliverableBase is IERC721Deliverable, Context {
     using ERC721Storage for ERC721Storage.Layout;
     using AccessControlStorage for AccessControlStorage.Layout;
 

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 // solhint-disable-next-line max-line-length
 import {ERC721SelfApproval, ERC721SelfApprovalForAll, ERC721NonApprovedForApproval, ERC721TransferToAddressZero, ERC721NonExistingToken, ERC721NonApprovedForTransfer, ERC721NonOwnedToken, ERC721SafeTransferRejected, ERC721BalanceOfAddressZero} from "./../errors/ERC721Errors.sol";
 import {ERC721MintToAddressZero, ERC721ExistingToken} from "./../errors/ERC721MintableErrors.sol";
 import {ERC721BurntToken} from "./../errors/ERC721MintableOnceErrors.sol";
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
-import {IERC721Events} from "./../events/IERC721Events.sol";
+import {Transfer, Approval, ApprovalForAll} from "./../events/ERC721Events.sol";
 import {IERC721} from "./../interfaces/IERC721.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
 import {IERC721Metadata} from "./../interfaces/IERC721Metadata.sol";
@@ -99,7 +99,7 @@ library ERC721Storage {
             }
             s.approvals[tokenId] = to;
         }
-        emit IERC721Events.Approval(ownerAddress, to, tokenId);
+        emit Approval(ownerAddress, to, tokenId);
     }
 
     /// @notice Sets or unsets an approval to transfer all tokens on behalf of their owner.
@@ -112,7 +112,7 @@ library ERC721Storage {
     function setApprovalForAll(Layout storage s, address sender, address operator, bool approved) internal {
         if (operator == sender) revert ERC721SelfApprovalForAll(sender);
         s.operators[sender][operator] = approved;
-        emit IERC721Events.ApprovalForAll(sender, operator, approved);
+        emit ApprovalForAll(sender, operator, approved);
     }
 
     /// @notice Unsafely transfers the ownership of a token to a recipient by a sender.
@@ -148,7 +148,7 @@ library ERC721Storage {
             }
         }
 
-        emit IERC721Events.Transfer(from, to, tokenId);
+        emit Transfer(from, to, tokenId);
     }
 
     /// @notice Safely transfers the ownership of a token to a recipient by a sender.
@@ -213,20 +213,20 @@ library ERC721Storage {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
-                if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
-                if (!operatable) {
-                    if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
-                }
-                s.owners[tokenId] = uint256(uint160(to));
-                emit IERC721Events.Transfer(from, to, tokenId);
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+            if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
+            if (!operatable) {
+                if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
             }
+            s.owners[tokenId] = uint256(uint160(to));
+            emit Transfer(from, to, tokenId);
+        }
 
-            if (from != to && length != 0) {
+        if (from != to && length != 0) {
+            unchecked {
                 // cannot underflow as balance is verified through ownership
                 s.balances[from] -= length;
                 // cannot overflow as supply cannot overflow
@@ -254,7 +254,7 @@ library ERC721Storage {
             ++s.balances[to];
         }
 
-        emit IERC721Events.Transfer(address(0), to, tokenId);
+        emit Transfer(address(0), to, tokenId);
     }
 
     /// @notice Safely mints a token.
@@ -288,15 +288,15 @@ library ERC721Storage {
         if (to == address(0)) revert ERC721MintToAddressZero();
 
         uint256 length = tokenIds.length;
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            if (_tokenExists(s.owners[tokenId])) revert ERC721ExistingToken(tokenId);
+
+            s.owners[tokenId] = uint256(uint160(to));
+            emit Transfer(address(0), to, tokenId);
+        }
+
         unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                if (_tokenExists(s.owners[tokenId])) revert ERC721ExistingToken(tokenId);
-
-                s.owners[tokenId] = uint256(uint160(to));
-                emit IERC721Events.Transfer(address(0), to, tokenId);
-            }
-
             s.balances[to] += length;
         }
     }
@@ -313,10 +313,8 @@ library ERC721Storage {
     function deliver(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
         if (length != tokenIds.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                s.mint(recipients[i], tokenIds[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            s.mint(recipients[i], tokenIds[i]);
         }
     }
 
@@ -343,7 +341,7 @@ library ERC721Storage {
             ++s.balances[to];
         }
 
-        emit IERC721Events.Transfer(address(0), to, tokenId);
+        emit Transfer(address(0), to, tokenId);
     }
 
     /// @notice Safely mints a token once.
@@ -378,18 +376,18 @@ library ERC721Storage {
         if (to == address(0)) revert ERC721MintToAddressZero();
 
         uint256 length = tokenIds.length;
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
+            if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
+
+            s.owners[tokenId] = uint256(uint160(to));
+
+            emit Transfer(address(0), to, tokenId);
+        }
+
         unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
-                if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
-
-                s.owners[tokenId] = uint256(uint160(to));
-
-                emit IERC721Events.Transfer(address(0), to, tokenId);
-            }
-
             s.balances[to] += length;
         }
     }
@@ -407,21 +405,21 @@ library ERC721Storage {
     function deliverOnce(Layout storage s, address[] memory recipients, uint256[] memory tokenIds) internal {
         uint256 length = recipients.length;
         if (length != tokenIds.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                address to = recipients[i];
-                if (to == address(0)) revert ERC721MintToAddressZero();
+        for (uint256 i; i < length; ++i) {
+            address to = recipients[i];
+            if (to == address(0)) revert ERC721MintToAddressZero();
 
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
-                if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (_tokenExists(owner)) revert ERC721ExistingToken(tokenId);
+            if (_tokenWasBurnt(owner)) revert ERC721BurntToken(tokenId);
 
-                s.owners[tokenId] = uint256(uint160(to));
+            s.owners[tokenId] = uint256(uint160(to));
+            unchecked {
                 ++s.balances[to];
-
-                emit IERC721Events.Transfer(address(0), to, tokenId);
             }
+
+            emit Transfer(address(0), to, tokenId);
         }
     }
 
@@ -448,7 +446,7 @@ library ERC721Storage {
             // cannot underflow as balance is verified through TOKEN ownership
             --s.balances[from];
         }
-        emit IERC721Events.Transfer(from, address(0), tokenId);
+        emit Transfer(from, address(0), tokenId);
     }
 
     /// @notice Burns a batch of tokens by a sender.
@@ -463,20 +461,20 @@ library ERC721Storage {
         bool operatable = _isOperatable(s, from, sender);
 
         uint256 length = tokenIds.length;
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                uint256 tokenId = tokenIds[i];
-                uint256 owner = s.owners[tokenId];
-                if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
-                if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
-                if (!operatable) {
-                    if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
-                }
-                s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
-                emit IERC721Events.Transfer(from, address(0), tokenId);
+        for (uint256 i; i < length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint256 owner = s.owners[tokenId];
+            if (!_tokenExists(owner)) revert ERC721NonExistingToken(tokenId);
+            if (_tokenOwner(owner) != from) revert ERC721NonOwnedToken(from, tokenId);
+            if (!operatable) {
+                if (!_tokenHasApproval(owner) || sender != s.approvals[tokenId]) revert ERC721NonApprovedForTransfer(sender, from, tokenId);
             }
+            s.owners[tokenId] = BURNT_TOKEN_OWNER_VALUE;
+            emit Transfer(from, address(0), tokenId);
+        }
 
-            if (length != 0) {
+        if (length != 0) {
+            unchecked {
                 s.balances[from] -= length;
             }
         }

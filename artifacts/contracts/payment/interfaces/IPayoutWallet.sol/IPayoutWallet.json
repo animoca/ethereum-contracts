@@ -4,19 +4,6 @@
   "sourceName": "contracts/payment/interfaces/IPayoutWallet.sol",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "payoutWallet",
-          "type": "address"
-        }
-      ],
-      "name": "PayoutWalletSet",
-      "type": "event"
-    },
-    {
       "inputs": [],
       "name": "payoutWallet",
       "outputs": [

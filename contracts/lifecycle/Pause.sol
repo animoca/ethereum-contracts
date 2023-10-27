@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {PauseStorage} from "./libraries/PauseStorage.sol";
 import {PauseBase} from "./base/PauseBase.sol";

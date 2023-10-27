@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {IProxyAdminEvents} from "./../events/IProxyAdminEvents.sol";
+pragma solidity ^0.8.22;
 
 /// @title ERC1967 Standard Proxy Storage Slots, Admin Address (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-1967
-interface IProxyAdmin is IProxyAdminEvents {
+interface IProxyAdmin {
     /// @notice Sets a new proxy admin.
     /// @dev Reverts with {NotProxyAdmin} if the sender is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.

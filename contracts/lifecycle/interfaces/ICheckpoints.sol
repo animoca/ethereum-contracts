@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
-
-import {ICheckpointsEvents} from "../events/ICheckpointsEvents.sol";
+pragma solidity ^0.8.22;
 
 /// @title Timestamp-based checkpoints management (functions)
-interface ICheckpoints is ICheckpointsEvents {
+interface ICheckpoints {
     /// @notice Gets the checkpoint timestamp.
     /// @param checkpointId The checkpoint identifier.
     /// @return timestamp The timestamp associated to the checkpoint. A zero value indicates that the checkpoint is not set.

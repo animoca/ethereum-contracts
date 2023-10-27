@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC1155Events} from "./../events/IERC1155Events.sol";
 import {IERC1155} from "./../interfaces/IERC1155.sol";
 import {ERC1155Storage} from "./../libraries/ERC1155Storage.sol";
 import {OperatorFiltererStorage} from "./../../royalty/libraries/OperatorFiltererStorage.sol";
@@ -10,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC1155 Multi Token Standard with Operator Filterer (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC165 (Interface Detection Standard).
-abstract contract ERC1155WithOperatorFiltererBase is IERC1155Events, IERC1155, Context {
+abstract contract ERC1155WithOperatorFiltererBase is IERC1155, Context {
     using ERC1155Storage for ERC1155Storage.Layout;
     using OperatorFiltererStorage for OperatorFiltererStorage.Layout;
 

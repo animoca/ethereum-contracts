@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @notice Thrown when setting a royalty percentage that is above 100% (> FEE_DENOMINATOR).
 /// @param percentage The royalty percentage that was attempted to be set.

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
-import {IERC721Events} from "./../events/IERC721Events.sol";
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";
 import {OperatorFiltererStorage} from "./../../royalty/libraries/OperatorFiltererStorage.sol";
@@ -10,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer with Operator Filterer (proxiable version).
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC721 (Non-Fungible Token Standard).
-abstract contract ERC721BatchTransferWithOperatorFiltererBase is IERC721Events, IERC721BatchTransfer, Context {
+abstract contract ERC721BatchTransferWithOperatorFiltererBase is IERC721BatchTransfer, Context {
     using ERC721Storage for ERC721Storage.Layout;
     using OperatorFiltererStorage for OperatorFiltererStorage.Layout;
 

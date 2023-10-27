@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {InconsistentArrayLengths} from "./../../CommonErrors.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
@@ -31,10 +31,8 @@ abstract contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         if (length != amounts.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                accounts[i].sendValue(amounts[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            accounts[i].sendValue(amounts[i]);
         }
     }
 
@@ -51,10 +49,8 @@ abstract contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         if (length != tokens.length || length != amounts.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                tokens[i].safeTransfer(accounts[i], amounts[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            tokens[i].safeTransfer(accounts[i], amounts[i]);
         }
     }
 
@@ -71,10 +67,8 @@ abstract contract TokenRecoveryBase is Context {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         uint256 length = accounts.length;
         if (length != contracts.length || length != tokenIds.length) revert InconsistentArrayLengths();
-        unchecked {
-            for (uint256 i; i != length; ++i) {
-                contracts[i].transferFrom(address(this), accounts[i], tokenIds[i]);
-            }
+        for (uint256 i; i < length; ++i) {
+            contracts[i].transferFrom(address(this), accounts[i], tokenIds[i]);
         }
     }
 }

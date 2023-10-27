@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @notice Thrown when setting an allowance to the the zero address.
 /// @param owner The owner of the tokens.

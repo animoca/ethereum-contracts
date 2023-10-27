@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 /// @title Universal Meta-Transactions Forwarder Registry.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)

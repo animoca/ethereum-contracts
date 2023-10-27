@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
 import {NotMetadataResolver} from "./../../metadata/errors/TokenMetadataErrors.sol";
-import {IERC1155Events} from "./../events/IERC1155Events.sol";
+import {URI} from "./../events/ERC1155Events.sol";
 import {IERC1155MetadataURI} from "./../interfaces/IERC1155MetadataURI.sol";
 import {IERC1155MetadataSetter} from "./../interfaces/IERC1155MetadataSetter.sol";
 import {TokenMetadataStorage} from "./../../metadata/libraries/TokenMetadataStorage.sol";
@@ -13,7 +13,7 @@ import {TokenMetadataBase} from "./../../metadata/base/TokenMetadataBase.sol";
 /// @notice This contracts uses an external resolver for managing individual tokens metadata.
 /// @dev This contract is to be used via inheritance in a proxied implementation.
 /// @dev Note: This contract requires ERC1155 (Multi Token Standard).
-abstract contract ERC1155MetadataBase is TokenMetadataBase, IERC1155MetadataURI, IERC1155MetadataSetter, IERC1155Events {
+abstract contract ERC1155MetadataBase is TokenMetadataBase, IERC1155MetadataURI, IERC1155MetadataSetter {
     using TokenMetadataStorage for TokenMetadataStorage.Layout;
 
     /// @inheritdoc IERC1155MetadataURI
@@ -41,10 +41,8 @@ abstract contract ERC1155MetadataBase is TokenMetadataBase, IERC1155MetadataURI,
         if (tokenIds.length != tokenURIs.length) revert InconsistentArrayLengths();
         if (msg.sender != address(TokenMetadataStorage.layout().metadataResolver())) revert NotMetadataResolver(msg.sender);
 
-        unchecked {
-            for (uint256 i; i != tokenIds.length; ++i) {
-                emit URI(tokenURIs[i], tokenIds[i]);
-            }
+        for (uint256 i; i < tokenIds.length; ++i) {
+            emit URI(tokenURIs[i], tokenIds[i]);
         }
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {ContractOwnershipStorage} from "./../access/libraries/ContractOwnershipStorage.sol";
@@ -58,7 +58,9 @@ abstract contract CumulativeMerkleClaim is Pause {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         PauseStorage.layout().unpause();
         root = merkleRoot;
-        ++nonce;
+        unchecked {
+            ++nonce;
+        }
         emit MerkleRootSet(merkleRoot);
     }
 
