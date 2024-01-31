@@ -132,6 +132,12 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       await expect(this.contract.recoverERC721s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
 
+    it('reverts when recovering from a non-ERC721 contract', async function () {
+      await expect(this.contract.recoverERC721s([deployer.address], [this.erc20.getAddress()], [1]))
+        .to.be.revertedWithCustomError(this.contract, 'IncorrectTokenContractType')
+        .withArgs(await this.erc20.getAddress());
+    });
+
     context('when successful', function () {
       beforeEach(async function () {
         this.recipients = [deployer.address, other.address, other.address];

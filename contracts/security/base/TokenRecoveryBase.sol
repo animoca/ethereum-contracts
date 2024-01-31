@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import {InconsistentArrayLengths} from "./../../CommonErrors.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC721} from "./../../token/ERC721/interfaces/IERC721.sol";
+import {IERC165} from "./../../introspection/interfaces/IERC165.sol";
 import {ContractOwnershipStorage} from "./../../access/libraries/ContractOwnershipStorage.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -16,6 +17,10 @@ abstract contract TokenRecoveryBase is Context {
     using ContractOwnershipStorage for ContractOwnershipStorage.Layout;
     using SafeERC20 for IERC20;
     using Address for address payable;
+
+    /// @notice Thrown when trying to recover a token of the wrong contract type.
+    /// @param tokenContract The token contract being recovered.
+    error IncorrectTokenContractType(address tokenContract);
 
     /// @notice Extract ETH tokens which were accidentally sent to the contract to a list of accounts.
     /// @dev Note: While contracts can generally prevent accidental ETH transfer by implementating a reverting
@@ -68,7 +73,11 @@ abstract contract TokenRecoveryBase is Context {
         uint256 length = accounts.length;
         if (length != contracts.length || length != tokenIds.length) revert InconsistentArrayLengths();
         for (uint256 i; i < length; ++i) {
-            contracts[i].transferFrom(address(this), accounts[i], tokenIds[i]);
+            IERC721 tokenContract = contracts[i];
+            if (!IERC165(address(tokenContract)).supportsInterface(type(IERC721).interfaceId)) {
+                revert IncorrectTokenContractType(address(tokenContract));
+            }
+            contracts[i].safeTransferFrom(address(this), accounts[i], tokenIds[i]);
         }
     }
 }

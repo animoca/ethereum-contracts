@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.0
+
+### Bugfixes
+
+- Fixed a bug in `TokenRecovery` which allowed to transfer ERC20 tokens through `recoverERC721s` function.
+
 ## 3.0.0
 
 ### New features
