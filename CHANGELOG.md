@@ -2,9 +2,17 @@
 
 ## 3.1.0
 
+### New features
+
+- Added `SafeContractOwnership` which requires the new owner to accept the ownership before it is transferred.
+
 ### Bugfixes
 
 - Fixed a bug in `TokenRecovery` which allowed to transfer ERC20 tokens through `recoverERC721s` function.
+
+### Improvements
+
+- Updated dependencies versions.
 
 ## 3.0.0
 
