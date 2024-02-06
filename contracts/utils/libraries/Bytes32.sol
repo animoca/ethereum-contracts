@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 library Bytes32 {
     /// @notice Converts bytes32 to base32 string.

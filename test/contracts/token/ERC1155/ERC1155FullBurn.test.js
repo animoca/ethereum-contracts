@@ -1,10 +1,6 @@
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
-const {
-  getForwarderRegistryAddress,
-  getOperatorFilterRegistryAddress,
-  getTokenMetadataResolverWithBaseURIAddress,
-} = require('../../../helpers/registries');
+const {getForwarderRegistryAddress, getTokenMetadataResolverWithBaseURIAddress} = require('../../../helpers/registries');
 const {behavesLikeERC1155} = require('./behaviors/ERC1155.behavior');
 
 const name = 'ERC1155FullBurn';
@@ -13,13 +9,13 @@ const symbol = 'ERC1155FullBurn';
 const config = {
   immutable: {
     name: 'ERC1155FullBurnMock',
-    ctorArguments: ['name', 'symbol', 'metadataResolver', 'operatorFilterRegistry', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'metadataResolver', 'forwarderRegistry'],
     testMsgData: true,
   },
   proxied: {
     name: 'ERC1155FullBurnProxiedMock',
     ctorArguments: ['forwarderRegistry'],
-    init: {method: 'init', arguments: ['name', 'symbol', 'metadataResolver', 'operatorFilterRegistry']},
+    init: {method: 'init', arguments: ['name', 'symbol', 'metadataResolver']},
     testMsgData: true,
   },
   diamond: {
@@ -36,18 +32,7 @@ const config = {
       {name: 'TokenRecoveryFacet', ctorArguments: ['forwarderRegistry']},
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
-        name: 'OperatorFiltererFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initOperatorFilterer',
-          arguments: ['operatorFilterRegistry'],
-          adminProtected: true,
-          phaseProtected: true,
-        },
-        testMsgData: true,
-      },
-      {
-        name: 'ERC1155WithOperatorFiltererFacetMock',
+        name: 'ERC1155FacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC1155Storage',
@@ -103,7 +88,6 @@ const config = {
   },
   defaultArguments: {
     forwarderRegistry: getForwarderRegistryAddress,
-    operatorFilterRegistry: getOperatorFilterRegistryAddress,
     metadataResolver: getTokenMetadataResolverWithBaseURIAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
@@ -134,9 +118,6 @@ runBehaviorTests('ERC1155FullBurn', config, function (deployFn) {
       IncorrectRoyaltyReceiver: {custom: true, error: 'ERC2981IncorrectRoyaltyReceiver'},
       IncorrectRoyaltyPercentage: {custom: true, error: 'ERC2981IncorrectRoyaltyPercentage', args: ['percentage']},
 
-      // OperatorFilterer
-      OperatorNotAllowed: {custom: true, error: 'OperatorNotAllowed', args: ['operator']},
-
       // Misc
       InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
       NotMinter: {custom: true, error: 'NotRoleHolder', args: ['role', 'account']},
@@ -144,8 +125,6 @@ runBehaviorTests('ERC1155FullBurn', config, function (deployFn) {
     },
     features: {
       MetadataResolver: true,
-      WithOperatorFilterer: true,
-      ERC2981: true,
     },
     interfaces: {
       NameSymbolMetadata: true,
@@ -154,6 +133,7 @@ runBehaviorTests('ERC1155FullBurn', config, function (deployFn) {
       ERC1155Deliverable: true,
       ERC1155Burnable: true,
       ERC1155MetadataURI: true,
+      ERC2981: true,
     },
     methods: {
       'safeMint(address,uint256,uint256,bytes)': async function (contract, to, id, value, data, signer) {

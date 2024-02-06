@@ -1,10 +1,6 @@
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
-const {
-  getForwarderRegistryAddress,
-  getOperatorFilterRegistryAddress,
-  getTokenMetadataResolverWithBaseURIAddress,
-} = require('../../../helpers/registries');
+const {getForwarderRegistryAddress, getTokenMetadataResolverWithBaseURIAddress} = require('../../../helpers/registries');
 const {behavesLikeERC721} = require('./behaviors/ERC721.behavior');
 
 const name = 'ERC721FullMintOnceBurn';
@@ -13,13 +9,13 @@ const symbol = 'ERC721FullMintOnceBurn';
 const config = {
   immutable: {
     name: 'ERC721FullMintOnceBurnMock',
-    ctorArguments: ['name', 'symbol', 'metadataResolver', 'operatorFilterRegistry', 'forwarderRegistry'],
+    ctorArguments: ['name', 'symbol', 'metadataResolver', 'forwarderRegistry'],
     testMsgData: true,
   },
   proxied: {
     name: 'ERC721FullMintOnceBurnProxiedMock',
     ctorArguments: ['forwarderRegistry'],
-    init: {method: 'init', arguments: ['name', 'symbol', 'metadataResolver', 'operatorFilterRegistry']},
+    init: {method: 'init', arguments: ['name', 'symbol', 'metadataResolver']},
     testMsgData: true,
   },
   diamond: {
@@ -36,18 +32,7 @@ const config = {
       {name: 'TokenRecoveryFacet', ctorArguments: ['forwarderRegistry']},
       {name: 'AccessControlFacet', ctorArguments: ['forwarderRegistry']},
       {
-        name: 'OperatorFiltererFacetMock',
-        ctorArguments: ['forwarderRegistry'],
-        init: {
-          method: 'initOperatorFilterer',
-          arguments: ['operatorFilterRegistry'],
-          adminProtected: true,
-          phaseProtected: true,
-        },
-        testMsgData: true,
-      },
-      {
-        name: 'ERC721WithOperatorFiltererFacetMock',
+        name: 'ERC721FacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721Storage',
@@ -56,7 +41,7 @@ const config = {
         testMsgData: true,
       },
       {
-        name: 'ERC721BatchTransferWithOperatorFiltererFacetMock',
+        name: 'ERC721BatchTransferFacetMock',
         ctorArguments: ['forwarderRegistry'],
         init: {
           method: 'initERC721BatchTransferStorage',
@@ -112,7 +97,6 @@ const config = {
   },
   defaultArguments: {
     forwarderRegistry: getForwarderRegistryAddress,
-    operatorFilterRegistry: getOperatorFilterRegistryAddress,
     metadataResolver: getTokenMetadataResolverWithBaseURIAddress,
     initialAdmin: getDeployerAddress,
     initialOwner: getDeployerAddress,
@@ -148,9 +132,6 @@ runBehaviorTests('ERC721FullMintOnceBurn', config, function (deployFn) {
       IncorrectRoyaltyReceiver: {custom: true, error: 'ERC2981IncorrectRoyaltyReceiver'},
       IncorrectRoyaltyPercentage: {custom: true, error: 'ERC2981IncorrectRoyaltyPercentage', args: ['percentage']},
 
-      // OperatorFilterer
-      OperatorNotAllowed: {custom: true, error: 'OperatorNotAllowed', args: ['operator']},
-
       // Misc
       InconsistentArrayLengths: {custom: true, error: 'InconsistentArrayLengths'},
       NotMinter: {custom: true, error: 'NotRoleHolder', args: ['role', 'account']},
@@ -159,7 +140,6 @@ runBehaviorTests('ERC721FullMintOnceBurn', config, function (deployFn) {
     features: {
       MetadataResolver: true,
       ERC721MintableOnce: true,
-      WithOperatorFilterer: true,
     },
     interfaces: {
       ERC721: true,

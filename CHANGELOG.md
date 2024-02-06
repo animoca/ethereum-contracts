@@ -1,6 +1,11 @@
 # Changelog
 
-## 3.1.0
+## 4.0.0
+
+### Breaking changes
+
+- Removed all contracts and features related to `OperatorFilterer`.
+- Upgraded to `solc@0.8.24`.
 
 ### New features
 

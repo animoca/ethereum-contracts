@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {ERC2981Storage} from "./libraries/ERC2981Storage.sol";
 import {ERC2981Base} from "./base/ERC2981Base.sol";

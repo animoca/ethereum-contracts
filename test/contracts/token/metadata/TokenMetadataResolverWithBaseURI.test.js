@@ -13,7 +13,7 @@ describe('TokenMetadataResolverPerToken', function () {
 
   const fixture = async function () {
     this.resolver = await deployContract('TokenMetadataResolverWithBaseURI');
-    this.token = await deployContract('ERC721Full', '', '', this.resolver.getAddress(), ethers.ZeroAddress, await getForwarderRegistryAddress());
+    this.token = await deployContract('ERC721Full', '', '', this.resolver.getAddress(), await getForwarderRegistryAddress());
   };
 
   beforeEach(async function () {

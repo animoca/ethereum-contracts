@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 /// @title ERC1967 Standard Proxy Storage Slots, Admin Address (functions).
 /// @dev See https://eips.ethereum.org/EIPS/eip-1967

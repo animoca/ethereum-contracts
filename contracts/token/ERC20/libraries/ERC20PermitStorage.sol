@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {ERC20PermitFromAddressZero, ERC20PermitExpired, ERC20PermitInvalidSignature} from "./../errors/ERC20PermitErrors.sol";
 import {IERC20Permit} from "./../interfaces/IERC20Permit.sol";

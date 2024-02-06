@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {ERC20PermitStorage} from "./libraries/ERC20PermitStorage.sol";
 import {ERC20PermitBase} from "./base/ERC20PermitBase.sol";

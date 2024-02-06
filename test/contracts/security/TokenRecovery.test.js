@@ -42,7 +42,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
     this.erc20 = await deployContract('ERC20MintBurn', '', '', 18, forwarderRegistryAddress);
     await this.erc20.grantRole(await this.erc20.MINTER_ROLE(), deployer.address);
     await this.erc20.batchMint([this.contract.getAddress()], [1000]);
-    this.erc721 = await deployContract('ERC721Full', '', '', ethers.ZeroAddress, ethers.ZeroAddress, forwarderRegistryAddress);
+    this.erc721 = await deployContract('ERC721Full', '', '', ethers.ZeroAddress, forwarderRegistryAddress);
     await this.erc721.grantRole(await this.erc721.MINTER_ROLE(), deployer.address);
     await this.erc721.mint(this.contract.getAddress(), 0);
     await this.erc721.mint(this.contract.getAddress(), 1);

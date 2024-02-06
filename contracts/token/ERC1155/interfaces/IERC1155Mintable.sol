@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 /// @title ERC1155 Multi Token Standard, optional extension: Mintable.
 /// @dev See https://eips.ethereum.org/EIPS/eip-1155

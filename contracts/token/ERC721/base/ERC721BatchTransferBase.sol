@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {IERC721BatchTransfer} from "./../interfaces/IERC721BatchTransfer.sol";
 import {ERC721Storage} from "./../libraries/ERC721Storage.sol";

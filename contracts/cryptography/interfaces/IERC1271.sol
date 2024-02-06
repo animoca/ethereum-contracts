@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 /// @title Standard Signature Validation Method for Contracts.
 /// @dev See https://eips.ethereum.org/EIPS/eip-1271

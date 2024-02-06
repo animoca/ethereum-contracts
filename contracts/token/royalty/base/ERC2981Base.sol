@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {IERC2981} from "./../interfaces/IERC2981.sol";
 import {ERC2981Storage} from "./../libraries/ERC2981Storage.sol";

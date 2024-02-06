@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 /// @notice Emitted when a token is transferred.
 /// @param from The previous token owner.
@@ -18,4 +18,3 @@ event Approval(address indexed owner, address indexed approved, uint256 indexed 
 /// @param operator The approved address.
 /// @param approved True when then approval is set, false when it is unset.
 event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-

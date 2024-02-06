@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {ProxyAdminStorage} from "./libraries/ProxyAdminStorage.sol";
 import {ProxyAdminBase} from "./base/ProxyAdminBase.sol";

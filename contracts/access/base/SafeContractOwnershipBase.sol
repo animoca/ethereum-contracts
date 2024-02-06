@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 import {IERC173Safe} from "./../interfaces/IERC173Safe.sol";
 import {SafeContractOwnershipStorage} from "./../libraries/SafeContractOwnershipStorage.sol";

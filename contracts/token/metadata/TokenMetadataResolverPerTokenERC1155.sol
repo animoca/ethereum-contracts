@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.24;
 
 import {IERC1155MetadataSetter} from "./../ERC1155/interfaces/IERC1155MetadataSetter.sol";
 import {TokenMetadataResolverPerToken} from "./TokenMetadataResolverPerToken.sol";

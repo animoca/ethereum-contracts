@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.24;
 
 /// @notice Emitted when `role` is granted to `account`.
 /// @param role The role that has been granted.
