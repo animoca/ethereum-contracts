@@ -7,11 +7,13 @@
 - Updated `ForwarderRegistry` so that forwarder approvals are set per meta-tx target contract instead of globally.
 - Replaced `ForwarderRegistry`.`removeForwarderApproval` function with `ForwarderRegistry`.`setForwarderApproval`.
 - Upgraded to `solc@0.8.25`.
+- Upgraded to `openzeppelin/contracts@5.0.2`.
 
 ### New features
 
 - Added `SafeContractOwnership` which requires the new owner to accept the ownership before it is transferred.
 - Added `abis.js` to conveniently import ABIs of this library's contracts.
+- Added `Address` library to replace removed feature from openzeppelin.
 
 ### Bugfixes
 

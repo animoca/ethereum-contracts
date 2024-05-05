@@ -5,7 +5,7 @@ import {NotContractOwner, NotPendingContractOwner, NotTargetContractOwner} from 
 import {TargetIsNotAContract} from "./../errors/Common.sol";
 import {OwnershipTransferred, OwnershipTransferPending} from "./../events/ERC173Events.sol";
 import {IERC173} from "./../interfaces/IERC173.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../utils/libraries/Address.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
@@ -95,7 +95,7 @@ library SafeContractOwnershipStorage {
     /// @param account The account to check.
     /// @return isTargetContractOwner_ Whether `account` is the owner of `targetContract`.
     function isTargetContractOwner(address targetContract, address account) internal view returns (bool isTargetContractOwner_) {
-        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
+        if (!targetContract.hasBytecode()) revert TargetIsNotAContract(targetContract);
         return IERC173(targetContract).owner() == account;
     }
 

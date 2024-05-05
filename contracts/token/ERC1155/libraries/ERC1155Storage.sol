@@ -12,7 +12,7 @@ import {IERC1155Mintable} from "./../interfaces/IERC1155Mintable.sol";
 import {IERC1155Deliverable} from "./../interfaces/IERC1155Deliverable.sol";
 import {IERC1155Burnable} from "./../interfaces/IERC1155Burnable.sol";
 import {IERC1155TokenReceiver} from "./../interfaces/IERC1155TokenReceiver.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../../utils/libraries/Address.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC1155Storage {
@@ -79,7 +79,7 @@ library ERC1155Storage {
 
         emit TransferSingle(sender, from, to, id, value);
 
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC1155Received(sender, from, to, id, value, data);
         }
     }
@@ -122,7 +122,7 @@ library ERC1155Storage {
 
         emit TransferBatch(sender, from, to, ids, values);
 
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC1155BatchReceived(sender, from, to, ids, values, data);
         }
     }
@@ -147,7 +147,7 @@ library ERC1155Storage {
 
         emit TransferSingle(sender, address(0), to, id, value);
 
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC1155Received(sender, address(0), to, id, value, data);
         }
     }
@@ -177,7 +177,7 @@ library ERC1155Storage {
 
         emit TransferBatch(sender, address(0), to, ids, values);
 
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC1155BatchReceived(sender, address(0), to, ids, values, data);
         }
     }

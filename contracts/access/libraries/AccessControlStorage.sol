@@ -5,7 +5,7 @@ import {NotRoleHolder, NotTargetContractRoleHolder} from "./../errors/AccessCont
 import {TargetIsNotAContract} from "./../errors/Common.sol";
 import {RoleGranted, RoleRevoked} from "./../events/AccessControlEvents.sol";
 import {IAccessControl} from "./../interfaces/IAccessControl.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../utils/libraries/Address.sol";
 
 library AccessControlStorage {
     using Address for address;
@@ -68,7 +68,7 @@ library AccessControlStorage {
     /// @param account The account to check.
     /// @return hasTargetContractRole_ Whether `account` has `role` in `targetContract`.
     function hasTargetContractRole(address targetContract, bytes32 role, address account) internal view returns (bool hasTargetContractRole_) {
-        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
+        if (!targetContract.hasBytecode()) revert TargetIsNotAContract(targetContract);
         return IAccessControl(targetContract).hasRole(role, account);
     }
 
