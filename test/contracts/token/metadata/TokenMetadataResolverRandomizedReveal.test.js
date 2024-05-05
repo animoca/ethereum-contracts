@@ -28,7 +28,7 @@ describe('TokenMetadataResolverRandomizedReveal', function () {
     this.vrfV2Wrapper = await deployContract('VRFV2WrapperMock');
 
     this.resolver = await deployContract('TokenMetadataResolverRandomizedReveal', this.linkToken.getAddress(), this.vrfV2Wrapper.getAddress());
-    this.token = await deployContract('ERC721Full', '', '', this.resolver.getAddress(), await getForwarderRegistryAddress());
+    this.token = await deployContract('ERC721Full', '', '', this.resolver.getAddress(), ethers.ZeroAddress, await getForwarderRegistryAddress());
   };
 
   beforeEach(async function () {

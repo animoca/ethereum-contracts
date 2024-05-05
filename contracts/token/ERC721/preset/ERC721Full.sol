@@ -3,8 +3,9 @@ pragma solidity 0.8.24;
 
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ITokenMetadataResolver} from "./../../metadata/interfaces/ITokenMetadataResolver.sol";
-import {ERC721} from "./../ERC721.sol";
-import {ERC721BatchTransfer} from "./../ERC721BatchTransfer.sol";
+import {IOperatorFilterRegistry} from "./../../royalty/interfaces/IOperatorFilterRegistry.sol";
+import {ERC721WithOperatorFilterer} from "./../ERC721WithOperatorFilterer.sol";
+import {ERC721BatchTransferWithOperatorFilterer} from "./../ERC721BatchTransferWithOperatorFilterer.sol";
 import {ERC721Metadata} from "./../ERC721Metadata.sol";
 import {ERC721Mintable} from "./../ERC721Mintable.sol";
 import {ERC721Deliverable} from "./../ERC721Deliverable.sol";
@@ -16,8 +17,8 @@ import {ForwarderRegistryContextBase} from "./../../../metatx/base/ForwarderRegi
 import {ForwarderRegistryContext} from "./../../../metatx/ForwarderRegistryContext.sol";
 
 contract ERC721Full is
-    ERC721,
-    ERC721BatchTransfer,
+    ERC721WithOperatorFilterer,
+    ERC721BatchTransferWithOperatorFilterer,
     ERC721Metadata,
     ERC721Mintable,
     ERC721Deliverable,
@@ -29,8 +30,14 @@ contract ERC721Full is
         string memory tokenName,
         string memory tokenSymbol,
         ITokenMetadataResolver metadataResolver,
+        IOperatorFilterRegistry filterRegistry,
         IForwarderRegistry forwarderRegistry
-    ) ContractOwnership(msg.sender) ERC721Metadata(tokenName, tokenSymbol, metadataResolver) ERC721() ForwarderRegistryContext(forwarderRegistry) {}
+    )
+        ContractOwnership(msg.sender)
+        ERC721Metadata(tokenName, tokenSymbol, metadataResolver)
+        ERC721WithOperatorFilterer(filterRegistry)
+        ForwarderRegistryContext(forwarderRegistry)
+    {}
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ForwarderRegistryContextBase) returns (address) {

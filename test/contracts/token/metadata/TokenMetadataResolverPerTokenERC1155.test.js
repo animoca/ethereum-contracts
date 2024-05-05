@@ -13,7 +13,7 @@ describe('TokenMetadataResolverPerTokenERC1155', function () {
 
   const fixture = async function () {
     this.resolver = await deployContract('TokenMetadataResolverPerTokenERC1155');
-    this.token = await deployContract('ERC1155Full', '', '', this.resolver.getAddress(), await getForwarderRegistryAddress());
+    this.token = await deployContract('ERC1155Full', '', '', this.resolver.getAddress(), ethers.ZeroAddress, await getForwarderRegistryAddress());
     await this.token.grantRole(await this.token.MINTER_ROLE(), deployer.address);
   };
 

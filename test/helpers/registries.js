@@ -13,6 +13,19 @@ async function getForwarderRegistryAddress() {
   return (await deployForwarderRegistry()).getAddress();
 }
 
+let operatorFilterRegistry = undefined;
+
+async function deployOperatorFilterRegistry() {
+  if (operatorFilterRegistry === undefined) {
+    operatorFilterRegistry = await deployContract('OperatorFilterRegistryMock', true);
+  }
+  return operatorFilterRegistry;
+}
+
+async function getOperatorFilterRegistryAddress() {
+  return (await deployOperatorFilterRegistry()).getAddress();
+}
+
 let tokenMetadataResolverPerToken = undefined;
 
 async function deployTokenMetadataResolverPerToken() {
@@ -42,6 +55,9 @@ async function getTokenMetadataResolverWithBaseURIAddress() {
 module.exports = {
   deployForwarderRegistry,
   getForwarderRegistryAddress,
+
+  deployOperatorFilterRegistry,
+  getOperatorFilterRegistryAddress,
 
   deployTokenMetadataResolverPerToken,
   getTokenMetadataResolverPerTokenAddress,
