@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 import {NoInitialProxyAdmin, NotProxyAdmin} from "./../errors/ProxyAdminErrors.sol";
 import {AdminChanged} from "./../events/ProxyAdminEvents.sol";

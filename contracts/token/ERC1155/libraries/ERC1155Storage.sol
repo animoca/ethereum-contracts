@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 // solhint-disable-next-line max-line-length
 import {ERC1155SelfApprovalForAll, ERC1155TransferToAddressZero, ERC1155NonApproved, ERC1155InsufficientBalance, ERC1155BalanceOverflow, ERC1155SafeTransferRejected, ERC1155SafeBatchTransferRejected, ERC1155BalanceOfAddressZero} from "./../errors/ERC1155Errors.sol";

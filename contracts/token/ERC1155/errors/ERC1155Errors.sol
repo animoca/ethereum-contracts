@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 /// @notice Thrown when trying to approveForAll oneself.
 /// @param account The account trying to approveForAll itself.

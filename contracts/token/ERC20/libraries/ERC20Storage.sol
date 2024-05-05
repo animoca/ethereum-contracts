@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 // solhint-disable-next-line max-line-length
 import {ERC20ApprovalToAddressZero, ERC20InsufficientAllowance, ERC20TransferToAddressZero, ERC20InsufficientBalance} from "./../errors/ERC20Errors.sol";

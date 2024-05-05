@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 import {CheckpointsBase} from "./base/CheckpointsBase.sol";
 import {ContractOwnership} from "./../access/ContractOwnership.sol";

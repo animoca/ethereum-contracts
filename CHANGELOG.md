@@ -4,8 +4,7 @@
 
 ### Breaking changes
 
-- Removed all contracts and features related to `OperatorFilterer`.
-- Upgraded to `solc@0.8.24`.
+- Upgraded to `solc@0.8.25`.
 
 ### New features
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 /// @notice Thrown when the target contract is actually not a contract.
 /// @param targetContract The contract that was checked

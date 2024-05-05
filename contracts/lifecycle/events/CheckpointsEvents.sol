@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 /// @notice Emitted when a checkpoint is set.
 /// @param checkpointId The checkpoint identifier.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity 0.8.25;
 
 import {IForwarderRegistry} from "./../../../../metatx/interfaces/IForwarderRegistry.sol";
 import {ERC721MintableFacet} from "./../../../../token/ERC721/facets/ERC721MintableFacet.sol";

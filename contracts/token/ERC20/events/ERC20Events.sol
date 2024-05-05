@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 /// @notice Emitted when tokens are transferred, including zero value transfers.
 /// @param from The account where the transferred tokens are withdrawn from.

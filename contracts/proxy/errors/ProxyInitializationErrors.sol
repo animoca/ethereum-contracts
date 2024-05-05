@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.25;
 
 /// @notice Emitted when trying to set a phase value that has already been reached.
 /// @param currentPhase The current phase.
