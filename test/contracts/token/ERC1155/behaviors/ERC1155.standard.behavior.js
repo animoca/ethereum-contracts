@@ -5,7 +5,7 @@ const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtu
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC1155Standard({errors, deploy, mint}) {
+function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegistryAddress = null) {
   let accounts, deployer, owner, approved, operator, other;
 
   before(async function () {
@@ -27,6 +27,9 @@ function behavesLikeERC1155Standard({errors, deploy, mint}) {
       this.receiver1155 = await deployContract('ERC1155TokenReceiverMock', true, this.token.getAddress());
       this.refusingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', false, this.token.getAddress());
       this.revertingReceiver1155 = await deployContract('ERC1155TokenReceiverMock', true, ethers.ZeroAddress);
+      if (operatorFilterRegistryAddress !== null) {
+        await this.token.updateOperatorFilterRegistry(operatorFilterRegistryAddress);
+      }
     };
 
     beforeEach(async function () {

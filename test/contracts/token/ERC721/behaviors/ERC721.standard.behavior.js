@@ -5,7 +5,7 @@ const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtu
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Standard({deploy, mint, errors}) {
+function behavesLikeERC721Standard({deploy, mint, errors}, operatorFilterRegistryAddress = null) {
   describe('like an ERC721', function () {
     let accounts, deployer, owner, approved, operator, other;
 
@@ -31,6 +31,9 @@ function behavesLikeERC721Standard({deploy, mint, errors}) {
       this.refusingReceiver721 = await deployContract('ERC721ReceiverMock', false, await this.token.getAddress());
       this.wrongTokenReceiver721 = await deployContract('ERC721ReceiverMock', true, ethers.ZeroAddress);
       this.nftBalance = await this.token.balanceOf(owner.address);
+      if (operatorFilterRegistryAddress !== null) {
+        await this.token.updateOperatorFilterRegistry(operatorFilterRegistryAddress);
+      }
     };
 
     beforeEach(async function () {

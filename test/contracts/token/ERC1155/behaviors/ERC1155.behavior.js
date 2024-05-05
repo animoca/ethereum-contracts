@@ -12,8 +12,6 @@ function behavesLikeERC1155(implementation) {
   const interfaces = implementation.interfaces;
 
   if (features && features.WithOperatorFilterer) {
-    console.log('WithOperatorFilterer');
-    process.exit(1);
     context('with an allowing Operator Filter Registry', function () {
       behavesLikeERC1155Standard(implementation);
     });
