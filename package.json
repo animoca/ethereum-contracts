@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@animoca/ethereum-contract-helpers": "^1.0.3",
-    "@chainlink/contracts": "0.8.0",
+    "@chainlink/contracts": "1.1.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.4",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
