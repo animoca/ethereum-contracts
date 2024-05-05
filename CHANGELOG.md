@@ -10,6 +10,7 @@
 ### New features
 
 - Added `SafeContractOwnership` which requires the new owner to accept the ownership before it is transferred.
+- Added `abis.js` to conveniently import ABIs of this library's contracts.
 
 ### Bugfixes
 
