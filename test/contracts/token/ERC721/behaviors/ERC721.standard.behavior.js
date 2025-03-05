@@ -412,7 +412,7 @@ function behavesLikeERC721Standard({deploy, mint, errors}, operatorFilterRegistr
       });
     });
 
-    supportsInterfaces(['IERC165', 'IERC721']);
+    supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'IERC721']);
   });
 }
 

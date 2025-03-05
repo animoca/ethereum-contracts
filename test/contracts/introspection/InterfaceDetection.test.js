@@ -24,7 +24,7 @@ runBehaviorTests('InterfaceDetection', config, function (deployFn) {
       expect(await this.contract.supportsInterface('0xffffffff')).to.be.false;
     });
 
-    supportsInterfaces(['IERC165']);
+    supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165']);
   });
 
   describe('setSupportedInterface(bytes4,bool)', function () {

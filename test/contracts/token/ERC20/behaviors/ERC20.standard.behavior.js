@@ -319,7 +319,7 @@ function behavesLikeERC20Standard(implementation) {
     });
 
     if (features && features.ERC165) {
-      supportsInterfaces(['IERC165', 'contracts/token/ERC20/interfaces/IERC20.sol:IERC20']);
+      supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'contracts/token/ERC20/interfaces/IERC20.sol:IERC20']);
     }
   });
 }

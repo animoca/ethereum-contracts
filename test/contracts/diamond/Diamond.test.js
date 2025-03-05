@@ -622,5 +622,5 @@ describe('Diamond', function () {
     });
   });
 
-  supportsInterfaces(['IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
+  supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
 });

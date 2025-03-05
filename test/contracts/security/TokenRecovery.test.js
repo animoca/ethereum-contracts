@@ -67,8 +67,8 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
 
     it('reverts with an amount above the contract balance', async function () {
       await expect(this.contract.recoverETH([deployer.address], ['1001']))
-        .to.be.revertedWithCustomError(this.contract, 'AddressInsufficientBalance')
-        .withArgs(await this.contract.getAddress());
+        .to.be.revertedWithCustomError(this.contract, 'InsufficientBalance')
+        .withArgs(1000, 1001);
     });
 
     context('when successful', function () {

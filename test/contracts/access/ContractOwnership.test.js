@@ -162,6 +162,6 @@ runBehaviorTests('ContractOwnership', config, function (deployFn) {
       });
     });
 
-    supportsInterfaces(['IERC165', 'IERC173']);
+    supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'IERC173']);
   });
 });

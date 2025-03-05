@@ -7,5 +7,5 @@ describe('ERC1155TokenReceiverMock', function () {
     this.contract = await deployContract('ERC1155TokenReceiverMock', true, ethers.ZeroAddress);
   });
 
-  supportsInterfaces(['IERC165', 'IERC1155TokenReceiver']);
+  supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'IERC1155TokenReceiver']);
 });
