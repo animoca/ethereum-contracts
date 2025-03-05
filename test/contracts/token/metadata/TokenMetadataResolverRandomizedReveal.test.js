@@ -23,7 +23,7 @@ describe('TokenMetadataResolverRandomizedReveal', function () {
       18,
       [deployer.address, other.address],
       [ethers.parseEther('1000000'), ethers.parseEther('1000000')],
-      await getForwarderRegistryAddress()
+      await getForwarderRegistryAddress(),
     );
     this.vrfV2Wrapper = await deployContract('VRFV2WrapperMock');
 
@@ -48,7 +48,7 @@ describe('TokenMetadataResolverRandomizedReveal', function () {
   describe('setTokenData(address,string,string,uint256)', function () {
     it('reverts if not called by the token contract owner', async function () {
       await expect(
-        this.resolver.connect(other).setTokenData(this.token.getAddress(), preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply)
+        this.resolver.connect(other).setTokenData(this.token.getAddress(), preRevealTokenMetadataURI, postRevealBaseMetadataURI, tokenSupply),
       )
         .to.be.revertedWithCustomError(this.resolver, 'NotTargetContractOwner')
         .withArgs(await this.token.getAddress(), other.address);

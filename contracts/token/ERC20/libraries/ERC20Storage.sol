@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 // solhint-disable-next-line max-line-length
 import {ERC20ApprovalToAddressZero, ERC20InsufficientAllowance, ERC20TransferToAddressZero, ERC20InsufficientBalance} from "./../errors/ERC20Errors.sol";
@@ -16,7 +16,7 @@ import {IERC20SafeTransfers} from "./../interfaces/IERC20SafeTransfers.sol";
 import {IERC20Mintable} from "./../interfaces/IERC20Mintable.sol";
 import {IERC20Burnable} from "./../interfaces/IERC20Burnable.sol";
 import {IERC20Receiver} from "./../interfaces/IERC20Receiver.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../../utils/libraries/Address.sol";
 import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
@@ -301,7 +301,7 @@ library ERC20Storage {
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
     function safeTransfer(Layout storage s, address from, address to, uint256 value, bytes calldata data) internal {
         s.transfer(from, to, value);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC20Received(from, from, to, value, data);
         }
     }
@@ -322,7 +322,7 @@ library ERC20Storage {
     /// @param data Optional additional data with no specified format, to be passed to the receiver contract.
     function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 value, bytes calldata data) internal {
         s.transferFrom(sender, from, to, value);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC20Received(sender, from, to, value, data);
         }
     }

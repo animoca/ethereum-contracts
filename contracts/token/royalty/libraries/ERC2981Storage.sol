@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 import {ERC2981IncorrectRoyaltyReceiver, ERC2981IncorrectRoyaltyPercentage} from "./../errors/ERC2981Errors.sol";
 import {IERC2981} from "./../interfaces/IERC2981.sol";

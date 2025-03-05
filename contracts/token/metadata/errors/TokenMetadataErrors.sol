@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 /// @notice Thrown when an account is not the metadata resolver but is required to.
 /// @param account The account that was checked.

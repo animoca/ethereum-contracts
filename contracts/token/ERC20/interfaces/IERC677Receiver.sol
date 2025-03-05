@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 /// @title ERC677 transferAndCall Token Standard, receiver interface.
 /// @dev See https://github.com/ethereum/EIPs/issues/677

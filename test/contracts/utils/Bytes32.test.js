@@ -7,6 +7,7 @@ describe('Bytes32', function () {
   const fixture = async function () {
     this.contract = await deployContract('Bytes32Mock');
   };
+
   beforeEach(async function () {
     await loadFixture(fixture, this);
   });
@@ -17,12 +18,12 @@ describe('Bytes32', function () {
     });
     it('returns h777777777777777777777777777777777777777777777777774 with a max value', async function () {
       expect(await this.contract.toBase32String('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')).to.equal(
-        'h777777777777777777777777777777777777777777777777774'
+        'h777777777777777777777777777777777777777777777777774',
       );
     });
     it('returns abaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa with a one value', async function () {
       expect(await this.contract.toBase32String('0x0000000000000000000000000000000000000000000000000000000000000001')).to.equal(
-        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaae'
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaae',
       );
     });
   });

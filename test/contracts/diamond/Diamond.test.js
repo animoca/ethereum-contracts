@@ -49,7 +49,7 @@ describe('Diamond', function () {
       {forwarderRegistry: forwarderRegistryAddress, initialAdmin: deployer.address},
       ['FacetMock'],
       newFacetFilter,
-      'DiamondMock'
+      'DiamondMock',
     );
     this.contract = deployments.diamond;
     this.facets = deployments.facets;
@@ -261,7 +261,7 @@ describe('Diamond', function () {
                   el.name === 'e' ||
                   el.name === 'f' ||
                   el.name === 'g' ||
-                  el.name === 'h'
+                  el.name === 'h',
               );
               this.cuts = [[ethers.ZeroAddress, FacetCutAction.Remove, this.removedSelectors]];
               this.receipt = await cutFn(this.contract, this.cuts, EmptyInit);
@@ -361,8 +361,8 @@ describe('Diamond', function () {
                 [await this.facet.getAddress(), FacetCutAction.Add, getSelectors(this.facet)],
                 [deployer.address, FacetCutAction.Replace, getSelectors(this.facet)],
               ],
-              EmptyInit
-            )
+              EmptyInit,
+            ),
           )
             .to.be.revertedWithCustomError(this.contract, 'NonContractFacet')
             .withArgs(deployer.address);
@@ -376,8 +376,8 @@ describe('Diamond', function () {
                 [await this.facet.getAddress(), FacetCutAction.Add, getSelectors(this.facet)],
                 [await this.facet.getAddress(), FacetCutAction.Replace, getSelectors(this.facet)],
               ],
-              EmptyInit
-            )
+              EmptyInit,
+            ),
           )
             .to.be.revertedWithCustomError(this.contract, 'ReplacingFunctionByItself')
             .withArgs(await this.facet.getAddress(), getSelectors(this.facet)[0]);
@@ -518,10 +518,11 @@ describe('Diamond', function () {
       beforeEach(async function () {
         this.cuts = [[await this.facet.getAddress(), FacetCutAction.Add, getSelectors(this.facet)]];
       });
+
       it('reverts with a zero address as init target and a non-empty init calldata', async function () {
         await expect(cutFn(this.contract, [], [ethers.ZeroAddress, '0x00'])).to.be.revertedWithCustomError(
           this.contract,
-          'ZeroAddressTargetInitCallButNonEmptyData'
+          'ZeroAddressTargetInitCallButNonEmptyData',
         );
       });
 
@@ -546,7 +547,7 @@ describe('Diamond', function () {
 
       it('reverts when the init function reverts (with an error message)', async function () {
         await expect(
-          cutFn(this.contract, this.cuts, [await this.facet.getAddress(), this.facet.interface.encodeFunctionData('revertsWithMessage')])
+          cutFn(this.contract, this.cuts, [await this.facet.getAddress(), this.facet.interface.encodeFunctionData('revertsWithMessage')]),
         ).to.be.revertedWithCustomError(this.facet, 'RevertedWithMessage');
       });
 
@@ -584,6 +585,7 @@ describe('Diamond', function () {
 
   describe('diamondCut(FacetCut[],address,bytes)', function () {
     const batchInit = false;
+
     it('reverts when not called by the proxy admin', async function () {
       await expect(this.contract.connect(other)['diamondCut((address,uint8,bytes4[])[],address,bytes)']([], ...EmptyInit))
         .to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin')
@@ -597,6 +599,7 @@ describe('Diamond', function () {
 
   describe('diamondCut(FacetCut[],Initialization[])', function () {
     const batchInit = true;
+
     it('reverts when not called by the proxy admin', async function () {
       await expect(this.contract.connect(other)['diamondCut((address,uint8,bytes4[])[],(address,bytes)[])']([], [EmptyInit]))
         .to.be.revertedWithCustomError(this.contract, 'NotProxyAdmin')
@@ -614,10 +617,10 @@ describe('Diamond', function () {
         deployer.sendTransaction({
           to: this.contract.getAddress(),
           value: 0,
-        })
+        }),
       ).to.be.revertedWithCustomError(this.contract, 'EtherReceptionDisabled');
     });
   });
 
-  supportsInterfaces(['IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
+  supportsInterfaces(['@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165', 'IDiamondLoupe', 'IDiamondCut', 'IDiamondCutBatchInit']);
 });

@@ -3,9 +3,9 @@ const {expect} = require('chai');
 
 function makeInterfaceId(interfaceName) {
   const artifact = artifacts.readArtifactSync(interfaceName);
-  const interface = new ethers.Interface(artifact.abi);
+  const iface = new ethers.Interface(artifact.abi);
   const selectors = [];
-  interface.forEachFunction((fn) => selectors.push(fn.selector));
+  iface.forEachFunction((fn) => selectors.push(fn.selector));
   const interfaceId = selectors
     .map((selector) => Buffer.from(selector.substring(2), 'hex'))
     .reduce((prev, curr) => {
@@ -23,10 +23,10 @@ function supportsInterfaces(interfaces, maxGas = 30000) {
       this.contract = this.contract || this.mock || this.token;
     });
 
-    for (const interface of interfaces) {
-      const interfaceId = makeInterfaceId(interface);
+    for (const iface of interfaces) {
+      const interfaceId = makeInterfaceId(iface);
 
-      describe(`${interface} (${interfaceId})`, function () {
+      describe(`${iface} (${interfaceId})`, function () {
         it('is supported', async function () {
           expect(await this.contract.supportsInterface(interfaceId)).to.be.true;
         });

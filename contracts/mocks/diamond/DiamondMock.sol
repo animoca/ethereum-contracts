@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 
 import {FacetCutAction, FacetCut, Initialization} from "./../../diamond/DiamondCommon.sol";
 import {DiamondStorage} from "./../../diamond/libraries/DiamondStorage.sol";

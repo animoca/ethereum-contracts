@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 pragma experimental ABIEncoderV2;
 
 import {EtherReceptionDisabled} from "./../CommonErrors.sol";

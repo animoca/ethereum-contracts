@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 // solhint-disable-next-line max-line-length
 import {ERC721SelfApproval, ERC721SelfApprovalForAll, ERC721NonApprovedForApproval, ERC721TransferToAddressZero, ERC721NonExistingToken, ERC721NonApprovedForTransfer, ERC721NonOwnedToken, ERC721SafeTransferRejected, ERC721BalanceOfAddressZero} from "./../errors/ERC721Errors.sol";
@@ -14,7 +14,7 @@ import {IERC721Mintable} from "./../interfaces/IERC721Mintable.sol";
 import {IERC721Deliverable} from "./../interfaces/IERC721Deliverable.sol";
 import {IERC721Burnable} from "./../interfaces/IERC721Burnable.sol";
 import {IERC721Receiver} from "./../interfaces/IERC721Receiver.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../../utils/libraries/Address.sol";
 import {InterfaceDetectionStorage} from "./../../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 library ERC721Storage {
@@ -168,7 +168,7 @@ library ERC721Storage {
     /// @param tokenId The identifier of the token to transfer.
     function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId) internal {
         s.transferFrom(sender, from, to, tokenId);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC721Received(sender, from, to, tokenId, "");
         }
     }
@@ -191,7 +191,7 @@ library ERC721Storage {
     /// @param data Optional data to send along to a receiver contract.
     function safeTransferFrom(Layout storage s, address sender, address from, address to, uint256 tokenId, bytes calldata data) internal {
         s.transferFrom(sender, from, to, tokenId);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC721Received(sender, from, to, tokenId, data);
         }
     }
@@ -271,7 +271,7 @@ library ERC721Storage {
     /// @param data Optional data to pass along to the receiver call.
     function safeMint(Layout storage s, address sender, address to, uint256 tokenId, bytes memory data) internal {
         s.mint(to, tokenId);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC721Received(sender, address(0), to, tokenId, data);
         }
     }
@@ -358,7 +358,7 @@ library ERC721Storage {
     /// @param data Optional data to pass along to the receiver call.
     function safeMintOnce(Layout storage s, address sender, address to, uint256 tokenId, bytes memory data) internal {
         s.mintOnce(to, tokenId);
-        if (to.isContract()) {
+        if (to.hasBytecode()) {
             _callOnERC721Received(sender, address(0), to, tokenId, data);
         }
     }

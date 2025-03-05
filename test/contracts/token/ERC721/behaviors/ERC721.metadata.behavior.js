@@ -6,11 +6,10 @@ const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsI
 
 function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
   describe('like an ERC721 Metadata', function () {
-    let accounts, deployer, owner, other;
+    let deployer;
 
     before(async function () {
-      accounts = await ethers.getSigners();
-      [deployer, owner, other] = accounts;
+      [deployer] = await ethers.getSigners();
     });
 
     const fixture = async function () {

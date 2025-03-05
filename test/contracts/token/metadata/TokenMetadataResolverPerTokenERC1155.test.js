@@ -40,7 +40,9 @@ describe('TokenMetadataResolverPerTokenERC1155', function () {
     });
 
     it('the token contract emits a URI event', async function () {
-      await expect(this.resolver.setTokenURI(this.token.getAddress(), 1, 'uri')).to.emit(this.token, 'URI').withArgs('uri', 1);
+      await expect(this.resolver.setTokenURI(this.token.getAddress(), 1, 'uri'))
+        .to.emit(this.token, 'URI')
+        .withArgs('uri', 1);
     });
   });
 
@@ -54,7 +56,7 @@ describe('TokenMetadataResolverPerTokenERC1155', function () {
     it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
       await expect(this.resolver.batchSetTokenURI(this.token.getAddress(), [1, 2], ['uri1'])).to.be.revertedWithCustomError(
         this.resolver,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
     });
 

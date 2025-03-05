@@ -7,6 +7,7 @@ const ForwarderApprovalType = {
   ForwarderApproval: [
     {name: 'sender', type: 'address'},
     {name: 'forwarder', type: 'address'},
+    {name: 'target', type: 'address'},
     {name: 'approved', type: 'bool'},
     {name: 'nonce', type: 'uint256'},
   ],
@@ -55,23 +56,45 @@ describe('Meta Transactions', function () {
       });
     });
 
-    describe('removeForwarderApproval(address,bool)', function () {
-      beforeEach(async function () {
-        this.receipt = await this.contract.removeForwarderApproval(this.forwarder.getAddress());
+    describe('setForwarderApproval(address,address,bool)', function () {
+      context('when setting approval', function () {
+        beforeEach(async function () {
+          this.receipt = await this.contract.setForwarderApproval(this.forwarder.getAddress(), this.receiver.getAddress(), true);
+        });
+
+        it('sets the forwarder approval', async function () {
+          expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.be.true;
+        });
+
+        it('updates the forwarder approval nonce', async function () {
+          expect(await this.contract.getNonce(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.equal(1);
+        });
+
+        it('emits a ForwarderApproval event', async function () {
+          await expect(this.receipt)
+            .to.emit(this.contract, 'ForwarderApproval')
+            .withArgs(deployer.address, await this.forwarder.getAddress(), this.receiver.getAddress(), true, 0);
+        });
       });
 
-      it('sets the forwarder approval', async function () {
-        expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.getAddress())).to.be.false;
-      });
+      context('when unsetting approval', function () {
+        beforeEach(async function () {
+          this.receipt = await this.contract.setForwarderApproval(this.forwarder.getAddress(), this.receiver.getAddress(), false);
+        });
 
-      it('updates the forwarder approval nonce', async function () {
-        expect(await this.contract.getNonce(deployer.address, this.forwarder.getAddress())).to.equal(1);
-      });
+        it('sets the forwarder approval', async function () {
+          expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.be.false;
+        });
 
-      it('emits a ForwarderApproval event', async function () {
-        await expect(this.receipt)
-          .to.emit(this.contract, 'ForwarderApproval')
-          .withArgs(deployer.address, await this.forwarder.getAddress(), false, 0);
+        it('updates the forwarder approval nonce', async function () {
+          expect(await this.contract.getNonce(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.equal(1);
+        });
+
+        it('emits a ForwarderApproval event', async function () {
+          await expect(this.receipt)
+            .to.emit(this.contract, 'ForwarderApproval')
+            .withArgs(deployer.address, await this.forwarder.getAddress(), this.receiver.getAddress(), false, 0);
+        });
       });
     });
 
@@ -90,6 +113,7 @@ describe('Meta Transactions', function () {
         const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
           sender: this.signer,
           forwarder: await this.forwarder.getAddress(),
+          target: await this.receiver.getAddress(),
           approved: false, // should be true
           nonce: 0,
         });
@@ -97,13 +121,14 @@ describe('Meta Transactions', function () {
         const {data: relayerData} = await this.contract.setForwarderApproval.populateTransaction(
           this.signer,
           this.forwarder.getAddress(),
+          this.receiver.getAddress(),
           true,
           signature,
-          isEIP712Signature
+          isEIP712Signature,
         );
         await expect(this.forwarder.forward(this.signer, this.contract.getAddress(), relayerData)).to.be.revertedWithCustomError(
           this.contract,
-          this.errorMsg
+          this.errorMsg,
         );
       });
 
@@ -112,6 +137,7 @@ describe('Meta Transactions', function () {
           const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
             sender: this.signer,
             forwarder: await this.forwarder.getAddress(),
+            target: await this.receiver.getAddress(),
             approved: true,
             nonce: 0,
           });
@@ -119,25 +145,26 @@ describe('Meta Transactions', function () {
           const {data: relayerData} = await this.contract.setForwarderApproval.populateTransaction(
             this.signer,
             this.forwarder.getAddress(),
+            this.receiver.getAddress(),
             true,
             signature,
-            isEIP712Signature
+            isEIP712Signature,
           );
           this.receipt = await this.forwarder.forward(this.signer, this.contract.getAddress(), relayerData);
         });
 
         it('sets the forwarder approval', async function () {
-          expect(await this.contract.isApprovedForwarder(this.signer, this.forwarder.getAddress())).to.be.true;
+          expect(await this.contract.isApprovedForwarder(this.signer, this.forwarder.getAddress(), this.receiver.getAddress())).to.be.true;
         });
 
         it('updates the forwarder approval nonce', async function () {
-          expect(await this.contract.getNonce(this.signer, this.forwarder.getAddress())).to.equal(1);
+          expect(await this.contract.getNonce(this.signer, this.forwarder.getAddress(), this.receiver.getAddress())).to.equal(1);
         });
 
         it('emits a ForwarderApproval event', async function () {
           await expect(this.receipt)
             .to.emit(this.contract, 'ForwarderApproval')
-            .withArgs(this.signer, await this.forwarder.getAddress(), true, 0);
+            .withArgs(this.signer, await this.forwarder.getAddress(), await this.receiver.getAddress(), true, 0);
         });
 
         it('allows direct forwarding to a receiver contract', async function () {
@@ -148,10 +175,11 @@ describe('Meta Transactions', function () {
       });
     }
 
-    describe('setForwarderApproval(address,address,bool,bytes,bool) DIRECT', function () {
+    describe('setForwarderApproval(address,address,address,bool,bytes,bool) DIRECT', function () {
       describeSetForwarderApproval(false);
     });
-    describe('setForwarderApproval(address,address,bool,bytes,bool) ERC1271', function () {
+
+    describe('setForwarderApproval(address,address,address,bool,bytes,bool) ERC1271', function () {
       describeSetForwarderApproval(true);
     });
 
@@ -160,6 +188,7 @@ describe('Meta Transactions', function () {
         const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
           sender: deployer.address,
           forwarder: await this.forwarder.getAddress(),
+          target: await this.receiver.getAddress(),
           approved: false, // should be true
           nonce: 0,
         });
@@ -168,7 +197,7 @@ describe('Meta Transactions', function () {
         const {data: relayerData} = await this.contract.approveAndForward.populateTransaction(signature, 0, to, data);
         await expect(this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData)).to.be.revertedWithCustomError(
           this.contract,
-          'WrongSigner'
+          'WrongSigner',
         );
       });
 
@@ -177,6 +206,7 @@ describe('Meta Transactions', function () {
           const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
             sender: deployer.address,
             forwarder: await this.forwarder.getAddress(),
+            target: await this.receiver.getAddress(),
             approved: true,
             nonce: 0,
           });
@@ -186,11 +216,11 @@ describe('Meta Transactions', function () {
         });
 
         it('sets the forwarder approval', async function () {
-          expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.getAddress())).to.be.true;
+          expect(await this.contract.isApprovedForwarder(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.be.true;
         });
 
         it('updates the forwarder approval nonce', async function () {
-          expect(await this.contract.getNonce(deployer.address, this.forwarder.getAddress())).to.equal(1);
+          expect(await this.contract.getNonce(deployer.address, this.forwarder.getAddress(), this.receiver.getAddress())).to.equal(1);
         });
 
         it('calls the target function', async function () {
@@ -200,7 +230,7 @@ describe('Meta Transactions', function () {
         it('emits a ForwarderApproval event', async function () {
           await expect(this.receipt)
             .to.emit(this.contract, 'ForwarderApproval')
-            .withArgs(deployer.address, await this.forwarder.getAddress(), true, 0);
+            .withArgs(deployer.address, await this.forwarder.getAddress(), await this.receiver.getAddress(), true, 0);
         });
 
         it('allows direct forwarding to a receiver contract', async function () {
@@ -219,10 +249,10 @@ describe('Meta Transactions', function () {
           other.sendTransaction({
             to: this.contract.getAddress(),
             data: relayerData + deployer.address.slice(2),
-          })
+          }),
         )
           .to.be.revertedWithCustomError(this.contract, 'ForwarderNotApproved')
-          .withArgs(deployer.address, other.address);
+          .withArgs(deployer.address, other.address, await this.receiver.getAddress());
       });
 
       context('when successful', function () {
@@ -230,6 +260,7 @@ describe('Meta Transactions', function () {
           const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
             sender: deployer.address,
             forwarder: other.address,
+            target: await this.receiver.getAddress(),
             approved: true,
             nonce: 0,
           });
@@ -237,9 +268,10 @@ describe('Meta Transactions', function () {
           const {data: approvalData} = await this.contract.setForwarderApproval.populateTransaction(
             deployer.address,
             other.address,
+            this.receiver.getAddress(),
             true,
             signature,
-            false
+            false,
           );
           await this.forwarder.forward(ethers.ZeroAddress, this.contract.getAddress(), approvalData);
 
@@ -270,6 +302,7 @@ describe('Meta Transactions', function () {
         const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
           sender: deployer.address,
           forwarder: await this.forwarder.getAddress(),
+          target: await this.receiver.getAddress(),
           approved: true,
           nonce: 0,
         });
@@ -277,9 +310,10 @@ describe('Meta Transactions', function () {
         const {data: relayerData} = await this.contract.setForwarderApproval.populateTransaction(
           deployer.address,
           this.forwarder.getAddress(),
+          this.receiver.getAddress(),
           true,
           signature,
-          false
+          false,
         );
         this.receipt = await this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData);
 

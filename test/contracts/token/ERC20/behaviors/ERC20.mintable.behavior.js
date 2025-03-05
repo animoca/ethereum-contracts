@@ -3,7 +3,6 @@ const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const exp = require('constants');
 
 function behavesLikeERC20Mintable(implementation) {
   const {features, interfaces, errors, methods, deploy} = implementation;
@@ -115,7 +114,7 @@ function behavesLikeERC20Mintable(implementation) {
             await expectRevert(
               batchMint(this.contract, [recipient1.address, recipient2.address], [1n, ethers.MaxUint256]),
               this.contract,
-              errors.BatchMintValuesOverflow
+              errors.BatchMintValuesOverflow,
             );
           });
         });
@@ -153,7 +152,7 @@ function behavesLikeERC20Mintable(implementation) {
             this.receipt = await batchMint(
               this.contract,
               recipientIndexes.map((toIndex) => accounts[toIndex].address),
-              values
+              values,
             );
           });
           mintWasSuccessful(recipientIndexes, values);

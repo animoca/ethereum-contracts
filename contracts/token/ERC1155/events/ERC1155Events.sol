@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 /// @notice Emitted when some token is transferred.
 /// @param operator The initiator of the transfer.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 /// @title ERC721 Non-Fungible Token Standard, optional extension: Batch Transfer.
 /// @dev See https://eips.ethereum.org/EIPS/eip-721

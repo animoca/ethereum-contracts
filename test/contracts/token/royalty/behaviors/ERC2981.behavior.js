@@ -15,6 +15,7 @@ function behavesLikeERC2981({deploy, errors}) {
     const fixture = async function () {
       this.contract = await deploy(deployer);
     };
+
     beforeEach(async function () {
       await loadFixture(fixture, this);
     });

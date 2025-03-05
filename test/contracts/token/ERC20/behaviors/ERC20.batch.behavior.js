@@ -3,21 +3,20 @@ const {expect} = require('chai');
 const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/revert');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const exp = require('constants');
 
 function behavesLikeERC20Batch(implementation) {
   const {features, errors, deploy} = implementation;
 
   describe('like an ERC20 Batch Transfers', function () {
-    let accounts, deployer, owner, recipient1, recipient2, spender, maxSpender;
-    const AccountIndex = {deployer: 0, owner: 1, recipient1: 2, recipient2: 3, spender: 4, maxSpender: 5};
+    let accounts, deployer, owner, recipient, spender, maxSpender;
+    const AccountIndex = {deployer: 0, owner: 1, recipient: 2, spender: 3, maxSpender: 4};
 
     const initialSupply = 100n;
     const initialAllowance = initialSupply - 1n;
 
     before(async function () {
       accounts = await ethers.getSigners();
-      [deployer, owner, recipient1, recipient2, spender, maxSpender] = accounts;
+      [deployer, owner, recipient, spender, maxSpender] = accounts;
     });
 
     const fixture = async function () {
@@ -32,7 +31,7 @@ function behavesLikeERC20Batch(implementation) {
 
     describe('batchTransfer(address[],uint256[])', function () {
       it('reverts with inconsistent arrays', async function () {
-        await expectRevert(this.contract.batchTransfer([recipient1.address], []), this.contract, errors.InconsistentArrayLengths);
+        await expectRevert(this.contract.batchTransfer([recipient.address], []), this.contract, errors.InconsistentArrayLengths);
         await expectRevert(this.contract.batchTransfer([], [1]), this.contract, errors.InconsistentArrayLengths);
       });
 
@@ -41,17 +40,17 @@ function behavesLikeERC20Batch(implementation) {
           owner: owner.address,
         });
         await expectRevert(
-          this.contract.batchTransfer([recipient1.address, ethers.ZeroAddress], [0, 0]),
+          this.contract.batchTransfer([recipient.address, ethers.ZeroAddress], [0, 0]),
           this.contract,
           errors.TransferToAddressZero,
           {
             owner: owner.address,
-          }
+          },
         );
       });
 
       it('reverts with an insufficient balance', async function () {
-        await expectRevert(this.contract.batchTransfer([recipient1.address], [initialSupply + 1n]), this.contract, errors.TransferExceedsBalance, {
+        await expectRevert(this.contract.batchTransfer([recipient.address], [initialSupply + 1n]), this.contract, errors.TransferExceedsBalance, {
           owner: owner.address,
           balance: initialSupply,
           value: initialSupply + 1n,
@@ -62,22 +61,22 @@ function behavesLikeERC20Batch(implementation) {
           value: initialSupply + 1n,
         });
         await expectRevert(
-          this.contract.batchTransfer([owner.address, recipient1.address], [initialSupply, 1n]),
+          this.contract.batchTransfer([owner.address, recipient.address], [initialSupply, 1n]),
           this.contract,
           errors.TransferExceedsBalance,
           {
             owner: owner.address,
             balance: initialSupply,
             value: initialSupply + 1n,
-          }
+          },
         );
       });
 
       it('reverts if values overflow', async function () {
         await expectRevert(
-          this.contract.batchTransfer([recipient1.address, recipient1.address], [1, ethers.MaxUint256]),
+          this.contract.batchTransfer([recipient.address, recipient.address], [1, ethers.MaxUint256]),
           this.contract,
-          errors.BatchTransferValuesOverflow
+          errors.BatchTransferValuesOverflow,
         );
       });
 
@@ -123,7 +122,7 @@ function behavesLikeERC20Batch(implementation) {
           }
           this.receipt = await this.contract.batchTransfer(
             recipientIndexes.map((toIndex) => accounts[toIndex].address),
-            values
+            values,
           );
         });
         transferWasSuccessful(recipientIndexes, values, AccountIndex.owner);
@@ -134,28 +133,28 @@ function behavesLikeERC20Batch(implementation) {
       });
 
       context('when transferring zero values', function () {
-        transfersTokens([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [0n, 1n, 0n]);
+        transfersTokens([AccountIndex.recipient, AccountIndex.deployer, AccountIndex.spender], [0n, 1n, 0n]);
       });
 
       context('when transferring the full balance in one transfer', function () {
-        transfersTokens([AccountIndex.recipient1], [initialSupply]);
+        transfersTokens([AccountIndex.recipient], [initialSupply]);
       });
 
       context('when transferring the full balance in several transfers', function () {
-        transfersTokens([AccountIndex.recipient1, AccountIndex.recipient2], [initialSupply - 1n, 1n]);
+        transfersTokens([AccountIndex.recipient, AccountIndex.deployer], [initialSupply - 1n, 1n]);
       });
 
       context('when transferring to the same owner', function () {
         transfersTokens(
-          [AccountIndex.recipient1, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.recipient2],
-          [0n, 1n, 0n, 2n, 1n]
+          [AccountIndex.recipient, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.deployer],
+          [0n, 1n, 0n, 2n, 1n],
         );
       });
 
       context('when transferring to the same owner where each value is under the balance but cumulates to more than balance', function () {
         transfersTokens(
           [AccountIndex.owner, AccountIndex.owner, AccountIndex.owner, AccountIndex.owner, AccountIndex.owner],
-          [initialSupply, initialSupply, initialSupply - 1n, 0n, 1n]
+          [initialSupply, initialSupply, initialSupply - 1n, 0n, 1n],
         );
       });
     });
@@ -164,24 +163,20 @@ function behavesLikeERC20Batch(implementation) {
       context('Pre-conditions', function () {
         it('reverts when from is the zero address', async function () {
           await expectRevert(
-            this.contract.batchTransferFrom(ethers.ZeroAddress, [recipient1.address], [1]),
+            this.contract.batchTransferFrom(ethers.ZeroAddress, [recipient.address], [1]),
             this.contract,
             errors.TransferExceedsBalance,
             {
               owner: ethers.ZeroAddress,
               balance: 0n,
               value: 1,
-            }
+            },
           );
         });
 
         it('reverts with inconsistent arrays', async function () {
           await expectRevert(this.contract.batchTransferFrom(owner.address, [], [1]), this.contract, errors.InconsistentArrayLengths);
-          await expectRevert(
-            this.contract.batchTransferFrom(owner.address, [recipient1.address], []),
-            this.contract,
-            errors.InconsistentArrayLengths
-          );
+          await expectRevert(this.contract.batchTransferFrom(owner.address, [recipient.address], []), this.contract, errors.InconsistentArrayLengths);
         });
 
         it('reverts when one of the recipients is the zero address', async function () {
@@ -189,25 +184,25 @@ function behavesLikeERC20Batch(implementation) {
             owner: owner.address,
           });
           await expectRevert(
-            this.contract.batchTransferFrom(owner.address, [recipient1.address, ethers.ZeroAddress], [0, 0]),
+            this.contract.batchTransferFrom(owner.address, [recipient.address, ethers.ZeroAddress], [0, 0]),
             this.contract,
             errors.TransferToAddressZero,
             {
               owner: owner.address,
-            }
+            },
           );
         });
 
         it('reverts with an insufficient balance', async function () {
           await expectRevert(
-            this.contract.batchTransferFrom(owner.address, [recipient1.address], [initialSupply + 1n]),
+            this.contract.batchTransferFrom(owner.address, [recipient.address], [initialSupply + 1n]),
             this.contract,
             errors.TransferExceedsBalance,
             {
               owner: owner.address,
               balance: initialSupply,
               value: initialSupply + 1n,
-            }
+            },
           );
           await expectRevert(
             this.contract.batchTransferFrom(owner.address, [owner.address], [initialSupply + 1n]),
@@ -217,23 +212,23 @@ function behavesLikeERC20Batch(implementation) {
               owner: owner.address,
               balance: initialSupply,
               value: initialSupply + 1n,
-            }
+            },
           );
           await expectRevert(
-            this.contract.batchTransferFrom(owner.address, [owner.address, recipient1.address], [initialSupply, 1]),
+            this.contract.batchTransferFrom(owner.address, [owner.address, recipient.address], [initialSupply, 1]),
             this.contract,
             errors.TransferExceedsBalance,
             {
               owner: owner.address,
               balance: initialSupply,
               value: initialSupply + 1n,
-            }
+            },
           );
         });
 
         it('reverts with an insufficient allowance', async function () {
           await expectRevert(
-            this.contract.connect(spender).batchTransferFrom(owner.address, [recipient1.address], [initialAllowance + 1n]),
+            this.contract.connect(spender).batchTransferFrom(owner.address, [recipient.address], [initialAllowance + 1n]),
             this.contract,
             errors.TransferExceedsAllowance,
             {
@@ -241,7 +236,7 @@ function behavesLikeERC20Batch(implementation) {
               spender: spender.address,
               allowance: initialAllowance,
               value: initialAllowance + 1n,
-            }
+            },
           );
           await expectRevert(
             this.contract.connect(spender).batchTransferFrom(owner.address, [owner.address], [initialAllowance + 1n]),
@@ -252,10 +247,10 @@ function behavesLikeERC20Batch(implementation) {
               spender: spender.address,
               allowance: initialAllowance,
               value: initialAllowance + 1n,
-            }
+            },
           );
           await expectRevert(
-            this.contract.connect(spender).batchTransferFrom(owner.address, [owner.address, recipient1.address], [initialAllowance, 1]),
+            this.contract.connect(spender).batchTransferFrom(owner.address, [owner.address, recipient.address], [initialAllowance, 1]),
             this.contract,
             errors.TransferExceedsAllowance,
             {
@@ -263,19 +258,19 @@ function behavesLikeERC20Batch(implementation) {
               spender: spender.address,
               allowance: initialAllowance,
               value: initialAllowance + 1n,
-            }
+            },
           );
         });
 
         it('reverts if values overflow', async function () {
           await expectRevert(
-            this.contract.batchTransferFrom(owner.address, [recipient1.address, recipient1.address], [1, ethers.MaxUint256]),
+            this.contract.batchTransferFrom(owner.address, [recipient.address, recipient.address], [1, ethers.MaxUint256]),
             this.contract,
             errors.BatchTransferValuesOverflow,
             {
               owner: owner.address,
               value: ethers.MaxUint256,
-            }
+            },
           );
         });
       });
@@ -346,7 +341,7 @@ function behavesLikeERC20Batch(implementation) {
           this.receipt = await this.contract.connect(accounts[senderIndex]).batchTransferFrom(
             owner.address,
             recipientIndexes.map((toIndex) => accounts[toIndex].address),
-            values
+            values,
           );
         });
         transferWasSuccessful(AccountIndex.owner, recipientIndexes, values, senderIndex, withEIP717);
@@ -371,18 +366,18 @@ function behavesLikeERC20Batch(implementation) {
       });
 
       context('when transferring zero values', function () {
-        transfersBySender([AccountIndex.recipient1, AccountIndex.recipient2, AccountIndex.spender], [0n, 1n, 0n]);
+        transfersBySender([AccountIndex.recipient, AccountIndex.deployer, AccountIndex.spender], [0n, 1n, 0n]);
       });
 
       context('when transferring the full allowance', function () {
-        transfersBySender([AccountIndex.recipient1], [initialAllowance]);
-        transfersBySender([AccountIndex.recipient1, AccountIndex.recipient2], [initialAllowance - 1n, 1n]);
+        transfersBySender([AccountIndex.recipient], [initialAllowance]);
+        transfersBySender([AccountIndex.recipient, AccountIndex.deployer], [initialAllowance - 1n, 1n]);
       });
 
       context('when transferring to the same owner', function () {
         transfersBySender(
-          [AccountIndex.recipient1, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.recipient2],
-          [0n, 1n, 0n, 2n, 1n]
+          [AccountIndex.recipient, AccountIndex.owner, AccountIndex.spender, AccountIndex.owner, AccountIndex.deployer],
+          [0n, 1n, 0n, 2n, 1n],
         );
       });
     });

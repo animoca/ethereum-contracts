@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 pragma experimental ABIEncoderV2;
 
 // solhint-disable-next-line max-line-length
@@ -9,7 +9,7 @@ import {DiamondCut} from "./../events/DiamondCutEvents.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
 import {IDiamondCutBatchInit} from "./../interfaces/IDiamondCutBatchInit.sol";
 import {IDiamondLoupe} from "./../interfaces/IDiamondLoupe.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../utils/libraries/Address.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
 /// @dev derived from https://github.com/mudgen/diamond-2 (MIT licence) and https://github.com/solidstate-network/solidstate-solidity (MIT licence)
@@ -102,7 +102,7 @@ library DiamondStorage {
         bytes32 selectorSlot,
         FacetCut memory facetCut
     ) internal returns (uint256, bytes32) {
-        if (facetCut.facet != address(this) && !facetCut.facet.isContract()) revert NonContractFacet(facetCut.facet);
+        if (facetCut.facet != address(this) && !facetCut.facet.hasBytecode()) revert NonContractFacet(facetCut.facet);
 
         uint256 length = facetCut.selectors.length;
         for (uint256 i; i < length; ++i) {
@@ -212,7 +212,7 @@ library DiamondStorage {
 
     function replaceFacetSelectors(Layout storage s, FacetCut memory facetCut) internal {
         address facet = facetCut.facet;
-        if (!facet.isContract()) revert NonContractFacet(facetCut.facet);
+        if (!facet.hasBytecode()) revert NonContractFacet(facetCut.facet);
 
         uint256 length = facetCut.selectors.length;
         for (uint256 i; i < length; ++i) {
@@ -235,7 +235,7 @@ library DiamondStorage {
         } else {
             if (data.length == 0) revert EmptyInitCallData(target);
             if (target != address(this)) {
-                if (!target.isContract()) revert NonContractInitCallTarget(target);
+                if (!target.hasBytecode()) revert NonContractInitCallTarget(target);
             }
 
             (bool success, bytes memory returndata) = target.delegatecall(data);

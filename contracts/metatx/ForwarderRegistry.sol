@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 
 import {IERC1271} from "./../cryptography/interfaces/IERC1271.sol";
 import {IForwarderRegistry} from "./interfaces/IForwarderRegistry.sol";
@@ -8,10 +8,9 @@ import {ERC2771Calldata} from "./libraries/ERC2771Calldata.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-/// @title Universal Meta-Transactions Forwarder Registry.
-/// @notice Users can allow specific EIP-2771 forwarders to forward meta-transactions on their behalf.
+/// @title Meta-Transactions Forwarder Registry.
+/// @notice Users can allow specific EIP-2771 forwarders to forward meta-transactions on their behalf, per target contract.
 /// @dev This contract should be deployed uniquely per network, in a non-upgradeable way.
-/// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     using Address for address;
     using ECDSA for bytes32;
@@ -21,15 +20,17 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         bool approved;
     }
 
-    error ForwarderNotApproved(address sender, address forwarder);
+    error ForwarderNotApproved(address sender, address forwarder, address target);
     error InvalidEIP1271Signature();
     error WrongSigner();
 
     bytes4 private constant EIP1271_MAGICVALUE = 0x1626ba7e;
     bytes32 private constant EIP712_DOMAIN_NAME = keccak256("ForwarderRegistry");
-    bytes32 private constant APPROVAL_TYPEHASH = keccak256("ForwarderApproval(address sender,address forwarder,bool approved,uint256 nonce)");
+    bytes32 private constant APPROVAL_TYPEHASH =
+        keccak256("ForwarderApproval(address sender,address forwarder,address target,bool approved,uint256 nonce)");
 
-    mapping(address => mapping(address => Forwarder)) private _forwarders;
+    // sender => forwarder => target => Forwarder
+    mapping(address => mapping(address => mapping(address => Forwarder))) private _forwarders;
 
     uint256 private immutable _DEPLOYMENT_CHAIN_ID;
     bytes32 private immutable _DEPLOYMENT_DOMAIN_SEPARATOR;
@@ -37,9 +38,10 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @notice Emitted when a forwarder is approved or disapproved.
     /// @param sender The account for which `forwarder` is approved or disapproved.
     /// @param forwarder The account approved or disapproved as forwarder.
+    /// @param target The target contract approved or disapproved as forwarder.
     /// @param approved True for an approval, false for a disapproval.
     /// @param nonce The `sender`'s account nonce before the approval change.
-    event ForwarderApproval(address indexed sender, address indexed forwarder, bool approved, uint256 nonce);
+    event ForwarderApproval(address indexed sender, address indexed forwarder, address indexed target, bool approved, uint256 nonce);
 
     constructor() {
         uint256 chainId;
@@ -50,12 +52,12 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         _DEPLOYMENT_DOMAIN_SEPARATOR = _calculateDomainSeparator(chainId);
     }
 
-    /// @notice Disapproves a forwarder for the sender.
+    /// @notice Approves or disapproves a forwarder for the sender.
     /// @dev Emits a {ForwarderApproval} event.
-    /// @param forwarder The address of the forwarder to disapprove.
-    function removeForwarderApproval(address forwarder) external {
-        Forwarder storage forwarderData = _forwarders[msg.sender][forwarder];
-        _setForwarderApproval(forwarderData, msg.sender, forwarder, false, forwarderData.nonce);
+    /// @param forwarder The address of the forwarder to change the approval of.
+    function setForwarderApproval(address forwarder, address target, bool approved) external {
+        Forwarder storage forwarderData = _forwarders[msg.sender][forwarder][target];
+        _setForwarderApproval(forwarderData, msg.sender, forwarder, target, approved, forwarderData.nonce);
     }
 
     /// @notice Approves or disapproves a forwarder using a signature.
@@ -64,15 +66,23 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @dev Emits a {ForwarderApproval} event.
     /// @param sender The address which signed the approval of the approval.
     /// @param forwarder The address of the forwarder to change the approval of.
+    /// @param target The target contract to change the approval of.
     /// @param approved Whether to approve or disapprove the forwarder.
     /// @param signature Signature by `sender` for approving forwarder.
     /// @param isEIP1271Signature True if `sender` is a contract that provides authorization via EIP-1271.
-    function setForwarderApproval(address sender, address forwarder, bool approved, bytes calldata signature, bool isEIP1271Signature) public {
-        Forwarder storage forwarderData = _forwarders[sender][forwarder];
+    function setForwarderApproval(
+        address sender,
+        address forwarder,
+        address target,
+        bool approved,
+        bytes calldata signature,
+        bool isEIP1271Signature
+    ) public {
+        Forwarder storage forwarderData = _forwarders[sender][forwarder][target];
         uint256 nonce = forwarderData.nonce;
 
-        _requireValidSignature(sender, forwarder, approved, nonce, signature, isEIP1271Signature);
-        _setForwarderApproval(forwarderData, sender, forwarder, approved, nonce);
+        _requireValidSignature(sender, forwarder, target, approved, nonce, signature, isEIP1271Signature);
+        _setForwarderApproval(forwarderData, sender, forwarder, target, approved, nonce);
     }
 
     /// @notice Forwards the meta-transaction using EIP-2771.
@@ -81,7 +91,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @param data The content of the call (the `sender` address will be appended to it according to EIP-2771).
     function forward(address target, bytes calldata data) external payable {
         address sender = ERC2771Calldata.msgSender();
-        if (!_forwarders[sender][msg.sender].approved) revert ForwarderNotApproved(sender, msg.sender);
+        if (!_forwarders[sender][msg.sender][target].approved) revert ForwarderNotApproved(sender, msg.sender, target);
         target.functionCallWithValue(abi.encodePacked(data, sender), msg.value);
     }
 
@@ -95,7 +105,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @param data The content of the call (the `sender` address will be appended to it according to EIP-2771).
     function approveAndForward(bytes calldata signature, bool isEIP1271Signature, address target, bytes calldata data) external payable {
         address sender = ERC2771Calldata.msgSender();
-        setForwarderApproval(sender, msg.sender, true, signature, isEIP1271Signature);
+        setForwarderApproval(sender, msg.sender, target, true, signature, isEIP1271Signature);
         target.functionCallWithValue(abi.encodePacked(data, sender), msg.value);
     }
 
@@ -115,14 +125,15 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     /// @notice Gets the current nonce for the sender/forwarder pair.
     /// @param sender The sender account.
     /// @param forwarder The forwarder account.
-    /// @return nonce The current nonce for the `sender`/`forwarder` pair.
-    function getNonce(address sender, address forwarder) external view returns (uint256 nonce) {
-        return _forwarders[sender][forwarder].nonce;
+    /// @param target The target contract.
+    /// @return nonce The current nonce for the `sender`/`forwarder`/`target` tuple.
+    function getNonce(address sender, address forwarder, address target) external view returns (uint256 nonce) {
+        return _forwarders[sender][forwarder][target].nonce;
     }
 
     /// @inheritdoc IForwarderRegistry
-    function isApprovedForwarder(address sender, address forwarder) external view returns (bool) {
-        return _forwarders[sender][forwarder].approved;
+    function isApprovedForwarder(address sender, address forwarder, address target) external view returns (bool) {
+        return _forwarders[sender][forwarder][target].approved;
     }
 
     /// @inheritdoc IERC2771
@@ -133,6 +144,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
     function _requireValidSignature(
         address sender,
         address forwarder,
+        address target,
         bool approved,
         uint256 nonce,
         bytes calldata signature,
@@ -141,7 +153,7 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         bytes memory data = abi.encodePacked(
             "\x19\x01",
             DOMAIN_SEPARATOR(),
-            keccak256(abi.encode(APPROVAL_TYPEHASH, sender, forwarder, approved, nonce))
+            keccak256(abi.encode(APPROVAL_TYPEHASH, sender, forwarder, target, approved, nonce))
         );
         if (isEIP1271Signature) {
             if (IERC1271(sender).isValidSignature(keccak256(data), signature) != EIP1271_MAGICVALUE) revert InvalidEIP1271Signature();
@@ -150,12 +162,19 @@ contract ForwarderRegistry is IForwarderRegistry, IERC2771 {
         }
     }
 
-    function _setForwarderApproval(Forwarder storage forwarderData, address sender, address forwarder, bool approved, uint256 nonce) private {
+    function _setForwarderApproval(
+        Forwarder storage forwarderData,
+        address sender,
+        address forwarder,
+        address target,
+        bool approved,
+        uint256 nonce
+    ) private {
         forwarderData.approved = approved;
         unchecked {
             forwarderData.nonce = uint248(nonce + 1);
         }
-        emit ForwarderApproval(sender, forwarder, approved, nonce);
+        emit ForwarderApproval(sender, forwarder, target, approved, nonce);
     }
 
     function _calculateDomainSeparator(uint256 chainId) private view returns (bytes32) {

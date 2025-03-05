@@ -85,8 +85,8 @@ describe('CumulativeMerkleClaim', function () {
         this.leaves = this.elements.map((el) =>
           ethers.solidityPacked(
             ['address', 'bytes', 'uint256'],
-            [el.claimer, ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [el.amount]), this.nextNonce]
-          )
+            [el.claimer, ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [el.amount]), this.nextNonce],
+          ),
         );
         this.tree = new MerkleTree(this.leaves, keccak256, {hashLeaves: true, sortPairs: true});
         this.root = this.tree.getHexRoot();

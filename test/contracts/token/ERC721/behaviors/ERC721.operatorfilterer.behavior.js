@@ -101,7 +101,7 @@ function behavesLikeERC721WithOperatorFilterer({deploy, mint, errors, methods}) 
                 errors.OperatorNotAllowed,
                 {
                   operator: approved.address,
-                }
+                },
               );
             });
 

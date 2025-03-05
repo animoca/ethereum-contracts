@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 import {NotContractOwner, NotTargetContractOwner} from "./../errors/ContractOwnershipErrors.sol";
 import {TargetIsNotAContract} from "./../errors/Common.sol";
 import {OwnershipTransferred} from "./../events/ERC173Events.sol";
 import {IERC173} from "./../interfaces/IERC173.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "./../../utils/libraries/Address.sol";
 import {ProxyInitialization} from "./../../proxy/libraries/ProxyInitialization.sol";
 import {InterfaceDetectionStorage} from "./../../introspection/libraries/InterfaceDetectionStorage.sol";
 
@@ -70,7 +70,7 @@ library ContractOwnershipStorage {
     /// @param account The account to check.
     /// @return isTargetContractOwner_ Whether `account` is the owner of `targetContract`.
     function isTargetContractOwner(address targetContract, address account) internal view returns (bool isTargetContractOwner_) {
-        if (!targetContract.isContract()) revert TargetIsNotAContract(targetContract);
+        if (!targetContract.hasBytecode()) revert TargetIsNotAContract(targetContract);
         return IERC173(targetContract).owner() == account;
     }
 

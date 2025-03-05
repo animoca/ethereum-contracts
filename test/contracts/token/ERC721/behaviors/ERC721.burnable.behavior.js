@@ -112,7 +112,7 @@ function behavesLikeERC721Burnable({deploy, mint, features, errors, interfaces, 
         it('can be minted again, using deliver(address[],uint256[])', async function () {
           await this.token.deliver(
             ids.map(() => owner.address),
-            ids
+            ids,
           );
         });
       }
@@ -160,13 +160,13 @@ function behavesLikeERC721Burnable({deploy, mint, features, errors, interfaces, 
           await expectRevert(
             this.token.deliver(
               ids.map(() => owner.address),
-              ids
+              ids,
             ),
             this.token,
             errors.BurntToken,
             {
               tokenId: ids[0],
-            }
+            },
           );
         });
       }

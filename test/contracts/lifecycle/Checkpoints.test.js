@@ -36,10 +36,10 @@ const config = {
 };
 
 runBehaviorTests('Checkpoints', config, function (deployFn) {
-  let deployer, other;
+  let other;
 
   before(async function () {
-    [deployer, other] = await ethers.getSigners();
+    [_, other] = await ethers.getSigners();
     const tempContract = await deployFn();
     this.checkpointId = await tempContract.START_CHECKPOINTID();
   });
@@ -131,7 +131,7 @@ runBehaviorTests('Checkpoints', config, function (deployFn) {
     it('reverts if not called by the contract owner', async function () {
       await expect(this.contract.connect(other).setCheckpoint(this.checkpointId, this.startTime)).to.be.revertedWithCustomError(
         this.contract,
-        'NotContractOwner'
+        'NotContractOwner',
       );
     });
 

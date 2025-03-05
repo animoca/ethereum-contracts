@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 import {IForwarderRegistry} from "./../interfaces/IForwarderRegistry.sol";
 import {ERC2771Calldata} from "./../libraries/ERC2771Calldata.sol";
@@ -25,7 +25,7 @@ abstract contract ForwarderRegistryContextBase {
         address sender = ERC2771Calldata.msgSender();
 
         // Return the EIP-2771 calldata-appended sender address if the message was forwarded by the ForwarderRegistry or an approved forwarder
-        if (msg.sender == address(_FORWARDER_REGISTRY) || _FORWARDER_REGISTRY.isApprovedForwarder(sender, msg.sender)) {
+        if (msg.sender == address(_FORWARDER_REGISTRY) || _FORWARDER_REGISTRY.isApprovedForwarder(sender, msg.sender, address(this))) {
             return sender;
         }
 
@@ -41,7 +41,10 @@ abstract contract ForwarderRegistryContextBase {
         }
 
         // Return the EIP-2771 calldata (minus the appended sender) if the message was forwarded by the ForwarderRegistry or an approved forwarder
-        if (msg.sender == address(_FORWARDER_REGISTRY) || _FORWARDER_REGISTRY.isApprovedForwarder(ERC2771Calldata.msgSender(), msg.sender)) {
+        if (
+            msg.sender == address(_FORWARDER_REGISTRY) ||
+            _FORWARDER_REGISTRY.isApprovedForwarder(ERC2771Calldata.msgSender(), msg.sender, address(this))
+        ) {
             return ERC2771Calldata.msgData();
         }
 

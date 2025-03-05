@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 import {IERC20Detailed} from "./../interfaces/IERC20Detailed.sol";
 import {ProxyInitialization} from "./../../../proxy/libraries/ProxyInitialization.sol";

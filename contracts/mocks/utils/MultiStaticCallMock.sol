@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 
 import {MultiStaticCall} from "./../../utils/MultiStaticCall.sol";
 
@@ -31,7 +31,7 @@ contract MultiStaticCallMock is MultiStaticCall {
     }
 
     function revertingCallWithoutMessage() public pure {
-        // solhint-disable-next-line custom-errors, reason-string
+        // solhint-disable-next-line gas-custom-errors, reason-string
         revert();
     }
 }

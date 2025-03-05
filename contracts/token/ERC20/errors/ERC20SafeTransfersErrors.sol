@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.25;
 
 /// @notice Thrown when a safe transfer is rejected by the recipient contract.
 /// @param recipient The recipient contract.

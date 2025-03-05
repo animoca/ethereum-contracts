@@ -66,7 +66,9 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
     });
 
     it('reverts with an amount above the contract balance', async function () {
-      await expect(this.contract.recoverETH([deployer.address], ['1001'])).to.be.revertedWith('Address: insufficient balance');
+      await expect(this.contract.recoverETH([deployer.address], ['1001']))
+        .to.be.revertedWithCustomError(this.contract, 'InsufficientBalance')
+        .withArgs(1000, 1001);
     });
 
     context('when successful', function () {
@@ -93,7 +95,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       await expect(this.contract.recoverERC20s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
       await expect(this.contract.recoverERC20s([], [this.erc20.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
       await expect(this.contract.recoverERC20s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
@@ -127,9 +129,15 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       await expect(this.contract.recoverERC721s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
       await expect(this.contract.recoverERC721s([], [this.erc721.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
       await expect(this.contract.recoverERC721s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+    });
+
+    it('reverts when recovering from a non-ERC721 contract', async function () {
+      await expect(this.contract.recoverERC721s([deployer.address], [this.erc20.getAddress()], [1]))
+        .to.be.revertedWithCustomError(this.contract, 'IncorrectTokenContractType')
+        .withArgs(await this.erc20.getAddress());
     });
 
     context('when successful', function () {

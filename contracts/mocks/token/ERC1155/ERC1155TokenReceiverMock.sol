@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 
 import {IERC1155TokenReceiver} from "./../../../token/ERC1155/interfaces/IERC1155TokenReceiver.sol";
 import {ERC1155Storage} from "./../../../token/ERC1155/libraries/ERC1155Storage.sol";

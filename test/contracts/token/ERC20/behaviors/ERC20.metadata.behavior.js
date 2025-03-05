@@ -29,6 +29,7 @@ function behavesLikeERC20Metadata(implementation) {
           account: other.address,
         });
       });
+
       it('sets the token URI', async function () {
         await this.token.setTokenURI(tokenURI);
         expect(await this.token.tokenURI()).to.equal(tokenURI);

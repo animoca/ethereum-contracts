@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.22;
+pragma solidity 0.8.28;
 
 contract FacetMock {
     event FacetFunctionCalled();
@@ -11,7 +11,7 @@ contract FacetMock {
     }
 
     function revertsWithoutMessage() external pure {
-        // solhint-disable-next-line custom-errors, reason-string
+        // solhint-disable-next-line gas-custom-errors, reason-string
         revert();
     }
 
