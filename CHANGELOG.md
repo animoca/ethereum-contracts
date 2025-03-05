@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.1.0
+
+### New features
+
+- Moved the core logic of `TokenRecoveryBase` in new `TokenRecoveryLibrary` so it can be used with different access controls.
+- Added `ITokenRecovery` interface.
+
 ## 4.0.0
 
 ### Breaking changes
