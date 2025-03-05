@@ -1,0 +1,22 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "TokenRecoveryLibrary",
+  "sourceName": "contracts/security/libraries/TokenRecoveryLibrary.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        }
+      ],
+      "name": "IncorrectTokenContractType",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122073a196a48acfc8b3adcc1f6f40ef3b8fe05efbdb644ee31d2c5bb7f32d55a06b64736f6c634300081c0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122073a196a48acfc8b3adcc1f6f40ef3b8fe05efbdb644ee31d2c5bb7f32d55a06b64736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
