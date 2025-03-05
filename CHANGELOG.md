@@ -6,7 +6,7 @@
 
 - Updated `ForwarderRegistry` so that forwarder approvals are set per meta-tx target contract instead of globally.
 - Replaced `ForwarderRegistry`.`removeForwarderApproval` function with `ForwarderRegistry`.`setForwarderApproval`.
-- Upgraded to `solc@0.8.25`.
+- Upgraded to `solc@0.8.28`.
 - Upgraded to `openzeppelin/contracts@5.2.0`.
 - Upgraded to new Node version.
 
