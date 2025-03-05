@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.1
+
+### Bugfixes
+
+- ERC20 test bugfix.
+
 ## 4.1.0
 
 ### New features
