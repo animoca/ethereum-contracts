@@ -33,10 +33,10 @@ const config = {
 };
 
 runBehaviorTests('PayoutWallet', config, function (deployFn) {
-  let deployer, other, payoutWallet;
+  let other, payoutWallet;
 
   before(async function () {
-    [deployer, other, payoutWallet] = await ethers.getSigners();
+    [_, other, payoutWallet] = await ethers.getSigners();
   });
 
   const fixture = async function () {

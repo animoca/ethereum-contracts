@@ -8,6 +8,7 @@
 - Replaced `ForwarderRegistry`.`removeForwarderApproval` function with `ForwarderRegistry`.`setForwarderApproval`.
 - Upgraded to `solc@0.8.25`.
 - Upgraded to `openzeppelin/contracts@5.0.2`.
+- Upgraded to new Node version.
 
 ### New features
 

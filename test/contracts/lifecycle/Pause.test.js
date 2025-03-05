@@ -33,10 +33,10 @@ const config = {
 };
 
 runBehaviorTests('Pause', config, function (deployFn) {
-  let deployer, other;
+  let other;
 
   before(async function () {
-    [deployer, other] = await ethers.getSigners();
+    [_, other] = await ethers.getSigners();
   });
 
   const fixturePaused = async function () {

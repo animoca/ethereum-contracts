@@ -124,11 +124,11 @@ describe('Meta Transactions', function () {
           this.receiver.getAddress(),
           true,
           signature,
-          isEIP712Signature
+          isEIP712Signature,
         );
         await expect(this.forwarder.forward(this.signer, this.contract.getAddress(), relayerData)).to.be.revertedWithCustomError(
           this.contract,
-          this.errorMsg
+          this.errorMsg,
         );
       });
 
@@ -148,7 +148,7 @@ describe('Meta Transactions', function () {
             this.receiver.getAddress(),
             true,
             signature,
-            isEIP712Signature
+            isEIP712Signature,
           );
           this.receipt = await this.forwarder.forward(this.signer, this.contract.getAddress(), relayerData);
         });
@@ -178,6 +178,7 @@ describe('Meta Transactions', function () {
     describe('setForwarderApproval(address,address,address,bool,bytes,bool) DIRECT', function () {
       describeSetForwarderApproval(false);
     });
+
     describe('setForwarderApproval(address,address,address,bool,bytes,bool) ERC1271', function () {
       describeSetForwarderApproval(true);
     });
@@ -196,7 +197,7 @@ describe('Meta Transactions', function () {
         const {data: relayerData} = await this.contract.approveAndForward.populateTransaction(signature, 0, to, data);
         await expect(this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData)).to.be.revertedWithCustomError(
           this.contract,
-          'WrongSigner'
+          'WrongSigner',
         );
       });
 
@@ -248,7 +249,7 @@ describe('Meta Transactions', function () {
           other.sendTransaction({
             to: this.contract.getAddress(),
             data: relayerData + deployer.address.slice(2),
-          })
+          }),
         )
           .to.be.revertedWithCustomError(this.contract, 'ForwarderNotApproved')
           .withArgs(deployer.address, other.address, await this.receiver.getAddress());
@@ -270,7 +271,7 @@ describe('Meta Transactions', function () {
             this.receiver.getAddress(),
             true,
             signature,
-            false
+            false,
           );
           await this.forwarder.forward(ethers.ZeroAddress, this.contract.getAddress(), approvalData);
 
@@ -312,7 +313,7 @@ describe('Meta Transactions', function () {
           this.receiver.getAddress(),
           true,
           signature,
-          false
+          false,
         );
         this.receipt = await this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData);
 

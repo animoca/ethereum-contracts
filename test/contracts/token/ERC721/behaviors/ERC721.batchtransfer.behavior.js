@@ -125,7 +125,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
             await expectRevert(
               batchTransferFrom_ERC721(this.token, owner.address, ethers.ZeroAddress, [nft1], owner),
               this.token,
-              errors.TransferToAddressZero
+              errors.TransferToAddressZero,
             );
           });
 
@@ -136,7 +136,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
               errors.NonExistingToken,
               {
                 tokenId: unknownNFT,
-              }
+              },
             );
           });
 
@@ -156,7 +156,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
                 sender: other.address,
                 owner: owner.address,
                 tokenId: nft3,
-              }
+              },
             );
           });
 
@@ -169,7 +169,7 @@ function behavesLikeERC721BatchTransfer({deploy, mint, interfaces, errors, metho
                 sender: other.address,
                 owner: owner.address,
                 tokenId: nft1,
-              }
+              },
             );
           });
         });

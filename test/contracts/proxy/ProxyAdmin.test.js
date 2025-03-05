@@ -52,7 +52,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
 
       it('updates the admin (direct storage access)', async function () {
         expect(await getStorageAt(await this.contract.getAddress(), '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')).to.equal(
-          '0x000000000000000000000000' + deployer.address.slice(2).toLowerCase()
+          '0x000000000000000000000000' + deployer.address.slice(2).toLowerCase(),
         );
       });
 
@@ -68,6 +68,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
     beforeEach(async function () {
       await loadFixture(fixture, this);
     });
+
     describe('changeProxyAdmin(address)', function () {
       it('reverts if the caller is not the contract admin', async function () {
         await expect(this.contract.connect(other).changeProxyAdmin(other.address))
@@ -85,7 +86,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
           });
           it('unsets the admin (direct storage access)', async function () {
             expect(
-              await getStorageAt(await this.contract.getAddress(), '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')
+              await getStorageAt(await this.contract.getAddress(), '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103'),
             ).to.equal(ethers.ZeroHash);
           });
           it('emits an AdminChanged event', async function () {
@@ -104,7 +105,7 @@ runBehaviorTests('ProxyAdmin', config, function (deployFn) {
 
           it('updates the admin (direct storage access)', async function () {
             expect(
-              await getStorageAt(await this.contract.getAddress(), '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103')
+              await getStorageAt(await this.contract.getAddress(), '0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103'),
             ).to.equal('0x000000000000000000000000' + other.address.slice(2).toLowerCase());
           });
 

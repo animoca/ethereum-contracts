@@ -95,7 +95,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       await expect(this.contract.recoverERC20s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
       await expect(this.contract.recoverERC20s([], [this.erc20.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
       await expect(this.contract.recoverERC20s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });
@@ -129,7 +129,7 @@ runBehaviorTests('TokenRecovery', config, function (deployFn) {
       await expect(this.contract.recoverERC721s([deployer.address], [], [])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
       await expect(this.contract.recoverERC721s([], [this.erc721.getAddress()], [])).to.be.revertedWithCustomError(
         this.contract,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
       await expect(this.contract.recoverERC721s([], [], ['1'])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
     });

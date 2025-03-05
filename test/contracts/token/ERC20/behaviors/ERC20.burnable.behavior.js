@@ -102,7 +102,7 @@ function behavesLikeERC20Burnable(implementation) {
                 owner: owner.address,
                 balance: initialSupply,
                 value: initialSupply + 1n,
-              }
+              },
             );
           });
 
@@ -116,7 +116,7 @@ function behavesLikeERC20Burnable(implementation) {
                 spender: spender.address,
                 allowance: initialAllowance,
                 value: initialAllowance + 1n,
-              }
+              },
             );
           });
         });
@@ -201,7 +201,7 @@ function behavesLikeERC20Burnable(implementation) {
             await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [spender.address, spender.address], [1]),
               this.contract,
-              errors.InconsistentArrayLengths
+              errors.InconsistentArrayLengths,
             );
             await expectRevert(batchBurnFrom(this.contract.connect(spender), [], [1]), this.contract, errors.InconsistentArrayLengths);
           });
@@ -216,7 +216,7 @@ function behavesLikeERC20Burnable(implementation) {
                 spender: spender.address,
                 allowance: 0,
                 value: 1,
-              }
+              },
             );
             await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [owner.address, ethers.ZeroAddress], [1n, 1n]),
@@ -227,7 +227,7 @@ function behavesLikeERC20Burnable(implementation) {
                 spender: spender.address,
                 allowance: 0n,
                 value: 1n,
-              }
+              },
             );
           });
 
@@ -240,7 +240,7 @@ function behavesLikeERC20Burnable(implementation) {
                 owner: owner.address,
                 balance: initialSupply,
                 value: initialSupply + 1n,
-              }
+              },
             );
             await expectRevert(
               batchBurnFrom(this.contract.connect(maxSpender), [owner.address, owner.address], [initialSupply, 1n]),
@@ -250,7 +250,7 @@ function behavesLikeERC20Burnable(implementation) {
                 owner: owner.address,
                 balance: 0n,
                 value: 1n,
-              }
+              },
             );
           });
 
@@ -264,7 +264,7 @@ function behavesLikeERC20Burnable(implementation) {
                 spender: spender.address,
                 allowance: initialAllowance,
                 value: initialAllowance + 1n,
-              }
+              },
             );
             await expectRevert(
               batchBurnFrom(this.contract.connect(spender), [owner.address, owner.address], [initialAllowance, 1n]),
@@ -275,7 +275,7 @@ function behavesLikeERC20Burnable(implementation) {
                 spender: spender.address,
                 allowance: 0n,
                 value: 1n,
-              }
+              },
             );
           });
         });
@@ -308,7 +308,7 @@ function behavesLikeERC20Burnable(implementation) {
               } else {
                 it('decreases the spender allowance', async function () {
                   expect(await this.contract.allowance(accounts[fromIndex].address, accounts[senderIndex].address)).to.equal(
-                    this.fromAllowances[fromIndex] - aggregatedValues[fromIndex]
+                    this.fromAllowances[fromIndex] - aggregatedValues[fromIndex],
                   );
                 });
               }
@@ -320,7 +320,7 @@ function behavesLikeERC20Burnable(implementation) {
                     .withArgs(
                       accounts[fromIndex].address,
                       accounts[senderIndex].address,
-                      withEIP717 ? ethers.MaxUint256 : this.fromAllowances[fromIndex] - aggregatedValues[fromIndex]
+                      withEIP717 ? ethers.MaxUint256 : this.fromAllowances[fromIndex] - aggregatedValues[fromIndex],
                     );
                 });
               }
@@ -342,7 +342,7 @@ function behavesLikeERC20Burnable(implementation) {
             }
             this.receipt = await this.contract.connect(accounts[senderIndex]).batchBurnFrom(
               ownerIndexes.map((fromIndex) => accounts[fromIndex].address),
-              values
+              values,
             );
           });
           burnWasSuccessful(ownerIndexes, values, senderIndex, withEIP717);

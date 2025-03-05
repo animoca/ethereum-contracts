@@ -50,7 +50,7 @@ describe('TokenMetadataResolverPerToken', function () {
     it('reverts when tokenIds and tokenURIs arrays have different length', async function () {
       await expect(this.resolver.batchSetTokenURI(this.token.getAddress(), [1, 2], ['uri1'])).to.be.revertedWithCustomError(
         this.resolver,
-        'InconsistentArrayLengths'
+        'InconsistentArrayLengths',
       );
     });
 

@@ -112,7 +112,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
         if (tokens.length != 0) {
           if (selfTransfer) {
             it('does not affect the from balance(s)', async function () {
-              for (const [id, _value] of tokens) {
+              for (const [id] of tokens) {
                 let balance;
                 if (id == token1.id) {
                   balance = token1.supply;
@@ -235,11 +235,12 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
       const revertsOnPreconditions = function (transferFunction, isBatch) {
         describe('Pre-conditions', function () {
           const data = '0x42';
+
           it('reverts if transferred to the zero address', async function () {
             await expectRevert(
               transferFunction.call(this, owner.address, ethers.ZeroAddress, token1.id, 1n, data, owner),
               this.token,
-              errors.TransferToAddressZero
+              errors.TransferToAddressZero,
             );
           });
 
@@ -251,7 +252,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
               {
                 sender: other.address,
                 owner: owner.address,
-              }
+              },
             );
             await expectRevert(
               transferFunction.call(this, owner.address, other.address, token1.id, 1n, data, other),
@@ -260,7 +261,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
               {
                 sender: other.address,
                 owner: owner.address,
-              }
+              },
             );
           });
 
@@ -275,7 +276,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
                 id: token1.id,
                 balance: ethers.MaxUint256,
                 value: 1n,
-              }
+              },
             );
           });
 
@@ -289,7 +290,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
                 id: token1.id,
                 balance: 0n,
                 value: 1n,
-              }
+              },
             );
           });
 
@@ -307,7 +308,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
                   recipient: await this.refusingReceiver1155.getAddress(),
                   ids: [token1.id],
                   values: [1n],
-                }
+                },
               );
             } else {
               await expectRevert(
@@ -318,7 +319,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
                   recipient: await this.refusingReceiver1155.getAddress(),
                   id: token1.id,
                   value: 1n,
-                }
+                },
               );
             }
           });
@@ -359,7 +360,7 @@ function behavesLikeERC1155Standard({errors, deploy, mint}, operatorFilterRegist
           await expectRevert(
             transferFn.call(this, owner.address, other.address, [], [1], '0x42', owner),
             this.token,
-            errors.InconsistentArrayLengths
+            errors.InconsistentArrayLengths,
           );
         });
 

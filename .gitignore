@@ -29,7 +29,7 @@ artifacts/*
 !artifacts/build-info/
 
 # solidity-coverage
-coverage/
+coverage*/
 coverage.json
 *.coverage/
 

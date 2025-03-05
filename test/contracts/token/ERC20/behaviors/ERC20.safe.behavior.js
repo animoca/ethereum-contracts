@@ -5,7 +5,6 @@ const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtu
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 const {getForwarderRegistryAddress} = require('../../../../helpers/registries');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
-const exp = require('constants');
 
 function behavesLikeERC20Safe(implementation) {
   const {features, errors, deploy} = implementation;
@@ -66,7 +65,7 @@ function behavesLikeERC20Safe(implementation) {
         it('reverts when sent to a receiver contract receiving another token', async function () {
           await expect(this.contract.safeTransfer(this.wrongTokenReceiver.getAddress(), 1n, data)).to.be.revertedWithCustomError(
             this.wrongTokenReceiver,
-            'WrongToken'
+            'WrongToken',
           );
         });
       });
@@ -153,7 +152,7 @@ function behavesLikeERC20Safe(implementation) {
               spender: spender.address,
               allowance: 0n,
               value: 1n,
-            }
+            },
           );
         });
 
@@ -164,7 +163,7 @@ function behavesLikeERC20Safe(implementation) {
             errors.TransferToAddressZero,
             {
               owner: owner.address,
-            }
+            },
           );
         });
 
@@ -178,7 +177,7 @@ function behavesLikeERC20Safe(implementation) {
               owner: owner.address,
               balance: initialSupply,
               value: initialSupply + 1n,
-            }
+            },
           );
         });
 
@@ -192,7 +191,7 @@ function behavesLikeERC20Safe(implementation) {
               spender: spender.address,
               allowance: initialAllowance,
               value: initialAllowance + 1n,
-            }
+            },
           );
         });
 
@@ -207,13 +206,13 @@ function behavesLikeERC20Safe(implementation) {
             errors.SafeTransferRejected,
             {
               recipient: await this.refusingReceiver.getAddress(),
-            }
+            },
           );
         });
 
         it('reverts when sent to a receiver contract receiving another token', async function () {
           await expect(
-            this.contract.connect(spender).safeTransferFrom(owner.address, this.wrongTokenReceiver.getAddress(), 1n, data)
+            this.contract.connect(spender).safeTransferFrom(owner.address, this.wrongTokenReceiver.getAddress(), 1n, data),
           ).to.be.revertedWithCustomError(this.wrongTokenReceiver, 'WrongToken');
         });
 

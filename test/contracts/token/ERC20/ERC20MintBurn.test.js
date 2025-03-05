@@ -1,4 +1,3 @@
-const {ethers} = require('hardhat');
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {getDeployerAddress} = require('@animoca/ethereum-contract-helpers/src/test/accounts');
 const {getForwarderRegistryAddress} = require('../../../helpers/registries');
@@ -182,12 +181,6 @@ runBehaviorTests('ERC20MintBurn', config, function (deployFn) {
       return contract;
     },
   };
-
-  let deployer;
-
-  before(async function () {
-    [deployer] = await ethers.getSigners();
-  });
 
   behavesLikeERC20(implementation);
 });

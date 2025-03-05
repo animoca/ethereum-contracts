@@ -73,7 +73,7 @@ runBehaviorTests('ERC677', config, function (deployFn) {
       ERC20Safe: true,
       ERC20Permit: true,
     },
-    deploy: async function (initialHolders, initialBalances, deployer) {
+    deploy: async function (initialHolders, initialBalances, _deployer) {
       const contract = await deployFn({name, symbol, decimals, initialHolders, initialBalances});
       return contract;
     },

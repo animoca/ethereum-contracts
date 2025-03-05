@@ -4,23 +4,15 @@ const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/reve
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC1155Burnable({errors, interfaces, methods, features, deploy, mint}) {
-  let accounts, deployer, owner, approved, operator, other;
+function behavesLikeERC1155Burnable({errors, interfaces, methods, deploy, mint}) {
+  let accounts, deployer, owner, operator, other;
 
   before(async function () {
     accounts = await ethers.getSigners();
-    [deployer, owner, approved, operator, other] = accounts;
+    [deployer, owner, operator, other] = accounts;
   });
 
-  const {
-    'burnFrom(address,uint256,uint256)': burnFrom,
-    'batchBurnFrom(address,uint256[],uint256[])': batchBurnFrom,
-    'safeMint(address,uint256,uint256,bytes)': safeMint,
-    'safeBatchMint(address,uint256[],uint256[],bytes)': safeBatchMint,
-    'mint(address,uint256)': mint_ERC721,
-    'batchMint(address,uint256[])': batchMint_ERC721,
-    'safeMint(address,uint256,bytes)': safeMint_ERC721,
-  } = methods || {};
+  const {'burnFrom(address,uint256,uint256)': burnFrom, 'batchBurnFrom(address,uint256[],uint256[])': batchBurnFrom} = methods || {};
 
   describe('like a burnable ERC1155Inventory', function () {
     const token1 = {id: 1n, supply: 10n};

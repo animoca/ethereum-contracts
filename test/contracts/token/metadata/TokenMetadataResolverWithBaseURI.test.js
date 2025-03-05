@@ -5,10 +5,10 @@ const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtu
 const {getForwarderRegistryAddress} = require('../../../helpers/registries');
 
 describe('TokenMetadataResolverPerToken', function () {
-  let deployer, other;
+  let other;
 
   before(async function () {
-    [deployer, other] = await ethers.getSigners();
+    [_, other] = await ethers.getSigners();
   });
 
   const fixture = async function () {

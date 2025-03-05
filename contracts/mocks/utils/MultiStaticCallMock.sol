@@ -31,7 +31,7 @@ contract MultiStaticCallMock is MultiStaticCall {
     }
 
     function revertingCallWithoutMessage() public pure {
-        // solhint-disable-next-line custom-errors, reason-string
+        // solhint-disable-next-line gas-custom-errors, reason-string
         revert();
     }
 }

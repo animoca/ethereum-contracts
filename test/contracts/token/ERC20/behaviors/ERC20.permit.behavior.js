@@ -53,12 +53,12 @@ function behavesLikeERC20Permit(implementation) {
             value: 1,
             nonce: nonce + 1n, // invalid nonce
             deadline: ethers.MaxUint256,
-          })
+          }),
         );
         await expectRevert(
           this.contract.permit(owner.address, spender.address, nonce, ethers.MaxUint256, signature.v, signature.r, signature.s),
           this.contract,
-          errors.PermitInvalid
+          errors.PermitInvalid,
         );
       });
 
@@ -70,12 +70,12 @@ function behavesLikeERC20Permit(implementation) {
             value: 1,
             nonce: await this.contract.nonces(owner.address),
             deadline: 0,
-          })
+          }),
         );
         await expectRevert(
           this.contract.permit(ethers.ZeroAddress, spender.address, 1, 0, signature.v, signature.r, signature.s),
           this.contract,
-          errors.PermitFromAddressZero
+          errors.PermitFromAddressZero,
         );
       });
 
@@ -87,7 +87,7 @@ function behavesLikeERC20Permit(implementation) {
             value: 1,
             nonce: await this.contract.nonces(owner.address),
             deadline: 0,
-          })
+          }),
         );
         await expectRevert(
           this.contract.permit(owner.address, spender.address, 1, 0, signature.v, signature.r, signature.s),
@@ -95,7 +95,7 @@ function behavesLikeERC20Permit(implementation) {
           errors.PermitExpired,
           {
             deadline: 0,
-          }
+          },
         );
       });
 
@@ -112,7 +112,7 @@ function behavesLikeERC20Permit(implementation) {
               value: 1,
               nonce: await this.nonce,
               deadline: noDeadline,
-            })
+            }),
           );
         });
 
@@ -125,7 +125,7 @@ function behavesLikeERC20Permit(implementation) {
               deadline,
               this.signature.v,
               this.signature.r,
-              this.signature.s
+              this.signature.s,
             );
           });
 

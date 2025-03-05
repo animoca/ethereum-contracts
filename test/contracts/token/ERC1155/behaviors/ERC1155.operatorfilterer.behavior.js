@@ -5,11 +5,11 @@ const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtu
 const {deployContract} = require('@animoca/ethereum-contract-helpers/src/test/deploy');
 
 function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
-  let accounts, deployer, owner, approved, operator, other;
+  let accounts, deployer, owner, operator, other;
 
   before(async function () {
     accounts = await ethers.getSigners();
-    [deployer, owner, approved, operator, other] = accounts;
+    [deployer, owner, operator, other] = accounts;
   });
 
   const token1 = {id: 1n, supply: 10n};
@@ -61,6 +61,7 @@ function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
       const revertsOnPreconditions = function (transferFunction) {
         describe('Pre-conditions', function () {
           const data = '0x42';
+
           it('reverts if sent by an operator', async function () {
             await expectRevert(
               transferFunction.call(this, owner.address, other.address, token1.id, 1, data, operator),
@@ -68,7 +69,7 @@ function behavesLikeERC1155WithOperatorFilterer({errors, deploy, mint}) {
               errors.OperatorNotAllowed,
               {
                 operator: operator.address,
-              }
+              },
             );
           });
         });

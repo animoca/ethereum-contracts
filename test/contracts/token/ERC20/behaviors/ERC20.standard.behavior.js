@@ -186,7 +186,7 @@ function behavesLikeERC20Standard(implementation) {
             this.contract.connect(spender).transferFrom(ethers.ZeroAddress, recipient.address, 1),
             this.contract,
             errors.TransferExceedsAllowance,
-            {owner: ethers.ZeroAddress, spender: spender.address, allowance: 0, value: 1}
+            {owner: ethers.ZeroAddress, spender: spender.address, allowance: 0, value: 1},
           );
         });
 
@@ -195,7 +195,7 @@ function behavesLikeERC20Standard(implementation) {
             this.contract.connect(spender).transferFrom(owner.address, ethers.ZeroAddress, 1),
             this.contract,
             errors.TransferToAddressZero,
-            {owner: owner.address}
+            {owner: owner.address},
           );
         });
 
@@ -206,7 +206,7 @@ function behavesLikeERC20Standard(implementation) {
             this.contract.connect(spender).transferFrom(owner.address, recipient.address, value),
             this.contract,
             errors.TransferExceedsBalance,
-            {owner: owner.address, balance: initialSupply, value}
+            {owner: owner.address, balance: initialSupply, value},
           );
         });
 
@@ -216,7 +216,7 @@ function behavesLikeERC20Standard(implementation) {
             this.contract.connect(spender).transferFrom(owner.address, recipient.address, value),
             this.contract,
             errors.TransferExceedsAllowance,
-            {owner: owner.address, spender: spender.address, allowance: initialAllowance, value}
+            {owner: owner.address, spender: spender.address, allowance: initialAllowance, value},
           );
         });
       });

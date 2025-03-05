@@ -43,7 +43,7 @@ describe('MultiStaticCall', function () {
       it('reverts if one of the calls reverts with a message', async function () {
         await expect(this.contract.tryAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWithCustomError(
           this.contract,
-          'Reverted'
+          'Reverted',
         );
       });
 
@@ -64,7 +64,7 @@ describe('MultiStaticCall', function () {
               this.getEthBalance,
             ])
           ).returnData,
-          ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256']
+          ['uint256', 'address', 'uint256', 'uint256', 'uint256', 'uint256'],
         );
 
         expect(result[0].success).to.be.true;
@@ -95,7 +95,7 @@ describe('MultiStaticCall', function () {
               this.revertingCallWithoutMessage,
             ])
           ).returnData,
-          ['uint256', 'address', 'uint256', 'uint256', 'uint256', '', '']
+          ['uint256', 'address', 'uint256', 'uint256', 'uint256', '', ''],
         );
 
         expect(result[0].success).to.be.true;
@@ -119,7 +119,7 @@ describe('MultiStaticCall', function () {
       it('reverts if one of the calls reverts with a message', async function () {
         await expect(this.contract.tryBlockAndAggregate(true, [this.getBlockNumber, this.revertingCall])).to.be.revertedWithCustomError(
           this.contract,
-          'Reverted'
+          'Reverted',
         );
       });
 

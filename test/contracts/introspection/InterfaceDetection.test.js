@@ -1,4 +1,3 @@
-const {ethers} = require('hardhat');
 const {expect} = require('chai');
 const {runBehaviorTests} = require('@animoca/ethereum-contract-helpers/src/test/run');
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
@@ -12,12 +11,6 @@ const config = {
 };
 
 runBehaviorTests('InterfaceDetection', config, function (deployFn) {
-  let deployer;
-
-  before(async function () {
-    [deployer] = await ethers.getSigners();
-  });
-
   const fixture = async function () {
     this.contract = await deployFn();
   };
