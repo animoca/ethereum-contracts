@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.28;
 
 /// @title ERC-173 Contract Ownership Standard with safe ownership transfer (functions)
 /// @dev See https://eips.ethereum.org/EIPS/eip-173

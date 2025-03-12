@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.1.2
+
+### Bugfixes
+
+- Use `solc@0.8.28` for non-deployable solidity code.
+
 ## 4.1.1
 
 ### Bugfixes

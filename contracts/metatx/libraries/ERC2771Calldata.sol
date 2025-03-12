@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.28;
 
 /// @dev Derived from https://github.com/OpenZeppelin/openzeppelin-contracts (MIT licence)
 /// @dev See https://eips.ethereum.org/EIPS/eip-2771
