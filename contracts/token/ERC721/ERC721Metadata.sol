@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.28;
 
 import {ITokenMetadataResolver} from "./../metadata/interfaces/ITokenMetadataResolver.sol";
 import {TokenMetadataStorage} from "./../metadata/libraries/TokenMetadataStorage.sol";

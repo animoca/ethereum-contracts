@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.28;
 
 import {ContractOwnershipStorage} from "./libraries/ContractOwnershipStorage.sol";
 import {ContractOwnershipBase} from "./base/ContractOwnershipBase.sol";

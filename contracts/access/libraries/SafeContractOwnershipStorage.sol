@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.28;
 
 import {NotContractOwner, NotPendingContractOwner, NotTargetContractOwner} from "./../errors/ContractOwnershipErrors.sol";
 import {TargetIsNotAContract} from "./../errors/Common.sol";
