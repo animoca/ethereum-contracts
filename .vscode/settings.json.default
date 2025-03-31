@@ -7,5 +7,8 @@
   "mochaExplorer.env": {
     "HARDHAT_CONFIG": "hardhat.config.js",
     "HARDHAT_COMPILE": "true"
+  },
+  "[solidity]": {
+    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   }
 }
