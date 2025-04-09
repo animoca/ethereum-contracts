@@ -17,7 +17,7 @@ abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
         STAKING_TOKEN = stakingToken;
     }
 
-    function onERC20Received(address, address from, uint256 value, bytes calldata) external override returns (bytes4) {
+    function onERC20Received(address, address from, uint256 value, bytes calldata) external virtual override returns (bytes4) {
         if (msg.sender != address(STAKING_TOKEN)) revert InvalidToken();
         bool requiresTransfer = false;
         _stake(from, abi.encode(requiresTransfer, abi.encode(value)));
