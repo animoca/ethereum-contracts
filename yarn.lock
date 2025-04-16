@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.1.tgz#63430d04bd8c5e74f8d7d049338f1cd9d4f02069"
   integrity sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==
 
-"@animoca/ethereum-contract-helpers@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@animoca/ethereum-contract-helpers/-/ethereum-contract-helpers-1.0.5.tgz#6b8bf225cd42b92daa8e22838d9606f870852804"
-  integrity sha512-5w0pwh1MDTvveHKcg7d2esTzthCaSCunvUcjdoEbx0g0zODVodX3OVi84vz9faUrKVvw1ZL1kcoiR7pUiktYZA==
+"@animoca/ethereum-contract-helpers@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@animoca/ethereum-contract-helpers/-/ethereum-contract-helpers-1.0.6.tgz#794284b73e885a4e3eaf5446c90e98c8a735f7f8"
+  integrity sha512-jmCeAoJ1i2IFWQ3bmgixa9oYzJgLDHXlWwuOw2yr8pyahaa9IHjYX9SN502QzlOSdToysweZZf+/56ZpMuHLhA==
   dependencies:
     cross-env "^7.0.3"
     fs-extra "^11.3.0"

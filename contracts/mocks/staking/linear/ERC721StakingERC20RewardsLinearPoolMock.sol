@@ -41,4 +41,8 @@ contract ERC721StakingERC20RewardsLinearPoolMock is ERC721StakingLinearPool, Lin
     function _msgData() internal view virtual override(Context, LinearPool) returns (bytes calldata) {
         return LinearPool._msgData();
     }
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
+    }
 }

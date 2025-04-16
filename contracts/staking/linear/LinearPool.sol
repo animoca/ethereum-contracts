@@ -9,11 +9,12 @@ import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistr
 import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ILinearPool} from "./interfaces/ILinearPool.sol";
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 
 // design inspired from https://github.com/k06a/Unipool/blob/master/contracts/Unipool.sol
 
-abstract contract LinearPool is AccessControl, ReentrancyGuard, ForwarderRegistryContext {
+abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, ForwarderRegistryContext {
     using AccessControlStorage for AccessControlStorage.Layout;
     using SafeERC20 for IERC20;
 
@@ -37,6 +38,7 @@ abstract contract LinearPool is AccessControl, ReentrancyGuard, ForwarderRegistr
 
     error InvalidStakeAmount();
     error InvalidWithdrawAmount();
+    error NotEnoughStake(address staker, uint256 stake, uint256 withdraw);
     error InvalidRewardAmount();
     error InvalidDuration();
     error RewardTooSmallForDuration(uint256 reward, uint256 duration);
@@ -73,45 +75,50 @@ abstract contract LinearPool is AccessControl, ReentrancyGuard, ForwarderRegistr
     }
 
     function stake(bytes calldata stakeData) public payable virtual nonReentrant {
-        _stake(_msgSender(), abi.encode(stakeData));
+        _stake(_msgSender(), stakeData);
     }
 
-    function _stake(address sender, bytes memory stakeData) internal virtual {
-        _updateReward(sender);
-        uint256 stakePoints = _computeStake(sender, stakeData);
+    function _stake(address staker, bytes memory stakeData) internal virtual {
+        _updateReward(staker);
+        uint256 stakePoints = _computeStake(staker, stakeData);
         require(stakePoints != 0, InvalidStakeAmount());
         totalStaked += stakePoints;
-        staked[sender] += stakePoints;
-        emit Staked(sender, stakeData, stakePoints);
+        staked[staker] += stakePoints;
+        emit Staked(staker, stakeData, stakePoints);
     }
 
     function withdraw(bytes calldata withdrawData) public virtual nonReentrant {
         _withdraw(_msgSender(), withdrawData);
     }
 
-    function _withdraw(address sender, bytes memory withdrawData) internal virtual {
-        _updateReward(sender);
-        uint256 stakePoints = _computeWithdraw(sender, withdrawData);
+    function _withdraw(address staker, bytes memory withdrawData) internal virtual {
+        _updateReward(staker);
+        uint256 stakePoints = _computeWithdraw(staker, withdrawData);
         require(stakePoints != 0, InvalidWithdrawAmount());
-        totalStaked -= stakePoints;
-        staked[sender] -= stakePoints;
-        emit Withdrawn(sender, withdrawData, stakePoints);
+        uint256 currentStaked = staked[staker];
+        require(currentStaked >= stakePoints, NotEnoughStake(staker, currentStaked, stakePoints));
+        unchecked {
+            // no underflow possible
+            staked[staker] -= stakePoints;
+            totalStaked = currentStaked - stakePoints;
+        }
+        emit Withdrawn(staker, withdrawData, stakePoints);
     }
 
     function claim() public virtual {
-        address sender = _msgSender();
-        _updateReward(sender);
-        uint256 reward = earned(sender);
+        address staker = _msgSender();
+        _updateReward(staker);
+        uint256 reward = earned(staker);
         if (reward != 0) {
-            rewards[sender] = 0;
-            bytes memory claimData = _computeClaim(sender, reward);
-            emit Claimed(sender, claimData, reward);
+            rewards[staker] = 0;
+            bytes memory claimData = _computeClaim(staker, reward);
+            emit Claimed(staker, claimData, reward);
         }
     }
 
     function addReward(uint256 reward, uint256 duration) public payable virtual {
-        address sender = _msgSender();
-        AccessControlStorage.layout().enforceHasRole(REWARDER_ROLE, sender);
+        address rewarder = _msgSender();
+        AccessControlStorage.layout().enforceHasRole(REWARDER_ROLE, rewarder);
 
         require(reward != 0, InvalidRewardAmount());
         require(duration != 0, InvalidDuration());
@@ -149,9 +156,9 @@ abstract contract LinearPool is AccessControl, ReentrancyGuard, ForwarderRegistr
         }
         lastUpdated = block.timestamp;
 
-        _computeAddReward(sender, reward, dust);
+        _computeAddReward(rewarder, reward, dust);
 
-        emit RewardAdded(sender, reward, duration, dust);
+        emit RewardAdded(rewarder, reward, duration, dust);
     }
 
     function _computeStake(address sender, bytes memory stakeData) internal virtual returns (uint256 stakePoints);

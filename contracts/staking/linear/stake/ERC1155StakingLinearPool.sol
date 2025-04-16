@@ -60,7 +60,7 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
         (bool requiresTransfer, bytes memory data) = abi.decode(stakeData, (bool, bytes));
         bool batch = abi.decode(data, (bool));
         if (batch) {
-            (, uint256[] memory ids, uint256[] memory amounts) = abi.decode(stakeData, (bool, uint256[], uint256[]));
+            (, uint256[] memory ids, uint256[] memory amounts) = abi.decode(data, (bool, uint256[], uint256[]));
             uint256 count = ids.length;
             require(count == amounts.length, InconsistentArrayLengths());
             for (uint256 i; i != count; ++i) {
@@ -73,7 +73,7 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
                 STAKING_TOKEN.safeBatchTransferFrom(staker, address(this), ids, amounts, "");
             }
         } else {
-            (, uint256 id, uint256 amount) = abi.decode(stakeData, (bool, uint256, uint256));
+            (, uint256 id, uint256 amount) = abi.decode(data, (bool, uint256, uint256));
             balances[staker][id] += amount;
             stakePoints = _tokenValue(id, amount);
             if (requiresTransfer) {

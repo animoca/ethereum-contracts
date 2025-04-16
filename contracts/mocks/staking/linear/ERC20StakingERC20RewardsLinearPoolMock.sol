@@ -36,4 +36,8 @@ contract ERC20StakingERC20RewardsLinearPoolMock is ERC20StakingLinearPool, Linea
     function _msgData() internal view virtual override(Context, LinearPool) returns (bytes calldata) {
         return LinearPool._msgData();
     }
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
+    }
 }

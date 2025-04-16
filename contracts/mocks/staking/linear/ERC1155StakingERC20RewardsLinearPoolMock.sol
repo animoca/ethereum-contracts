@@ -9,7 +9,7 @@ import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC1155} from "./../../../token/ERC1155/interfaces/IERC1155.sol";
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 
-contract ERC1155StakingERC20RewardsLinearPool is ERC1155StakingLinearPool, LinearPool_ERC20Rewards {
+contract ERC1155StakingERC20RewardsLinearPoolMock is ERC1155StakingLinearPool, LinearPool_ERC20Rewards {
     constructor(
         IERC1155 stakingToken,
         IERC20 rewardToken,
@@ -40,5 +40,9 @@ contract ERC1155StakingERC20RewardsLinearPool is ERC1155StakingLinearPool, Linea
     /// @inheritdoc LinearPool
     function _msgData() internal view virtual override(Context, LinearPool) returns (bytes calldata) {
         return LinearPool._msgData();
+    }
+
+    function __msgData() external view returns (bytes calldata) {
+        return _msgData();
     }
 }

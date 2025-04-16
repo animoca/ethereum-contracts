@@ -42,9 +42,8 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
                 uint256 tokenId = tokenIds[i];
                 tokenOwners[tokenId] = staker;
                 stakePoints += _tokenValue(tokenId);
-                if (requiresTransfer) {
-                    STAKING_TOKEN.transferFrom(staker, address(this), tokenId);
-                }
+                // batch case always requires transfer
+                STAKING_TOKEN.transferFrom(staker, address(this), tokenId);
             }
         } else {
             (, uint256 tokenId) = abi.decode(data, (bool, uint256));
