@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.0
+
+### New features
+
+- Added linear reward pool staking contracts.
+
 ## 4.1.3
 
 ### Bugfixes
