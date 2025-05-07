@@ -258,6 +258,56 @@ describe('ERC721StakingLinearPool', function () {
     });
   });
 
+  describe('recoverERC721s(address[],IERC721[],uint256[])', function () {
+    it('reverts with inconsistent array lengths', async function () {
+      await expect(this.contract.recoverERC721s([], [], [1n])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+    });
+
+    it('reverts if not called by the contract owner', async function () {
+      await expect(this.contract.connect(alice).recoverERC721s([], [], []))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(alice.address);
+    });
+
+    it('reverts if trying to recover staking tokens which were staked', async function () {
+      const tokenId = 1n;
+      const stakeData = ethers.AbiCoder.defaultAbiCoder().encode(['bool', 'uint256'], [false, tokenId]);
+      await this.contract.connect(alice).stake(stakeData);
+      await expect(this.contract.recoverERC721s([alice.address], [await this.stakingToken.getAddress()], [tokenId]))
+        .to.be.revertedWithCustomError(this.contract, 'InvalidRecoveryToken')
+        .withArgs(tokenId);
+    });
+
+    context('when successful', function () {
+      const tokenId = 1n;
+      let otherToken;
+
+      beforeEach(async function () {
+        otherToken = await deployContract('ERC721Full', '', '', ethers.ZeroAddress, ethers.ZeroAddress, await getForwarderRegistryAddress());
+        await otherToken.grantRole(await otherToken.MINTER_ROLE(), deployer.address);
+        await otherToken.batchMint(alice.address, [tokenId]);
+
+        await this.stakingToken.connect(alice).transferFrom(alice.address, await this.contract.getAddress(), tokenId);
+        await otherToken.connect(alice).transferFrom(alice.address, await this.contract.getAddress(), tokenId);
+        this.receipt = await this.contract.recoverERC721s(
+          [alice.address, alice.address],
+          [await this.stakingToken.getAddress(), await otherToken.getAddress()],
+          [tokenId, tokenId],
+        );
+      });
+
+      it('recovers the token', async function () {
+        await expect(this.receipt)
+          .to.emit(this.stakingToken, 'Transfer')
+          .withArgs(await this.contract.getAddress(), alice.address, tokenId);
+
+        await expect(this.receipt)
+          .to.emit(otherToken, 'Transfer')
+          .withArgs(await this.contract.getAddress(), alice.address, tokenId);
+      });
+    });
+  });
+
   describe('__msgData()', function () {
     it('returns the msg.data', async function () {
       await this.contract.__msgData();
