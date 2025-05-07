@@ -22,6 +22,10 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
         emit RewardHolderSet(rewardHolder_);
     }
 
+    /// @notice Sets the reward holder address.
+    /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
+    /// @param rewardHolder_ The address of the reward holder.
+    /// @dev Emits a {RewardHolderSet} event if the reward holder address is changed.
     function setRewardHolder(address rewardHolder_) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         if (rewardHolder_ != rewardHolder) {
@@ -30,10 +34,12 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
         }
     }
 
+    /// @notice Computes the claim data for a staker.
     function _computeClaim(address staker, uint256 reward) internal virtual returns (bytes memory claimData) {
         claimData = abi.encode(reward);
         REWARD_TOKEN.safeTransferFrom(rewardHolder, staker, reward);
     }
 
+    /// @notice Computes the reward for a staker.
     function _computeAddReward(address rewarder, uint256 reward, uint256 dust) internal virtual {}
 }

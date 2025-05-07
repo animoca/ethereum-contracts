@@ -19,11 +19,13 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
         STAKING_TOKEN = stakingToken;
     }
 
-    function stake(bytes calldata stakeData) public payable virtual override {
-        bool requiresTransfer = true;
-        _stake(_msgSender(), abi.encode(requiresTransfer, stakeData));
-    }
-
+    /// @notice Callback called when the contract receives ERC1155 tokens via the IERC1155Receiver functions.
+    /// @param operator The address of the operator.
+    /// @param from The address of the sender.
+    /// @param id The id of the token received.
+    /// @param amount The amount of tokens received.
+    /// @return bytes4 The function selector of the callback.
+    /// @dev Reverts with {InvalidToken} if this function is not called by this contract and the sender is not the staking token.
     function onERC1155Received(
         address operator,
         address from,
@@ -40,6 +42,13 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
         return this.onERC1155Received.selector;
     }
 
+    /// @notice Callback called when the contract receives ERC1155 tokens via the IERC1155Receiver functions.
+    /// @param operator The address of the operator.
+    /// @param from The address of the sender.
+    /// @param ids The ids of the tokens received.
+    /// @param amounts The amounts of tokens received.
+    /// @return bytes4 The function selector of the callback.
+    /// @dev Reverts with {InvalidToken} if this function is not called by this contract and the sender is not the staking token.
     function onERC1155BatchReceived(
         address operator,
         address from,
@@ -56,6 +65,20 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
         return this.onERC1155BatchReceived.selector;
     }
 
+    /// @inheritdoc LinearPool
+    /// @param stakeData The data to be used for staking, encoded as
+    ///   (bool batch, uint256 tokenId, uint256 amount) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds, uint256[] amounts) where batch is true.
+    function stake(bytes calldata stakeData) public payable virtual override {
+        bool requiresTransfer = true;
+        _stake(_msgSender(), abi.encode(requiresTransfer, stakeData));
+    }
+
+    /// @inheritdoc LinearPool
+    /// @param stakeData The data to be used for staking, encoded as (bool requiresTransfer, bytes stakeData) where stakeData is
+    ///   (bool batch, uint256 tokenId, uint256 amount) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds, uint256[] amounts) where batch is true.
+    /// @dev Reverts with {InconsistentArrayLengths} if the lengths of the ids and amounts arrays are not equal.
     function _computeStake(address staker, bytes memory stakeData) internal virtual override returns (uint256 stakePoints) {
         (bool requiresTransfer, bytes memory data) = abi.decode(stakeData, (bool, bytes));
         bool batch = abi.decode(data, (bool));
@@ -82,6 +105,12 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
         }
     }
 
+    /// @inheritdoc LinearPool
+    /// @param withdrawData The data to be used for withdrawing, encoded as
+    ///   (bool batch, uint256 tokenId, uint256 amount) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds, uint256[] amounts) where batch is true.
+    /// @dev Reverts with {InconsistentArrayLengths} if the lengths of the ids and amounts arrays are not equal.
+    /// @dev Reverts with {NotEnoughBalance} if the staker does not have enough balance for the given id and amount.
     function _computeWithdraw(address staker, bytes memory withdrawData) internal virtual override returns (uint256 stakePoints) {
         bool batch = abi.decode(withdrawData, (bool));
         if (batch) {

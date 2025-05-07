@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.1
+
+### Improvements
+
+- Added `TokenRecovery` to linear staking contracts.
+- Added inline documentation to linear staking contracts.
+
 ## 4.2.0
 
 ### New features

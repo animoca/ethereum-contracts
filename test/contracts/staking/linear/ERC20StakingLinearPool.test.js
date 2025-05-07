@@ -177,6 +177,55 @@ describe('ERC20StakingLinearPool', function () {
     });
   });
 
+  describe('recoverERC20s(address[],IERC20[],uint256[])', function () {
+    it('reverts with inconsistent array lengths', async function () {
+      await expect(this.contract.recoverERC20s([], [], [1n])).to.be.revertedWithCustomError(this.contract, 'InconsistentArrayLengths');
+    });
+
+    it('reverts if not called by the contract owner', async function () {
+      await expect(this.contract.connect(alice).recoverERC20s([], [], []))
+        .to.be.revertedWithCustomError(this.contract, 'NotContractOwner')
+        .withArgs(alice.address);
+    });
+
+    it('reverts if trying to recover staking tokens which were staked', async function () {
+      const amount = 100n;
+      const stakeData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
+      const recoveryAmount = 1n;
+      await this.contract.connect(alice).stake(stakeData);
+      await this.stakingToken.connect(alice).transfer(await this.contract.getAddress(), recoveryAmount);
+      await expect(this.contract.recoverERC20s([alice.address], [await this.stakingToken.getAddress()], [recoveryAmount + 1n]))
+        .to.be.revertedWithCustomError(this.contract, 'InvalidRecoveryAmount')
+        .withArgs(recoveryAmount + 1n, recoveryAmount);
+    });
+
+    context('when successful', function () {
+      const recoveryAmount = 2n;
+
+      beforeEach(async function () {
+        const amount = 100n;
+        const stakeData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
+        await this.contract.connect(alice).stake(stakeData);
+        await this.stakingToken.connect(alice).transfer(await this.contract.getAddress(), recoveryAmount);
+        this.receipt = await this.contract.recoverERC20s(
+          [alice.address, alice.address],
+          [await this.stakingToken.getAddress(), await this.rewardToken.getAddress()],
+          [recoveryAmount, 0n],
+        );
+      });
+
+      it('recovers the tokens', async function () {
+        await expect(this.receipt)
+          .to.emit(this.stakingToken, 'Transfer')
+          .withArgs(await this.contract.getAddress(), alice.address, recoveryAmount);
+
+        await expect(this.receipt)
+          .to.emit(this.rewardToken, 'Transfer')
+          .withArgs(await this.contract.getAddress(), alice.address, 0n);
+      });
+    });
+  });
+
   describe('__msgData()', function () {
     it('returns the msg.data', async function () {
       await this.contract.__msgData();
