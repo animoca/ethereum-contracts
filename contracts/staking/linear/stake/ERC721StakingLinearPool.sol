@@ -7,6 +7,8 @@ import {TokenRecoveryBase} from "./../../../security/base/TokenRecoveryBase.sol"
 import {IERC721} from "./../../../token/ERC721/interfaces/IERC721.sol";
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 
+/// @title ERC721StakingLinearPool
+/// @notice A linear pool that allows staking of ERC721 tokens.
 abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
     IERC721 public immutable STAKING_TOKEN;
 

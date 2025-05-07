@@ -5,6 +5,8 @@ import {ContractOwnership} from "./../../../access/ContractOwnership.sol";
 import {ContractOwnershipStorage} from "./../../../access/libraries/ContractOwnershipStorage.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+/// @title LinearPool_ERC20Rewards
+/// @notice A linear pool that allows for ERC20 rewards distribution.
 // solhint-disable-next-line contract-name-capwords
 abstract contract LinearPool_ERC20Rewards is ContractOwnership {
     using SafeERC20 for IERC20;

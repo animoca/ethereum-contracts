@@ -7,6 +7,8 @@ import {IERC1155} from "./../../../token/ERC1155/interfaces/IERC1155.sol";
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
 
+/// @title ERC1155StakingLinearPool
+/// @notice A linear pool that allows staking of ERC1155 tokens.
 abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
     IERC1155 public immutable STAKING_TOKEN;
 

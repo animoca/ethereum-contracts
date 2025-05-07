@@ -7,6 +7,8 @@ import {TokenRecoveryBase} from "./../../../security/base/TokenRecoveryBase.sol"
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistry.sol";
 
+/// @title ERC20StakingLinearPool
+/// @notice A linear pool that allows staking of ERC20 tokens.
 abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
     using SafeERC20 for IERC20;
 
