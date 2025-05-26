@@ -142,8 +142,8 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
         require(currentStaked >= stakePoints, NotEnoughStake(staker, currentStaked, stakePoints));
         unchecked {
             // no underflow possible
-            staked[staker] -= stakePoints;
-            totalStaked = currentStaked - stakePoints;
+            staked[staker] = currentStaked - stakePoints;
+            totalStaked -= stakePoints;
         }
         emit Withdrawn(staker, withdrawData, stakePoints);
     }
