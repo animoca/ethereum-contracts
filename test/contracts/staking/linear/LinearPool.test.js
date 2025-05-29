@@ -80,6 +80,11 @@ describe('LinearPool', function () {
         .withArgs(50, 150);
     });
 
+    it('reverts if new distribution ends after current distribution and rewards get diluted', async function () {
+      await this.contract.connect(rewarder).addReward(100, 10);
+      await expect(this.contract.connect(rewarder).addReward(15, 15)).to.be.revertedWithCustomError(this.contract, 'RewardDilution').withArgs(10, 7);
+    });
+
     context('when successful, no current distribution', function () {
       const reward = 101n;
       const duration = 10n;

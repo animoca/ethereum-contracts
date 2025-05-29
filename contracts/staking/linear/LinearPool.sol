@@ -50,6 +50,7 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     error InvalidRewardAmount();
     error InvalidDuration();
     error RewardTooSmallForDuration(uint256 reward, uint256 duration);
+    error RewardDilution(uint256 currentRewardRate, uint256 newRewardRate);
 
     constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
 
@@ -101,6 +102,7 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     }
 
     /// @notice Stakes to the pool.
+    /// NB: If a reward is ongoing while there are no stakers, the accumulated rewards so far will go to the first staker.
     /// @param staker The address of the staker.
     /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
     /// @dev Reverts with {InvalidStakeAmount} if the stake amount is 0.
@@ -166,12 +168,14 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// @notice If there is an ongoing distribution, the new rewards are added to the current distribution:
     /// @notice - If the new distribution ends before the current one, the new rewards are added to the current distribution.
     /// @notice - If the new distribution ends after the current one, the remaining rewards are added to the new distribution.
+    /// @notice NB: Any dust (remainder of the division of the reward by the duration) will not be distributed.
     /// @param reward The amount of rewards to be added.
     /// @param duration The duration of the rewards distribution.
     /// @dev Reverts with {NotRoleHolder} if the sender does not have the REWARDER_ROLE.
     /// @dev Reverts with {InvalidRewardAmount} if the reward amount is 0.
     /// @dev Reverts with {InvalidDuration} if the duration is 0.
     /// @dev Reverts with {RewardTooSmallForDuration} if the reward is too small for the duration.
+    /// @dev Reverts with {RewardDilution} if the new reward rate is lower than the current one.
     /// @dev Emits a {RewardAdded} event with the rewarder address, reward amount, duration and dust.
     function addReward(uint256 reward, uint256 duration) public payable virtual {
         address rewarder = _msgSender();
@@ -204,11 +208,14 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
             } else {
                 // New distribution ends after current distribution
                 require(reward / duration != 0, RewardTooSmallForDuration(reward, duration));
-                uint256 remainingReward = rewardRate * (currentDistributionEnd - block.timestamp);
+                uint256 currentRewardRate = rewardRate;
+                uint256 remainingReward = currentRewardRate * (currentDistributionEnd - block.timestamp);
                 uint256 totalReward = remainingReward + reward;
-                rewardRate = totalReward / duration;
-                dust = totalReward % duration;
+                uint256 newRewardRate = totalReward / duration;
+                require(newRewardRate >= currentRewardRate, RewardDilution(currentRewardRate, newRewardRate));
+                rewardRate = newRewardRate;
                 distributionEnd = newDisributionEnd;
+                dust = totalReward % duration;
             }
         }
         lastUpdated = block.timestamp;
