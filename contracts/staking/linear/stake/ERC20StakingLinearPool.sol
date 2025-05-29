@@ -9,6 +9,7 @@ import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistr
 
 /// @title ERC20StakingLinearPool
 /// @notice A linear pool that allows staking of ERC20 tokens.
+/// @notice This contract is not compatible with fee-on-transfer and rebasing tokens.
 abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
     using SafeERC20 for IERC20;
 
