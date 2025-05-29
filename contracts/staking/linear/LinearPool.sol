@@ -188,7 +188,7 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
 
         uint256 dust;
         uint256 currentDistributionEnd = distributionEnd;
-        uint256 newDisributionEnd = block.timestamp + duration;
+        uint256 newDisrtibutionEnd = block.timestamp + duration;
 
         if (block.timestamp >= currentDistributionEnd) {
             // No current distribution
@@ -196,9 +196,9 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
             require(newRewardRate != 0, RewardTooSmallForDuration(reward, duration));
             rewardRate = newRewardRate;
             dust = reward % duration;
-            distributionEnd = newDisributionEnd;
+            distributionEnd = newDisrtibutionEnd;
         } else {
-            if (newDisributionEnd <= currentDistributionEnd) {
+            if (newDisrtibutionEnd <= currentDistributionEnd) {
                 // New distribution ends before current distribution
                 duration = currentDistributionEnd - block.timestamp;
                 uint256 additionalRewardRate = reward / duration;
@@ -214,7 +214,7 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
                 uint256 newRewardRate = totalReward / duration;
                 require(newRewardRate >= currentRewardRate, RewardDilution(currentRewardRate, newRewardRate));
                 rewardRate = newRewardRate;
-                distributionEnd = newDisributionEnd;
+                distributionEnd = newDisrtibutionEnd;
                 dust = totalReward % duration;
             }
         }

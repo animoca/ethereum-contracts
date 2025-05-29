@@ -42,6 +42,5 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
         REWARD_TOKEN.safeTransferFrom(rewardHolder, staker, reward);
     }
 
-    /// @notice Computes the reward for a staker.
     function _computeAddReward(address rewarder, uint256 reward, uint256 dust) internal virtual {}
 }
