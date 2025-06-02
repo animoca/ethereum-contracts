@@ -44,6 +44,11 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
         _stake(_msgSender(), abi.encode(requiresTransfer, stakeData));
     }
 
+    function withdraw(bytes calldata withdrawData) public virtual override {
+        // non-reentrancy check removed
+        _withdraw(_msgSender(), withdrawData);
+    }
+
     /// @inheritdoc LinearPool
     /// @param stakeData The data to be used for staking, encoded as (bool requiresTransfer, bytes stakeData) where stakeData is
     ///   (bool batch, uint256 tokenId) where batch is false, or (bool batch, uint256[] tokenIds) where batch is true.
