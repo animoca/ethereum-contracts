@@ -37,7 +37,6 @@ abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
     /// @inheritdoc LinearPool
     /// @param stakeData The data to be used for staking, encoded as (uint256 value)
     function stake(bytes calldata stakeData) public payable virtual override {
-        // non-reentrancy check removed
         bool requiresTransfer = true;
         _stake(_msgSender(), abi.encode(requiresTransfer, stakeData));
     }
@@ -50,13 +49,6 @@ abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
         if (requiresTransfer) {
             STAKING_TOKEN.safeTransferFrom(staker, address(this), stakePoints);
         }
-    }
-
-    /// @inheritdoc LinearPool
-    /// @param withdrawData The data to be used for withdrawing, encoded as (uint256 value)
-    function withdraw(bytes calldata withdrawData) public virtual override {
-        // non-reentrancy check removed
-        _withdraw(_msgSender(), withdrawData);
     }
 
     /// @inheritdoc LinearPool

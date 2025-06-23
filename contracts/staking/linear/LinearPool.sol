@@ -18,8 +18,6 @@ import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.s
 /// @title Linear rewards distribution staking pool.
 /// @notice Implements the base logic for linear reward pools, while the nature of the staking and rewards is left to the deriving contracts.
 /// @notice Stakes, whether fungible or non-fungible, map to an amount of "stake points", then used to compute the user rewards share.
-/// @notice NB: Reentrancy guards are used to protect the stake and withdraw functions, the implementation being unknown.
-/// @notice If the deriving contract's implementation does not present reentrancy elements, the guards can be dropped.
 /// @notice NB: This contract inherits TokenRecovery functions. In the likely event that the deriving contract does keep tokens in stake,
 /// @notice the corresponding functions must be overriden to prevent recovering tokens legitimately staked in the contract.
 abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, TokenRecovery, ForwarderRegistryContext {
@@ -97,7 +95,7 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// @dev Emits a {Staked} event with the staker address, stakeData and stake points.
     /// @dev The stakeData is passed to the _computeStake function, which must be implemented in the deriving contract.
     /// @dev The stakeData is not used in the base implementation, but it is passed to the event for convenience.
-    function stake(bytes calldata stakeData) public payable virtual nonReentrant {
+    function stake(bytes calldata stakeData) public payable virtual {
         _stake(_msgSender(), stakeData);
     }
 
@@ -105,10 +103,11 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// NB: If a reward is ongoing while there are no stakers, the accumulated rewards so far will go to the first staker.
     /// @param staker The address of the staker.
     /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
+    /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidStakeAmount} if the stake amount is 0.
     /// @dev Emits a {Staked} event with the staker address, stakeData and stake points.
     /// @dev The stakeData is passed to the _computeStake function, which must be implemented in the deriving contract.
-    function _stake(address staker, bytes memory stakeData) internal virtual {
+    function _stake(address staker, bytes memory stakeData) internal virtual nonReentrant {
         _updateReward(staker);
         uint256 stakePoints = _computeStake(staker, stakeData);
         require(stakePoints != 0, InvalidStakeAmount());
@@ -125,18 +124,19 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// @dev Emits a {Withdrawn} event with the staker address, withdrawData and stake points.
     /// @dev The withdrawData is passed to the _computeWithdraw function, which must be implemented in the deriving contract.
     /// @dev The withdrawData is not used in the base implementation, but it is passed to the event for convenience.
-    function withdraw(bytes calldata withdrawData) public virtual nonReentrant {
+    function withdraw(bytes calldata withdrawData) public virtual {
         _withdraw(_msgSender(), withdrawData);
     }
 
     /// @notice Withdraws from the pool.
     /// @param staker The address of the staker.
     /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
+    /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidWithdrawAmount} if the withdraw amount is 0.
     /// @dev Reverts with {NotEnoughStake} if the staker does not have enough stake points to withdraw.
     /// @dev Emits a {Withdrawn} event with the staker address, withdrawData and stake points.
     /// @dev The withdrawData is passed to the _computeWithdraw function, which must be implemented in the deriving contract.
-    function _withdraw(address staker, bytes memory withdrawData) internal virtual {
+    function _withdraw(address staker, bytes memory withdrawData) internal virtual nonReentrant {
         _updateReward(staker);
         uint256 stakePoints = _computeWithdraw(staker, withdrawData);
         require(stakePoints != 0, InvalidWithdrawAmount());
