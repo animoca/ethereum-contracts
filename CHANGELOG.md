@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.2.2
+
+### Bugfixes
+
+- Fixed a bug where totalStaked was incorrectly computed during withdrawal in LinearPool.
+- Prevented rewards dilution when adding rewards in LinearPool as it could be unfair to stakers.
+- Moved reentrancy guards to internal functions and kept the guards active in deriving contract for linear staking contracts.
+
+### Improvements
+
+- Improved documentation and fixed typos in linear staking contracts.
+
 ## 4.2.1
 
 ### Improvements

@@ -80,6 +80,11 @@ describe('LinearPool', function () {
         .withArgs(50, 150);
     });
 
+    it('reverts if new distribution ends after current distribution and rewards get diluted', async function () {
+      await this.contract.connect(rewarder).addReward(100, 10);
+      await expect(this.contract.connect(rewarder).addReward(15, 15)).to.be.revertedWithCustomError(this.contract, 'RewardDilution').withArgs(10, 7);
+    });
+
     context('when successful, no current distribution', function () {
       const reward = 101n;
       const duration = 10n;
@@ -383,20 +388,24 @@ describe('LinearPool', function () {
 
     context('when successful, before adding rewards', function () {
       const amount = 100n;
+      const amount2 = 10n;
       const stakeData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
+      const stakeData2 = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount2]);
       const withdrawData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
 
       beforeEach(async function () {
         await this.contract.connect(alice).stake(stakeData);
+        await this.contract.connect(bob).stake(stakeData2);
         this.receipt = await this.contract.connect(alice).withdraw(withdrawData);
       });
 
       it('decreases the total staked amount', async function () {
-        expect(await this.contract.totalStaked()).to.equal(0);
+        expect(await this.contract.totalStaked()).to.equal(amount2);
       });
 
       it('decreases the staker amount', async function () {
         expect(await this.contract.staked(alice.address)).to.equal(0);
+        expect(await this.contract.staked(bob.address)).to.equal(amount2);
       });
 
       it('does not set the reward per stake point stored', async function () {
