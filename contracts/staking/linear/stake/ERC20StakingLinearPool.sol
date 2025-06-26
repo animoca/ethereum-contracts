@@ -9,7 +9,7 @@ import {IForwarderRegistry} from "./../../../metatx/interfaces/IForwarderRegistr
 
 /// @title ERC20StakingLinearPool
 /// @notice A linear pool that allows staking of ERC20 tokens.
-/// @notice This contract is not compatible with fee-on-transfer and rebasing tokens.
+/// @notice WARNING: This contract is not compatible with fee-on-transfer and rebasing tokens.
 abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
     using SafeERC20 for IERC20;
 
@@ -23,10 +23,10 @@ abstract contract ERC20StakingLinearPool is LinearPool, ERC20Receiver {
     }
 
     /// @notice Callback called when the contract receives ERC20 tokens via the IERC20SafeTransfers functions.
+    /// @dev Reverts  with {InvalidToken} if the sender is not the staking token.
     /// @param from The address of the sender.
     /// @param value The amount of tokens received.
     /// @return bytes4 The function selector of the callback.
-    /// @dev Reverts  with {InvalidToken} if the sender is not the staking token.
     function onERC20Received(address, address from, uint256 value, bytes calldata) external virtual override returns (bytes4) {
         if (msg.sender != address(STAKING_TOKEN)) revert InvalidToken();
         bool requiresTransfer = false;

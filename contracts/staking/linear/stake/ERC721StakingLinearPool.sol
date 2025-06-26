@@ -37,7 +37,8 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
 
     /// @inheritdoc LinearPool
     /// @param stakeData The data to be used for staking, encoded as
-    ///   (bool batch, uint256 tokenId) where batch is false, or (bool batch, uint256[] tokenIds) where batch is true.
+    ///   (bool batch, uint256 tokenId) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds) where batch is true.
     function stake(bytes calldata stakeData) public payable virtual override {
         bool requiresTransfer = true;
         _stake(_msgSender(), abi.encode(requiresTransfer, stakeData));
@@ -45,7 +46,8 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
 
     /// @inheritdoc LinearPool
     /// @param stakeData The data to be used for staking, encoded as (bool requiresTransfer, bytes stakeData) where stakeData is
-    ///   (bool batch, uint256 tokenId) where batch is false, or (bool batch, uint256[] tokenIds) where batch is true.
+    ///   (bool batch, uint256 tokenId) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds) where batch is true.
     function _computeStake(address staker, bytes memory stakeData) internal virtual override returns (uint256 stakePoints) {
         (bool requiresTransfer, bytes memory data) = abi.decode(stakeData, (bool, bytes));
         bool batch = abi.decode(data, (bool));
@@ -71,7 +73,8 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
 
     /// @inheritdoc LinearPool
     /// @param withdrawData The data to be used for withdrawing, encoded as
-    ///   (bool batch, uint256 tokenId) where batch is false, or (bool batch, uint256[] tokenIds) where batch is true.
+    ///   (bool batch, uint256 tokenId) where batch is false, or
+    ///   (bool batch, uint256[] tokenIds) where batch is true.
     function _computeWithdraw(address staker, bytes memory withdrawData) internal virtual override returns (uint256 stakePoints) {
         bool batch = abi.decode(withdrawData, (bool));
         if (batch) {
@@ -107,5 +110,8 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
         super.recoverERC721s(accounts, contracts, tokenIds);
     }
 
+    /// @notice Computes the stake points for a given token ID.
+    /// @param tokenId The ID of the token.
+    /// @return stakePoints The stake points for the token.
     function _tokenValue(uint256 tokenId) internal view virtual returns (uint256 stakePoints);
 }

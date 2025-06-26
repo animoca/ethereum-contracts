@@ -82,31 +82,30 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     }
 
     /// @notice Returns the amount of rewards earned by the account.
-    /// @param account The address of the account to check.
     /// @return The account's stake points times the difference between the current reward per stake point and the last paid reward per stake point.
+    /// @param account The address of the account to check.
     function earned(address account) public view returns (uint256) {
         return (staked[account] * (rewardPerStakePoint() - rewardPerStakePointPaid[account])) / SCALING_FACTOR + rewards[account];
     }
 
     /// @notice Stakes to the pool.
-    /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
     /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidStakeAmount} if the stake amount is 0.
     /// @dev Emits a {Staked} event with the staker address, stakeData and stake points.
     /// @dev The stakeData is passed to the _computeStake function, which must be implemented in the deriving contract.
-    /// @dev The stakeData is not used in the base implementation, but it is passed to the event for convenience.
+    /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
     function stake(bytes calldata stakeData) public payable virtual {
         _stake(_msgSender(), stakeData);
     }
 
     /// @notice Stakes to the pool.
     /// NB: If a reward is ongoing while there are no stakers, the accumulated rewards so far will go to the first staker.
-    /// @param staker The address of the staker.
-    /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
     /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidStakeAmount} if the stake amount is 0.
     /// @dev Emits a {Staked} event with the staker address, stakeData and stake points.
     /// @dev The stakeData is passed to the _computeStake function, which must be implemented in the deriving contract.
+    /// @param staker The address of the staker.
+    /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
     function _stake(address staker, bytes memory stakeData) internal virtual nonReentrant {
         _updateReward(staker);
         uint256 stakePoints = _computeStake(staker, stakeData);
@@ -117,25 +116,24 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     }
 
     /// @notice Withdraws from the pool.
-    /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
     /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidWithdrawAmount} if the withdraw amount is 0.
     /// @dev Reverts with {NotEnoughStake} if the staker does not have enough stake points to withdraw.
     /// @dev Emits a {Withdrawn} event with the staker address, withdrawData and stake points.
     /// @dev The withdrawData is passed to the _computeWithdraw function, which must be implemented in the deriving contract.
-    /// @dev The withdrawData is not used in the base implementation, but it is passed to the event for convenience.
+    /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
     function withdraw(bytes calldata withdrawData) public virtual {
         _withdraw(_msgSender(), withdrawData);
     }
 
     /// @notice Withdraws from the pool.
-    /// @param staker The address of the staker.
-    /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
     /// @dev Reverts with {ReentrancyGuardReentrantCall} if the function is re-entered.
     /// @dev Reverts with {InvalidWithdrawAmount} if the withdraw amount is 0.
     /// @dev Reverts with {NotEnoughStake} if the staker does not have enough stake points to withdraw.
     /// @dev Emits a {Withdrawn} event with the staker address, withdrawData and stake points.
     /// @dev The withdrawData is passed to the _computeWithdraw function, which must be implemented in the deriving contract.
+    /// @param staker The address of the staker.
+    /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
     function _withdraw(address staker, bytes memory withdrawData) internal virtual nonReentrant {
         _updateReward(staker);
         uint256 stakePoints = _computeWithdraw(staker, withdrawData);
@@ -169,14 +167,14 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// @notice - If the new distribution ends before the current one, the new rewards are added to the current distribution.
     /// @notice - If the new distribution ends after the current one, the remaining rewards are added to the new distribution.
     /// @notice NB: Any dust (remainder of the division of the reward by the duration) will not be distributed.
-    /// @param reward The amount of rewards to be added.
-    /// @param duration The duration of the rewards distribution.
     /// @dev Reverts with {NotRoleHolder} if the sender does not have the REWARDER_ROLE.
     /// @dev Reverts with {InvalidRewardAmount} if the reward amount is 0.
     /// @dev Reverts with {InvalidDuration} if the duration is 0.
     /// @dev Reverts with {RewardTooSmallForDuration} if the reward is too small for the duration.
     /// @dev Reverts with {RewardDilution} if the new reward rate is lower than the current one.
     /// @dev Emits a {RewardAdded} event with the rewarder address, reward amount, duration and dust.
+    /// @param reward The amount of rewards to be added.
+    /// @param duration The duration of the rewards distribution.
     function addReward(uint256 reward, uint256 duration) public payable virtual {
         address rewarder = _msgSender();
         AccessControlStorage.layout().enforceHasRole(REWARDER_ROLE, rewarder);
@@ -225,12 +223,30 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
         emit RewardAdded(rewarder, reward, duration, dust);
     }
 
+    /// @notice Performs a stake (deposit some asset in the pool), for example by transferring staking tokens to this contract.
+    /// @notice Computes the amount of stake points for the sender based on the stakeData.
+    /// @param sender The address of the sender.
+    /// @param stakeData The data to be used for the stake (encoding freely determined by the deriving contracts).
+    /// @return stakePoints The amount of stake points computed from the stakeData.
     function _computeStake(address sender, bytes memory stakeData) internal virtual returns (uint256 stakePoints);
 
+    /// @notice Performs a withdrawal (remove some asset from the pool), for example by transferring taking tokens from this contract.
+    /// @notice Computes the amount of stake points for the sender based on the withdrawData.
+    /// @param sender The address of the sender.
+    /// @param withdrawData The data to be used for the withdraw (encoding freely determined by the deriving contracts).
+    /// @return stakePoints The amount of stake points computed from the withdrawData.
     function _computeWithdraw(address sender, bytes memory withdrawData) internal virtual returns (uint256 stakePoints);
 
+    /// @notice Performs a claim, for examples by transferring reward tokens to the sender.
+    /// @param sender The address of the sender.
+    /// @param reward The amount of rewards to be claimed.
+    /// @return claimData The data used in the claim process (encoding freely determined by the deriving contracts).
     function _computeClaim(address sender, uint256 reward) internal virtual returns (bytes memory claimData);
 
+    /// @notice Performs addition of rewards to the pool, for example by transferring rewards tokens to this contract.
+    /// @param sender The address of the sender.
+    /// @param reward The amount of rewards to be added.
+    /// @param dust The amount of dust (remainder of the division of the reward by the duration).
     function _computeAddReward(address sender, uint256 reward, uint256 dust) internal virtual;
 
     /// @inheritdoc ForwarderRegistryContextBase

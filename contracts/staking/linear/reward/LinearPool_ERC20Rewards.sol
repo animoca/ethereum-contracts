@@ -18,6 +18,9 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
 
     event RewardHolderSet(address indexed rewardHolder);
 
+    /// @dev Emits a {RewardHolderSet} event with the initial reward holder address.
+    /// @param rewardToken The ERC20 token used for rewards.
+    /// @param rewardHolder_ The address that holds the rewards.
     constructor(IERC20 rewardToken, address rewardHolder_) {
         REWARD_TOKEN = rewardToken;
         rewardHolder = rewardHolder_;
@@ -26,8 +29,8 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
 
     /// @notice Sets the reward holder address.
     /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
-    /// @param rewardHolder_ The address of the reward holder.
     /// @dev Emits a {RewardHolderSet} event if the reward holder address is changed.
+    /// @param rewardHolder_ The address of the reward holder.
     function setRewardHolder(address rewardHolder_) external {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         if (rewardHolder_ != rewardHolder) {
@@ -36,11 +39,16 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
         }
     }
 
-    /// @notice Computes the claim data for a staker.
+    /// @notice Transfers `reward` amount of REWARD_TOKEN from the reward holder to the staker.
+    /// @param staker The address of the staker.
+    /// @param reward The amount of REWARD_TOKEN to be transferred.
+    /// @return claimData The data to be used for claiming the reward, encoded as (uint256 reward).
     function _computeClaim(address staker, uint256 reward) internal virtual returns (bytes memory claimData) {
         claimData = abi.encode(reward);
         REWARD_TOKEN.safeTransferFrom(rewardHolder, staker, reward);
     }
 
-    function _computeAddReward(address rewarder, uint256 reward, uint256 dust) internal virtual {}
+    /// @notice Computes the reward for a staker.
+    /// @dev This function is empty since the rewards do not need to be transferred to this contract.
+    function _computeAddReward(address, uint256, uint256) internal virtual {}
 }
