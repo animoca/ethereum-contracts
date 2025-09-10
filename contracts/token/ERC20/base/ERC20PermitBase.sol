@@ -18,13 +18,13 @@ abstract contract ERC20PermitBase is IERC20Permit, Context {
     }
 
     /// @inheritdoc IERC20Permit
-    function nonces(address owner) external view returns (uint256) {
+    function nonces(address owner) external view virtual returns (uint256) {
         return ERC20PermitStorage.layout().nonces(owner);
     }
 
     /// @inheritdoc IERC20Permit
     // solhint-disable-next-line func-name-mixedcase
-    function DOMAIN_SEPARATOR() external view returns (bytes32) {
+    function DOMAIN_SEPARATOR() external view virtual returns (bytes32) {
         return ERC20PermitStorage.DOMAIN_SEPARATOR();
     }
 }

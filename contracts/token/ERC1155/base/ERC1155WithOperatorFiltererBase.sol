@@ -45,7 +45,7 @@ abstract contract ERC1155WithOperatorFiltererBase is IERC1155, Context {
     }
 
     /// @inheritdoc IERC1155
-    function isApprovedForAll(address owner, address operator) external view returns (bool approvedForAll) {
+    function isApprovedForAll(address owner, address operator) external view virtual returns (bool approvedForAll) {
         return ERC1155Storage.layout().isApprovedForAll(owner, operator);
     }
 

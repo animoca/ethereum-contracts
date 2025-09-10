@@ -16,13 +16,13 @@ abstract contract OperatorFiltererBase is Context {
     /// @notice Updates the address that the contract will make OperatorFilter checks against.
     /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @param registry The new operator filter registry address. When set to the zero address, checks will be bypassed.
-    function updateOperatorFilterRegistry(IOperatorFilterRegistry registry) external {
+    function updateOperatorFilterRegistry(IOperatorFilterRegistry registry) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         OperatorFiltererStorage.layout().updateOperatorFilterRegistry(registry);
     }
 
     /// @notice Gets the operator filter registry address.
-    function operatorFilterRegistry() external view returns (IOperatorFilterRegistry) {
+    function operatorFilterRegistry() external view virtual returns (IOperatorFilterRegistry) {
         return OperatorFiltererStorage.layout().operatorFilterRegistry();
     }
 }

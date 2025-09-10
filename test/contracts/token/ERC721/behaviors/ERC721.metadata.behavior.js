@@ -4,7 +4,7 @@ const {expectRevert} = require('@animoca/ethereum-contract-helpers/src/test/reve
 const {loadFixture} = require('@animoca/ethereum-contract-helpers/src/test/fixtures');
 const {supportsInterfaces} = require('../../../introspection/behaviors/SupportsInterface.behavior');
 
-function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
+function behavesLikeERC721Metadata({name, symbol, deploy, mint, errors, features}) {
   describe('like an ERC721 Metadata', function () {
     let deployer;
 
@@ -34,7 +34,7 @@ function behavesLikeERC721Metadata({name, symbol, deploy, errors, features}) {
 
     describe('tokenURI(uint256)', function () {
       it('does not revert when called on an existing token', async function () {
-        await this.token.mint(deployer.address, 1);
+        await mint(this.token, deployer.address, 1, deployer);
         await this.token.tokenURI(1);
       });
 

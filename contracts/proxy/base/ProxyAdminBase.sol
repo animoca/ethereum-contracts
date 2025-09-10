@@ -15,13 +15,13 @@ abstract contract ProxyAdminBase is IProxyAdmin, Context {
     /// @dev Reverts with {NotProxyAdmin} if `sender` is not the proxy admin.
     /// @dev Emits an {AdminChanged} event if `newAdmin` is different from the current proxy admin.
     /// @param newAdmin The new proxy admin.
-    function changeProxyAdmin(address newAdmin) external {
+    function changeProxyAdmin(address newAdmin) external virtual {
         ProxyAdminStorage.layout().changeProxyAdmin(_msgSender(), newAdmin);
     }
 
     /// @notice Gets the proxy admin.
     /// @return admin The proxy admin.
-    function proxyAdmin() external view returns (address admin) {
+    function proxyAdmin() external view virtual returns (address admin) {
         return ProxyAdminStorage.layout().proxyAdmin();
     }
 }
