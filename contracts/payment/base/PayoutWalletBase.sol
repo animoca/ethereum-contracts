@@ -18,14 +18,14 @@ abstract contract PayoutWalletBase is IPayoutWallet, Context {
     /// @dev Reverts with {ZeroAddressPayoutWallet} if `newPayoutWallet` is the zero address.
     /// @dev Emits a {PayoutWalletSet} event.
     /// @param newPayoutWallet The payout wallet.
-    function setPayoutWallet(address payable newPayoutWallet) external {
+    function setPayoutWallet(address payable newPayoutWallet) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         PayoutWalletStorage.layout().setPayoutWallet(newPayoutWallet);
     }
 
     /// @notice Gets the payout wallet.
     /// @return wallet The payout wallet.
-    function payoutWallet() external view returns (address payable wallet) {
+    function payoutWallet() external view virtual returns (address payable wallet) {
         return PayoutWalletStorage.layout().payoutWallet();
     }
 }

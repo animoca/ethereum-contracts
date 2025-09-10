@@ -20,7 +20,7 @@ abstract contract ERC2981Base is Context, IERC2981 {
     /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @dev Reverts with {IncorrectRoyaltyPercentage} if `percentage` is above 100% (> FEE_DENOMINATOR).
     /// @param percentage The new percentage to set. For example 50000 sets 50% royalty.
-    function setRoyaltyPercentage(uint256 percentage) external {
+    function setRoyaltyPercentage(uint256 percentage) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         ERC2981Storage.layout().setRoyaltyPercentage(percentage);
     }
@@ -29,13 +29,13 @@ abstract contract ERC2981Base is Context, IERC2981 {
     /// @dev Reverts with {NotContractOwner} if the sender is not the contract owner.
     /// @dev Reverts with {IncorrectRoyaltyReceiver} if `receiver` is the zero address.
     /// @param receiver The new receiver to set.
-    function setRoyaltyReceiver(address receiver) external {
+    function setRoyaltyReceiver(address receiver) external virtual {
         ContractOwnershipStorage.layout().enforceIsContractOwner(_msgSender());
         ERC2981Storage.layout().setRoyaltyReceiver(receiver);
     }
 
     /// @inheritdoc IERC2981
-    function royaltyInfo(uint256 tokenId, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
+    function royaltyInfo(uint256 tokenId, uint256 salePrice) external view virtual returns (address receiver, uint256 royaltyAmount) {
         return ERC2981Storage.layout().royaltyInfo(tokenId, salePrice);
     }
 }

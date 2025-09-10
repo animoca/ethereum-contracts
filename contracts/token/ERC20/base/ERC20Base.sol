@@ -43,12 +43,12 @@ abstract contract ERC20Base is IERC20, IERC20Allowance, Context {
     }
 
     /// @inheritdoc IERC20
-    function totalSupply() external view returns (uint256 supply) {
+    function totalSupply() external view virtual returns (uint256 supply) {
         return ERC20Storage.layout().totalSupply();
     }
 
     /// @inheritdoc IERC20
-    function balanceOf(address owner) external view returns (uint256 balance) {
+    function balanceOf(address owner) external view virtual returns (uint256 balance) {
         return ERC20Storage.layout().balanceOf(owner);
     }
 

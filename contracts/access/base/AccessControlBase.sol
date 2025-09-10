@@ -18,7 +18,7 @@ abstract contract AccessControlBase is IAccessControl, Context {
     /// @dev Emits a {RoleGranted} event if the account did not previously have the role.
     /// @param role The role to grant.
     /// @param account The account to grant the role to.
-    function grantRole(bytes32 role, address account) external {
+    function grantRole(bytes32 role, address account) external virtual {
         address operator = _msgSender();
         ContractOwnershipStorage.layout().enforceIsContractOwner(operator);
         AccessControlStorage.layout().grantRole(role, account, operator);
@@ -29,19 +29,19 @@ abstract contract AccessControlBase is IAccessControl, Context {
     /// @dev Emits a {RoleRevoked} event if the account previously had the role.
     /// @param role The role to revoke.
     /// @param account The account to revoke the role from.
-    function revokeRole(bytes32 role, address account) external {
+    function revokeRole(bytes32 role, address account) external virtual {
         address operator = _msgSender();
         ContractOwnershipStorage.layout().enforceIsContractOwner(operator);
         AccessControlStorage.layout().revokeRole(role, account, operator);
     }
 
     /// @inheritdoc IAccessControl
-    function renounceRole(bytes32 role) external {
+    function renounceRole(bytes32 role) external virtual {
         AccessControlStorage.layout().renounceRole(_msgSender(), role);
     }
 
     /// @inheritdoc IAccessControl
-    function hasRole(bytes32 role, address account) external view returns (bool hasRole_) {
+    function hasRole(bytes32 role, address account) external view virtual returns (bool hasRole_) {
         return AccessControlStorage.layout().hasRole(role, account);
     }
 }

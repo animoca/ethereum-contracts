@@ -12,7 +12,7 @@ abstract contract SealsBase is ISeals, Context {
     /// @notice Retrieves whether a seal has been used already.
     /// @param sealId the seal identifier.
     /// @return wasSealed Whether a seal has been used already.
-    function isSealed(uint256 sealId) external view returns (bool wasSealed) {
+    function isSealed(uint256 sealId) external view virtual returns (bool wasSealed) {
         return SealsStorage.layout().isSealed(sealId);
     }
 }

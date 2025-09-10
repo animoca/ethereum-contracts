@@ -11,17 +11,17 @@ abstract contract ERC20DetailedBase is IERC20Detailed {
     using ERC20DetailedStorage for ERC20DetailedStorage.Layout;
 
     /// @inheritdoc IERC20Detailed
-    function name() external view returns (string memory) {
+    function name() external view virtual returns (string memory) {
         return ERC20DetailedStorage.layout().name();
     }
 
     /// @inheritdoc IERC20Detailed
-    function symbol() external view returns (string memory) {
+    function symbol() external view virtual returns (string memory) {
         return ERC20DetailedStorage.layout().symbol();
     }
 
     /// @inheritdoc IERC20Detailed
-    function decimals() external view returns (uint8) {
+    function decimals() external view virtual returns (uint8) {
         return ERC20DetailedStorage.layout().decimals();
     }
 }

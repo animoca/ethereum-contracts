@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.3
+
+### Bugfixes
+
+- Add missing `virtual` keyword on some "Base" contract functions.
+- Fix ERC721Metadata behavior test not using the implementation-specific `mint` function.
+
 ## 4.2.2
 
 ### Bugfixes
