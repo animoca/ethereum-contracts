@@ -4,8 +4,9 @@
 
 ### Bugfixes
 
-- Add missing `virtual` keyword on some "Base" contract functions.
-- Fix ERC721Metadata behavior test not using the implementation-specific `mint` function.
+- Added missing `virtual` keyword on some "Base" contract functions.
+- Fixed ERC721Metadata behavior test not using the implementation-specific `mint` function.
+- Fixed security alerts in depenencies.
 
 ## 4.2.2
 
