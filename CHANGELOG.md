@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.4
+
+### Bugfixes
+- Fixed ERC20 permit behaviour support interface path
+
 ## 4.2.3
 
 ### Bugfixes

@@ -157,7 +157,7 @@ function behavesLikeERC20Permit(implementation) {
     });
 
     if (features && features.ERC165) {
-      supportsInterfaces(['contracts/token/ERC20/interfaces/IERC20Permit.sol:IERC20Permit']);
+      supportsInterfaces(['IERC20Permit']);
     }
   });
 }
