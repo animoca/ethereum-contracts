@@ -22,7 +22,13 @@
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "claimData",
+          "type": "bytes"
+        }
+      ],
       "name": "claim",
       "outputs": [],
       "stateMutability": "nonpayable",

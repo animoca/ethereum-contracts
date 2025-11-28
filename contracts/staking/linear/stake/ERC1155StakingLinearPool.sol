@@ -17,7 +17,11 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
     error InvalidToken();
     error NotEnoughBalance(address staker, uint256 id, uint256 amount, uint256 balance);
 
-    constructor(IERC1155 stakingToken, IForwarderRegistry forwarderRegistry) LinearPool(forwarderRegistry) {
+    constructor(
+        IERC1155 stakingToken,
+        uint8 scalingFactorDecimals,
+        IForwarderRegistry forwarderRegistry
+    ) LinearPool(scalingFactorDecimals, forwarderRegistry) {
         STAKING_TOKEN = stakingToken;
     }
 

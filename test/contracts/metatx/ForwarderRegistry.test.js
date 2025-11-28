@@ -27,6 +27,7 @@ describe('Meta Transactions', function () {
     this.contract = await deployContract('ForwarderRegistry');
     this.forwarder = await deployContract('ForwarderMock');
     this.receiver = await deployContract('ForwarderRegistryReceiverMock', this.contract.getAddress());
+    this.noMetaTxReceiver = await deployContract('ForwarderRegistryReceiverMock', ethers.ZeroAddress);
     this.erc1271 = await deployContract('ERC1271Mock', deployer.address);
 
     this.domain = {
@@ -291,44 +292,55 @@ describe('Meta Transactions', function () {
   });
 
   describe('ForwarderRegistryReceiver', function () {
-    describe('_msgSender() and _msgData()', function () {
-      it('_msgSender() == msg.sender if msg.sender == tx.origin', async function () {
-        await this.receiver.test(42);
-        expect(await this.receiver.getData(deployer.address)).to.equal(42);
+    context('when the receiver has meta-transactions disabled', function () {
+      describe('_msgSender() and _msgData()', function () {
+        it('_msgSender() == msg.sender', async function () {
+          await this.noMetaTxReceiver.test(42);
+          expect(await this.noMetaTxReceiver.getData(deployer.address)).to.equal(42);
+        });
       });
+    });
 
-      it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.data.length < 24', async function () {
-        // Approve forwarder
-        const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
-          sender: deployer.address,
-          forwarder: await this.forwarder.getAddress(),
-          target: await this.receiver.getAddress(),
-          approved: true,
-          nonce: 0,
+    context('when the receiver has meta-transactions enabled', function () {
+      describe('_msgSender() and _msgData()', function () {
+        it('_msgSender() == msg.sender if msg.sender == tx.origin', async function () {
+          await this.receiver.test(42);
+          expect(await this.receiver.getData(deployer.address)).to.equal(42);
         });
 
-        const {data: relayerData} = await this.contract.setForwarderApproval.populateTransaction(
-          deployer.address,
-          this.forwarder.getAddress(),
-          this.receiver.getAddress(),
-          true,
-          signature,
-          false,
-        );
-        this.receipt = await this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData);
+        it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.data.length < 24', async function () {
+          // Approve forwarder
+          const signature = await deployer.signTypedData(this.domain, ForwarderApprovalType, {
+            sender: deployer.address,
+            forwarder: await this.forwarder.getAddress(),
+            target: await this.receiver.getAddress(),
+            approved: true,
+            nonce: 0,
+          });
 
-        // Forward non-EIP-2771 payload
-        const {to, data} = await this.receiver.smallDataTest.populateTransaction();
-        await this.forwarder.non2771Forward(to, data);
-        expect(await this.receiver.getData(deployer.address)).to.equal(0);
-        expect(await this.receiver.getData(this.forwarder.getAddress())).to.equal(1);
-      });
+          const {data: relayerData} = await this.contract.setForwarderApproval.populateTransaction(
+            deployer.address,
+            this.forwarder.getAddress(),
+            this.receiver.getAddress(),
+            true,
+            signature,
+            false,
+          );
+          this.receipt = await this.forwarder.forward(deployer.address, this.contract.getAddress(), relayerData);
 
-      it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.sender is not an approved forwarder', async function () {
-        const {to, data} = await this.receiver.test.populateTransaction(42);
-        await this.forwarder.forward(deployer.address, to, data);
-        expect(await this.receiver.getData(deployer.address)).to.equal(0);
-        expect(await this.receiver.getData(this.forwarder.getAddress())).to.equal(42);
+          // Forward non-EIP-2771 payload
+          const {to, data} = await this.receiver.smallDataTest.populateTransaction();
+          await this.forwarder.non2771Forward(to, data);
+          expect(await this.receiver.getData(deployer.address)).to.equal(0);
+          expect(await this.receiver.getData(this.forwarder.getAddress())).to.equal(1);
+        });
+
+        it('_msgSender() == msg.sender if msg.sender != tx.origin and msg.sender is not an approved forwarder', async function () {
+          const {to, data} = await this.receiver.test.populateTransaction(42);
+          await this.forwarder.forward(deployer.address, to, data);
+          expect(await this.receiver.getData(deployer.address)).to.equal(0);
+          expect(await this.receiver.getData(this.forwarder.getAddress())).to.equal(42);
+        });
       });
     });
   });

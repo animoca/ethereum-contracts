@@ -41,14 +41,16 @@ abstract contract LinearPool_ERC20Rewards is ContractOwnership {
 
     /// @notice Transfers `reward` amount of REWARD_TOKEN from the reward holder to the staker.
     /// @param staker The address of the staker.
-    /// @param reward The amount of REWARD_TOKEN to be transferred.
-    /// @return claimData The data to be used for claiming the reward, encoded as (uint256 reward).
-    function _computeClaim(address staker, uint256 reward) internal virtual returns (bytes memory claimData) {
-        claimData = abi.encode(reward);
-        REWARD_TOKEN.safeTransferFrom(rewardHolder, staker, reward);
+    /// @param claimable The amount of REWARD_TOKEN to be transferred.
+    /// @return claimed The amount of REWARD_TOKEN successfully claimed identical to claimable.
+    /// @return unclaimed The amount of REWARD_TOKEN that could not be claimed, always 0.
+    function _computeClaim(address staker, uint256 claimable, bytes calldata) internal virtual returns (uint256 claimed, uint256 unclaimed) {
+        claimed = claimable;
+        unclaimed = 0;
+        REWARD_TOKEN.safeTransferFrom(rewardHolder, staker, claimable);
     }
 
     /// @notice Computes the reward for a staker.
     /// @dev This function is empty since the rewards do not need to be transferred to this contract.
-    function _computeAddReward(address, uint256, uint256) internal virtual {}
+    function _computeAddReward(address, uint256) internal virtual {}
 }

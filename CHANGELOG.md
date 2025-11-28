@@ -1,5 +1,15 @@
 # Changelog
 
+## 5.0.0
+
+### Breaking changes
+
+- Modified the interface of `LinearStaking`.
+
+### New features
+
+- `ForwarderRegistryContext` can be used with a zero address `forwarderRegistry`, in which case meta-txs are disabled.
+
 ## 4.2.4
 
 ### Bugfixes

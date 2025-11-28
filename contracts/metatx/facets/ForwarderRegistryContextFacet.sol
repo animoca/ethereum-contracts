@@ -20,6 +20,11 @@ contract ForwarderRegistryContextFacet is IERC2771 {
 
     /// @inheritdoc IERC2771
     function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
+        // ERC2771 meta-transactions disabled
+        if (_FORWARDER_REGISTRY == IForwarderRegistry(address(0))) {
+            return false;
+        }
+
         return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

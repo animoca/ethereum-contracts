@@ -9,6 +9,7 @@ import {ForwarderRegistryContextBase} from "./base/ForwarderRegistryContextBase.
 /// @dev This contract is to be used via inheritance in an immutable (non-proxied) implementation.
 /// @dev Derived from https://github.com/wighawag/universal-forwarder (MIT licence)
 abstract contract ForwarderRegistryContext is ForwarderRegistryContextBase, IERC2771 {
+    /// @param forwarderRegistry_ The ForwarderRegistry contract address, or the zero address to disable meta-transactions.
     constructor(IForwarderRegistry forwarderRegistry_) ForwarderRegistryContextBase(forwarderRegistry_) {}
 
     function forwarderRegistry() external view returns (IForwarderRegistry) {
@@ -17,6 +18,11 @@ abstract contract ForwarderRegistryContext is ForwarderRegistryContextBase, IERC
 
     /// @inheritdoc IERC2771
     function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
+        // ERC2771 meta-transactions disabled
+        if (_FORWARDER_REGISTRY == IForwarderRegistry(address(0))) {
+            return false;
+        }
+
         return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

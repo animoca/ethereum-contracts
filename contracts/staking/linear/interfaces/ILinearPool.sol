@@ -12,7 +12,7 @@ interface ILinearPool {
 
     function withdraw(bytes calldata withdrawData) external;
 
-    function claim() external;
+    function claim(bytes calldata claimData) external;
 
     function addReward(uint256 reward, uint256 duration) external payable;
 }

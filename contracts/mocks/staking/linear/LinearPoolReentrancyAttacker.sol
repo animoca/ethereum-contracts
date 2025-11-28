@@ -21,4 +21,10 @@ contract LinearPoolReentrancyAttacker {
             target.withdraw(withdrawData);
         }
     }
+
+    function claim(bytes calldata claimData) external {
+        if (address(target) != address(0)) {
+            target.claim(claimData);
+        }
+    }
 }
