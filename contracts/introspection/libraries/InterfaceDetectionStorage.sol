@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {IllegalInterfaceId} from "./../errors/InterfaceDetectionErrors.sol";
 import {IERC165} from "./../interfaces/IERC165.sol";

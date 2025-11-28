@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {IERC20Receiver} from "./interfaces/IERC20Receiver.sol";
 import {InterfaceDetectionStorage} from "../../introspection/libraries/InterfaceDetectionStorage.sol";

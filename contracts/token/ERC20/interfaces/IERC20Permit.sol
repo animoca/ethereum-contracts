@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 /// @title ERC20 Token Standard, ERC2612 optional extension: permit – 712-signed approvals
 /// @notice Interface for allowing ERC20 approvals to be made via ECDSA `secp256k1` signatures.

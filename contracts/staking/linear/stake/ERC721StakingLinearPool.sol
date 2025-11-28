@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {LinearPool} from "./../LinearPool.sol";
 import {ERC721Receiver} from "./../../../token/ERC721/ERC721Receiver.sol";

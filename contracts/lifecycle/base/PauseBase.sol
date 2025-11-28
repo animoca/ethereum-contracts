@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {IPause} from "./../interfaces/IPause.sol";
 import {PauseStorage} from "./../libraries/PauseStorage.sol";

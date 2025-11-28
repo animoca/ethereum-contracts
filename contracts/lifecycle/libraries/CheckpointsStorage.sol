@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {CheckpointAlreadySet, CheckpointNotReached, CheckpointReached} from "./../errors/CheckpointsErrors.sol";
 import {InconsistentArrayLengths} from "./../../CommonErrors.sol";
