@@ -5,10 +5,16 @@
 ### Breaking changes
 
 - Modified the interface of `LinearStaking`.
+- Upgraded to `solc@0.8.30` and activated viaIR compilation.
+- Upgraded to `openzeppelin/contracts@5.4.0`.
 
 ### New features
 
 - `ForwarderRegistryContext` can be used with a zero address `forwarderRegistry`, in which case meta-txs are disabled.
+
+### Improvements
+
+- Updated dependencies versions.
 
 ## 4.2.4
 

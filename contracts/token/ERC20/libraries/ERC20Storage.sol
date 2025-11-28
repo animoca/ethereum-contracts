@@ -2,7 +2,12 @@
 pragma solidity ^0.8.30;
 
 // solhint-disable-next-line max-line-length
-import {ERC20ApprovalToAddressZero, ERC20InsufficientAllowance, ERC20TransferToAddressZero, ERC20InsufficientBalance} from "./../errors/ERC20Errors.sol";
+import {
+    ERC20ApprovalToAddressZero,
+    ERC20InsufficientAllowance,
+    ERC20TransferToAddressZero,
+    ERC20InsufficientBalance
+} from "./../errors/ERC20Errors.sol";
 import {ERC20AllowanceOverflow} from "./../errors/ERC20AllowanceErrors.sol";
 import {ERC20BatchTransferValuesOverflow} from "./../errors/ERC20BatchTransfersErrors.sol";
 import {ERC20SafeTransferRejected} from "./../errors/ERC20SafeTransfersErrors.sol";

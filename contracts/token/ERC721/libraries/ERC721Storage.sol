@@ -2,7 +2,17 @@
 pragma solidity ^0.8.30;
 
 // solhint-disable-next-line max-line-length
-import {ERC721SelfApproval, ERC721SelfApprovalForAll, ERC721NonApprovedForApproval, ERC721TransferToAddressZero, ERC721NonExistingToken, ERC721NonApprovedForTransfer, ERC721NonOwnedToken, ERC721SafeTransferRejected, ERC721BalanceOfAddressZero} from "./../errors/ERC721Errors.sol";
+import {
+    ERC721SelfApproval,
+    ERC721SelfApprovalForAll,
+    ERC721NonApprovedForApproval,
+    ERC721TransferToAddressZero,
+    ERC721NonExistingToken,
+    ERC721NonApprovedForTransfer,
+    ERC721NonOwnedToken,
+    ERC721SafeTransferRejected,
+    ERC721BalanceOfAddressZero
+} from "./../errors/ERC721Errors.sol";
 import {ERC721MintToAddressZero, ERC721ExistingToken} from "./../errors/ERC721MintableErrors.sol";
 import {ERC721BurntToken} from "./../errors/ERC721MintableOnceErrors.sol";
 import {InconsistentArrayLengths} from "./../../../CommonErrors.sol";
