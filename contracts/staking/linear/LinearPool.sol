@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {ContractOwnership} from "./../../access/ContractOwnership.sol";
 import {AccessControl} from "./../../access/AccessControl.sol";
@@ -10,6 +10,7 @@ import {ForwarderRegistryContextBase} from "./../../metatx/base/ForwarderRegistr
 import {ForwarderRegistryContext} from "./../../metatx/ForwarderRegistryContext.sol";
 import {AccessControlStorage} from "./../../access/libraries/AccessControlStorage.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {ILinearPool} from "./interfaces/ILinearPool.sol";
 import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.sol";
 
@@ -23,9 +24,11 @@ import {IForwarderRegistry} from "./../../metatx/interfaces/IForwarderRegistry.s
 abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, TokenRecovery, ForwarderRegistryContext {
     using AccessControlStorage for AccessControlStorage.Layout;
     using SafeERC20 for IERC20;
+    using Math for uint256;
 
     bytes32 public constant REWARDER_ROLE = "rewarder";
-    uint256 public constant SCALING_FACTOR = 1e18;
+
+    uint256 public immutable SCALING_FACTOR;
 
     uint256 public totalStaked;
     uint256 public lastUpdated;
@@ -39,18 +42,33 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
 
     event Staked(address indexed staker, bytes stakeData, uint256 stakePoints);
     event Withdrawn(address indexed staker, bytes withdrawData, uint256 stakePoints);
-    event Claimed(address indexed staker, bytes claimData, uint256 reward);
-    event RewardAdded(address indexed rewarder, uint256 reward, uint256 duration, uint256 dust);
+    event Claimed(address indexed staker, bytes claimData, uint256 claimed, uint256 unclaimed);
+    event RewardAdded(address indexed rewarder, uint256 reward, uint256 duration);
 
+    error ScalingFactorOutOfBounds();
     error InvalidStakeAmount();
     error InvalidWithdrawAmount();
     error NotEnoughStake(address staker, uint256 stake, uint256 withdraw);
+    error InvalidClaimSum(uint256 claimable, uint256 claimed, uint256 unclaimed);
     error InvalidRewardAmount();
     error InvalidDuration();
-    error RewardTooSmallForDuration(uint256 reward, uint256 duration);
     error RewardDilution(uint256 currentRewardRate, uint256 newRewardRate);
+    error RewardOverflow();
 
-    constructor(IForwarderRegistry forwarderRegistry) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {}
+    /// @param scalingFactorDecimals The number of decimals for the scaling factor used to avoid precision loss in reward calculations.
+    /// @param forwarderRegistry The address of the forwarder registry contract.
+    /// @dev Reverts with {ScalingFactorOutOfBounds} if scalingFactorDecimals is 77 or more.
+    /// @dev It is recomended to use a scaling factor as high as possible without causing overflows in reward calculations.
+    ///      Overflow would happen in addReward if the total remaining reward to be distributed overflows when scaled by the SCALING_FACTOR.
+    ///      When rewardPerStakePoint() is computed, the reward is divided by totalStaked, so the highest the total staked gets,
+    ///      the higher the precision loss can be if the scaling factor is too low.
+    constructor(
+        uint8 scalingFactorDecimals,
+        IForwarderRegistry forwarderRegistry
+    ) ContractOwnership(msg.sender) ForwarderRegistryContext(forwarderRegistry) {
+        require(scalingFactorDecimals < 77, ScalingFactorOutOfBounds());
+        SCALING_FACTOR = 10 ** scalingFactorDecimals;
+    }
 
     function _updateReward(address account) internal {
         rewardPerStakePointStored = rewardPerStakePoint();
@@ -78,14 +96,14 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
         if (currentTotalStaked == 0) {
             return rewardPerStakePointStored;
         }
-        return rewardPerStakePointStored + (((lastTimeRewardApplicable() - lastUpdated) * rewardRate * SCALING_FACTOR) / currentTotalStaked);
+        return rewardPerStakePointStored + (((lastTimeRewardApplicable() - lastUpdated) * rewardRate) / currentTotalStaked);
     }
 
     /// @notice Returns the amount of rewards earned by the account.
     /// @return The account's stake points times the difference between the current reward per stake point and the last paid reward per stake point.
     /// @param account The address of the account to check.
     function earned(address account) public view returns (uint256) {
-        return (staked[account] * (rewardPerStakePoint() - rewardPerStakePointPaid[account])) / SCALING_FACTOR + rewards[account];
+        return (staked[account] * (rewardPerStakePoint() - rewardPerStakePointPaid[account])) + rewards[account];
     }
 
     /// @notice Stakes to the pool.
@@ -150,15 +168,18 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
 
     /// @notice Claims the rewards for the sender.
     /// @dev Emits a {Claimed} event with the staker address, claimData and reward.
-    /// @dev The claimData is generated by the _computeClaim function, which must be implemented in the deriving contract.
-    function claim() public virtual {
+    /// @param claimData The data to be used in the claim process (encoding freely determined by the deriving contracts).
+    function claim(bytes calldata claimData) public virtual nonReentrant {
         address staker = _msgSender();
         _updateReward(staker);
         uint256 reward = earned(staker);
         if (reward != 0) {
-            rewards[staker] = 0;
-            bytes memory claimData = _computeClaim(staker, reward);
-            emit Claimed(staker, claimData, reward);
+            uint256 claimable = reward / SCALING_FACTOR;
+            uint256 dust = reward % SCALING_FACTOR;
+            (uint256 claimed, uint256 unclaimed) = _computeClaim(staker, claimable, claimData);
+            require(claimed + unclaimed == claimable, InvalidClaimSum(claimable, claimed, unclaimed));
+            rewards[staker] = dust + unclaimed * SCALING_FACTOR;
+            emit Claimed(staker, claimData, claimed, unclaimed);
         }
     }
 
@@ -166,13 +187,12 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
     /// @notice If there is an ongoing distribution, the new rewards are added to the current distribution:
     /// @notice - If the new distribution ends before the current one, the new rewards are added to the current distribution.
     /// @notice - If the new distribution ends after the current one, the remaining rewards are added to the new distribution.
-    /// @notice NB: Any dust (remainder of the division of the reward by the duration) will not be distributed.
     /// @dev Reverts with {NotRoleHolder} if the sender does not have the REWARDER_ROLE.
     /// @dev Reverts with {InvalidRewardAmount} if the reward amount is 0.
     /// @dev Reverts with {InvalidDuration} if the duration is 0.
-    /// @dev Reverts with {RewardTooSmallForDuration} if the reward is too small for the duration.
+    /// @dev Reverts with {RewardOverflow} if the resulting total reward to be distributed overflows when scaled by the SCALING_FACTOR.
     /// @dev Reverts with {RewardDilution} if the new reward rate is lower than the current one.
-    /// @dev Emits a {RewardAdded} event with the rewarder address, reward amount, duration and dust.
+    /// @dev Emits a {RewardAdded} event with the rewarder address, reward amount, and duration.
     /// @param reward The amount of rewards to be added.
     /// @param duration The duration of the rewards distribution.
     function addReward(uint256 reward, uint256 duration) public payable virtual {
@@ -182,45 +202,43 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
         require(reward != 0, InvalidRewardAmount());
         require(duration != 0, InvalidDuration());
 
+        (bool success, uint256 totalReward) = reward.tryMul(SCALING_FACTOR);
+        require(success, RewardOverflow());
+
         _updateReward(address(0));
 
-        uint256 dust;
         uint256 currentDistributionEnd = distributionEnd;
         uint256 newDisrtibutionEnd = block.timestamp + duration;
 
         if (block.timestamp >= currentDistributionEnd) {
             // No current distribution
-            uint256 newRewardRate = reward / duration;
-            require(newRewardRate != 0, RewardTooSmallForDuration(reward, duration));
-            rewardRate = newRewardRate;
-            dust = reward % duration;
+            rewardRate = totalReward / duration;
             distributionEnd = newDisrtibutionEnd;
         } else {
+            uint256 currentRewardRate = rewardRate;
+            uint256 remainingReward = currentRewardRate * (currentDistributionEnd - block.timestamp);
+            (success, totalReward) = totalReward.tryAdd(remainingReward);
+            require(success, RewardOverflow());
+
             if (newDisrtibutionEnd <= currentDistributionEnd) {
                 // New distribution ends before current distribution
+                // Keep the current distribution end and increase the reward rate accordingly
                 duration = currentDistributionEnd - block.timestamp;
-                uint256 additionalRewardRate = reward / duration;
-                require(additionalRewardRate != 0, RewardTooSmallForDuration(reward, duration));
-                rewardRate += additionalRewardRate;
-                dust = reward % duration;
+                rewardRate = totalReward / duration;
             } else {
                 // New distribution ends after current distribution
-                require(reward / duration != 0, RewardTooSmallForDuration(reward, duration));
-                uint256 currentRewardRate = rewardRate;
-                uint256 remainingReward = currentRewardRate * (currentDistributionEnd - block.timestamp);
-                uint256 totalReward = remainingReward + reward;
+                // Extend the current distribution end and increase the reward rate accordingly
                 uint256 newRewardRate = totalReward / duration;
                 require(newRewardRate >= currentRewardRate, RewardDilution(currentRewardRate, newRewardRate));
                 rewardRate = newRewardRate;
                 distributionEnd = newDisrtibutionEnd;
-                dust = totalReward % duration;
             }
         }
         lastUpdated = block.timestamp;
 
-        _computeAddReward(rewarder, reward, dust);
+        _computeAddReward(rewarder, reward);
 
-        emit RewardAdded(rewarder, reward, duration, dust);
+        emit RewardAdded(rewarder, reward, duration);
     }
 
     /// @notice Performs a stake (deposit some asset in the pool), for example by transferring staking tokens to this contract.
@@ -239,15 +257,16 @@ abstract contract LinearPool is ILinearPool, AccessControl, ReentrancyGuard, Tok
 
     /// @notice Performs a claim, for examples by transferring reward tokens to the sender.
     /// @param sender The address of the sender.
-    /// @param reward The amount of rewards to be claimed.
-    /// @return claimData The data used in the claim process (encoding freely determined by the deriving contracts).
-    function _computeClaim(address sender, uint256 reward) internal virtual returns (bytes memory claimData);
+    /// @param claimable The amount of rewards which can be claimed.
+    /// @param claimData The data to be used in the claim process (encoding freely determined by the deriving contracts).
+    /// @return claimed The amount of rewards that was claimed.
+    /// @return unclaimed The amount of rewards that was not claimed.
+    function _computeClaim(address sender, uint256 claimable, bytes calldata claimData) internal virtual returns (uint256 claimed, uint256 unclaimed);
 
     /// @notice Performs addition of rewards to the pool, for example by transferring rewards tokens to this contract.
     /// @param sender The address of the sender.
     /// @param reward The amount of rewards to be added.
-    /// @param dust The amount of dust (remainder of the division of the reward by the duration).
-    function _computeAddReward(address sender, uint256 reward, uint256 dust) internal virtual;
+    function _computeAddReward(address sender, uint256 reward) internal virtual;
 
     /// @inheritdoc ForwarderRegistryContextBase
     function _msgSender() internal view virtual override(Context, ForwarderRegistryContextBase) returns (address) {

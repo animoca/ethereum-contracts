@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 /// @notice Thrown when an account is not the contract owner but is required to.
 /// @param account The account that was checked.

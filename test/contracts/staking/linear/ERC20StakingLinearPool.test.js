@@ -12,6 +12,8 @@ describe('ERC20StakingLinearPool', function () {
     [_deployer, rewarder, holder, alice] = await ethers.getSigners();
   });
 
+  const scalingFactorDecimals = 36n;
+
   const fixture = async function () {
     this.stakingToken = await deployContract('ERC20FixedSupply', '', '', 18, [alice.address], [1000n], await getForwarderRegistryAddress());
     this.rewardToken = await deployContract(
@@ -28,6 +30,7 @@ describe('ERC20StakingLinearPool', function () {
       await this.stakingToken.getAddress(),
       await this.rewardToken.getAddress(),
       holder.address,
+      scalingFactorDecimals,
       await getForwarderRegistryAddress(),
     );
     this.rewarderRole = await this.contract.REWARDER_ROLE();
@@ -122,13 +125,15 @@ describe('ERC20StakingLinearPool', function () {
       const reward = 100000n;
       const duration = 100n;
       const stakeData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
-      const claimData = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [reward]);
+      const claimData = '0x';
+      const claimed = reward;
+      const unclaimed = 0n;
 
       beforeEach(async function () {
         await this.contract.connect(alice).stake(stakeData);
         await this.contract.connect(rewarder).addReward(reward, duration);
         await time.increase(duration);
-        this.receipt = await this.contract.connect(alice).claim();
+        this.receipt = await this.contract.connect(alice).claim(claimData);
       });
 
       it('transfers the reward to the staker', async function () {
@@ -136,7 +141,7 @@ describe('ERC20StakingLinearPool', function () {
       });
 
       it('emits a Claimed event', async function () {
-        await expect(this.receipt).to.emit(this.contract, 'Claimed').withArgs(alice.address, claimData, reward);
+        await expect(this.receipt).to.emit(this.contract, 'Claimed').withArgs(alice.address, claimData, claimed, unclaimed);
       });
     });
   });

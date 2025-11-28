@@ -1,9 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 pragma experimental ABIEncoderV2;
 
 // solhint-disable-next-line max-line-length
-import {EmptyFacet, NonContractFacet, FunctionAlreadyPresent, RemovingWithNonZeroAddressFacet, FunctionNotFound, ModifyingImmutableFunction, ReplacingFunctionByItself, ZeroAddressTargetInitCallButNonEmptyData, EmptyInitCallData, NonContractInitCallTarget, InitCallReverted} from "./../errors/DiamondErrors.sol";
+import {
+    EmptyFacet,
+    NonContractFacet,
+    FunctionAlreadyPresent,
+    RemovingWithNonZeroAddressFacet,
+    FunctionNotFound,
+    ModifyingImmutableFunction,
+    ReplacingFunctionByItself,
+    ZeroAddressTargetInitCallButNonEmptyData,
+    EmptyInitCallData,
+    NonContractInitCallTarget,
+    InitCallReverted
+} from "./../errors/DiamondErrors.sol";
 import {Facet, FacetCutAction, FacetCut, Initialization} from "./../DiamondCommon.sol";
 import {DiamondCut} from "./../events/DiamondCutEvents.sol";
 import {IDiamondCut} from "./../interfaces/IDiamondCut.sol";
@@ -187,16 +199,14 @@ library DiamondStorage {
 
                 // clears the selector we are deleting and puts the last selector in its place.
                 oldSelectorSlot =
-                    (oldSelectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
-                    (bytes32(lastSelector) >> oldSelectorInSlotPosition);
+                    (oldSelectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) | (bytes32(lastSelector) >> oldSelectorInSlotPosition);
 
                 // update storage with the modified slot
                 s.selectorSlots[oldSelectorsSlotCount] = oldSelectorSlot;
             } else {
                 // clears the selector we are deleting and puts the last selector in its place.
                 selectorSlot =
-                    (selectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |
-                    (bytes32(lastSelector) >> oldSelectorInSlotPosition);
+                    (selectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) | (bytes32(lastSelector) >> oldSelectorInSlotPosition);
             }
 
             if (selectorInSlotIndex == 0) {

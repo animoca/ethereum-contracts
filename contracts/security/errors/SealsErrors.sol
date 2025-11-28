@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 /// @notice Thrown when trying to seal a sealId which has already been used.
 /// @param sealId The seal identifier.

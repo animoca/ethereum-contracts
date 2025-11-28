@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {ILinearPool} from "./../../../staking/linear/interfaces/ILinearPool.sol";
 
@@ -19,6 +19,12 @@ contract LinearPoolReentrancyAttacker {
     function withdraw(bytes calldata withdrawData) external {
         if (address(target) != address(0)) {
             target.withdraw(withdrawData);
+        }
+    }
+
+    function claim(bytes calldata claimData) external {
+        if (address(target) != address(0)) {
+            target.claim(claimData);
         }
     }
 }

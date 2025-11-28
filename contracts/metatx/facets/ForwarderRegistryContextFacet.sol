@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {IERC2771} from "./../interfaces/IERC2771.sol";
 import {IForwarderRegistry} from "./../interfaces/IForwarderRegistry.sol";
@@ -20,6 +20,11 @@ contract ForwarderRegistryContextFacet is IERC2771 {
 
     /// @inheritdoc IERC2771
     function isTrustedForwarder(address forwarder) external view virtual returns (bool) {
+        // ERC2771 meta-transactions disabled
+        if (_FORWARDER_REGISTRY == IForwarderRegistry(address(0))) {
+            return false;
+        }
+
         return forwarder == address(_FORWARDER_REGISTRY);
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 interface ILinearPool {
     function lastTimeRewardApplicable() external view returns (uint256);
@@ -12,7 +12,7 @@ interface ILinearPool {
 
     function withdraw(bytes calldata withdrawData) external;
 
-    function claim() external;
+    function claim(bytes calldata claimData) external;
 
     function addReward(uint256 reward, uint256 duration) external payable;
 }

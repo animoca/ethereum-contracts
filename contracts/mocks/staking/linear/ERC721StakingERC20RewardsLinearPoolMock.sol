@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {LinearPool} from "./../../../staking/linear/LinearPool.sol";
 import {ERC721StakingLinearPool} from "./../../../staking/linear/stake/ERC721StakingLinearPool.sol";
@@ -14,18 +14,20 @@ contract ERC721StakingERC20RewardsLinearPoolMock is ERC721StakingLinearPool, Lin
         IERC721 stakingToken,
         IERC20 rewardToken,
         address rewardHolder,
+        uint8 scalingFactorDecimals,
         IForwarderRegistry forwarderRegistry
-    ) ERC721StakingLinearPool(stakingToken, forwarderRegistry) LinearPool_ERC20Rewards(rewardToken, rewardHolder) {}
+    ) ERC721StakingLinearPool(stakingToken, scalingFactorDecimals, forwarderRegistry) LinearPool_ERC20Rewards(rewardToken, rewardHolder) {}
 
     function _computeClaim(
         address staker,
-        uint256 reward
-    ) internal virtual override(LinearPool, LinearPool_ERC20Rewards) returns (bytes memory claimData) {
-        return LinearPool_ERC20Rewards._computeClaim(staker, reward);
+        uint256 claimable,
+        bytes calldata claimData
+    ) internal virtual override(LinearPool, LinearPool_ERC20Rewards) returns (uint256 claimed, uint256 unclaimed) {
+        return LinearPool_ERC20Rewards._computeClaim(staker, claimable, claimData);
     }
 
-    function _computeAddReward(address rewarder, uint256 reward, uint256 dust) internal virtual override(LinearPool, LinearPool_ERC20Rewards) {
-        LinearPool_ERC20Rewards._computeAddReward(rewarder, reward, dust);
+    function _computeAddReward(address rewarder, uint256 reward) internal virtual override(LinearPool, LinearPool_ERC20Rewards) {
+        LinearPool_ERC20Rewards._computeAddReward(rewarder, reward);
     }
 
     function _tokenValue(uint256) internal view virtual override returns (uint256) {

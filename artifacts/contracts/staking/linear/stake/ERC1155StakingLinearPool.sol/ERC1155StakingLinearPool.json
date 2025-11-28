@@ -46,6 +46,27 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "claimable",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "claimed",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "unclaimed",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidClaimSum",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "InvalidDuration",
       "type": "error"
@@ -166,19 +187,8 @@
       "type": "error"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "reward",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "duration",
-          "type": "uint256"
-        }
-      ],
-      "name": "RewardTooSmallForDuration",
+      "inputs": [],
+      "name": "RewardOverflow",
       "type": "error"
     },
     {
@@ -190,6 +200,11 @@
         }
       ],
       "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ScalingFactorOutOfBounds",
       "type": "error"
     },
     {
@@ -210,7 +225,13 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "reward",
+          "name": "claimed",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unclaimed",
           "type": "uint256"
         }
       ],
@@ -255,12 +276,6 @@
           "indexed": false,
           "internalType": "uint256",
           "name": "duration",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "dust",
           "type": "uint256"
         }
       ],
@@ -449,7 +464,13 @@
       "type": "function"
     },
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "claimData",
+          "type": "bytes"
+        }
+      ],
       "name": "claim",
       "outputs": [],
       "stateMutability": "nonpayable",

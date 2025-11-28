@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {IForwarderRegistry} from "./../interfaces/IForwarderRegistry.sol";
 import {ERC2771Calldata} from "./../libraries/ERC2771Calldata.sol";
@@ -10,12 +10,18 @@ import {ERC2771Calldata} from "./../libraries/ERC2771Calldata.sol";
 abstract contract ForwarderRegistryContextBase {
     IForwarderRegistry internal immutable _FORWARDER_REGISTRY;
 
+    /// @param forwarderRegistry The ForwarderRegistry contract address, or the zero address to disable meta-transactions.
     constructor(IForwarderRegistry forwarderRegistry) {
         _FORWARDER_REGISTRY = forwarderRegistry;
     }
 
     /// @notice Returns the message sender depending on the ForwarderRegistry-based meta-transaction context.
     function _msgSender() internal view virtual returns (address) {
+        // ERC2771 meta-transactions disabled
+        if (_FORWARDER_REGISTRY == IForwarderRegistry(address(0))) {
+            return msg.sender;
+        }
+
         // Optimised path in case of an EOA-initiated direct tx to the contract or a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
         if (msg.sender == tx.origin || msg.data.length < 24) {
@@ -34,6 +40,11 @@ abstract contract ForwarderRegistryContextBase {
 
     /// @notice Returns the message data depending on the ForwarderRegistry-based meta-transaction context.
     function _msgData() internal view virtual returns (bytes calldata) {
+        // ERC2771 meta-transactions disabled
+        if (_FORWARDER_REGISTRY == IForwarderRegistry(address(0))) {
+            return msg.data;
+        }
+
         // Optimised path in case of an EOA-initiated direct tx to the contract or a call from a contract not complying with EIP-2771
         // solhint-disable-next-line avoid-tx-origin
         if (msg.sender == tx.origin || msg.data.length < 24) {

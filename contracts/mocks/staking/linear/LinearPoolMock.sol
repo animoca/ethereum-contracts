@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {LinearPool} from "./../../../staking/linear/LinearPool.sol";
 import {LinearPoolReentrancyAttacker} from "./LinearPoolReentrancyAttacker.sol";
@@ -10,10 +10,14 @@ contract LinearPoolMock is LinearPool {
 
     event ComputeStakeCalled(address staker, bytes stakeData);
     event ComputeWithdrawCalled(address staker, bytes withdrawData);
-    event ComputeClaimCalled(address staker, uint256 reward);
-    event ComputeAddRewardCalled(address rewarder, uint256 reward, uint256 dust);
+    event ComputeClaimCalled(address staker, uint256 claimable, bytes claimData);
+    event ComputeAddRewardCalled(address rewarder, uint256 reward);
 
-    constructor(LinearPoolReentrancyAttacker reentrancyAttacker, IForwarderRegistry forwarderRegistry) LinearPool(forwarderRegistry) {
+    constructor(
+        LinearPoolReentrancyAttacker reentrancyAttacker,
+        uint8 scalingFactorDecimals,
+        IForwarderRegistry forwarderRegistry
+    ) LinearPool(scalingFactorDecimals, forwarderRegistry) {
         REENTRANCY_ATTACKER = reentrancyAttacker;
     }
 
@@ -29,13 +33,19 @@ contract LinearPoolMock is LinearPool {
         emit ComputeWithdrawCalled(staker, withdrawData);
     }
 
-    function _computeClaim(address staker, uint256 reward) internal virtual override returns (bytes memory claimData) {
-        claimData = abi.encode(reward);
-        emit ComputeClaimCalled(staker, reward);
+    function _computeClaim(
+        address staker,
+        uint256 claimable,
+        bytes calldata claimData
+    ) internal virtual override returns (uint256 claimed, uint256 unclaimed) {
+        claimed = claimable;
+        unclaimed = 0;
+        REENTRANCY_ATTACKER.claim(claimData);
+        emit ComputeClaimCalled(staker, claimable, claimData);
     }
 
-    function _computeAddReward(address rewarder, uint256 reward, uint256 dust) internal virtual override {
-        emit ComputeAddRewardCalled(rewarder, reward, dust);
+    function _computeAddReward(address rewarder, uint256 reward) internal virtual override {
+        emit ComputeAddRewardCalled(rewarder, reward);
     }
 
     function __msgData() external view returns (bytes calldata) {

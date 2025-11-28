@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {LinearPool} from "./../LinearPool.sol";
 import {ERC721Receiver} from "./../../../token/ERC721/ERC721Receiver.sol";
@@ -18,7 +18,11 @@ abstract contract ERC721StakingLinearPool is LinearPool, ERC721Receiver {
     error NotTheTokenOwner(address staker, uint256 tokenId, address owner);
     error InvalidRecoveryToken(uint256 tokenId);
 
-    constructor(IERC721 stakingToken, IForwarderRegistry forwarderRegistry) LinearPool(forwarderRegistry) {
+    constructor(
+        IERC721 stakingToken,
+        uint8 scalingFactorDecimals,
+        IForwarderRegistry forwarderRegistry
+    ) LinearPool(scalingFactorDecimals, forwarderRegistry) {
         STAKING_TOKEN = stakingToken;
     }
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.30;
 
 import {LinearPool} from "./../LinearPool.sol";
 import {ERC1155TokenReceiver} from "./../../../token/ERC1155/ERC1155TokenReceiver.sol";
@@ -17,7 +17,11 @@ abstract contract ERC1155StakingLinearPool is LinearPool, ERC1155TokenReceiver {
     error InvalidToken();
     error NotEnoughBalance(address staker, uint256 id, uint256 amount, uint256 balance);
 
-    constructor(IERC1155 stakingToken, IForwarderRegistry forwarderRegistry) LinearPool(forwarderRegistry) {
+    constructor(
+        IERC1155 stakingToken,
+        uint8 scalingFactorDecimals,
+        IForwarderRegistry forwarderRegistry
+    ) LinearPool(scalingFactorDecimals, forwarderRegistry) {
         STAKING_TOKEN = stakingToken;
     }
 

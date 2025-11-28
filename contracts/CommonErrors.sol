@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 /// @notice Thrown when trying to transfer tokens without calldata to the contract.
 error EtherReceptionDisabled();
